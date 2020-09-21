@@ -72,8 +72,8 @@ For test purposes you can add at the end ``maxEvents=<num_events>`` (e.g. to run
 
 Conventions:
    * The particles in the process are labeled as X &#8594; Y HX, and Y &#8594; HY1 HY2. The three H bosons (HX, HY1, HY2) decay to b1 b2.
-   * Objects are ordered in pt, so that pt(HY1) > pt(HY1) and pt(b1) > pt (b2)
-   * The first and last copy of the bosons in the hadronisation are labelled ``fc`` and ``lc`` respectively
+   * Objects are ordered in pt, so that pt(HY1) > pt(HY1) and pt(b1) > pt (b2) .
+   * The first and last copy of the bosons in the hadronisation are labelled ``fc`` and ``lc`` respectively. Note that this only matters for X, as Y, HX, HY1, HY2 are identical between ``lc`` and ``fc``
 
 Content:
    * A vector of pt/eta/phi/m of all the genjets satisfying minimal pt requirements
