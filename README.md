@@ -76,6 +76,6 @@ Conventions:
    * The first and last copy of the bosons in the hadronisation are labelled ``fc`` and ``lc`` respectively. Note that this only matters for X, as Y, HX, HY1, HY2 are identical between ``lc`` and ``fc``
 
 Content:
-   * A vector of pt/eta/phi/m of all the genjets satisfying minimal pt requirements
+   * A vector of pt/eta/phi/m of all the genjets satisfying minimal pt requirements (both in the cases where the neutrinos are clustered and are not clustered in the jet)
    * The pt/eta/phi/m of the gen particles as individual floats X, Y, HY, HY1, HY1, HY_b1, HY_b2, HY1_b1, HY1_b2, HY1_b1, HY1_b2
    * For every gen b the index of the genjet matched (matched = the closest within a cone dR = 0.4). Value ``-1`` if no match found
