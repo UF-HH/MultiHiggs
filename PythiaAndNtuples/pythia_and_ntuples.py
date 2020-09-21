@@ -9,11 +9,14 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 # default
 options = VarParsing.VarParsing ('analysis')
 options.inputFiles = 'file:/uscms/home/lcadamur/nobackup/sixB/CMSSW_10_2_18/src/test_lhe.lhe'
-options.maxEvents = -1
+options.outputFile = 'test_ntuple.root'
+options.maxEvents  = -1
 
 options.parseArguments()
 
-print '[INFO] Running on files', options.inputFiles  
+print '[INFO] Running on files        : ', options.inputFiles  
+print '[INFO] Output will be saved as : ', options.outputFile
+print '[INFO] Max number of events    : ', options.maxEvents
 
 from Configuration.StandardSequences.Eras import eras
 
@@ -150,7 +153,7 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
 
 process.TFileService = cms.Service('TFileService',
     # fileName = cms.string(options.outputFile)
-    fileName = cms.string('testntuple.root')
+    fileName = cms.string(options.outputFile)
 )
 
 # process.externalLHEProducer = cms.EDProducer("ExternalLHEProducer",
