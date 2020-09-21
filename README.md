@@ -57,6 +57,8 @@ To uncompress the file for running the Pythia step, use ``gunzip filename.tar.gz
 #### Hadronisaton and ntuple step
 
 This step runs Pythia within CMSSW on top of the previously produced LHE file.
+First you need to compile the code with ``scram b -j 4`` (just once).
+
 To run on a single file locally:
 
 ```
