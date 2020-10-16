@@ -52,15 +52,18 @@ source generate_LHE.sh <mX> <mY> [nevents: default 10000]
 
 This will create a folder with the zipped LHE file under ``MG5_aMC_v2_6_5/X_YH_HHH_6b/Events/gen6b_<mX>_<mY>``
 
+To uncompress the file for running the Pythia step, use ``gunzip filename.tar.gz``.
 
 #### Hadronisaton and ntuple step
 
 This step runs Pythia within CMSSW on top of the previously produced LHE file.
+First you need to compile the code with ``scram b -j 4`` (just once).
+
 To run on a single file locally:
 
 ```
 cd PythiaAndNtuples
-cmsRun pythia_and_ntuples.py inputFiles=file:/path/to/the/LHE outputFile=required_file_name.root
+cmsRun pythia_and_ntuples.py inputFiles=file:/path/to/the/LHE outputFile=output_file_name.root
 ```
 
 This step takes approximately 90s to hadronise and ntuplise 1000 events (a few error messages from Pythia may appear) when running locally.
