@@ -13,3 +13,16 @@ You can follow the example contained in ``Era_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_
 
 NOTE: you can create both mini and nanoAOD (set the sequence you need in ``scriptExe.sh``). Using ``miniAOD_step_fake.py`` or ``nanoAOD_step_fake.py`` in the ``crabConfig.py`` will tell CRAB what type of output file to transmit to the storage.
 
+Quick instructions to build more folders starting from the example one.
+Assumes that all the gridpacks and outputs are called the same and just differ for the mass values
+
+```
+# copy gridpacks
+for d in NMSSM_XYH_YToHH_6b_MX_450_MY_300 NMSSM_XYH_YToHH_6b_MX_500_MY_300 ; do cp NMSSM_XYH_YToHH_6b_MX_600_MY_400/* $d ; cp ${d}_slc6_amd64_gcc630_CMSSW_9_3_16_tarball.tar.xz ${d} ; done
+
+# change inputs
+for d in NMSSM_XYH_YToHH_6b_MX_450_MY_300 NMSSM_XYH_YToHH_6b_MX_500_MY_300 ; do cd ${d}; sed -i "s/NMSSM_XYH_YToHH_6b_MX_600_MY_400/${d}/" genSim_step.py ; sed -i "s/NMSSM_XYH_YToHH_6b_MX_600_MY_400/${d}/" crabConfig.py ; cd .. ; done
+
+# submit to CRAB
+for d in NMSSM_XYH_YToHH_6b_MX_450_MY_300 NMSSM_XYH_YToHH_6b_MX_500_MY_300 ; do echo $d; cd $d ; crab submit -c crabConfig.py ; cd .. ; done
+```
