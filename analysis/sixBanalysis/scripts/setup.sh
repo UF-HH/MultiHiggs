@@ -31,7 +31,7 @@ if [ "$pathunset" = true ] ; then
         export CPP_BOOST_PATH=/cvmfs/sft.cern.ch/lcg/views/LCG_89/x86_64-slc6-gcc62-opt
     fi
     export CPATH=${CPATH}:${CPP_BOOST_PATH}/include
-    export CPATH=${CPATH}:${THISDIR}/../
+    export CPATH=${CPATH}:${CMSSW_BASE}/src/
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${THISDIR}/lib:${CPP_BOOST_PATH}/lib
     ## NB: /cvmfs/sft.cern.ch/... is needed to source most recent boost libraries
 
