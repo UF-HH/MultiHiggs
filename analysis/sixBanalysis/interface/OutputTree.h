@@ -90,6 +90,17 @@ class OutputTree {
         DECLARE_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
         DECLARE_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
 
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+        int gen_bs_N_reco_match;
+        int gen_bs_N_reco_match_in_acc;
+        double gen_bs_match_recojet_minv;
+        double gen_bs_match_in_acc_recojet_minv;
+
         DECLARE_m_pt_eta_phi_p4(X);
         DECLARE_m_pt_eta_phi_p4(Y);
         DECLARE_m_pt_eta_phi_p4(HX);

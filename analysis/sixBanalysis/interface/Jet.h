@@ -19,6 +19,8 @@ class Jet : public Candidate
             clonedJet->setP4(this->P4());
         	return std::unique_ptr<Jet> (clonedJet);
         }
+        float getBregCorr();
+        float getBregRes();
         p4_t P4Regressed() const      {return p4Regressed_;}
         void setP4Regressed( p4_t p4Regressed) {p4Regressed_ = p4Regressed;}
         

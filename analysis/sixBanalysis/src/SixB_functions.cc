@@ -130,6 +130,90 @@ void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, boo
     return;
 }
 
+void SixB_functions::match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei)
+{
+    int ij_gen_HX_b1_genjet  = (ei.gen_HX_b1_genjet  ? find_jet_from_genjet(nat, *ei.gen_HX_b1_genjet)  : -1); 
+    int ij_gen_HX_b2_genjet  = (ei.gen_HX_b2_genjet  ? find_jet_from_genjet(nat, *ei.gen_HX_b2_genjet)  : -1); 
+    int ij_gen_HY1_b1_genjet = (ei.gen_HY1_b1_genjet ? find_jet_from_genjet(nat, *ei.gen_HY1_b1_genjet) : -1); 
+    int ij_gen_HY1_b2_genjet = (ei.gen_HY1_b2_genjet ? find_jet_from_genjet(nat, *ei.gen_HY1_b2_genjet) : -1); 
+    int ij_gen_HY2_b1_genjet = (ei.gen_HY2_b1_genjet ? find_jet_from_genjet(nat, *ei.gen_HY2_b1_genjet) : -1); 
+    int ij_gen_HY2_b2_genjet = (ei.gen_HY2_b2_genjet ? find_jet_from_genjet(nat, *ei.gen_HY2_b2_genjet) : -1); 
+
+    if (ij_gen_HX_b1_genjet >= 0)  ei.gen_HX_b1_recojet  = Jet(ij_gen_HX_b1_genjet,  &nat);
+    if (ij_gen_HX_b2_genjet >= 0)  ei.gen_HX_b2_recojet  = Jet(ij_gen_HX_b2_genjet,  &nat);
+    if (ij_gen_HY1_b1_genjet >= 0) ei.gen_HY1_b1_recojet = Jet(ij_gen_HY1_b1_genjet, &nat);
+    if (ij_gen_HY1_b2_genjet >= 0) ei.gen_HY1_b2_recojet = Jet(ij_gen_HY1_b2_genjet, &nat);
+    if (ij_gen_HY2_b1_genjet >= 0) ei.gen_HY2_b1_recojet = Jet(ij_gen_HY2_b1_genjet, &nat);
+    if (ij_gen_HY2_b2_genjet >= 0) ei.gen_HY2_b2_recojet = Jet(ij_gen_HY2_b2_genjet, &nat);
+
+    // select unique occurences in vector
+    // note : PAT tools already ensure that match is unique
+    // https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/PatAlgos/python/mcMatchLayer0/jetMatch_cfi.py
+    // so the check below is redundant
+
+    // std::vector<int> imatchs;
+    // if (ij_gen_HX_b1_genjet >= 0)  imatchs.push_back(ij_gen_HX_b1_genjet);
+    // if (ij_gen_HX_b2_genjet >= 0)  imatchs.push_back(ij_gen_HX_b2_genjet);
+    // if (ij_gen_HY1_b1_genjet >= 0) imatchs.push_back(ij_gen_HY1_b1_genjet);
+    // if (ij_gen_HY1_b2_genjet >= 0) imatchs.push_back(ij_gen_HY1_b2_genjet);
+    // if (ij_gen_HY2_b1_genjet >= 0) imatchs.push_back(ij_gen_HY2_b1_genjet);
+    // if (ij_gen_HY2_b2_genjet >= 0) imatchs.push_back(ij_gen_HY2_b2_genjet);
+
+    // sort(imatchs.begin(), imatchs.end());
+    // imatchs.erase(unique (imatchs.begin(), imatchs.end()), imatchs.end());
+    // ei.gen_bs_N_reco_match = imatchs.size(); // number of different reco jets that are matched to gen jets
+
+    int nmatched = 0;
+    if (ij_gen_HX_b1_genjet >= 0)  nmatched += 1;
+    if (ij_gen_HX_b2_genjet >= 0)  nmatched += 1;
+    if (ij_gen_HY1_b1_genjet >= 0) nmatched += 1;
+    if (ij_gen_HY1_b2_genjet >= 0) nmatched += 1;
+    if (ij_gen_HY2_b1_genjet >= 0) nmatched += 1;
+    if (ij_gen_HY2_b2_genjet >= 0) nmatched += 1;
+    ei.gen_bs_N_reco_match = nmatched;
+
+    // same as above, but apply acceptance cuts on the matched jets
+    int nmatched_acc = 0;
+    if (ei.gen_HX_b1_recojet  && ei.gen_HX_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_HX_b1_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
+    if (ei.gen_HX_b2_recojet  && ei.gen_HX_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_HX_b2_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
+    if (ei.gen_HY1_b1_recojet && ei.gen_HY1_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY1_b1_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+    if (ei.gen_HY1_b2_recojet && ei.gen_HY1_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY1_b2_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+    if (ei.gen_HY2_b1_recojet && ei.gen_HY2_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY2_b1_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+    if (ei.gen_HY2_b2_recojet && ei.gen_HY2_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY2_b2_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+    ei.gen_bs_N_reco_match_in_acc = nmatched_acc;
+
+    // now compute p4 sums to make the invariant mass of X - FIXME: can add more inv masses for the various cases
+    p4_t p4_sum_matched (0,0,0,0);
+    if (ei.gen_HX_b1_recojet) p4_sum_matched  += ei.gen_HX_b1_recojet->P4();
+    if (ei.gen_HX_b2_recojet) p4_sum_matched  += ei.gen_HX_b2_recojet->P4();
+    if (ei.gen_HY1_b1_recojet) p4_sum_matched += ei.gen_HY1_b1_recojet->P4();
+    if (ei.gen_HY1_b2_recojet) p4_sum_matched += ei.gen_HY1_b2_recojet->P4();
+    if (ei.gen_HY2_b1_recojet) p4_sum_matched += ei.gen_HY2_b1_recojet->P4();
+    if (ei.gen_HY2_b2_recojet) p4_sum_matched += ei.gen_HY2_b2_recojet->P4();
+    ei.gen_bs_match_recojet_minv = p4_sum_matched.M();
+
+    p4_t p4_sum_matched_acc (0,0,0,0);
+    if (ei.gen_HX_b1_recojet  && ei.gen_HX_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_HX_b1_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_HX_b1_recojet->P4();
+    if (ei.gen_HX_b2_recojet  && ei.gen_HX_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_HX_b2_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_HX_b2_recojet->P4();
+    if (ei.gen_HY1_b1_recojet && ei.gen_HY1_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY1_b1_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_HY1_b1_recojet->P4();
+    if (ei.gen_HY1_b2_recojet && ei.gen_HY1_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY1_b2_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_HY1_b2_recojet->P4();
+    if (ei.gen_HY2_b1_recojet && ei.gen_HY2_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY2_b1_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_HY2_b1_recojet->P4();
+    if (ei.gen_HY2_b2_recojet && ei.gen_HY2_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY2_b2_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_HY2_b2_recojet->P4();
+    ei.gen_bs_match_in_acc_recojet_minv = p4_sum_matched_acc.M();
+}
+
+int SixB_functions::find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj)
+{
+    const int gjidx = gj.getIdx();
+    for (unsigned int ij = 0; ij < *(nat.nJet); ++ij){
+        Jet jet (ij, &nat);
+        int igj = get_property(jet, Jet_genJetIdx);
+        if (igj == gjidx)
+            return ij;
+    }
+    return -1;
+}
+
 std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
 {
     std::vector<Jet> jets;
@@ -244,4 +328,27 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
     CompositeCandidate HY2 (jets.at(4), jets.at(5));
 
     return std::make_tuple(HX, HY1, HY2);
+}
+
+int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+    std::vector<int> matched_jets;
+    if (ei.gen_HX_b1_recojet)  matched_jets.push_back(ei.gen_HX_b1_recojet->getIdx());
+    if (ei.gen_HX_b2_recojet)  matched_jets.push_back(ei.gen_HX_b2_recojet->getIdx());
+    if (ei.gen_HY1_b1_recojet) matched_jets.push_back(ei.gen_HY1_b1_recojet->getIdx());
+    if (ei.gen_HY1_b2_recojet) matched_jets.push_back(ei.gen_HY1_b2_recojet->getIdx());
+    if (ei.gen_HY2_b1_recojet) matched_jets.push_back(ei.gen_HY2_b1_recojet->getIdx());
+    if (ei.gen_HY2_b2_recojet) matched_jets.push_back(ei.gen_HY2_b2_recojet->getIdx());
+
+    std::vector<int> reco_js (in_jets.size());
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
+        reco_js.at(ij) = in_jets.at(ij).getIdx();
+
+    int nfound = 0;
+    for (int imj : matched_jets){
+        if (std::find(reco_js.begin(), reco_js.end(), imj) != reco_js.end())
+            nfound += 1;
+    }
+
+    return nfound;
 }

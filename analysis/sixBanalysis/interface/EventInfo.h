@@ -39,12 +39,23 @@ struct EventInfo{
     boost::optional<GenPart>  gen_HY2_b1;
     boost::optional<GenPart>  gen_HY2_b2;
 
-    boost::optional<GenJet> gen_HX_b1_genjet;
+    boost::optional<GenJet> gen_HX_b1_genjet; // genjets matched to the 6 b
     boost::optional<GenJet> gen_HX_b2_genjet;
     boost::optional<GenJet> gen_HY1_b1_genjet;
     boost::optional<GenJet> gen_HY1_b2_genjet;
     boost::optional<GenJet> gen_HY2_b1_genjet;
     boost::optional<GenJet> gen_HY2_b2_genjet;
+
+    boost::optional<Jet> gen_HX_b1_recojet; // recojets matched to the 6 b
+    boost::optional<Jet> gen_HX_b2_recojet;
+    boost::optional<Jet> gen_HY1_b1_recojet;
+    boost::optional<Jet> gen_HY1_b2_recojet;
+    boost::optional<Jet> gen_HY2_b1_recojet;
+    boost::optional<Jet> gen_HY2_b2_recojet;
+    boost::optional<int> gen_bs_N_reco_match;
+    boost::optional<int> gen_bs_N_reco_match_in_acc; // counts how many different jets are the ones above (== fully resolved event)
+    boost::optional<double> gen_bs_match_recojet_minv; // inv mass of the matched jets
+    boost::optional<double> gen_bs_match_in_acc_recojet_minv;
 
     boost::optional<CompositeCandidate> X;
     boost::optional<CompositeCandidate> Y;

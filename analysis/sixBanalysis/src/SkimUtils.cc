@@ -98,18 +98,29 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
 
-    COPY_m_pt_eta_phi_p4(X);
-    COPY_m_pt_eta_phi_p4(Y);
-    COPY_m_pt_eta_phi_p4(HX);
-    COPY_m_pt_eta_phi_p4(HY1);
-    COPY_m_pt_eta_phi_p4(HY2);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+    if (ei.gen_bs_N_reco_match)        ot.gen_bs_N_reco_match        = *ei.gen_bs_N_reco_match;
+    if (ei.gen_bs_N_reco_match_in_acc) ot.gen_bs_N_reco_match_in_acc = *ei.gen_bs_N_reco_match_in_acc;
+    if (ei.gen_bs_match_recojet_minv)        ot.gen_bs_match_recojet_minv        = *ei.gen_bs_match_recojet_minv;
+    if (ei.gen_bs_match_in_acc_recojet_minv) ot.gen_bs_match_in_acc_recojet_minv = *ei.gen_bs_match_in_acc_recojet_minv;
 
-    COPY_m_pt_ptRegressed_eta_phi_p4(HX_b1);
-    COPY_m_pt_ptRegressed_eta_phi_p4(HX_b2);
-    COPY_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
-    COPY_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
-    COPY_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
-    COPY_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+    COPY_OPTIONAL_m_pt_eta_phi_p4(X);
+    COPY_OPTIONAL_m_pt_eta_phi_p4(Y);
+    COPY_OPTIONAL_m_pt_eta_phi_p4(HX);
+    COPY_OPTIONAL_m_pt_eta_phi_p4(HY1);
+    COPY_OPTIONAL_m_pt_eta_phi_p4(HY2);
+
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HX_b1);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HX_b2);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
 
     // fill the tree
     ot.fill();

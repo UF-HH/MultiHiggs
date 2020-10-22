@@ -72,6 +72,17 @@ void OutputTree::init_branches()
     BRANCH_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
     BRANCH_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
 
+    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
+    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
+    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
+    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
+    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
+    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+    tree_->Branch("gen_bs_N_reco_match",        &gen_bs_N_reco_match);
+    tree_->Branch("gen_bs_N_reco_match_in_acc", &gen_bs_N_reco_match_in_acc);
+    tree_->Branch("gen_bs_match_recojet_minv",        &gen_bs_match_recojet_minv);
+    tree_->Branch("gen_bs_match_in_acc_recojet_minv", &gen_bs_match_in_acc_recojet_minv);
+
     BRANCH_m_pt_eta_phi_p4(X);
     BRANCH_m_pt_eta_phi_p4(Y);
     BRANCH_m_pt_eta_phi_p4(HX);
@@ -114,6 +125,17 @@ void OutputTree::clear()
     CLEAR_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
     CLEAR_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
     CLEAR_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
+
+    CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
+    CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
+    CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
+    CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
+    CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
+    CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+    gen_bs_N_reco_match        = -999;
+    gen_bs_N_reco_match_in_acc = -999;
+    gen_bs_match_recojet_minv        = -999;
+    gen_bs_match_in_acc_recojet_minv = -999;
 
     CLEAR_m_pt_eta_phi_p4(X);
     CLEAR_m_pt_eta_phi_p4(Y);

@@ -18,6 +18,7 @@ namespace su = SkimUtils;
 #include "jsonLumiFilter.h"
 
 #include "SixB_functions.h"
+#include "JetTools.h"
 
 #include "TFile.h"
 #include "TROOT.h"
@@ -39,6 +40,17 @@ std::vector<std::string> split_by_delimiter(std::string input, std::string delim
     tokens.push_back(input); // last part splitted
 
     return tokens;
+}
+
+Variation string_to_jer_variation (std::string s)
+{
+    if (s == "nominal")
+        return Variation::NOMINAL;
+    if (s == "up")
+        return Variation::UP;
+    if (s == "down")
+        return Variation::DOWN;
+    throw std::runtime_error(string("Cannot parse the variation ") + s);
 }
 
 int main(int argc, char** argv)
@@ -65,8 +77,9 @@ int main(int argc, char** argv)
         // ("kl-rew"    , po::value<float>(),  "klambda value for reweighting")
         // ("kl-map"    , po::value<string>()->default_value(""), "klambda input map for reweighting")
         // ("kl-histo"  , po::value<string>()->default_value("hhGenLevelDistr"), "klambda histogram name for reweighting")
-        ("jes-shift-syst", po::value<string>()->default_value("nominal"), "Name of the JES (scale) source uncertainty to be shifted. Usage as <name>:<up/down>. Pass -nominal- to not shift the jets")
-        ("jer-shift-syst", po::value<string>()->default_value("nominal"), "Name of the JER (resolution) source uncertainty to be shifted. Usage as <jer/bjer>:<up/down>. Pass -nominal- to not shift the jets")
+        ("jes-shift-syst",  po::value<string>()->default_value("nominal"), "Name of the JES (scale) source uncertainty to be shifted. Usage as <name>:<up/down>. Pass -nominal- to not shift the jets")
+        ("jer-shift-syst",  po::value<string>()->default_value("nominal"), "Name of the JER (resolution) source uncertainty to be shifted. Usage as <up/down>. Pass -nominal- to not shift the jets")
+        ("bjer-shift-syst", po::value<string>()->default_value("nominal"), "Name of the b regressed JER (resolution) source uncertainty to be shifted. Usage as <up/down>. Pass -nominal- to not shift the jets")
         // pairing variables
         // ("bbbbChoice"    , po::value<string>()->default_value("BothClosestToDiagonal"), "bbbb pairing choice")
         // ("mh1mh2"        , po::value<float>()->default_value(1.05), "Ratio Xo/Yo or 1/slope of the diagonal") 
@@ -204,10 +217,56 @@ int main(int argc, char** argv)
     OutputTree ot(
         opts["save-p4"].as<bool>()
     );
+
+    ot.declareUserIntBranch("nfound_all",    0);
+    ot.declareUserIntBranch("nfound_presel", 0);
+    ot.declareUserIntBranch("nfound_sixb",   0);
+
+    ////////////////////////////////////////////////////////////////////////
+    // All pre-running configurations (corrections, methods from cfg, etc)
+    ////////////////////////////////////////////////////////////////////////
   
     jsonLumiFilter jlf;
     if (is_data)
         jlf.loadJSON(config.readStringOpt("data::lumimask")); // just read the info for data, so if I just skim MC I'm not forced to parse a JSON
+
+
+    SixB_functions sbf;
+    
+    JetTools jt;
+
+    string jes_shift = opts["jes-shift-syst"].as<string>();
+    bool do_jes_shift = (jes_shift != "nominal");
+    cout << "[INFO] ... shifting jet energy scale? " << std::boolalpha << do_jes_shift << std::noboolalpha << endl;
+    bool dir_jes_shift_is_up;
+    if (do_jes_shift){
+        string JECFileName = config.readStringOpt("parameters::JECFileName");
+        auto tokens = split_by_delimiter(opts["jes-shift-syst"].as<string>(), ":");
+        if (tokens.size() != 2)
+            throw std::runtime_error(string("Cannot parse the jes shift name : ") + opts["jes-shift-syst"].as<string>());
+        string jes_syst_name = tokens.at(0);
+        dir_jes_shift_is_up   = (tokens.at(1) == "up"   ? true  :
+                               tokens.at(1) == "down" ? false :
+                               throw std::runtime_error(string("Could not parse jes direction ") + tokens.at(1)));
+        cout << "       ... jec file name           : " << JECFileName << endl;
+        cout << "       ... jet energy scale syst   : " << jes_syst_name << endl;
+        cout << "       ... jet energy scale is up? : " << std::boolalpha << dir_jes_shift_is_up << std::noboolalpha << endl;
+        jt.init_jec_shift(JECFileName, jes_syst_name);
+    }
+
+    string JERScaleFactorFile = config.readStringOpt("parameters::JERScaleFactorFile");
+    string JERResolutionFile  = config.readStringOpt("parameters::JERResolutionFile");
+    const int rndm_seed = opts["seed"].as<int>();
+    cout << "[INFO] ... initialising JER corrector with the following parameters" << endl;
+    cout << "       ... SF file         : " << JERScaleFactorFile << endl;
+    cout << "       ... resolution file : " << JERResolutionFile << endl;
+    cout << "       ... rndm seed       : " << rndm_seed << endl;
+    jt.init_smear(JERScaleFactorFile, JERResolutionFile, rndm_seed);
+
+    cout << "[INFO] ... jet resolution syst is    : " << opts["jer-shift-syst"].as<string>() << endl;
+    cout << "[INFO] ... b regr resolution syst is : " << opts["bjer-shift-syst"].as<string>() << endl;
+    const Variation jer_var  = string_to_jer_variation(opts["jer-shift-syst"].as<string>());
+    const Variation bjer_var = string_to_jer_variation(opts["bjer-shift-syst"].as<string>());
 
     ////////////////////////////////////////////////////////////////////////
     // Execute event loop
@@ -216,8 +275,6 @@ int main(int argc, char** argv)
     int maxEvts = opts["maxEvts"].as<int>();
     if (maxEvts >= 0)
         cout << "[INFO] ... running on : " << maxEvts << " events" << endl;
-
-    SixB_functions sbf;
 
     for (int iEv = 0; true; ++iEv)
     {
@@ -232,21 +289,39 @@ int main(int argc, char** argv)
         }
 
         EventInfo ei;
+        ot.clear();
 
+        // global event info
         sbf.copy_event_info(nat, ei);
 
+        // signal-specific gen info
         if (is_signal){
             sbf.select_gen_particles   (nat, ei);
             sbf.match_genbs_to_genjets (nat, ei);
+            sbf.match_genbs_genjets_to_reco (nat, ei);
         }
 
+        // // jet selections
         std::vector<Jet> all_jets    = sbf.get_all_jets     (nat);
-        // FIXME: here smear and resolution of jets when required
+        int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
+        if (!is_data){
+            if (do_jes_shift)
+                all_jets = jt.jec_shift_jets(nat, all_jets, dir_jes_shift_is_up);
+            all_jets = jt.smear_jets(nat, all_jets, jer_var, bjer_var);
+        }
         std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);
+        int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
+
         std::vector<Jet> sixb_jets   = sbf.select_sixb_jets (nat, presel_jets);
-        if (sixb_jets.size() < 6)
-            continue;
-        sbf.pair_jets(nat, ei, sixb_jets);
+        int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
+
+        // if (sixb_jets.size() < 6)
+        //     continue;
+        // sbf.pair_jets(nat, ei, sixb_jets);
+
+        ot.userInt("nfound_all")    = nfound_all;
+        ot.userInt("nfound_presel") = nfound_presel;
+        ot.userInt("nfound_sixb")   = nfound_sixb;
 
         su::fill_output_tree(ot, nat, ei);
     }

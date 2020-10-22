@@ -28,6 +28,9 @@ class SixB_functions{
         // otherwise it will match to the closest parton found
         void match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique = true);
 
+        // match the genjets associated to the 6 gen b quarks to reco jets
+        void match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei);
+
         ////////////////////////////////////////////////////
         /// jet selection functions
         ////////////////////////////////////////////////////
@@ -44,6 +47,14 @@ class SixB_functions{
         // pair the jets and assign them into the 6b candidates - will be stored in the EventInfo
         void pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
+        ////////////////////////////////////////////////////
+        /// other jet utilities
+        ////////////////////////////////////////////////////
+
+        // counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
+        int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+
+
     private:
         // loops on targets, and assigns value to the first element of target that is found to be uninitialized
         // returns false if none could be assigned, else return true
@@ -53,6 +64,9 @@ class SixB_functions{
 
         template <typename T>
         bool checkBit(T value, int bitpos) {T unit = 1; return value & (unit << bitpos);}
+
+        // finds the index of the jet that was matched in nanoAOD to the input genjet
+        int find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj);
 
         ////////////////////////////////////////////////////
         /// jet pairing functions

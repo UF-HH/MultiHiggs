@@ -11,17 +11,32 @@
 #include "Jet.h"
 #include "NanoAODTree.h"
 #include <vector>
+#include "TRandom3.h"
 
-class JetFunctions{
+// from CMSSW libraries
+#include "JetMETCorrections/Modules/interface/JetResolution.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+
+class JetTools{
     
     public:
+        void init_jec_shift(std::string JECFileName, std::string syst_name);
+
         void init_smear(std::string JERScaleFactorFile, std::string JERResolutionFile, int random_seed);
 
-        std::vector<Jet> smear_jets(NanoAODTree& nat, std::vector<Jet> input_jets, Variation variation);
+        std::vector<Jet> jec_shift_jets(NanoAODTree& nat, const std::vector<Jet>& input_jets, bool direction_is_up);
+
+        std::vector<Jet> smear_jets(NanoAODTree& nat, const std::vector<Jet>& input_jets,
+            Variation jer_var = Variation::NOMINAL, Variation breg_jer_var = Variation::NOMINAL);
 
     private:
+        std::unique_ptr<JetCorrectorParameters>   jcp_;
+        std::unique_ptr<JetCorrectionUncertainty> jcu_;
+
         std::unique_ptr<JME::JetResolutionScaleFactor> jetResolutionScaleFactor_;
         std::unique_ptr<JME::JetResolution>            jetResolution_;
+        TRandom3 rndm_generator_;
 
 };
 

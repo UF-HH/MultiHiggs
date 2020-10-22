@@ -49,8 +49,8 @@ SONAME	 =  libsixBanalysis.so
 SONAME2  =  sixBanalysis
 SOFLAGS  =  -Wl,-soname,$(SONAME)
 
+CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger
 # CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lPhysicsToolsKinFitter -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger
-CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ #fixme: removed for now
 GLIBS   =  $(ROOTGLIBS) -lm -ldl -rdynamic -lboost_program_options -lGenVector -lFoam -lMinuit -lTMVA -lMLP -lXMLIO -lGpad  -lTreePlayer -lRooFit -lRooFitCore -lRooStats  $(CMSLIBS)
 
 #################################################
