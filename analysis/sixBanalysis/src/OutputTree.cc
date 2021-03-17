@@ -36,10 +36,9 @@ using namespace std;
     OBJ ## _p4            . SetCoordinates(0,0,0,0);
 
 OutputTree::OutputTree (bool savetlv, string name, string title) :
-savetlv_ (savetlv)
+    BaseOutTree(name, title, "OutputTree"),
+    savetlv_ (savetlv)
 {
-    tree_ = std::unique_ptr<TTree> (new TTree(name.c_str(), title.c_str()));
-    
     init_branches();
     clear();
 }
@@ -154,54 +153,4 @@ void OutputTree::clear()
     userFloats_.resetAll();
     userInts_.resetAll();
 
-}
-
-bool OutputTree::declareUserIntBranch (std::string name, int defaultClearValue)
-{
-    // check if the branch exists -- the check in the same collection is done by UserVal internally, but I have to do the cross-checks
-    if (userFloats_.hasVal(name)){
-        cout << "[WARNING] OutputTree : declareUserIntBranch : branch " << name << " was already found as a userFloat, cannot create it" << endl;
-        return false;
-    }
-    
-    if (!userInts_.addVal(name, defaultClearValue)){
-        cout << "[WARNING] OutputTree : declareUserIntBranch : branch " << name << " was already found as a userInt, cannot create it" << endl;
-        return false;
-    }
-
-    cout << "[INFO] OutputTree : creating userIntBranch " << name << " (" << defaultClearValue << ")" << endl;
-
-    // set the branch
-    tree_->Branch(name.c_str(), userInts_.getValPtr(name));
-    return true;
-}
-
-bool OutputTree::declareUserFloatBranch (std::string name, float defaultClearValue)
-{
-    // check if the branch exists -- the check in the same collection is done by UserVal internally, but I have to do the cross-checks
-    if (userInts_.hasVal(name)){
-        cout << "[WARNING] OutputTree : declareUserFloatBranch : branch " << name << " was already found as a userInt, cannot create it" << endl;
-        return false;
-    }
-    
-    if (!userFloats_.addVal(name, defaultClearValue)){
-        cout << "[WARNING] OutputTree : declareUserFloatBranch : branch " << name << " was already found as a userFloat, cannot create it" << endl;
-        return false;
-    }
-
-    cout << "[INFO] OutputTree : creating userFloatBranch " << name << " (" << defaultClearValue << ")" << endl;
-
-    // set the branch
-    tree_->Branch(name.c_str(), userFloats_.getValPtr(name));
-    return true;
-}
-
-bool OutputTree::declareUserIntBranchList(std::vector<std::string> nameList, int defaultClearValue)
-{
-    for(const auto& name : nameList)
-    {
-        bool success = declareUserIntBranch(name, defaultClearValue);
-        if(!success) return false;
-    }
-    return true;
 }

@@ -13,8 +13,12 @@
 **        :
 **        : remember that the variables are set (from the EventInfo) in the SkimUtils::fill_output_tree function
 **        : so put the set instructions of the new variables there
+**
+**  NOTE 2 : handling of tree pointer and userFloat/int is done in the BaseOutTree class
+**         : so OutputTree only takes care of defining and resetting the outout variables
 **/
 
+#include "BaseOutTree.h"
 #include "TTree.h"
 #include "Math/Vector4D.h"
 typedef ROOT::Math::PtEtaPhiMVector p4_t;
@@ -40,26 +44,26 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
     float OBJ ## _phi; \
     p4_t  OBJ ## _p4;
 
-class OutputTree {
+class OutputTree : public BaseOutTree {
     
     public:
         OutputTree (bool savetlv = false, std::string name = "sixBtree", std::string title = "sixBtree");
         ~OutputTree(){};
         
         void clear(); // to be called to reset the var values
-        int fill()  {return tree_->Fill();}
-        int write() {return tree_->Write();}
+        // int fill()  {return tree_->Fill();}
+        // int write() {return tree_->Write();}
     
-        // returns false if the branch could not be created, true if all ok
-        // thje second optional value specifies what the branch should be reset to at clear()
-        bool declareUserIntBranch   (std::string name, int defaultClearValue = 0);
-        bool declareUserFloatBranch (std::string name, float defaultClearValue = 0.0);
-        //XYH
-        bool declareUserIntBranchList(std::vector<std::string> nameList, int defaultClearValue = 0);
+        // // returns false if the branch could not be created, true if all ok
+        // // thje second optional value specifies what the branch should be reset to at clear()
+        // bool declareUserIntBranch   (std::string name, int defaultClearValue = 0);
+        // bool declareUserFloatBranch (std::string name, float defaultClearValue = 0.0);
+        // //XYH
+        // bool declareUserIntBranchList(std::vector<std::string> nameList, int defaultClearValue = 0);
 
-        // throws an exception if the branch name was not declared
-        int&   userInt   (std::string name) {return userInts_   . getVal(name);}
-        float& userFloat (std::string name) {return userFloats_ . getVal(name);}
+        // // throws an exception if the branch name was not declared
+        // int&   userInt   (std::string name) {return userInts_   . getVal(name);}
+        // float& userFloat (std::string name) {return userFloats_ . getVal(name);}
 
         //////////////////////////
         //// saved variables
@@ -121,12 +125,12 @@ class OutputTree {
     
     private:
         void init_branches();
-        std::unique_ptr<TTree> tree_;
+        // std::unique_ptr<TTree> tree_;
         const bool savetlv_;
         
         // for user declared branches
-        UserValCollection<float> userFloats_;
-        UserValCollection<int>   userInts_;
+        // UserValCollection<float> userFloats_;
+        // UserValCollection<int>   userInts_;
 };
 
 #endif
