@@ -4,6 +4,7 @@
 #include <string>
 #include <iomanip>
 #include <any>
+#include <chrono>
 
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
@@ -19,6 +20,8 @@ namespace su = SkimUtils;
 
 #include "SixB_functions.h"
 #include "JetTools.h"
+
+#include "Timer.h"
 
 #include "TFile.h"
 #include "TROOT.h"
@@ -56,6 +59,7 @@ Variation string_to_jer_variation (std::string s)
 int main(int argc, char** argv)
 {
     cout << "[INFO] ... starting program" << endl;
+    const auto start_prog_t = chrono::high_resolution_clock::now();
 
     ////////////////////////////////////////////////////////////////////////
     // Declare command line options
@@ -230,6 +234,7 @@ int main(int argc, char** argv)
     if (is_data)
         jlf.loadJSON(config.readStringOpt("data::lumimask")); // just read the info for data, so if I just skim MC I'm not forced to parse a JSON
 
+    Timer loop_timer;
 
     SixB_functions sbf;
     
@@ -276,10 +281,13 @@ int main(int argc, char** argv)
     if (maxEvts >= 0)
         cout << "[INFO] ... running on : " << maxEvts << " events" << endl;
 
+    const auto start_loop_t = chrono::high_resolution_clock::now();
     for (int iEv = 0; true; ++iEv)
     {
         if (maxEvts >= 0 && iEv >= maxEvts)
             break;
+
+        loop_timer.start_lap();
 
         if (!nat.Next()) break;
         if (iEv % 10000 == 0) cout << "... processing event " << iEv << endl;
@@ -291,8 +299,11 @@ int main(int argc, char** argv)
         EventInfo ei;
         ot.clear();
 
+        loop_timer.click("Input read");
+
         // global event info
         sbf.copy_event_info(nat, ei);
+        loop_timer.click("Global info");
 
         // signal-specific gen info
         if (is_signal){
@@ -300,20 +311,30 @@ int main(int argc, char** argv)
             sbf.match_genbs_to_genjets (nat, ei);
             sbf.match_genbs_genjets_to_reco (nat, ei);
         }
+        loop_timer.click("Signal gen level");
 
         // // jet selections
-        std::vector<Jet> all_jets    = sbf.get_all_jets     (nat);
+        std::vector<Jet> all_jets    = sbf.get_all_jets (nat);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
+        loop_timer.click("All jets copy");
+
         if (!is_data){
             if (do_jes_shift)
                 all_jets = jt.jec_shift_jets(nat, all_jets, dir_jes_shift_is_up);
             all_jets = jt.smear_jets(nat, all_jets, jer_var, bjer_var);
         }
+        loop_timer.click("JEC + JER");
+
         std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
+        loop_timer.click("Preselection");
+
+        if (presel_jets.size() < 6)
+            continue;
 
         std::vector<Jet> sixb_jets   = sbf.select_sixb_jets (nat, presel_jets);
         int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
+        loop_timer.click("Six b selection");
 
         // if (sixb_jets.size() < 6)
         //     continue;
@@ -324,8 +345,24 @@ int main(int argc, char** argv)
         ot.userInt("nfound_sixb")   = nfound_sixb;
 
         su::fill_output_tree(ot, nat, ei);
+        loop_timer.click("Tree fill");
     }
+    const auto end_loop_t = chrono::high_resolution_clock::now();
 
     outputFile.cd();
     ot.write();
+    const auto end_prog_t = chrono::high_resolution_clock::now();
+
+    // timing statistics
+    cout << endl;
+    cout << "[INFO] : sumary of skim loop execution time" << endl;
+    loop_timer.print_summary();
+    cout << endl;
+    cout << "[INFO] : total elapsed time : " << chrono::duration_cast<chrono::milliseconds>(end_prog_t - start_prog_t).count()/1000.   << " s" << endl;
+    cout << "       : startup time       : " << chrono::duration_cast<chrono::milliseconds>(start_loop_t - start_prog_t).count()/1000. << " s" << endl;
+    cout << "       : loop time          : " << chrono::duration_cast<chrono::milliseconds>(end_loop_t - start_loop_t).count()/1000.   << " s" << endl;
+    cout << "       : post-loop time     : " << chrono::duration_cast<chrono::milliseconds>(end_prog_t - end_loop_t).count()/1000.     << " s" << endl;
+
+    cout << endl;
+    cout << "[INFO] ... skim finished" << endl;
 }
