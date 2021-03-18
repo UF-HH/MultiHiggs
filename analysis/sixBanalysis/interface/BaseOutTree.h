@@ -16,7 +16,7 @@
 
 class BaseOutTree {
     public:
-        BaseOutTree(std::string name = "sixBtree", std::string title = "sixBtree", std::string clsLogName = "BaseOutTree");
+        BaseOutTree(std::string name, std::string title, std::string clsLogName = "BaseOutTree");
         ~BaseOutTree(){}
 
         int fill()  {return tree_->Fill();}
