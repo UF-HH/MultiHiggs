@@ -1,4 +1,4 @@
-// skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
+// skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal --puWeight data/pileup/test_PUweights_2018.root
 
 #include <iostream>
 #include <string>
@@ -11,6 +11,7 @@ namespace po = boost::program_options;
 
 #include "CfgParser.h"
 #include "NanoAODTree.h"
+#include "NormWeightTree.h"
 
 #include "SkimUtils.h"
 namespace su = SkimUtils;
@@ -226,10 +227,18 @@ int main(int argc, char** argv)
     ot.declareUserIntBranch("nfound_presel", 0);
     ot.declareUserIntBranch("nfound_sixb",   0);
 
+    NormWeightTree nwt;
+    map<string, string> pu_data{
+        {"filename", opts["puWeight"].as<string>()},
+        {"name_PU_w",    "PUweights"},
+        {"name_PU_w_up", "PUweights_up"},
+        {"name_PU_w_do", "PUweights_down"},
+    };
+
     ////////////////////////////////////////////////////////////////////////
     // All pre-running configurations (corrections, methods from cfg, etc)
     ////////////////////////////////////////////////////////////////////////
-  
+
     jsonLumiFilter jlf;
     if (is_data)
         jlf.loadJSON(config.readStringOpt("data::lumimask")); // just read the info for data, so if I just skim MC I'm not forced to parse a JSON
@@ -292,6 +301,11 @@ int main(int argc, char** argv)
         if (!nat.Next()) break;
         if (iEv % 10000 == 0) cout << "... processing event " << iEv << endl;
 
+        // use the tree content to initialise weight tree in the first event
+        if (iEv == 0){
+            nwt.init_weights(nat, pu_data);
+        }
+
         if (is_data && !jlf.isValid(*nat.run, *nat.luminosityBlock)){
             continue; // not a valid lumi
         }
@@ -300,6 +314,10 @@ int main(int argc, char** argv)
         ot.clear();
 
         loop_timer.click("Input read");
+
+        nwt.read_weights(nat);
+        nwt.fill();
+        loop_timer.click("Norm weight read + fill");
 
         // global event info
         sbf.copy_event_info(nat, ei);
@@ -345,12 +363,13 @@ int main(int argc, char** argv)
         ot.userInt("nfound_sixb")   = nfound_sixb;
 
         su::fill_output_tree(ot, nat, ei);
-        loop_timer.click("Tree fill");
+        loop_timer.click("Output tree fill");
     }
     const auto end_loop_t = chrono::high_resolution_clock::now();
 
     outputFile.cd();
     ot.write();
+    nwt.write();
     const auto end_prog_t = chrono::high_resolution_clock::now();
 
     // timing statistics
