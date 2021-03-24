@@ -235,6 +235,11 @@ int main(int argc, char** argv)
         {"name_PU_w_do", "PUweights_down"},
     };
 
+    // // just a test
+    // nwt.add_weight("test1", {"test1_up", "test1_down"});
+    // nwt.add_weight("test2", {"test2_A", "test2_B", "test2_C"});
+    // nwt.add_weight("test3", {});
+
     ////////////////////////////////////////////////////////////////////////
     // All pre-running configurations (corrections, methods from cfg, etc)
     ////////////////////////////////////////////////////////////////////////
@@ -316,6 +321,17 @@ int main(int argc, char** argv)
         loop_timer.click("Input read");
 
         nwt.read_weights(nat);
+        // example to fill user weights
+        // auto& w1 = nwt.get_weight("test1");
+        // auto& w2 = nwt.get_weight("test2");
+        // auto& w3 = nwt.get_weight("test3");
+        // w1.w = iEv;
+        // w2.w = 10*iEv;
+        // w3.w = 100*iEv;
+        // w1.syst_val = {iEv + 1., iEv - 1.};
+        // w2.syst_val = {10. * iEv - 10, 10. * iEv - 20, 10. * iEv - 30};
+        // w3.syst_val = {};
+
         nwt.fill();
         loop_timer.click("Norm weight read + fill");
 

@@ -38,10 +38,10 @@ class NormWeightTree : public BaseOutTree {
 
         void read_weights(NanoAODTree& nat);
 
-
-         // other custom weights added - they will be saved internally and will take part to the computation of the normalisation weight
-         // FIXME: TODO
-        // void add_weight(std::string wname, std::vector <std::string> wsystsname = {});
+        // other custom weights added - they will be saved internally and will take part to the computation of the normalisation weight
+        // note that it is responsibility of the user to set them - they are not set with read_weights
+        // internally userfloats are used with the same names as the systematics
+        void add_weight(std::string wname, std::vector <std::string> wsystsname = {});
 
         // specific accessors from the nanoAOD tree for the weights
         void read_gen_weight   (NanoAODTree &nat);
@@ -57,6 +57,15 @@ class NormWeightTree : public BaseOutTree {
         void init_scale_weight (NanoAODTree &nat); // need to read from the nat the number of variation
         void init_ps_weight    (NanoAODTree &nat); // need to read from the nat the number of variation
 
+        // getters
+        weight_t& get_gen_weight   () {return gen_w_;}
+        weight_t& get_pu_weight    () {return pu_w_;}
+        weight_t& get_pdf_weight   () {return pdf_w_;}
+        weight_t& get_scale_weight () {return scale_w_;}
+        weight_t& get_ps_weight    () {return ps_w_;}
+
+        weight_t& get_weight(std::string wname) {return extra_weights_.getVal(wname);}
+
     private:
 
         weight_t gen_w_;
@@ -71,8 +80,8 @@ class NormWeightTree : public BaseOutTree {
         void make_branches(weight_t& weight);
 
         // extra weights
-        // bool extra_weights_branched_; // needed to control when branches are created for these
-        std::vector<weight_t> extra_weights_;
+        UserValCollection<weight_t> extra_weights_;
+        std::vector<std::string>    extra_weights_names_;
 
         int verbosity_;
 };

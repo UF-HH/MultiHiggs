@@ -132,7 +132,7 @@ void NormWeightTree::read_pdf_weight(NanoAODTree &nat){
     // pdf_w_.w = 1.0; // leave as default
     uint nvars = *(nat.nLHEPdfWeight);
     if (nvars != pdf_w_.syst_val.size()){
-        cout << "[ERROR] there are " << nvars << "variations in the event and  " << pdf_w_.syst_val.size() << " variations expected" << endl;
+        cout << "[ERROR] : NormWeightTree : there are " << nvars << "variations in the event and  " << pdf_w_.syst_val.size() << " variations expected" << endl;
         throw std::runtime_error("NormWeightTree : pdf weight size mismatch");
     }
     for (uint is = 0; is < nvars; ++is){
@@ -146,7 +146,7 @@ void NormWeightTree::read_scale_weight(NanoAODTree &nat){
     uint nvars = *(nat.nLHEScaleWeight);
     if (nvars != scale_w_.syst_val.size())
     {
-        cout << "[ERROR] there are " << nvars << "variations in the event and  " << scale_w_.syst_val.size() << " variations expected" << endl;
+        cout << "[ERROR] : NormWeightTree : there are " << nvars << "variations in the event and  " << scale_w_.syst_val.size() << " variations expected" << endl;
         throw std::runtime_error("NormWeightTree : scale weight size mismatch");
     }
     for (uint is = 0; is < nvars; ++is)
@@ -161,7 +161,7 @@ void NormWeightTree::read_ps_weight(NanoAODTree &nat){
     uint nvars = *(nat.nPSWeight);
     if (nvars != ps_w_.syst_val.size())
     {
-        cout << "[ERROR] there are " << nvars << "variations in the event and  " << ps_w_.syst_val.size() << " variations expected" << endl;
+        cout << "[ERROR] : NormWeightTree : there are " << nvars << "variations in the event and  " << ps_w_.syst_val.size() << " variations expected" << endl;
         throw std::runtime_error("NormWeightTree : ps weight size mismatch");
     }
     for (uint is = 0; is < nvars; ++is)
@@ -170,3 +170,33 @@ void NormWeightTree::read_ps_weight(NanoAODTree &nat){
     }
 }
 
+// -----------------------------------------------
+// extra weights
+
+void NormWeightTree::add_weight(std::string wname, std::vector <std::string> wsystsname){
+
+    if (verbosity_ >= 1){
+        cout << "[INFO] NormWeightTree : adding an external weight named " << wname << " with " << wsystsname.size() << " syst variations (listed below)" << endl;
+        for (auto s : wsystsname){
+            cout << "   - " << s << endl;
+        }
+    }
+
+    weight_t def_w;
+    def_w.w         = 1.0;
+    def_w.name      = wname;
+    def_w.syst_val = std::vector<double>(wsystsname.size(), 1.0);
+    def_w.syst_name = wsystsname;
+
+    if (!extra_weights_.addVal(wname, def_w)){
+        cout << "[ERROR] : NormWeightTree : could not add the weight " << wname << endl;
+        throw std::runtime_error("NormWeightTree : user weight not added");
+    }
+    extra_weights_names_.emplace_back(wname);
+
+    // create branches
+    tree_->Branch(wname.c_str(), &(extra_weights_.getVal(wname).w));
+    for (uint is = 0; is < wsystsname.size(); ++is){
+        tree_->Branch(wsystsname.at(is).c_str(), &(extra_weights_.getVal(wname).syst_val.at(is)));
+    }
+}
