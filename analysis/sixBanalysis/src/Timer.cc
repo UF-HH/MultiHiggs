@@ -82,14 +82,21 @@ void Timer::print_summary()
 {
     double tot_s = 0;
     for (unsigned int idx = 0; idx < steps_.size(); ++idx)
+        tot_s += step_dt_.at(idx).count() / 1000000.;
+
+    std::streamsize ss = std::cout.precision(); // default stream precision
+    for (unsigned int idx = 0; idx < steps_.size(); ++idx)
     {
         // std::cout << std::setw(35) << std::left <<
         std::cout << "-- " << steps_.at(idx) << std::endl;
         // std::cout << "   ... average [us]          : " << 1.*step_dt_.at(idx).count()/step_calls_.at(idx) << std::endl;
         std::cout << "   ... time/10000 events [s] : " << 0.01*step_dt_.at(idx).count()/step_calls_.at(idx) << std::endl;
         std::cout << "   ... total time spent  [s] : " << step_dt_.at(idx).count()/1000000. << std::endl;
+        std::cout << std::fixed << std::setprecision(1);
+        std::cout << "   ... frac. time spent      : " << 100. * ((step_dt_.at(idx).count() / 1000000.) / tot_s) << " %" << std::endl;
+        std::cout << std::fixed << std::setprecision(ss);
         std::cout << "   ... calls :               : " << step_calls_.at(idx) << std::endl;
-        tot_s += step_dt_.at(idx).count()/1000000.;
     }
-    std::cout << "-- -- TOTAL ELAPSED TIME [s] :" << tot_s << std::endl;
+    std::cout << std::endl;
+    std::cout << "-- -- TOTAL ELAPSED TIME [s] : " << tot_s << std::endl;
 }
