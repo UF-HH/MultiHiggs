@@ -12,6 +12,7 @@
 #include "TString.h"
 
 #include "NanoAODTree.h"
+#include "NormWeightTree.h"
 #include "OutputTree.h"
 #include "EventInfo.h"
 
@@ -25,6 +26,11 @@ namespace SkimUtils
     // copy the information contained in the EventInfo to the OutputTree, and call the Fill() command
     void fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei);
 
+    // initialises in OutputTree the same structure contained in NormWeightTree
+    void init_gen_weights(OutputTree& ot, NormWeightTree& nwt);
+
+    // copies in OutputTree the weights contained in NormWeightTree
+    void copy_gen_weights(OutputTree& ot, NormWeightTree& nwt);
 }
 
 #endif

@@ -308,7 +308,8 @@ int main(int argc, char** argv)
 
         // use the tree content to initialise weight tree in the first event
         if (iEv == 0){
-            nwt.init_weights(nat, pu_data);
+            nwt.init_weights(nat, pu_data); // get the syst structure from nanoAOD
+            su::init_gen_weights(ot, nwt);  // and forward it to the output tree
         }
 
         if (is_data && !jlf.isValid(*nat.run, *nat.luminosityBlock)){
@@ -377,6 +378,9 @@ int main(int argc, char** argv)
         ot.userInt("nfound_all")    = nfound_all;
         ot.userInt("nfound_presel") = nfound_presel;
         ot.userInt("nfound_sixb")   = nfound_sixb;
+
+        su::copy_gen_weights(ot, nwt);
+        loop_timer.click("Read and copy gen weights");
 
         su::fill_output_tree(ot, nat, ei);
         loop_timer.click("Output tree fill");
