@@ -45,6 +45,17 @@ using namespace std;
     ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
     ot.OBJ ## _p4           = ei. OBJ -> P4();\
     }
+
+ #define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
+    if (ei.OBJ) { \
+    ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
+    ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
+    ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
+    ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
+    ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
+    ot.OBJ ## _DeepJet      = get_property( ei. OBJ .get(), Jet_btagDeepFlavB); \
+    ot.OBJ ## _p4           = ei. OBJ -> P4();\
+    }   
 // --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - 
 
 int SkimUtils::appendFromFileList (TChain* chain, string filename)
@@ -121,6 +132,17 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+
+    COPY_OPTIONAL_m_pt_eta_phi_p4(mu_1);
+    COPY_OPTIONAL_m_pt_eta_phi_p4(mu_2);
+    COPY_OPTIONAL_m_pt_eta_phi_p4(ele_1);
+    COPY_OPTIONAL_m_pt_eta_phi_p4(ele_2);
+
+    ot.n_mu_loose  = *ei.n_mu_loose;
+    ot.n_ele_loose = *ei.n_ele_loose;
+
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+    COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
 
     // fill the tree
     ot.fill();

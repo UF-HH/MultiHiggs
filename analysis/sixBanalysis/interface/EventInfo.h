@@ -14,8 +14,8 @@
 
 #include "CompositeCandidate.h"
 #include "Jet.h"
-// #include "Muon.h"
-// #include "Electron.h"
+#include "Muon.h"
+#include "Electron.h"
 #include "GenPart.h"
 #include "GenJet.h"
 
@@ -70,6 +70,19 @@ struct EventInfo{
     boost::optional<Jet> HY2_b1;
     boost::optional<Jet> HY2_b2;
 
+    // for ttbar skims
+    boost::optional<Jet> bjet1;
+    boost::optional<Jet> bjet2;
+
+    // info on leptons in the event
+    boost::optional<Muon> mu_1;
+    boost::optional<Muon> mu_2;
+    boost::optional<Electron> ele_1;
+    boost::optional<Electron> ele_2;
+    boost::optional<int> n_mu_loose;
+    boost::optional<int> n_ele_loose;
+    // boost::optional<int> n_mu_tight;
+    // boost::optional<int> n_ele_tight;
 };
 
 #endif

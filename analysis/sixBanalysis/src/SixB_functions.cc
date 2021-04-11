@@ -4,6 +4,9 @@
 #include <iostream>
 #include <tuple>
 
+#include "Electron.h"
+#include "Muon.h"
+
 void SixB_functions::copy_event_info(NanoAODTree& nat, EventInfo& ei)
 {
     ei.Run     = *(nat.run);
@@ -268,6 +271,32 @@ std::vector<Jet> SixB_functions::select_sixb_jets(NanoAODTree& nat, const std::v
     return jets;
 }
 
+void SixB_functions::select_ttbar_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets)
+{
+    std::vector<Jet> jets = in_jets;
+    stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
+            return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
+    ); // sort jet by deepjet score (highest to lowest)
+
+    if (jets.size() < 2)
+        return;
+    ei.bjet1 = jets.at(0);
+    ei.bjet2 = jets.at(1);
+    if (ei.bjet1->P4().Pt() < ei.bjet2->P4().Pt()) // sort by pt
+        std::swap(ei.bjet1, ei.bjet2);
+
+    // int n_out = std::min<int>(jets.size(), 6);
+    // jets.resize(n_out);
+
+    // for (auto& jet : jets)
+    //     std::cout << jet.P4().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
+    // std::cout << std::endl << std::endl;
+
+    // return jets;
+
+}
+
+
 void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
     // FIXME: here a switch for the pairing algo
@@ -351,4 +380,108 @@ int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
     }
 
     return nfound;
+}
+
+void SixB_functions::select_leptons(NanoAODTree &nat, EventInfo &ei)
+{
+    std::vector<Electron> electrons;
+    std::vector<Muon> muons;
+
+    for (unsigned int ie = 0; ie < *(nat.nElectron); ++ie){
+        Electron ele (ie, &nat);
+        electrons.emplace_back(ele);
+    }
+
+    for (unsigned int imu = 0; imu < *(nat.nMuon); ++imu){
+        Muon mu(imu, &nat);
+        muons.emplace_back(mu);
+    }
+
+    // apply preselections
+    std::vector<Electron> loose_electrons;
+    std::vector<Muon> loose_muons;
+
+    // std::vector<Electron> tight_electrons;
+    // std::vector<Muon> tight_muons;
+
+    for (auto& el : electrons){
+
+        float dxy    = get_property(el, Electron_dxy);
+        float dz     = get_property(el, Electron_dz);
+        float eta    = get_property(el, Electron_eta);
+        float pt     = get_property(el, Electron_pt);
+        bool ID_WPL  = get_property(el, Electron_mvaFall17V2Iso_WPL); 
+        // bool ID_WP90 = get_property(el, Electron_mvaFall17V2Iso_WP90);
+        // bool ID_WP80 = get_property(el, Electron_mvaFall17V2Iso_WP80);
+        float iso    = get_property(el, Electron_pfRelIso03_all);
+
+        // note: hardcoded selections can be made configurable from cfg if needed
+        const float e_pt_min  = 15;
+        const float e_eta_max = 2.5;
+        const float e_iso_max = 0.15;
+        
+        const float e_dxy_max_barr = 0.05;
+        const float e_dxy_max_endc = 0.10;
+        const float e_dz_max_barr  = 0.10;
+        const float e_dz_max_endc  = 0.20;
+
+        bool is_barrel = abs(eta) < 1.479;
+        bool pass_dxy  = (is_barrel ? dxy < e_dxy_max_barr : dxy < e_dxy_max_endc);
+        bool pass_dz   = (is_barrel ? dz  < e_dz_max_barr  : dz  < e_dz_max_endc);
+
+        // loose electrons for veto
+        if (pt > e_pt_min        &&
+            abs(eta) < e_eta_max &&
+            iso < e_iso_max      &&
+            pass_dxy             &&
+            pass_dz              &&
+            ID_WPL)
+            loose_electrons.emplace_back(el);
+    }
+
+    for (auto& mu : muons){
+
+        float dxy    = get_property(mu, Muon_dxy);
+        float dz     = get_property(mu, Muon_dz);
+        float eta    = get_property(mu, Muon_eta);
+        float pt     = get_property(mu, Muon_pt);
+        bool ID_WPL  = get_property(mu, Muon_looseId);
+        // bool ID_WPM = get_property(mu, Muon_mediumId);
+        // bool ID_WPT = get_property(mu, Muon_tightId);
+        float iso    = get_property(mu, Muon_pfRelIso04_all);
+
+        // note: hardcoded selections can be made configurable from cfg if needed
+        const float mu_pt_min  = 10;
+        const float mu_eta_max = 2.4;
+        const float mu_iso_max = 0.15;
+        
+        const float mu_dxy_max_barr = 0.05;
+        const float mu_dxy_max_endc = 0.10;
+        const float mu_dz_max_barr  = 0.10;
+        const float mu_dz_max_endc  = 0.20;
+
+        bool is_barrel = abs(eta) < 1.2;
+        bool pass_dxy  = (is_barrel ? dxy < mu_dxy_max_barr : dxy < mu_dxy_max_endc);
+        bool pass_dz   = (is_barrel ? dz  < mu_dz_max_barr  : dz  < mu_dz_max_endc);
+
+        // loose muons for veto
+        if (pt > mu_pt_min        &&
+            abs(eta) < mu_eta_max &&
+            iso < mu_iso_max      &&
+            pass_dxy              &&
+            pass_dz               &&
+            ID_WPL)
+            loose_muons.emplace_back(mu);
+    }
+
+    // copy needed info to the EventInfo
+    if (loose_muons.size() > 0) ei.mu_1 = loose_muons.at(0);
+    if (loose_muons.size() > 1) ei.mu_2 = loose_muons.at(1);
+    if (loose_electrons.size() > 0) ei.ele_1 = loose_electrons.at(0);
+    if (loose_electrons.size() > 1) ei.ele_2 = loose_electrons.at(1);
+
+    ei.n_mu_loose  = loose_muons.size();
+    ei.n_ele_loose = loose_electrons.size();
+    // ei.n_mu_tight  = tight_muons.size();
+    // ei.n_ele_tight = tight_electrons.size();
 }

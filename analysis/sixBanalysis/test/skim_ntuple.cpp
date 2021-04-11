@@ -1,4 +1,5 @@
-// skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal --puWeight data/pileup/test_PUweights_2018.root
+// skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
+// skim_ntuple.exe --input input/Run2_UL/2018/TTJets.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_ttbar.root
 
 #include <iostream>
 #include <string>
@@ -127,6 +128,23 @@ int main(int argc, char** argv)
     }
     cout << "[INFO] ... using config file " << opts["cfg"].as<string>() << endl;
 
+    enum SkimTypes
+    {
+        ksixb,
+        kttbar,
+        knull
+    };
+
+    string skim_type_name = config.readStringOpt("configurations::skimType");
+    cout << "[INFO] ... skim type " << skim_type_name << endl;
+    const SkimTypes skim_type = (
+        skim_type_name == "sixb"  ? ksixb  :
+        skim_type_name == "ttbar" ? kttbar :
+                                    knull
+    );
+    if (skim_type == knull)
+        throw std::runtime_error("skim type not recognized");
+
     ////////////////////////////////////////////////////////////////////////
     // Prepare event loop
     ////////////////////////////////////////////////////////////////////////
@@ -158,14 +176,18 @@ int main(int argc, char** argv)
 
     cout << "[INFO] ... loading " << config.readStringListOpt("triggers::makeORof").size() << " triggers" << endl;
 
-    const bool apply_trigger =  config.readBoolOpt("triggers::applyTrigger");
+    const bool apply_trigger     = config.readBoolOpt("triggers::applyTrigger");
+    const bool save_trg_decision = config.readBoolOpt("triggers::saveDecision");
     cout << "[INFO] ... is the OR decision of these triggers applied? " << std::boolalpha << apply_trigger << std::noboolalpha << endl;
+    cout << "[INFO] ... will save the trigger decision? " << std::boolalpha << save_trg_decision << std::noboolalpha << endl;
 
-    std::vector<std::string> triggerAndNameVector;
-    if(apply_trigger) triggerAndNameVector = config.readStringListOpt("triggers::makeORof");
-    std::vector<std::string> triggerVector;
+    // std::vector<std::string> triggerAndNameVector;
+    // if(apply_trigger) triggerAndNameVector = config.readStringListOpt("triggers::makeORof");
     // <triggerName , < objectBit, minNumber> >
-    std::map<std::string, std::map< std::pair<int,int>, int > > triggerObjectAndMinNumberMap;
+    // std::map<std::string, std::map< std::pair<int,int>, int > > triggerObjectAndMinNumberMap;
+
+    std::vector<std::string> triggerAndNameVector = config.readStringListOpt("triggers::makeORof");
+    std::vector<std::string> triggerVector;
 
     cout << "[INFO] ... listing the triggers applied" << endl;
     for (auto & trigger : triggerAndNameVector)
@@ -220,17 +242,35 @@ int main(int argc, char** argv)
     cout << "[INFO] ... saving output to file : " << outputFileName << endl;
     TFile outputFile(outputFileName.c_str(), "recreate");
     OutputTree ot(
-        opts["save-p4"].as<bool>()
-    );
+        opts["save-p4"].as<bool>(),
+        map<string, bool>{
+            {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
+            {"ttbar_brs",  (skim_type == kttbar)},
+        });
 
     ot.declareUserIntBranch("nfound_all",    0);
     ot.declareUserIntBranch("nfound_presel", 0);
     ot.declareUserIntBranch("nfound_sixb",   0);
 
+    if (save_trg_decision) {
+        for (auto& tname : triggerVector)
+            ot.declareUserIntBranch(tname,   0);
+    }
+
+        std::string pu_weight_file;
+    if (opts["puWeight"].as<string>().size() != 0){ // a valid option is passed from cmd line
+        cout << "[INFO] Using custom PU weight file passed from cmd line options" << endl;
+        pu_weight_file = opts["puWeight"].as<string>();
+    }
+    else { // revert to default in skim cfg
+        cout << "[INFO] Using PU weight file from skim cfg" << endl;
+        pu_weight_file = config.readStringOpt("parameters::PUweightFile");
+    }
+
     NormWeightTree nwt;
     map<string, string> pu_data{
-        {"filename", opts["puWeight"].as<string>()},
-        {"name_PU_w",    "PUweights"},
+        {"filename", pu_weight_file},
+        {"name_PU_w", "PUweights"},
         {"name_PU_w_up", "PUweights_up"},
         {"name_PU_w_do", "PUweights_down"},
     };
@@ -332,9 +372,20 @@ int main(int argc, char** argv)
         // w1.syst_val = {iEv + 1., iEv - 1.};
         // w2.syst_val = {10. * iEv - 10, 10. * iEv - 20, 10. * iEv - 30};
         // w3.syst_val = {};
-
         nwt.fill();
         loop_timer.click("Norm weight read + fill");
+
+        // ------- events can start be filtered from here (after saving all gen weights)
+        
+        // trigger requirements
+        if (apply_trigger && !(nat.getTrgOr()) )
+            continue;
+        if (save_trg_decision) {
+            auto listOfPassedTriggers = nat.getTrgPassed();
+            for (auto& t : listOfPassedTriggers)
+                ot.userInt(t) = 1; // defaults are left to 0
+        }
+        loop_timer.click("Trigger");
 
         // global event info
         sbf.copy_event_info(nat, ei);
@@ -348,9 +399,10 @@ int main(int argc, char** argv)
         }
         loop_timer.click("Signal gen level");
 
-        // // jet selections
+        // jet selections
         std::vector<Jet> all_jets    = sbf.get_all_jets (nat);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
+        ot.userInt("nfound_all")    = nfound_all;
         loop_timer.click("All jets copy");
 
         if (!is_data){
@@ -362,22 +414,32 @@ int main(int argc, char** argv)
 
         std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
+        ot.userInt("nfound_presel") = nfound_presel;
         loop_timer.click("Preselection");
 
-        if (presel_jets.size() < 6)
-            continue;
+        if (skim_type == ksixb){
+            if (presel_jets.size() < 6)
+                continue;
 
-        std::vector<Jet> sixb_jets   = sbf.select_sixb_jets (nat, presel_jets);
-        int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
-        loop_timer.click("Six b selection");
+            std::vector<Jet> sixb_jets = sbf.select_sixb_jets(nat, presel_jets);
+            int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
+            ot.userInt("nfound_sixb")   = nfound_sixb;
+            loop_timer.click("Six b selection");
 
-        // if (sixb_jets.size() < 6)
-        //     continue;
-        // sbf.pair_jets(nat, ei, sixb_jets);
+            // if (sixb_jets.size() < 6)
+            //     continue;
+            // sbf.pair_jets(nat, ei, sixb_jets);
+        }
 
-        ot.userInt("nfound_all")    = nfound_all;
-        ot.userInt("nfound_presel") = nfound_presel;
-        ot.userInt("nfound_sixb")   = nfound_sixb;
+        if (skim_type == kttbar){
+            if (presel_jets.size() < 2)
+                continue;
+            sbf.select_ttbar_jets(nat, ei, presel_jets);   
+            loop_timer.click("ttbar b jet selection");
+        }
+
+        sbf.select_leptons(nat, ei);
+        loop_timer.click("Lepton selection");
 
         su::copy_gen_weights(ot, nwt);
         loop_timer.click("Read and copy gen weights");

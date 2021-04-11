@@ -44,6 +44,9 @@ class SixB_functions{
         // select up to six jet candidates out of the input jets
         std::vector<Jet> select_sixb_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
 
+        // two most b tagged jets for ttbar events
+        void select_ttbar_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
+
         // pair the jets and assign them into the 6b candidates - will be stored in the EventInfo
         void pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
@@ -54,6 +57,11 @@ class SixB_functions{
         // counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
         int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
+        ////////////////////////////////////////////////////
+        /// non-jet functions
+        ////////////////////////////////////////////////////
+
+        void select_leptons(NanoAODTree& nat, EventInfo& ei);
 
     private:
         // loops on targets, and assigns value to the first element of target that is found to be uninitialized

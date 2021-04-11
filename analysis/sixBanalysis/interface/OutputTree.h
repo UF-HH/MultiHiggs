@@ -26,6 +26,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 #include "UserValCollection.h"
 #include <string>
 #include <memory>
+#include <map>
 
 // helper: declares the m/pt/eta/phi/p4 of a variable OBJ
 #define DECLARE_m_pt_eta_phi_p4(OBJ) \
@@ -44,10 +45,23 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
     float OBJ ## _phi; \
     p4_t  OBJ ## _p4;
 
+// helper: declares the m/pt/eta/phi/p4/DeepJet of a variable OBJ
+#define DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
+    float OBJ ## _m; \
+    float OBJ ## _pt; \
+    float OBJ ## _ptRegressed; \
+    float OBJ ## _eta; \
+    float OBJ ## _phi; \
+    float OBJ ## _DeepJet; \
+    p4_t  OBJ ## _p4;
+
 class OutputTree : public BaseOutTree {
     
     public:
-        OutputTree (bool savetlv = false, std::string name = "sixBtree", std::string title = "sixBtree");
+        // branch_switches are forwarded to init_branches
+        // they can be used to turn on (true) or off (false) some branches creation
+
+        OutputTree(bool savetlv = false, std::map<std::string, bool> branch_switches = {}, std::string name = "sixBtree", std::string title = "sixBtree");
         ~OutputTree(){};
         
         void clear(); // to be called to reset the var values
@@ -118,13 +132,20 @@ class OutputTree : public BaseOutTree {
         DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
         DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
 
+        DECLARE_m_pt_eta_phi_p4(mu_1);
+        DECLARE_m_pt_eta_phi_p4(mu_2);
+        DECLARE_m_pt_eta_phi_p4(ele_1);
+        DECLARE_m_pt_eta_phi_p4(ele_2);
 
-        // DECLARE_m_pt_eta_phi_p4(gen_H1)
-        // DECLARE_m_pt_ptRegressed_eta_phi_p4(HH_btag_b1)
-        
-    
+        int n_mu_loose;
+        int n_ele_loose;
+
+        DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+        DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+
+
     private:
-        void init_branches();
+        void init_branches(std::map<std::string, bool> branch_switches);
         // std::unique_ptr<TTree> tree_;
         const bool savetlv_;
         
