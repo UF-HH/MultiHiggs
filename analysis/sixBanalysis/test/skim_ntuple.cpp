@@ -1,5 +1,6 @@
 // skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
 // skim_ntuple.exe --input input/Run2_UL/2018/TTJets.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_ttbar.root
+// skim_ntuple.exe --input input/Run2_UL/2018/SingleMuon_Run2.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_singlemu_ttbarskim.root --is-data
 
 #include <iostream>
 #include <string>
@@ -257,14 +258,16 @@ int main(int argc, char** argv)
             ot.declareUserIntBranch(tname,   0);
     }
 
-        std::string pu_weight_file;
-    if (opts["puWeight"].as<string>().size() != 0){ // a valid option is passed from cmd line
-        cout << "[INFO] Using custom PU weight file passed from cmd line options" << endl;
-        pu_weight_file = opts["puWeight"].as<string>();
-    }
-    else { // revert to default in skim cfg
-        cout << "[INFO] Using PU weight file from skim cfg" << endl;
-        pu_weight_file = config.readStringOpt("parameters::PUweightFile");
+    std::string pu_weight_file;
+    if (!is_data){
+        if (opts["puWeight"].as<string>().size() != 0){ // a valid option is passed from cmd line
+            cout << "[INFO] Using custom PU weight file passed from cmd line options" << endl;
+            pu_weight_file = opts["puWeight"].as<string>();
+        }
+        else { // revert to default in skim cfg
+            cout << "[INFO] Using PU weight file from skim cfg" << endl;
+            pu_weight_file = config.readStringOpt("parameters::PUweightFile");
+        }
     }
 
     NormWeightTree nwt;
@@ -298,7 +301,7 @@ int main(int argc, char** argv)
     bool do_jes_shift = (jes_shift != "nominal");
     cout << "[INFO] ... shifting jet energy scale? " << std::boolalpha << do_jes_shift << std::noboolalpha << endl;
     bool dir_jes_shift_is_up;
-    if (do_jes_shift){
+    if (do_jes_shift && !is_data){
         string JECFileName = config.readStringOpt("parameters::JECFileName");
         auto tokens = split_by_delimiter(opts["jes-shift-syst"].as<string>(), ":");
         if (tokens.size() != 2)
@@ -313,6 +316,7 @@ int main(int argc, char** argv)
         jt.init_jec_shift(JECFileName, jes_syst_name);
     }
 
+    // FIXME: block below to be run only if !is_data?
     string JERScaleFactorFile = config.readStringOpt("parameters::JERScaleFactorFile");
     string JERResolutionFile  = config.readStringOpt("parameters::JERResolutionFile");
     const int rndm_seed = opts["seed"].as<int>();
@@ -347,7 +351,7 @@ int main(int argc, char** argv)
         if (iEv % 10000 == 0) cout << "... processing event " << iEv << endl;
 
         // use the tree content to initialise weight tree in the first event
-        if (iEv == 0){
+        if (iEv == 0 && !is_data){
             nwt.init_weights(nat, pu_data); // get the syst structure from nanoAOD
             su::init_gen_weights(ot, nwt);  // and forward it to the output tree
         }
@@ -361,20 +365,21 @@ int main(int argc, char** argv)
 
         loop_timer.click("Input read");
 
-        nwt.read_weights(nat);
-        // example to fill user weights
-        // auto& w1 = nwt.get_weight("test1");
-        // auto& w2 = nwt.get_weight("test2");
-        // auto& w3 = nwt.get_weight("test3");
-        // w1.w = iEv;
-        // w2.w = 10*iEv;
-        // w3.w = 100*iEv;
-        // w1.syst_val = {iEv + 1., iEv - 1.};
-        // w2.syst_val = {10. * iEv - 10, 10. * iEv - 20, 10. * iEv - 30};
-        // w3.syst_val = {};
-        nwt.fill();
-        loop_timer.click("Norm weight read + fill");
-
+        if (!is_data){
+            nwt.read_weights(nat);
+            // example to fill user weights
+            // auto& w1 = nwt.get_weight("test1");
+            // auto& w2 = nwt.get_weight("test2");
+            // auto& w3 = nwt.get_weight("test3");
+            // w1.w = iEv;
+            // w2.w = 10*iEv;
+            // w3.w = 100*iEv;
+            // w1.syst_val = {iEv + 1., iEv - 1.};
+            // w2.syst_val = {10. * iEv - 10, 10. * iEv - 20, 10. * iEv - 30};
+            // w3.syst_val = {};
+            nwt.fill();
+            loop_timer.click("Norm weight read + fill");
+        }
         // ------- events can start be filtered from here (after saving all gen weights)
         
         // trigger requirements
@@ -396,8 +401,8 @@ int main(int argc, char** argv)
             sbf.select_gen_particles   (nat, ei);
             sbf.match_genbs_to_genjets (nat, ei);
             sbf.match_genbs_genjets_to_reco (nat, ei);
+            loop_timer.click("Signal gen level");
         }
-        loop_timer.click("Signal gen level");
 
         // jet selections
         std::vector<Jet> all_jets    = sbf.get_all_jets (nat);
@@ -409,8 +414,8 @@ int main(int argc, char** argv)
             if (do_jes_shift)
                 all_jets = jt.jec_shift_jets(nat, all_jets, dir_jes_shift_is_up);
             all_jets = jt.smear_jets(nat, all_jets, jer_var, bjer_var);
+            loop_timer.click("JEC + JER");
         }
-        loop_timer.click("JEC + JER");
 
         std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
@@ -441,8 +446,10 @@ int main(int argc, char** argv)
         sbf.select_leptons(nat, ei);
         loop_timer.click("Lepton selection");
 
-        su::copy_gen_weights(ot, nwt);
-        loop_timer.click("Read and copy gen weights");
+        if (!is_data){
+            su::copy_gen_weights(ot, nwt);
+            loop_timer.click("Read and copy gen weights");
+        }
 
         su::fill_output_tree(ot, nat, ei);
         loop_timer.click("Output tree fill");
@@ -451,7 +458,8 @@ int main(int argc, char** argv)
 
     outputFile.cd();
     ot.write();
-    nwt.write();
+    if (!is_data)
+        nwt.write();
     const auto end_prog_t = chrono::high_resolution_clock::now();
 
     // timing statistics
