@@ -1,10 +1,4 @@
-### TO DO 
-# - add checking that input/output/seed are not provided in "unknown"
-# - remove message "unable to stat directory..."
-# - add a block of code that chdir the base directory [or just checks that I am in the right directory]
-
 # test : python scripts/submitSkimOnBatch.py --input TTJets_dummy.txt --tag prova_4 --cfg config/skim_ntuple_2018_ttbar.cfg --maxEvts 50000 --force
-
 
 import condortools.inputsplit as inputtools
 import condortools.eostools as eostools
@@ -49,11 +43,30 @@ print "... Welcome", username
 ## check that environment was set up
 
 cmssw_version  = os.environ.get('CMSSW_VERSION')
+cmssw_base     = os.environ.get('CMSSW_BASE')
 scram_arch     = os.environ.get('SCRAM_ARCH')
 cpp_boost_path = os.environ.get('CPP_BOOST_PATH')
 
-if None in [cmssw_version, scram_arch, cpp_boost_path]:
+if None in [cmssw_version, cmssw_base, scram_arch, cpp_boost_path]:
     raise RuntimeError("Env variables not set (please do cmsenv and source setup before)")
+
+## -----------------------------------------------------
+## check that I am in the base folder for submission
+here = os.getcwd()
+exp_here = '/'.join([cmssw_base, 'src/sixB/analysis/sixBanalysis'])
+if here != exp_here:
+    print "[ERROR] please launch this code from the base sixBanalysis directory that is:"
+    print exp_here
+    raise RuntimeError("wrong execution path")
+
+## -----------------------------------------------------
+## check that options generated here are not passed
+
+generated_opts = ['output', 'seed']
+if len([x for x in generated_opts if x in args]):
+    print "[ERROR] : the following options are created automatically by this code and should not be added"
+    print generated_opts
+    raise RuntimeError("wrong options passed")
 
 ## -----------------------------------------------------
 ## check proxy and create it if needed

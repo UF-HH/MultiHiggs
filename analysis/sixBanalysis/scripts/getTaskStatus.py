@@ -1,5 +1,13 @@
 ### TO DO 
-# - add resubmission command -> how to do so with a single .jdl? --> add : Queue Process in 7, 9,  50, 149
+# - handle failures that do not result in .log being transmitted
+# === ttbar_2018_21Apr2021/SingleMuon_Run2 has some good examples
+# LPC job removed by SYSTEM_PERIODIC_REMOVE due to job exceeding requested memory.
+# 012 (12522113.014.000) 04/21 15:10:28 Job was held.
+# Job was aborted by the user  |||||| <-- when I did condor_rm
+# CFR: good termination is :
+## 005 (12522113.019.000) 04/21 15:22:34 Job terminated.
+##  (1) Normal termination (return value 0)
+# - add options to force idxjob to resubmit
 
 import condortools.taskstatus as ts
 import argparse
@@ -87,6 +95,10 @@ for fol in folders:
         raise RuntimeError("duplicate stdout found")
     data[fol]['nfinished'] = len(idxs['cluster_idx_stdout'])
 
+    # get idxs of jobs running by intersecting the two filelists
+    cluster_idx_running = [x for x in idxs['cluster_idx_logs'] if x not in idxs['cluster_idx_stdout']]
+    data[fol]['cluster_idx_running'] = cluster_idx_running
+
     # for all the jobs with a log, check the status codes
     data[fol]['finished_codes'] = collections.OrderedDict()
     for cluster, idx in idxs['cluster_idx_stdout']:
@@ -103,8 +115,9 @@ bad_folders_jobs = {}
 good_folders_jobs = {}
 
 for fol in folders:
-    print '-----------------------------------'
-    print '----', fol
+    print '\n=================================='
+    print '====', fol
+    print '====', '/'.join([base_path, fol])
     if data[fol]['ncreated'] == 0:
         print '** no jobs found'
         continue
@@ -112,8 +125,9 @@ for fol in folders:
     ntot = data[fol]['ncreated']
     print "-- N. jobs prepared  : {}".format(ntot)
     print "-- N. jobs submitted : {} ({:.1f}%)".format(data[fol]['nsubmitted'], 100.*data[fol]['nsubmitted']/ntot)
+    print "-- N. jobs running   : {} ({:.1f}%)".format(ntot-data[fol]['nfinished'], 100.*(ntot-data[fol]['nfinished'])/ntot)
     print "-- N. jobs finished  : {} ({:.1f}%)".format(data[fol]['nfinished'], 100.*data[fol]['nfinished']/ntot)
-    
+
     nsuccess  = 0
     nbad_skim_done = 0
     nbad_skim_code = 0
@@ -127,15 +141,18 @@ for fol in folders:
             nsuccess += 1
             good_cluster_idx.append((cluster, idx))
 
-    print "** SUCCESS      : {} ({:.1f}%)".format(nsuccess, 100.*nsuccess/ntot)
-    print "** Skim failed  : {} ({:.1f}%)".format((nbad_skim_done + nbad_skim_code), 100.*(nbad_skim_done + nbad_skim_code)/ntot)
-    print "** Copy failed  : {} ({:.1f}%)".format(nbad_skim_copy, 100.*nbad_skim_copy/ntot)
+    print "   ** SUCCESS        : {} ({:.1f}%)".format(nsuccess, 100.*nsuccess/ntot)
+    print "   ** Skim failed    : {} ({:.1f}%)".format((nbad_skim_done + nbad_skim_code), 100.*(nbad_skim_done + nbad_skim_code)/ntot)
+    print "   ** Copy failed    : {} ({:.1f}%)".format(nbad_skim_copy, 100.*nbad_skim_copy/ntot)
 
     bad_cluster_idx = [x for x in data[fol]['finished_codes'].keys() if x not in good_cluster_idx]
     good_folders_jobs[fol] = good_cluster_idx
     bad_folders_jobs[fol]  = bad_cluster_idx
     if args.long:
-        print '... more info on unsuccessful jobs in the logs below'
+        print '... the following', len(data[fol]['cluster_idx_running']), 'jobs are still running (no stdout found)'
+        if len(data[fol]['cluster_idx_running']) > 0:
+            print zip(*data[fol]['cluster_idx_running'])[1]
+        print '... more info on the', len(bad_cluster_idx), 'failed jobs in the logs below'
         for cluster, idx in bad_cluster_idx:
             logname = '/'.join([base_path, fol, stdoutname_proto]).format(cluster=cluster, ijob=idx)
             print '   ... Skim : {} | code : {} | copy : {} | log : {}'.format(
@@ -146,7 +163,7 @@ for fol in folders:
 
 print '\n--- SUMMARY : there are', len(bad_folders), 'skims stll running or with some jobs failed'
 for bf in bad_folders:
-    print '-', bf
+    print '*', bf
 
 
 ###########################################

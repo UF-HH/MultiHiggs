@@ -3,7 +3,7 @@ import subprocess
 
 def exists_on_eos(lfn):
     """ check if lfn (starting with /store/group) exists """
-    retcode = os.system('eos root://cmseos.fnal.gov ls -s %s' % lfn)
+    retcode = os.system('eos root://cmseos.fnal.gov ls -s %s > /dev/null 2>&1' % lfn)
     # print "THE FOLDER", lfn, "RETURNED CODE", retcode
     return True if retcode == 0 else False
 
