@@ -32,6 +32,9 @@ class BaseOutTree {
         int&   userInt   (std::string name) {return userInts_   . getVal(name);}
         float& userFloat (std::string name) {return userFloats_ . getVal(name);}
 
+        // access the underlying TTree
+        TTree* getTree() {return tree_.get();}
+
     protected:
         std::unique_ptr<TTree> tree_;
         std::string clsLogName_; // name to appear in log messages

@@ -246,7 +246,9 @@ int main(int argc, char** argv)
         opts["save-p4"].as<bool>(),
         map<string, bool>{
             {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
-            {"ttbar_brs",  (skim_type == kttbar)},
+            {"sixb_brs",    (skim_type == ksixb)},
+            {"ttbar_brs",   (skim_type == kttbar)},
+            {"sig_gen_brs", (is_signal)},
         });
 
     ot.declareUserIntBranch("nfound_all",    0);
@@ -335,7 +337,7 @@ int main(int argc, char** argv)
     // Execute event loop
     ////////////////////////////////////////////////////////////////////////
 
-    int maxEvts = opts["maxEvts"].as<int>();
+    const int maxEvts = opts["maxEvts"].as<int>();
     if (maxEvts >= 0)
         cout << "[INFO] ... running on : " << maxEvts << " events" << endl;
 
@@ -348,8 +350,11 @@ int main(int argc, char** argv)
         loop_timer.start_lap();
 
         if (!nat.Next()) break;
-        if (iEv % 10000 == 0) cout << "... processing event " << iEv << endl;
-
+        if (iEv % 10000 == 0) {
+            cout << "... processing event " << iEv << endl;
+            // auto bsize  = ot.getTree()->GetBranch("Run")->GetBasketSize();
+            // cout << "... tree basket size (branch Run) : " << bsize  << endl;
+        }
         // use the tree content to initialise weight tree in the first event
         if (iEv == 0 && !is_data){
             nwt.init_weights(nat, pu_data); // get the syst structure from nanoAOD

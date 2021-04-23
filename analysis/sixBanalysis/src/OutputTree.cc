@@ -63,65 +63,71 @@ OutputTree::OutputTree(bool savetlv, std::map<std::string, bool> branch_switches
 
 void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 {
-    //event information
-    tree_->Branch("Run",     &Run);
-    tree_->Branch("LumiSec", &LumiSec);
-    tree_->Branch("Event",   &Event);
-
-    BRANCH_m_pt_eta_phi_p4(gen_X_fc);
-    BRANCH_m_pt_eta_phi_p4(gen_X);
-    BRANCH_m_pt_eta_phi_p4(gen_Y);
-    BRANCH_m_pt_eta_phi_p4(gen_HX);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2);
-
-    BRANCH_m_pt_eta_phi_p4(gen_HX_b1);
-    BRANCH_m_pt_eta_phi_p4(gen_HX_b2);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1_b1);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1_b2);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2_b1);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2_b2);
-
-    BRANCH_m_pt_eta_phi_p4(gen_HX_b1_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HX_b2_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1_b1_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
-
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
-    tree_->Branch("gen_bs_N_reco_match",        &gen_bs_N_reco_match);
-    tree_->Branch("gen_bs_N_reco_match_in_acc", &gen_bs_N_reco_match_in_acc);
-    tree_->Branch("gen_bs_match_recojet_minv",        &gen_bs_match_recojet_minv);
-    tree_->Branch("gen_bs_match_in_acc_recojet_minv", &gen_bs_match_in_acc_recojet_minv);
-
-    BRANCH_m_pt_eta_phi_p4(X);
-    BRANCH_m_pt_eta_phi_p4(Y);
-    BRANCH_m_pt_eta_phi_p4(HX);
-    BRANCH_m_pt_eta_phi_p4(HY1);
-    BRANCH_m_pt_eta_phi_p4(HY2);
-
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HX_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HX_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
-
-    tree_->Branch("n_mu_loose",  &n_mu_loose);
-    tree_->Branch("n_ele_loose", &n_ele_loose);
-
     auto is_enabled = [&branch_switches](std::string opt) -> bool {
         auto search = branch_switches.find(opt);
         if (search == branch_switches.end())
             return true; // if no opt given, enabled by default
         return search->second; // otherwise, use the value of the option
     };
+
+    //event information
+    tree_->Branch("Run",     &Run);
+    tree_->Branch("LumiSec", &LumiSec);
+    tree_->Branch("Event",   &Event);
+
+    if (is_enabled("sig_gen_brs"))
+    {
+        BRANCH_m_pt_eta_phi_p4(gen_X_fc);
+        BRANCH_m_pt_eta_phi_p4(gen_X);
+        BRANCH_m_pt_eta_phi_p4(gen_Y);
+        BRANCH_m_pt_eta_phi_p4(gen_HX);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2);
+
+        BRANCH_m_pt_eta_phi_p4(gen_HX_b1);
+        BRANCH_m_pt_eta_phi_p4(gen_HX_b2);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1_b1);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1_b2);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2_b1);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2_b2);
+
+        BRANCH_m_pt_eta_phi_p4(gen_HX_b1_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HX_b2_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1_b1_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
+
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+        tree_->Branch("gen_bs_N_reco_match",        &gen_bs_N_reco_match);
+        tree_->Branch("gen_bs_N_reco_match_in_acc", &gen_bs_N_reco_match_in_acc);
+        tree_->Branch("gen_bs_match_recojet_minv",        &gen_bs_match_recojet_minv);
+        tree_->Branch("gen_bs_match_in_acc_recojet_minv", &gen_bs_match_in_acc_recojet_minv);
+    }
+
+    if (is_enabled("sixb_brs"))
+    {
+        BRANCH_m_pt_eta_phi_p4(X);
+        BRANCH_m_pt_eta_phi_p4(Y);
+        BRANCH_m_pt_eta_phi_p4(HX);
+        BRANCH_m_pt_eta_phi_p4(HY1);
+        BRANCH_m_pt_eta_phi_p4(HY2);
+
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HX_b1);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HX_b2);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+    }
+
+    tree_->Branch("n_mu_loose",  &n_mu_loose);
+    tree_->Branch("n_ele_loose", &n_ele_loose);
     
     if (is_enabled("leptons_p4"))
     {
