@@ -29,22 +29,44 @@ class NormSample:
                     filelist.append(line)
         self.build_dataframe(filelist)   
 
-    def load_weights(self, weightdef):
-        self.weightdef = copy.deepcopy(weightdef) # a dict, with 'tuple of weights -> weight_name'
+    def load_weights(self, weightdef, normweights):
+        """ Construct the new columns as needed to compute normalizations.
+        The definition of all the weights used to fill histograms is contained in weightdef.
+        The list of weights that must be considered for normalisation is normweights.
+        Sums are constructed only for those unique combinations of normweights (all other weights are excluded) """
+
+        ## find the unique weights participating to the normalisation
+        self.weightdef  = copy.deepcopy(weightdef) # a dict, with 'tuple of weights -> weight_name'
+        self.normwdef   = {} # a dict, with 'tuple of norm weights -> weight_name'
+        self.normwremap = {} # maps the weightdef (tuple of weights used in EventSample) to the (restricted set) name used here
 
         # define these weights as new columns in the rdf
         for wlist, wname in self.weightdef.items():
+            normws = tuple(sorted([x for x in wlist if x in normweights])) # only norm weights
+            if normws not in self.normwdef: # this is a new set of norm weight products
+                normwname = 'NORMW_{}'.format(len(self.normwdef))
+                if self.verb >= 2: print("[DEBUG] NormSample", self.name, "created new norm weight", normwname, '->', normws) 
+                self.normwdef[normws] = normwname
+            self.normwremap[wname] = self.normwdef[normws]
+
+        # define these weights as new columns in the rdf
+        for wlist, wname in self.normwdef.items():
             self.rdf = self.rdf.Define(wname, '*'.join(wlist))
             if self.verb >= 2: print("[DEBUG] NormSample", self.name, "created weight", wname, '->', wlist)
 
     def build_norms(self):
         if self.verb >= 1:  print("[INFO] NormSample", self.name, ": booking sum of weights.")
         self.bookednorms = {} # wname -> sum
-        for wname in self.weightdef.values():
+        for wname in self.normwdef.values():
             self.bookednorms[wname] = self.rdf.Sum(wname)
 
         # norms were booked, now trigger their calculation
         if self.verb >= 1:  print("[INFO] NormSample", self.name, ": computing sum of weights. This may take a while, please wait...")
         self.norms = {}
-        for wname in self.weightdef.values():
+        for wname in self.normwdef.values():
             self.norms[wname] = self.bookednorms[wname].GetValue()
+
+    def get_norm(self, wname):
+        """ get the norm corresponding to the EventSample original weight """
+        thisname = self.normwremap[wname]
+        return self.norms[thisname]

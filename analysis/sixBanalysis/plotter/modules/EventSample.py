@@ -82,11 +82,11 @@ class EventSample:
     def book_histo(self, histodata):
         
         """ Book the histogram creations with RDataFrames. Expect Histo to contain the following keys:
-            var               : the variable to plot
-            binning           : the binning to use (as a list). Alternatively the ones below
-            nbins, xmin, xmax : for the standard ROOT constructor
-            sel               : the name of the selection
-            weightlist        : a list of the weights to apply
+            var                      : the variable to plot
+            binning                  : the binning to use (as a list). Alternatively the ones below
+            bins (nbins, xmin, xmax) : for the standard ROOT constructor
+            sel                      : the name of the selection
+            weightlist               : a list of the weights to apply
             NOTE: booking is actually done in two separate steps. First we collect all the histogram descriptions,
             than we find unique selections to be applied. Finally, we build fitered dataframes and book histograms from there
         """

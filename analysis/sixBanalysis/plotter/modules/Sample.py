@@ -56,7 +56,7 @@ class Sample:
     # def make_selections(self, selecti):
     #     pass
 
-    def do_histos(self, histos_descs):
+    def do_histos(self, histos_descs, norm_weights):
         
         # first tell the event sample which histograms to make
         for h in histos_descs:
@@ -70,7 +70,7 @@ class Sample:
 
         # if it is a MC sample, also prepare the norms - these will have been 
         if self.sampletype == 'mc':
-            self.norm_sample.load_weights(self.evt_sample.weightdef)
+            self.norm_sample.load_weights(self.evt_sample.weightdef, norm_weights)
 
         # fill the histograms
         self.evt_sample.fill_histos()
@@ -89,9 +89,9 @@ class Sample:
                     print ('        lumiscale :', self.lumiscale)
                     print ('        xs        :', self.xs, self.xs_units)
                     print ('        xsscale   :', self.xsscale)
-                    print ('        Norm retrieved for weight', wname, 'is', self.norm_sample.norms[wname])
+                    print ('        Norm retrieved for weight', wname, '->', self.norm_sample.normwremap[wname], 'is', self.norm_sample.get_norm(wname))
                 global_scale = self.scale * self.lumi * self.lumiscale * self.xs * self.xsscale
-                norm_scale   = self.norm_sample.norms[wname]
+                norm_scale   = self.norm_sample.get_norm(wname)
                 h.Scale(global_scale / norm_scale)
 
     def make_histo_dir_name(self, histodata):
@@ -101,6 +101,8 @@ class Sample:
 
         rdir = '{sample}/{sel}'.format(sample=self.name, sel=histodata['sel'])
         hname = '{var}'.format(var=histodata['var'])
+        if 'nametag' in histodata:
+            hname += '_{}'.format(histodata['nametag'])
         # FIXME: add systematics naming
 
         return (rdir, hname)
