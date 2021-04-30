@@ -156,7 +156,7 @@ for fol in folders:
         for cluster, idx in bad_cluster_idx:
             logname = '/'.join([base_path, fol, stdoutname_proto]).format(cluster=cluster, ijob=idx)
             print '   ... Skim : {} | code : {} | copy : {} | log : {}'.format(
-                codes['skim_done'], codes['skim_code'], codes['copy_code'], logname) 
+                data[fol]['finished_codes'][(cluster, idx)]['skim_done'], data[fol]['finished_codes'][(cluster, idx)]['skim_code'], data[fol]['finished_codes'][(cluster, idx)]['copy_code'], logname) 
 
     if nsuccess != ntot:
         bad_folders.append(fol)
