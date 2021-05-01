@@ -132,3 +132,11 @@ class Sample:
             fOut.cd(onames[uuid][0])
             h.SetName(onames[uuid][1])
             h.Write()
+
+    def print_end_summary(self):
+        print('[END SUMMARY] : Sample', self.name, ', type', self.sampletype)
+        print('              : EventSample did', self.evt_sample.rdf.GetNRuns(), 'event loops') 
+        if self.norm_sample:
+            print('              : NormWeight did', self.evt_sample.rdf.GetNRuns(), 'event loops') 
+        else:
+            print('              : NormWeight was not defined')
