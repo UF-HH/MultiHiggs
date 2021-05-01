@@ -75,6 +75,9 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     tree_->Branch("LumiSec", &LumiSec);
     tree_->Branch("Event",   &Event);
 
+    tree_->Branch("n_other_pv",     &n_other_pv);
+    tree_->Branch("rhofastjet_all", &rhofastjet_all);
+
     if (is_enabled("sig_gen_brs"))
     {
         BRANCH_m_pt_eta_phi_p4(gen_X_fc);
@@ -142,7 +145,19 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     {
         std::cout << "[INFO] OutputTree : enabling ttbar branches" << std::endl;
         BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+        if (is_enabled("gen_brs")) tree_->Branch("bjet1_hadflav", &bjet1_hadflav);
+
         BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+        if (is_enabled("gen_brs")) tree_->Branch("bjet2_hadflav", &bjet2_hadflav);
+    }
+
+    if (is_enabled("gen_brs"))
+    {
+        std::cout << "[INFO] OutputTree : enabling gen-only related branches" << std::endl;
+        tree_->Branch("n_pu",        &n_pu);
+        tree_->Branch("n_true_int",  &n_true_int);
+
+        tree_->Branch("btagSF_WP_M", &btagSF_WP_M);
     }
 
     // note that the initialization of the user branches is made separately when calling declareUser*Branch
@@ -153,6 +168,11 @@ void OutputTree::clear()
     Run     = 0;
     LumiSec = 0;
     Event   = 0;
+
+    n_other_pv     = 0;
+    n_pu           = 0;
+    n_true_int     = 0;
+    rhofastjet_all = 0;
 
     CLEAR_m_pt_eta_phi_p4(gen_X_fc);
     CLEAR_m_pt_eta_phi_p4(gen_X);
@@ -209,6 +229,11 @@ void OutputTree::clear()
 
     CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
     CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+
+    bjet1_hadflav = -999;
+    bjet2_hadflav = -999;
+
+    btagSF_WP_M = -999.;
 
     // reset all user-defined branches
     userFloats_.resetAll();

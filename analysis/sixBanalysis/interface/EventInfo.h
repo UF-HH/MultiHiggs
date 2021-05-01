@@ -25,6 +25,12 @@ struct EventInfo{
     boost::optional<unsigned int>           LumiSec;
     boost::optional<unsigned long long int> Event;
 
+    boost::optional<int>    n_other_pv;
+    boost::optional<int>    n_pu;
+    boost::optional<double> n_true_int;
+    boost::optional<double> rhofastjet_all;
+
+
     boost::optional<GenPart>  gen_X_fc; // first copy at LHE
     boost::optional<GenPart>  gen_X;
     boost::optional<GenPart>  gen_Y;
@@ -83,6 +89,9 @@ struct EventInfo{
     boost::optional<int> n_ele_loose;
     // boost::optional<int> n_mu_tight;
     // boost::optional<int> n_ele_tight;
+
+    // scale factors
+    boost::optional<double> btagSF_WP_M;
 };
 
 #endif

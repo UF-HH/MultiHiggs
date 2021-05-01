@@ -14,7 +14,6 @@ namespace po = boost::program_options;
 #include "CfgParser.h"
 #include "NanoAODTree.h"
 #include "NormWeightTree.h"
-
 #include "SkimUtils.h"
 namespace su = SkimUtils;
 
@@ -23,6 +22,7 @@ namespace su = SkimUtils;
 
 #include "SixB_functions.h"
 #include "JetTools.h"
+#include "BtagSF.h"
 
 #include "Timer.h"
 
@@ -249,6 +249,7 @@ int main(int argc, char** argv)
             {"sixb_brs",    (skim_type == ksixb)},
             {"ttbar_brs",   (skim_type == kttbar)},
             {"sig_gen_brs", (is_signal)},
+            {"gen_brs",     (!is_data)},
         });
 
     ot.declareUserIntBranch("nfound_all",    0);
@@ -293,10 +294,32 @@ int main(int argc, char** argv)
     if (is_data)
         jlf.loadJSON(config.readStringOpt("data::lumimask")); // just read the info for data, so if I just skim MC I'm not forced to parse a JSON
 
+    // -----------
+
     Timer loop_timer;
 
+    // -----------
+
     SixB_functions sbf;
+
+    // -----------
     
+    const std::vector<double> btag_WPs = config.readDoubleListOpt("configurations::bTagWPDef");
+    const int nMinBtag = config.readIntOpt("configurations::nMinBtag");
+    const int bTagWP   = config.readIntOpt("configurations::bTagWP");
+
+    cout << "[INFO] ... events must contain >= " << nMinBtag << " jets passing WP (0:L, 1:M, 2:T) : " << bTagWP << endl;
+    cout << "[INFO] ... the WPs are: (L/M/T) : " << btag_WPs.at(0) << "/" << btag_WPs.at(1) << "/" << btag_WPs.at(2) << endl;
+
+    BtagSF btsf;
+    if (!is_data){
+        string btsffile = config.readStringOpt("parameters::DeepJetScaleFactorFile");
+        btsf.init_reader("DeepJet", btsffile);
+        btsf.set_WPs(btag_WPs.at(0), btag_WPs.at(1), btag_WPs.at(2));
+    }
+
+    // -----------
+
     JetTools jt;
 
     string jes_shift = opts["jes-shift-syst"].as<string>();
@@ -398,7 +421,7 @@ int main(int argc, char** argv)
         loop_timer.click("Trigger");
 
         // global event info
-        sbf.copy_event_info(nat, ei);
+        sbf.copy_event_info(nat, ei, !is_data);
         loop_timer.click("Global info");
 
         // signal-specific gen info
@@ -444,7 +467,16 @@ int main(int argc, char** argv)
         if (skim_type == kttbar){
             if (presel_jets.size() < 2)
                 continue;
-            sbf.select_ttbar_jets(nat, ei, presel_jets);   
+            std::vector<Jet> ttjets = sbf.select_ttbar_jets(nat, ei, presel_jets); // ttjets sorted by DeepJet
+            double deepjet1 = get_property(ttjets.at(0), Jet_btagDeepFlavB);
+            double deepjet2 = get_property(ttjets.at(1), Jet_btagDeepFlavB);
+            int nbtag = 0;
+            if (deepjet1 > btag_WPs.at(bTagWP)) nbtag += 1;
+            if (deepjet2 > btag_WPs.at(bTagWP)) nbtag += 1;
+            if (nbtag < nMinBtag)
+                continue;
+            if (!is_data)
+                ei.btagSF_WP_M = btsf.get_SF_allJetsPassWP({ttjets.at(0), ttjets.at(1)}, BtagSF::btagWP::medium);
             loop_timer.click("ttbar b jet selection");
         }
 

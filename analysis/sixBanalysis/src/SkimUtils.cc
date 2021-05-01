@@ -88,6 +88,11 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     ot.LumiSec  = *ei.LumiSec;
     ot.Event    = *ei.Event;
 
+    if(ei.n_other_pv)     ot.n_other_pv      = *ei.n_other_pv;
+    if(ei.n_pu)           ot.n_pu            = *ei.n_pu;
+    if(ei.n_true_int)     ot.n_true_int      = *ei.n_true_int;
+    if(ei.rhofastjet_all) ot.rhofastjet_all  = *ei.rhofastjet_all;
+
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_Y);
@@ -143,6 +148,15 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 
     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+
+    // must check validity of reader because this is not defined in data
+    if (ei.bjet1 && nat.Jet_hadronFlavour.IsValid())
+        ot.bjet1_hadflav = get_property(ei.bjet1.get(), Jet_hadronFlavour);
+
+    if (ei.bjet2 && nat.Jet_hadronFlavour.IsValid())
+        ot.bjet2_hadflav = get_property(ei.bjet2.get(), Jet_hadronFlavour);
+
+    if (ei.btagSF_WP_M) ot.btagSF_WP_M = *ei.btagSF_WP_M;
 
     // fill the tree
     ot.fill();

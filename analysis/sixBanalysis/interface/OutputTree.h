@@ -87,6 +87,11 @@ class OutputTree : public BaseOutTree {
         unsigned int           LumiSec;
         unsigned long long int Event;
 
+        int    n_other_pv;
+        int    n_pu;
+        double n_true_int;
+        double rhofastjet_all;
+
         DECLARE_m_pt_eta_phi_p4(gen_X_fc);
         DECLARE_m_pt_eta_phi_p4(gen_X);
         DECLARE_m_pt_eta_phi_p4(gen_Y);
@@ -141,8 +146,12 @@ class OutputTree : public BaseOutTree {
         int n_ele_loose;
 
         DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+        int bjet1_hadflav;
+        
         DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+        int bjet2_hadflav;
 
+        double btagSF_WP_M;
 
     private:
         void init_branches(std::map<std::string, bool> branch_switches);

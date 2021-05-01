@@ -18,7 +18,7 @@ class SixB_functions{
         ////////////////////////////////////////////////////
 
         // copy general event-level into to ei
-        void copy_event_info(NanoAODTree& nat, EventInfo& ei);
+        void copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc);
         
         // select the gen-level six b candidates (bs, bosons)
         void select_gen_particles(NanoAODTree& nat, EventInfo& ei);
@@ -45,7 +45,7 @@ class SixB_functions{
         std::vector<Jet> select_sixb_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
 
         // two most b tagged jets for ttbar events
-        void select_ttbar_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
+        std::vector<Jet> select_ttbar_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
 
         // pair the jets and assign them into the 6b candidates - will be stored in the EventInfo
         void pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);

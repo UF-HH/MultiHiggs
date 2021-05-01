@@ -1,4 +1,4 @@
-TAG="ttbar_2018_23Apr2021"
+TAG="ttbar_2018_1Mag2021_2b"
 ODIR="/store/group/lpchbb/lcadamur/sixb_ntuples/"
 
 echo "... tag       : ", $TAG
