@@ -25,10 +25,11 @@ extragroup = parser.add_mutually_exclusive_group()
 extragroup.add_argument('--resub',      dest = 'resub',        help = 'resubmit failed jobs',   action='store_true', default=False)
 extragroup.add_argument('--makeflist',  dest = 'makeflist',    help = 'make a filelist for good jobs',   action='store_true', default=False)
 
-parser.add_argument('--long',       dest = 'long',         help = 'detailed report',        action='store_true', default=False)
-parser.add_argument('--test-resub', dest = 'issue_resub',  help = 'do not actually resubmit, just print the commands executed (for debug)',   action='store_false', default=True)
-parser.add_argument('--flistname',  dest = 'flistname',    help = 'name of the filelist (valid only if using --folder)',  default=None)
-parser.add_argument('--flistdest',  dest = 'flistdest',    help = 'destination folder for the filelist',  default='./')
+parser.add_argument('--long',             dest = 'long',               help = 'detailed report',        action='store_true', default=False)
+parser.add_argument('--test-resub',       dest = 'issue_resub',        help = 'do not actually resubmit, just print the commands executed (for debug)',   action='store_false', default=True)
+parser.add_argument('--force-resub-idx',  dest = 'force_resub_idx',    help = 'force the resub of the jobs with these idx',   nargs='+', default=None, type=int)
+parser.add_argument('--flistname',        dest = 'flistname',          help = 'name of the filelist (valid only if using --folder)',  default=None)
+parser.add_argument('--flistdest',        dest = 'flistdest',          help = 'destination folder for the filelist',  default='./')
 
 args = parser.parse_args()
 
@@ -36,6 +37,10 @@ args = parser.parse_args()
 # handle collisions between options
 if args.tag and args.makeflist and args.flistname:
     print '... please do not use --flistname together with --tag (cannot use same name for all different filelists)'
+    raise RuntimeError("colliding options")
+
+if args.tag and args.force_resub_idx:
+    print '... please do not use --force-resub-idx together with --tag (cannot determine which folder the idx refers to)'
     raise RuntimeError("colliding options")
 
 ###########################################
@@ -155,8 +160,8 @@ for fol in folders:
         print '... more info on the', len(bad_cluster_idx), 'failed jobs in the logs below'
         for cluster, idx in bad_cluster_idx:
             logname = '/'.join([base_path, fol, stdoutname_proto]).format(cluster=cluster, ijob=idx)
-            print '   ... Skim : {} | code : {} | copy : {} | log : {}'.format(
-                data[fol]['finished_codes'][(cluster, idx)]['skim_done'], data[fol]['finished_codes'][(cluster, idx)]['skim_code'], data[fol]['finished_codes'][(cluster, idx)]['copy_code'], logname) 
+            print '{} :   ... Skim : {} | code : {} | copy : {} | log : {}'.format(
+                idx, data[fol]['finished_codes'][(cluster, idx)]['skim_done'], data[fol]['finished_codes'][(cluster, idx)]['skim_code'], data[fol]['finished_codes'][(cluster, idx)]['copy_code'], logname) 
 
     if nsuccess != ntot:
         bad_folders.append(fol)
@@ -170,7 +175,15 @@ for bf in bad_folders:
 # resubmit failed jobs
 
 if args.resub:
-    print '\n[INFO] going to resubmit the failed jobs for each of the', len(bad_folders), 'folders'
+    if args.force_resub_idx: ## the user specified jobs to resubmit
+        if len(folders) > 1:
+            raise RuntimeError ("too many folders available when trying to force resub idx")
+        bad_folders = folders ## this options expects a single folder being passed
+        bad_folders_jobs[bad_folders[0]] = [('*', i) for i in args.force_resub_idx]
+        print '\n[INFO] forcing the resub of the jobs of: ', bad_folders
+    else:
+        print '\n[INFO] going to resubmit the failed jobs for each of the', len(bad_folders), 'folders: ', bad_folders
+    
     workdir = os.getcwd()
     for fol in bad_folders:
         thisfol = '/'.join([base_path, fol])
