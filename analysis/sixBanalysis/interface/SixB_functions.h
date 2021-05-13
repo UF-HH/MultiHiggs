@@ -35,6 +35,8 @@ class SixB_functions{
         /// jet selection functions
         ////////////////////////////////////////////////////
 
+        int njets_preselections (const std::vector<Jet>& in_jets);
+
         // create a vector with all jets in the event
         std::vector<Jet> get_all_jets(NanoAODTree& nat);
 

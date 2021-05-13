@@ -22,6 +22,7 @@ using namespace std;
     ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
     ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
     ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
+    ot.OBJ ## _deepJet      = get_property(ei.OBJ.get(),Jet_btagDeepFlavB); \
     ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
     ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
     ot.OBJ ## _p4           = ei. OBJ -> P4();
@@ -41,6 +42,7 @@ using namespace std;
     ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
     ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
     ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
+    ot.OBJ ## _deepJet      = get_property(ei.OBJ.get(),Jet_btagDeepFlavB); \
     ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
     ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
     ot.OBJ ## _p4           = ei. OBJ -> P4();\
@@ -76,6 +78,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     ot.Run      = *ei.Run;
     ot.LumiSec  = *ei.LumiSec;
     ot.Event    = *ei.Event;
+    ot.njet     = *ei.njet;
 
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);
@@ -122,35 +125,38 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
 
+    if (ei.HX_b1) ot.HX_b1_deepJet = get_property(ei.HX_b1.get(),Jet_btagDeepFlavB);
+    if (ei.HX_b2) ot.HX_b2_deepJet = get_property(ei.HX_b2.get(),Jet_btagDeepFlavB);
+    if (ei.HY1_b1) ot.HY1_b1_deepJet = get_property(ei.HY1_b1.get(),Jet_btagDeepFlavB);
+    if (ei.HY1_b2) ot.HY1_b2_deepJet = get_property(ei.HY1_b2.get(),Jet_btagDeepFlavB);
+    if (ei.HY2_b1) ot.HY2_b1_deepJet = get_property(ei.HY2_b1.get(),Jet_btagDeepFlavB);
+    if (ei.HY2_b2) ot.HY2_b2_deepJet = get_property(ei.HY2_b2.get(),Jet_btagDeepFlavB);
+
     // fill the tree
     ot.fill();
 
 }
 
-//     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(H1_b1)
+    // COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(H1_b1)
 //     if (ei.H1_b1) ot.H1_b1_deepCSV = get_property(ei.H1_b1.get(),Jet_btagDeepB); 
-//     if (ei.H1_b1) ot.H1_b1_deepJet = get_property(ei.H1_b1.get(),Jet_btagDeepFlavB);
 //     if (ei.H1_b1) ot.H1_b1_bRegRes = get_property(ei.H1_b1.get(),Jet_bRegRes);
 //     if (ei.H1_b1) ot.H1_b1_jetId   = get_property(ei.H1_b1.get(),Jet_jetId); 
 //     if (ei.H1_b1) ot.H1_b1_puId    = get_property(ei.H1_b1.get(),Jet_puId);
 //     if (ei.H1_b1) ot.H1_b1_qgl     = get_property(ei.H1_b1.get(),Jet_qgl);
 //     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(H1_b2)
 //     if (ei.H1_b2) ot.H1_b2_deepCSV = get_property(ei.H1_b2.get(),Jet_btagDeepB);
-//     if (ei.H1_b2) ot.H1_b2_deepJet = get_property(ei.H1_b2.get(),Jet_btagDeepFlavB);
 //     if (ei.H1_b2) ot.H1_b2_bRegRes = get_property(ei.H1_b2.get(),Jet_bRegRes);
 //     if (ei.H1_b2) ot.H1_b2_jetId   = get_property(ei.H1_b2.get(),Jet_jetId); 
 //     if (ei.H1_b2) ot.H1_b2_puId    = get_property(ei.H1_b2.get(),Jet_puId);
 //     if (ei.H1_b2) ot.H1_b2_qgl     = get_property(ei.H1_b2.get(),Jet_qgl);
 //     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(H2_b1)
 //     if (ei.H2_b1) ot.H2_b1_deepCSV = get_property(ei.H2_b1.get(),Jet_btagDeepB);
-//     if (ei.H2_b1) ot.H2_b1_deepJet = get_property(ei.H2_b1.get(),Jet_btagDeepFlavB);
 //     if (ei.H2_b1) ot.H2_b1_bRegRes = get_property(ei.H2_b1.get(),Jet_bRegRes);
 //     if (ei.H2_b1) ot.H2_b1_jetId   = get_property(ei.H2_b1.get(),Jet_jetId); 
 //     if (ei.H2_b1) ot.H2_b1_puId    = get_property(ei.H2_b1.get(),Jet_puId);
 //     if (ei.H2_b1) ot.H2_b1_qgl     = get_property(ei.H2_b1.get(),Jet_qgl);
 //     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(H2_b2)
 //     if (ei.H2_b2) ot.H2_b2_deepCSV = get_property(ei.H2_b2.get(),Jet_btagDeepB);
-//     if (ei.H2_b2) ot.H2_b2_deepJet = get_property(ei.H2_b2.get(),Jet_btagDeepFlavB);
 //     if (ei.H2_b2) ot.H2_b2_bRegRes = get_property(ei.H2_b2.get(),Jet_bRegRes);
 //     if (ei.H2_b2) ot.H2_b2_jetId   = get_property(ei.H2_b2.get(),Jet_jetId); 
 //     if (ei.H2_b2) ot.H2_b2_puId    = get_property(ei.H2_b2.get(),Jet_puId);

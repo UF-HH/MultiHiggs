@@ -38,6 +38,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
     float OBJ ## _ptRegressed; \
     float OBJ ## _eta; \
     float OBJ ## _phi; \
+    float OBJ ## _deepJet; \
     p4_t  OBJ ## _p4;
 
 class OutputTree {
@@ -68,6 +69,7 @@ class OutputTree {
         unsigned int           Run;
         unsigned int           LumiSec;
         unsigned long long int Event;
+        unsigned int           njet;
 
         DECLARE_m_pt_eta_phi_p4(gen_X_fc);
         DECLARE_m_pt_eta_phi_p4(gen_X);

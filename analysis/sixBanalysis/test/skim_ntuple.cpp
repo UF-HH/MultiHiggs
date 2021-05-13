@@ -221,6 +221,7 @@ int main(int argc, char** argv)
     ot.declareUserIntBranch("nfound_all",    0);
     ot.declareUserIntBranch("nfound_presel", 0);
     ot.declareUserIntBranch("nfound_sixb",   0);
+    ot.declareUserIntBranch("njet_presel",   0);
 
     ////////////////////////////////////////////////////////////////////////
     // All pre-running configurations (corrections, methods from cfg, etc)
@@ -286,10 +287,12 @@ int main(int argc, char** argv)
 
         if (is_data && !jlf.isValid(*nat.run, *nat.luminosityBlock)){
             continue; // not a valid lumi
-        }
+        } 
 
         EventInfo ei;
         ot.clear();
+
+        ei.njet = *(nat.nJet);
 
         // global event info
         sbf.copy_event_info(nat, ei);
@@ -303,6 +306,7 @@ int main(int argc, char** argv)
 
         // // jet selections
         std::vector<Jet> all_jets    = sbf.get_all_jets     (nat);
+        int njet_presel = sbf.njets_preselections(all_jets);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
         if (!is_data){
             if (do_jes_shift)
@@ -322,6 +326,7 @@ int main(int argc, char** argv)
         ot.userInt("nfound_all")    = nfound_all;
         ot.userInt("nfound_presel") = nfound_presel;
         ot.userInt("nfound_sixb")   = nfound_sixb;
+        ot.userInt("njet_presel")   = njet_presel;
 
         su::fill_output_tree(ot, nat, ei);
     }

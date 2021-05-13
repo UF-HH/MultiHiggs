@@ -24,6 +24,7 @@ struct EventInfo{
     boost::optional<unsigned int>           Run;
     boost::optional<unsigned int>           LumiSec;
     boost::optional<unsigned long long int> Event;
+    boost::optional<unsigned int>           njet;
 
     boost::optional<GenPart>  gen_X_fc; // first copy at LHE
     boost::optional<GenPart>  gen_X;

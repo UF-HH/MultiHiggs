@@ -43,6 +43,12 @@ float Jet::getBregRes()
     return corr;
 }
 
+float Jet::getDeepJet() 
+{
+    deepJet = get_property((*this),Jet_btagDeepFlavB);
+    return deepJet;
+}
+
 void Jet::buildP4Regressed()
 {
     if(p4_.Pt()==0.) this->buildP4();

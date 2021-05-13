@@ -25,6 +25,7 @@ using namespace std;
     tree_->Branch(#OBJ "_ptRegressed",  &OBJ ## _ptRegressed); \
     tree_->Branch(#OBJ "_eta"        , &OBJ ## _eta); \
     tree_->Branch(#OBJ "_phi"        , &OBJ ## _phi); \
+    tree_->Branch(#OBJ "_deepJet"    , &OBJ ## _deepJet); \
     if (savetlv_) tree_->Branch(#OBJ "_p4", &OBJ ## _p4);
 
 #define CLEAR_m_pt_ptRegressed_eta_phi_p4(OBJ) \
@@ -33,7 +34,9 @@ using namespace std;
     OBJ ## _ptRegressed   = -999.; \
     OBJ ## _eta           = -999.; \
     OBJ ## _phi           = -999.; \
+    OBJ ## _deepJet       = -999.; \
     OBJ ## _p4            . SetCoordinates(0,0,0,0);
+
 
 OutputTree::OutputTree (bool savetlv, string name, string title) :
 savetlv_ (savetlv)
@@ -50,6 +53,7 @@ void OutputTree::init_branches()
     tree_->Branch("Run",     &Run);
     tree_->Branch("LumiSec", &LumiSec);
     tree_->Branch("Event",   &Event);
+    tree_->Branch("njet",    &njet);
 
     BRANCH_m_pt_eta_phi_p4(gen_X_fc);
     BRANCH_m_pt_eta_phi_p4(gen_X);
@@ -104,6 +108,7 @@ void OutputTree::clear()
     Run     = 0;
     LumiSec = 0;
     Event   = 0;
+    njet    = 0;
 
     CLEAR_m_pt_eta_phi_p4(gen_X_fc);
     CLEAR_m_pt_eta_phi_p4(gen_X);
