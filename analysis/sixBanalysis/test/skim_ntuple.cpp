@@ -306,6 +306,19 @@ int main(int argc, char** argv)
 
         // // jet selections
         std::vector<Jet> all_jets    = sbf.get_all_jets     (nat);
+
+        // Preselections applied to all jets
+        std::vector<float> jet_pt    = sbf.get_all_jet_pt   (all_jets);
+        std::vector<float> jet_eta   = sbf.get_all_jet_eta  (all_jets);
+        std::vector<float> jet_phi   = sbf.get_all_jet_phi  (all_jets);
+        std::vector<float> jet_m     = sbf.get_all_jet_mass (all_jets);
+        std::vector<float> jet_btag  = sbf.get_all_jet_btag (all_jets);
+        ei.jet_pt = jet_pt;
+        ei.jet_eta = jet_eta;
+        ei.jet_phi = jet_phi;
+        ei.jet_m = jet_m;
+        ei.jet_btag = jet_btag;
+
         int njet_presel = sbf.njets_preselections(all_jets);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
         if (!is_data){

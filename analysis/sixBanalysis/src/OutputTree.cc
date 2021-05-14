@@ -54,6 +54,11 @@ void OutputTree::init_branches()
     tree_->Branch("LumiSec", &LumiSec);
     tree_->Branch("Event",   &Event);
     tree_->Branch("njet",    &njet);
+    tree_->Branch("jet_pt", "std::vector<float>", &jet_pt);
+    tree_->Branch("jet_eta", "std::vector<float>", &jet_eta);
+    tree_->Branch("jet_phi", "std::vector<float>", &jet_phi);
+    tree_->Branch("jet_m", "std::vector<float>", &jet_m);
+    tree_->Branch("jet_btag", "std::vector<float>", &jet_btag);
 
     BRANCH_m_pt_eta_phi_p4(gen_X_fc);
     BRANCH_m_pt_eta_phi_p4(gen_X);

@@ -70,6 +70,11 @@ class OutputTree {
         unsigned int           LumiSec;
         unsigned long long int Event;
         unsigned int           njet;
+        std::vector<float>     jet_pt;
+        std::vector<float>     jet_eta;
+        std::vector<float>     jet_phi;
+        std::vector<float>     jet_m;
+        std::vector<float>     jet_btag;
 
         DECLARE_m_pt_eta_phi_p4(gen_X_fc);
         DECLARE_m_pt_eta_phi_p4(gen_X);

@@ -21,6 +21,8 @@ class Jet : public Candidate
         }
         float getBregCorr();
         float getBregRes();
+        float getDeepJet();
+        float deepJet = getDeepJet();
         p4_t P4Regressed() const      {return p4Regressed_;}
         void setP4Regressed( p4_t p4Regressed) {p4Regressed_ = p4Regressed;}
         

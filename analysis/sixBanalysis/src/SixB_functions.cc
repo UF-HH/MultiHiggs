@@ -240,11 +240,115 @@ std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
     return jets;
 }
 
+std::vector<float> SixB_functions::get_all_jet_pt(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        jets.emplace_back(jet.P4().Pt());
+    }
+    return jets;
+}
+
+std::vector<float> SixB_functions::get_all_jet_eta(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        jets.emplace_back(jet.P4().Eta());
+    }
+    return jets;
+}
+
+std::vector<float> SixB_functions::get_all_jet_phi(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        jets.emplace_back(jet.P4().Phi());
+    }
+    return jets;
+}
+
+std::vector<float> SixB_functions::get_all_jet_mass(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        jets.emplace_back(jet.P4().M());
+    }
+    return jets;
+}
+
+std::vector<int> SixB_functions::get_all_jet_genidx(const std::vector<Jet>& in_jets)
+{
+    std::vector<int> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        int btag = get_property (jet, Jet_btagDeepFlavB);
+        jets.emplace_back(jet.P4().M());
+    }
+    return jets;
+}
+
+std::vector<float> SixB_functions::get_all_jet_btag(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        float btag = get_property (jet, Jet_btagDeepFlavB);
+        jets.emplace_back(btag);
+    }
+    return jets;
+}
+
 std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets)
 {
     // FIXME: make these selections configurable
-    const double pt_min  = 20.;
-    const double eta_max = 2.5;
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
     const int    pf_id   = 1;
     const int    pu_id   = 1;
 

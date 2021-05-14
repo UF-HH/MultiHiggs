@@ -39,6 +39,11 @@ class SixB_functions{
 
         // create a vector with all jets in the event
         std::vector<Jet> get_all_jets(NanoAODTree& nat);
+        std::vector<float> get_all_jet_pt(const std::vector<Jet>& in_jets);
+        std::vector<float> get_all_jet_eta(const std::vector<Jet>& in_jets);
+        std::vector<float> get_all_jet_phi(const std::vector<Jet>& in_jets);
+        std::vector<float> get_all_jet_mass(const std::vector<Jet>& in_jets);
+        std::vector<float> get_all_jet_btag(const std::vector<Jet>& in_jets);
 
         // create a vector with all jets in the event
         std::vector<Jet> preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);

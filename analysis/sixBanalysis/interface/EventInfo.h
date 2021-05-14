@@ -71,6 +71,12 @@ struct EventInfo{
     boost::optional<Jet> HY2_b1;
     boost::optional<Jet> HY2_b2;
 
+    std::vector<float> jet_pt;
+    std::vector<float> jet_eta;
+    std::vector<float> jet_phi;
+    std::vector<float> jet_m;
+    std::vector<float> jet_btag;
+
 };
 
 #endif
