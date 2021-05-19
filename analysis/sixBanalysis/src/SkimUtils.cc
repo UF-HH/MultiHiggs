@@ -83,7 +83,8 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     ot.jet_eta  = ei.jet_eta;
     ot.jet_phi  = ei.jet_phi;
     ot.jet_m    = ei.jet_m;
-    ot.jet_btag    = ei.jet_btag;
+    ot.jet_btag = ei.jet_btag;
+    ot.jet_idx  = ei.jet_idx;
 
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);
