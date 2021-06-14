@@ -40,7 +40,7 @@ float Jet::getBregRes()
     }
     // else //Do nothing, use the NANOAOD correction value
 
-    return corr;
+    return res;
 }
 
 void Jet::buildP4Regressed()
