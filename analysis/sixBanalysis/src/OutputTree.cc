@@ -59,6 +59,8 @@ void OutputTree::init_branches()
     tree_->Branch("jet_phi", "std::vector<float>", &jet_phi);
     tree_->Branch("jet_m", "std::vector<float>", &jet_m);
     tree_->Branch("jet_btag", "std::vector<float>", &jet_btag);
+    tree_->Branch("jet_hadronFlav", "std::vector<int>", &jet_hadronFlav);
+    tree_->Branch("jet_partonFlav", "std::vector<int>", &jet_partonFlav);
     tree_->Branch("jet_idx", "std::vector<int>", &jet_idx);
 
     BRANCH_m_pt_eta_phi_p4(gen_X_fc);

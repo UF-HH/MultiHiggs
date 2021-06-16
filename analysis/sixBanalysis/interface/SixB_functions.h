@@ -44,6 +44,9 @@ class SixB_functions{
         std::vector<float> get_all_jet_phi(const std::vector<Jet>& in_jets);
         std::vector<float> get_all_jet_mass(const std::vector<Jet>& in_jets);
         std::vector<float> get_all_jet_btag(const std::vector<Jet>& in_jets);
+        std::vector<int> get_all_jet_hadronFlavour(const std::vector<Jet>& in_jets);
+        std::vector<int> get_all_jet_partonFlavour(const std::vector<Jet>& in_jets);
+        std::vector<int> get_all_jet_genidx(EventInfo& ei, const std::vector<Jet>& in_jets);
 
         // create a vector with all jets in the event
         std::vector<Jet> preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);

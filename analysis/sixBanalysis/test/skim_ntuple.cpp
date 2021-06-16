@@ -1,5 +1,5 @@
-// skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
 
+// skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -300,7 +300,7 @@ int main(int argc, char** argv)
         // signal-specific gen info
         if (is_signal){
             sbf.select_gen_particles   (nat, ei);
-            sbf.match_genbs_to_genjets (nat, ei);
+            sbf.match_genbs_to_genjets (nat, ei, true);
             sbf.match_genbs_genjets_to_reco (nat, ei);
         }
 
@@ -313,11 +313,15 @@ int main(int argc, char** argv)
         std::vector<float> jet_phi   = sbf.get_all_jet_phi  (all_jets);
         std::vector<float> jet_m     = sbf.get_all_jet_mass (all_jets);
         std::vector<float> jet_btag  = sbf.get_all_jet_btag (all_jets);
+        std::vector<int> jet_hadronFlavour  = sbf.get_all_jet_hadronFlavour (all_jets);
+        std::vector<int> jet_partonFlavour  = sbf.get_all_jet_partonFlavour (all_jets);
         ei.jet_pt = jet_pt;
         ei.jet_eta = jet_eta;
         ei.jet_phi = jet_phi;
         ei.jet_m = jet_m;
         ei.jet_btag = jet_btag;
+        ei.jet_hadronFlavour = jet_hadronFlavour;
+        ei.jet_partonFlavour = jet_partonFlavour;
 
         int njet_presel = sbf.njets_preselections(all_jets);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
@@ -332,6 +336,8 @@ int main(int argc, char** argv)
         std::vector<Jet> sixb_jets   = sbf.select_sixb_jets (nat, presel_jets);
         int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
 
+        std::vector<int> jet_idx    = sbf.get_all_jet_genidx(ei, all_jets);
+        ei.jet_idx = jet_idx;
         // if (sixb_jets.size() < 6)
         //     continue;
         // sbf.pair_jets(nat, ei, sixb_jets);

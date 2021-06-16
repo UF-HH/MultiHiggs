@@ -301,7 +301,6 @@ std::vector<int> SixB_functions::get_all_jet_genidx(EventInfo& ei, const std::ve
 }
 
 
-
 std::vector<float> SixB_functions::get_all_jet_eta(const std::vector<Jet>& in_jets)
 {
     std::vector<float> jets;
@@ -367,6 +366,42 @@ std::vector<float> SixB_functions::get_all_jet_btag(const std::vector<Jet>& in_j
         if (std::abs(jet.P4().Eta()) >= eta_max) continue;
         float btag = get_property (jet, Jet_btagDeepFlavB);
         jets.emplace_back(btag);
+    }
+    return jets;
+}
+
+std::vector<int> SixB_functions::get_all_jet_partonFlavour(const std::vector<Jet>& in_jets)
+{
+    std::vector<int> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        int partonFlavour = get_property (jet, Jet_partonFlavour);
+        jets.emplace_back(partonFlavour);
+    }
+    return jets;
+}
+
+std::vector<int> SixB_functions::get_all_jet_hadronFlavour(const std::vector<Jet>& in_jets)
+{
+    std::vector<int> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        int hadronFlavour = get_property (jet, Jet_hadronFlavour);
+        jets.emplace_back(hadronFlavour);
     }
     return jets;
 }
