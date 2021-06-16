@@ -49,6 +49,18 @@ float Jet::getDeepJet()
     return deepJet;
 }
 
+float Jet::getJetHadronFlavour() 
+{
+    hadronFlavour = get_property((*this),Jet_hadronFlavour);
+    return hadronFlavour;
+}
+
+float Jet::getJetPartonFlavour() 
+{
+    partonFlavour = get_property((*this),Jet_partonFlavour);
+    return partonFlavour;
+}
+
 void Jet::buildP4Regressed()
 {
     if(p4_.Pt()==0.) this->buildP4();
