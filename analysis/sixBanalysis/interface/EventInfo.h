@@ -76,6 +76,7 @@ struct EventInfo{
     std::vector<float> jet_phi;
     std::vector<float> jet_m;
     std::vector<float> jet_btag;
+    std::vector<float> jet_qgl;
     std::vector<int> jet_hadronFlavour;
     std::vector<int> jet_partonFlavour;
     std::vector<int>   jet_idx;

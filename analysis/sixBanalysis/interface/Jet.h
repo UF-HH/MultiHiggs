@@ -22,11 +22,13 @@ class Jet : public Candidate
         float getBregCorr();
         float getBregRes();
         float getDeepJet();
-        float getJetHadronFlavour();
-        float getJetPartonFlavour();
+        int getJetHadronFlavour();
+        int getJetPartonFlavour();
+        float getJetQGL();
         float deepJet = getDeepJet();
         int hadronFlavour = getJetHadronFlavour();
         int partonFlavour = getJetPartonFlavour();
+        float qgl = getJetQGL();
         p4_t P4Regressed() const      {return p4Regressed_;}
         void setP4Regressed( p4_t p4Regressed) {p4Regressed_ = p4Regressed;}
         

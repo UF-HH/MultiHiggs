@@ -75,6 +75,7 @@ class OutputTree {
         std::vector<float>     jet_phi;
         std::vector<float>     jet_m;
         std::vector<float>     jet_btag;
+        std::vector<float>     jet_qgl;
         std::vector<int>       jet_hadronFlav;
         std::vector<int>       jet_partonFlav;
         std::vector<int>       jet_idx;

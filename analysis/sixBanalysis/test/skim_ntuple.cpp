@@ -315,11 +315,13 @@ int main(int argc, char** argv)
         std::vector<float> jet_btag  = sbf.get_all_jet_btag (all_jets);
         std::vector<int> jet_hadronFlavour  = sbf.get_all_jet_hadronFlavour (all_jets);
         std::vector<int> jet_partonFlavour  = sbf.get_all_jet_partonFlavour (all_jets);
+        std::vector<float> jet_qgl  = sbf.get_all_jet_qgl (all_jets);
         ei.jet_pt = jet_pt;
         ei.jet_eta = jet_eta;
         ei.jet_phi = jet_phi;
         ei.jet_m = jet_m;
         ei.jet_btag = jet_btag;
+        ei.jet_qgl = jet_qgl;
         ei.jet_hadronFlavour = jet_hadronFlavour;
         ei.jet_partonFlavour = jet_partonFlavour;
 

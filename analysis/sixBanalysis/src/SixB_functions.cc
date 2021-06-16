@@ -370,6 +370,24 @@ std::vector<float> SixB_functions::get_all_jet_btag(const std::vector<Jet>& in_j
     return jets;
 }
 
+std::vector<float> SixB_functions::get_all_jet_qgl(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        float qgl = get_property (jet, Jet_qgl);
+        jets.emplace_back(qgl);
+    }
+    return jets;
+}
+
 std::vector<int> SixB_functions::get_all_jet_partonFlavour(const std::vector<Jet>& in_jets)
 {
     std::vector<int> jets;
