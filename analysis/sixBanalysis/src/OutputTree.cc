@@ -5,52 +5,52 @@
 using namespace std;
 
 // helper: creates the pt/eta/phi/p4 branches of a variable OBJ
-#define BRANCH_m_pt_eta_phi_p4(OBJ) \
-    tree_->Branch(#OBJ "_m",  &OBJ ## _m); \
-    tree_->Branch(#OBJ "_pt",  &OBJ ## _pt); \
-    tree_->Branch(#OBJ "_eta", &OBJ ## _eta); \
-    tree_->Branch(#OBJ "_phi", &OBJ ## _phi); \
+#define BRANCH_m_pt_eta_phi_p4(OBJ)							\
+    tree_->Branch(#OBJ "_m",  &OBJ ## _m);					\
+    tree_->Branch(#OBJ "_pt",  &OBJ ## _pt);				\
+    tree_->Branch(#OBJ "_eta", &OBJ ## _eta);				\
+    tree_->Branch(#OBJ "_phi", &OBJ ## _phi);				\
     if (savetlv_) tree_->Branch(#OBJ "_p4", &OBJ ## _p4);
 
-#define CLEAR_m_pt_eta_phi_p4(OBJ) \
-    OBJ ## _m    = -999.; \
-    OBJ ## _pt   = -999.; \
-    OBJ ## _eta  = -999.; \
-    OBJ ## _phi  = -999.; \
+#define CLEAR_m_pt_eta_phi_p4(OBJ)				\
+    OBJ ## _m    = -999.;						\
+    OBJ ## _pt   = -999.;						\
+    OBJ ## _eta  = -999.;						\
+    OBJ ## _phi  = -999.;						\
     OBJ ## _p4 . SetCoordinates(0,0,0,0);
 
-#define BRANCH_m_pt_ptRegressed_eta_phi_p4(OBJ) \
-    tree_->Branch(#OBJ "_m"          ,  &OBJ ## _m); \
-    tree_->Branch(#OBJ "_pt"         ,  &OBJ ## _pt); \
-    tree_->Branch(#OBJ "_ptRegressed",  &OBJ ## _ptRegressed); \
-    tree_->Branch(#OBJ "_eta"        , &OBJ ## _eta); \
-    tree_->Branch(#OBJ "_phi"        , &OBJ ## _phi); \
+#define BRANCH_m_pt_ptRegressed_eta_phi_p4(OBJ)					\
+    tree_->Branch(#OBJ "_m"          ,  &OBJ ## _m);			\
+    tree_->Branch(#OBJ "_pt"         ,  &OBJ ## _pt);			\
+    tree_->Branch(#OBJ "_ptRegressed",  &OBJ ## _ptRegressed);	\
+    tree_->Branch(#OBJ "_eta"        , &OBJ ## _eta);			\
+    tree_->Branch(#OBJ "_phi"        , &OBJ ## _phi);			\
     if (savetlv_) tree_->Branch(#OBJ "_p4", &OBJ ## _p4);
 
-#define CLEAR_m_pt_ptRegressed_eta_phi_p4(OBJ) \
-    OBJ ## _m             = -999.; \
-    OBJ ## _pt            = -999.; \
-    OBJ ## _ptRegressed   = -999.; \
-    OBJ ## _eta           = -999.; \
-    OBJ ## _phi           = -999.; \
+#define CLEAR_m_pt_ptRegressed_eta_phi_p4(OBJ)			\
+    OBJ ## _m             = -999.;						\
+    OBJ ## _pt            = -999.;						\
+    OBJ ## _ptRegressed   = -999.;						\
+    OBJ ## _eta           = -999.;						\
+    OBJ ## _phi           = -999.;						\
     OBJ ## _p4            . SetCoordinates(0,0,0,0);
 
-#define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
-    tree_->Branch(#OBJ "_m"          ,  &OBJ ## _m); \
-    tree_->Branch(#OBJ "_pt"         ,  &OBJ ## _pt); \
-    tree_->Branch(#OBJ "_ptRegressed",  &OBJ ## _ptRegressed); \
-    tree_->Branch(#OBJ "_eta"        , &OBJ ## _eta); \
-    tree_->Branch(#OBJ "_phi"        , &OBJ ## _phi); \
-    tree_->Branch(#OBJ "_DeepJet"    , &OBJ ## _DeepJet); \
+#define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)			\
+    tree_->Branch(#OBJ "_m"          ,  &OBJ ## _m);			\
+    tree_->Branch(#OBJ "_pt"         ,  &OBJ ## _pt);			\
+    tree_->Branch(#OBJ "_ptRegressed",  &OBJ ## _ptRegressed);	\
+    tree_->Branch(#OBJ "_eta"        , &OBJ ## _eta);			\
+    tree_->Branch(#OBJ "_phi"        , &OBJ ## _phi);			\
+    tree_->Branch(#OBJ "_DeepJet"    , &OBJ ## _DeepJet);		\
     if (savetlv_) tree_->Branch(#OBJ "_p4", &OBJ ## _p4);
 
-#define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
-    OBJ ## _m             = -999.; \
-    OBJ ## _pt            = -999.; \
-    OBJ ## _ptRegressed   = -999.; \
-    OBJ ## _eta           = -999.; \
-    OBJ ## _phi           = -999.; \
-    OBJ ## _DeepJet       = -999.; \
+#define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)	\
+    OBJ ## _m             = -999.;						\
+    OBJ ## _pt            = -999.;						\
+    OBJ ## _ptRegressed   = -999.;						\
+    OBJ ## _eta           = -999.;						\
+    OBJ ## _phi           = -999.;						\
+    OBJ ## _DeepJet       = -999.;						\
     OBJ ## _p4            . SetCoordinates(0,0,0,0);
 
 OutputTree::OutputTree(bool savetlv, std::map<std::string, bool> branch_switches, string name, string title) :
@@ -151,6 +151,27 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
         if (is_enabled("gen_brs")) tree_->Branch("bjet2_hadflav", &bjet2_hadflav);
     }
 
+	tree_->Branch("n_jet",&n_jet);
+	
+	if (is_enabled("jet_coll"))
+	{
+		std::cout << "[INFO] OutputTree : enabling jet collection branches" << std::endl;
+		tree_->Branch("jet_E",         &jet_E);	    
+		tree_->Branch("jet_m",         &jet_m);		
+		tree_->Branch("jet_pt",        &jet_pt);		
+		tree_->Branch("jet_eta",       &jet_eta);		
+		tree_->Branch("jet_phi",       &jet_phi);		
+		tree_->Branch("jet_partonFlav",&jet_partonFlav);
+		tree_->Branch("jet_hadronFlav",&jet_hadronFlav);
+		tree_->Branch("jet_signalId",  &jet_signalId);
+		tree_->Branch("jet_genIdx",    &jet_genIdx);
+		tree_->Branch("jet_btag",      &jet_btag);
+		tree_->Branch("jet_qgl",       &jet_qgl);
+		tree_->Branch("jet_id",        &jet_id);
+		tree_->Branch("jet_puid",      &jet_puid);
+		tree_->Branch("presel_jet_idxs",&presel_jet_idxs);
+	}
+
     if (is_enabled("gen_brs"))
     {
         std::cout << "[INFO] OutputTree : enabling gen-only related branches" << std::endl;
@@ -158,7 +179,23 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
         tree_->Branch("n_true_int",  &n_true_int);
 
         tree_->Branch("btagSF_WP_M", &btagSF_WP_M);
+		tree_->Branch("n_genjet",    &n_genjet);
+
+		if (is_enabled("jet_coll"))
+		{
+			tree_->Branch("genjet_E",         &genjet_E);	    
+			tree_->Branch("genjet_m",         &genjet_m);		
+			tree_->Branch("genjet_pt",        &genjet_pt);		
+			tree_->Branch("genjet_eta",       &genjet_eta);		
+			tree_->Branch("genjet_phi",       &genjet_phi);		
+			tree_->Branch("genjet_partonFlav",&genjet_partonFlav);
+			tree_->Branch("genjet_hadronFlav",&genjet_hadronFlav);
+			tree_->Branch("genjet_signalId",  &genjet_signalId);
+			tree_->Branch("genjet_recoIdx",   &genjet_recoIdx);
+		}
     }
+
+	
 
     // note that the initialization of the user branches is made separately when calling declareUser*Branch
 }
@@ -173,6 +210,33 @@ void OutputTree::clear()
     n_pu           = 0;
     n_true_int     = 0;
     rhofastjet_all = 0;
+
+	n_jet = 0;
+	n_genjet = 0;
+
+	genjet_E.clear();	    
+	genjet_m.clear();		
+	genjet_pt.clear();		
+	genjet_eta.clear();		
+	genjet_phi.clear();		
+	genjet_partonFlav.clear();
+	genjet_hadronFlav.clear();
+	genjet_signalId.clear();
+	genjet_recoIdx.clear();
+	
+	jet_E.clear();	    
+	jet_m.clear();		
+	jet_pt.clear();		
+	jet_eta.clear();		
+	jet_phi.clear();		
+	jet_partonFlav.clear();
+	jet_hadronFlav.clear();
+	jet_signalId.clear();
+	jet_genIdx.clear();
+	jet_btag.clear();
+	jet_qgl.clear();
+	jet_id.clear();
+	jet_puid.clear();
 
     CLEAR_m_pt_eta_phi_p4(gen_X_fc);
     CLEAR_m_pt_eta_phi_p4(gen_X);

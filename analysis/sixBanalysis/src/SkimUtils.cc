@@ -11,51 +11,51 @@ using namespace std;
 
 // helper: copies the pt/eta/phi/p4 branches from a candidate OBJ to the output tree
 // NOTE: requires the matching of the names (and enforces it)
-#define COPY_m_pt_eta_phi_p4(OBJ) \
-    ot.OBJ ## _m   = ei. OBJ -> P4().M(); \
-    ot.OBJ ## _pt  = ei. OBJ -> P4().Pt(); \
-    ot.OBJ ## _eta = ei. OBJ -> P4().Eta(); \
-    ot.OBJ ## _phi = ei. OBJ -> P4().Phi(); \
+#define COPY_m_pt_eta_phi_p4(OBJ)				\
+    ot.OBJ ## _m   = ei. OBJ -> P4().M();		\
+    ot.OBJ ## _pt  = ei. OBJ -> P4().Pt();		\
+    ot.OBJ ## _eta = ei. OBJ -> P4().Eta();		\
+    ot.OBJ ## _phi = ei. OBJ -> P4().Phi();		\
     ot.OBJ ## _p4  = ei. OBJ -> P4();
 
-#define COPY_m_pt_ptRegressed_eta_phi_p4(OBJ) \
-    ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
-    ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
-    ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
-    ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
-    ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
+#define COPY_m_pt_ptRegressed_eta_phi_p4(OBJ)					\
+    ot.OBJ ## _m            = ei. OBJ -> P4().M();				\
+    ot.OBJ ## _pt           = ei. OBJ -> P4().Pt();				\
+    ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt();	\
+    ot.OBJ ## _eta          = ei. OBJ -> P4().Eta();			\
+    ot.OBJ ## _phi          = ei. OBJ -> P4().Phi();			\
     ot.OBJ ## _p4           = ei. OBJ -> P4();
 
 //helperM same as above, but encloses the obj (a boost::optional is expected) in a if clause to check whether it is initialized
-#define COPY_OPTIONAL_m_pt_eta_phi_p4(OBJ) \
-    if (ei.OBJ) { \
-        ot.OBJ ## _m   = ei. OBJ -> P4().M(); \
-        ot.OBJ ## _pt  = ei. OBJ -> P4().Pt(); \
+#define COPY_OPTIONAL_m_pt_eta_phi_p4(OBJ)		\
+    if (ei.OBJ) {								\
+        ot.OBJ ## _m   = ei. OBJ -> P4().M();	\
+        ot.OBJ ## _pt  = ei. OBJ -> P4().Pt();	\
         ot.OBJ ## _eta = ei. OBJ -> P4().Eta(); \
         ot.OBJ ## _phi = ei. OBJ -> P4().Phi(); \
-        ot.OBJ ## _p4  = ei. OBJ -> P4(); \
+        ot.OBJ ## _p4  = ei. OBJ -> P4();		\
     }
 
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(OBJ) \
-    if (ei.OBJ) { \
-    ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
-    ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
-    ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
-    ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
-    ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
-    ot.OBJ ## _p4           = ei. OBJ -> P4();\
+#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(OBJ)				\
+    if (ei.OBJ) {													\
+		ot.OBJ ## _m            = ei. OBJ -> P4().M();				\
+		ot.OBJ ## _pt           = ei. OBJ -> P4().Pt();				\
+		ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt();	\
+		ot.OBJ ## _eta          = ei. OBJ -> P4().Eta();			\
+		ot.OBJ ## _phi          = ei. OBJ -> P4().Phi();			\
+		ot.OBJ ## _p4           = ei. OBJ -> P4();					\
     }
 
- #define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
-    if (ei.OBJ) { \
-    ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
-    ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
-    ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
-    ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
-    ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
-    ot.OBJ ## _DeepJet      = get_property( ei. OBJ .get(), Jet_btagDeepFlavB); \
-    ot.OBJ ## _p4           = ei. OBJ -> P4();\
-    }   
+#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)			\
+    if (ei.OBJ) {														\
+		ot.OBJ ## _m            = ei. OBJ -> P4().M();					\
+		ot.OBJ ## _pt           = ei. OBJ -> P4().Pt();					\
+		ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt();		\
+		ot.OBJ ## _eta          = ei. OBJ -> P4().Eta();				\
+		ot.OBJ ## _phi          = ei. OBJ -> P4().Phi();				\
+		ot.OBJ ## _DeepJet      = get_property( ei. OBJ .get(), Jet_btagDeepFlavB); \
+		ot.OBJ ## _p4           = ei. OBJ -> P4();						\
+    }
 // --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - 
 
 int SkimUtils::appendFromFileList (TChain* chain, string filename)
@@ -75,7 +75,7 @@ int SkimUtils::appendFromFileList (TChain* chain, string filename)
             chain->Add(line.c_str());
             ++nfiles;
         }
-     }
+	}
     return nfiles;
 }
 
@@ -92,6 +92,41 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     if(ei.n_pu)           ot.n_pu            = *ei.n_pu;
     if(ei.n_true_int)     ot.n_true_int      = *ei.n_true_int;
     if(ei.rhofastjet_all) ot.rhofastjet_all  = *ei.rhofastjet_all;
+	if(ei.n_jet)          ot.n_jet           = *ei.n_jet;
+	if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
+
+	if (ei.jet_list) {
+		for (Jet& jet : ei.jet_list.get()) {
+			ot.jet_E.push_back( jet.get_E() );	    
+			ot.jet_m.push_back( jet.get_m() );		
+			ot.jet_pt.push_back( jet.get_pt() );		
+			ot.jet_eta.push_back( jet.get_eta() );		
+			ot.jet_phi.push_back( jet.get_phi() );		
+			ot.jet_partonFlav.push_back( jet.get_partonFlav() );
+			ot.jet_hadronFlav.push_back( jet.get_hadronFlav() );
+			ot.jet_signalId.push_back( jet.get_signalId() );
+			ot.jet_genIdx.push_back( jet.get_genIdx() );
+			ot.jet_btag.push_back( jet.get_btag() );
+			ot.jet_qgl.push_back( jet.get_qgl() );
+			ot.jet_id.push_back( jet.get_id() );
+			ot.jet_puid.push_back( jet.get_puid() );
+		}
+		ot.presel_jet_idxs = ei.presel_jet_idxs.get();
+	}
+
+	if (ei.genjet_list) {
+		for (GenJet& jet : ei.genjet_list.get()) {
+			ot.genjet_E.push_back( jet.get_E() );	    
+			ot.genjet_m.push_back( jet.get_m() );		
+			ot.genjet_pt.push_back( jet.get_pt() );		
+			ot.genjet_eta.push_back( jet.get_eta() );		
+			ot.genjet_phi.push_back( jet.get_phi() );		
+			ot.genjet_partonFlav.push_back( jet.get_partonFlav() );
+			ot.genjet_hadronFlav.push_back( jet.get_hadronFlav() );
+			ot.genjet_signalId.push_back( jet.get_signalId() );
+			ot.genjet_recoIdx.push_back( jet.get_recoIdx() );
+		}
+	}
 
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);

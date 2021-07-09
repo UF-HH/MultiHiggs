@@ -11,77 +11,83 @@
 
 class SixB_functions{
     
-    public:
+public:
 
-        ////////////////////////////////////////////////////
-        /// gen objects functions
-        ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
+	/// gen objects functions
+	////////////////////////////////////////////////////
 
-        // copy general event-level into to ei
-        void copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc);
+	// copy general event-level into to ei
+	void copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc);
         
-        // select the gen-level six b candidates (bs, bosons)
-        void select_gen_particles(NanoAODTree& nat, EventInfo& ei);
+	// select the gen-level six b candidates (bs, bosons)
+	void select_gen_particles(NanoAODTree& nat, EventInfo& ei);
 
-        // match the selected gen b to gen jets
-        // if ensure_unique = true, ensures that a gen jet is not matched to two different partons
-        // otherwise it will match to the closest parton found
-        void match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique = true);
+	// match the selected gen b to gen jets
+	// if ensure_unique = true, ensures that a gen jet is not matched to two different partons
+	// otherwise it will match to the closest parton found
+	void match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique = true);
 
-        // match the genjets associated to the 6 gen b quarks to reco jets
-        void match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei);
+	// match the genjets associated to the 6 gen b quarks to reco jets
+	void match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei);
+	
+	void match_genjets_to_reco(std::vector<GenJet>& genjets,std::vector<Jet>& recojets);
 
-        ////////////////////////////////////////////////////
-        /// jet selection functions
-        ////////////////////////////////////////////////////
+	std::vector<int> match_local_idx(std::vector<Jet> subset,std::vector<Jet> supset);
+	////////////////////////////////////////////////////
+	/// jet selection functions
+	////////////////////////////////////////////////////
 
-        // create a vector with all jets in the event
-        std::vector<Jet> get_all_jets(NanoAODTree& nat);
+	// create a vector with all jets in the event
+	std::vector<GenJet> get_all_genjets(NanoAODTree& nat);
+	
+	// create a vector with all jets in the event
+	std::vector<Jet> get_all_jets(NanoAODTree& nat);
 
-        // create a vector with all jets in the event
-        std::vector<Jet> preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
+	// create a vector with all jets in the event
+	std::vector<Jet> preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
 
-        // select up to six jet candidates out of the input jets
-        std::vector<Jet> select_sixb_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
+	// select up to six jet candidates out of the input jets
+	std::vector<Jet> select_sixb_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
 
-        // two most b tagged jets for ttbar events
-        std::vector<Jet> select_ttbar_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
+	// two most b tagged jets for ttbar events
+	std::vector<Jet> select_ttbar_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
 
-        // pair the jets and assign them into the 6b candidates - will be stored in the EventInfo
-        void pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+	// pair the jets and assign them into the 6b candidates - will be stored in the EventInfo
+	void pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
-        ////////////////////////////////////////////////////
-        /// other jet utilities
-        ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
+	/// other jet utilities
+	////////////////////////////////////////////////////
 
-        // counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
-        int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+	// counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
+	int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
-        ////////////////////////////////////////////////////
-        /// non-jet functions
-        ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
+	/// non-jet functions
+	////////////////////////////////////////////////////
 
-        void select_leptons(NanoAODTree& nat, EventInfo& ei);
+	void select_leptons(NanoAODTree& nat, EventInfo& ei);
 
-    private:
-        // loops on targets, and assigns value to the first element of target that is found to be uninitialized
-        // returns false if none could be assigned, else return true
-        // if throw = true, throws an error if none could be assigned
-        template <typename T>
-        bool assign_to_uninit(T value, std::initializer_list<boost::optional<T>*> targets, bool do_throw = true);
+private:
+	// loops on targets, and assigns value to the first element of target that is found to be uninitialized
+	// returns false if none could be assigned, else return true
+	// if throw = true, throws an error if none could be assigned
+	template <typename T>
+	bool assign_to_uninit(T value, std::initializer_list<boost::optional<T>*> targets, bool do_throw = true);
 
-        template <typename T>
-        bool checkBit(T value, int bitpos) {T unit = 1; return value & (unit << bitpos);}
+	template <typename T>
+	bool checkBit(T value, int bitpos) {T unit = 1; return value & (unit << bitpos);}
 
-        // finds the index of the jet that was matched in nanoAOD to the input genjet
-        int find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj);
+	// finds the index of the jet that was matched in nanoAOD to the input genjet
+	int find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj);
 
-        ////////////////////////////////////////////////////
-        /// jet pairing functions
-        ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
+	/// jet pairing functions
+	////////////////////////////////////////////////////
 
-        // just pair jets as they are incoming - for debug
-        std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (std::vector<Jet> jets);
+	// just pair jets as they are incoming - for debug
+	std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (std::vector<Jet> jets);
 
 
 };

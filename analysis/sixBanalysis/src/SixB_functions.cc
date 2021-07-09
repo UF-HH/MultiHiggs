@@ -15,11 +15,13 @@ void SixB_functions::copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc
 
     ei.n_other_pv                    = *(nat.nOtherPV);
     ei.rhofastjet_all                = *(nat.fixedGridRhoFastjetAll);
+	ei.n_jet                         = *(nat.nJet);
 
     // mc-only
     if (is_mc){
         ei.n_pu       = *(nat.Pileup_nPU);
         ei.n_true_int = *(nat.Pileup_nTrueInt);
+		ei.n_genjet   = *(nat.nGenJet);
     }
 }
 
@@ -125,7 +127,7 @@ void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, boo
             auto best_match = matched_gj.at(0);
             genjet_idxs.push_back(std::get<1>(best_match));
             if (ensure_unique) // genjet already used, remove it from the input list
-               genjets.erase(genjets.begin() + std::get<2>(best_match)); 
+				genjets.erase(genjets.begin() + std::get<2>(best_match)); 
         }
         else
             genjet_idxs.push_back(-1);
@@ -226,6 +228,64 @@ int SixB_functions::find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj)
     return -1;
 }
 
+void SixB_functions::match_genjets_to_reco(std::vector<GenJet>& genjets,std::vector<Jet>& recojets)
+{
+  
+	for (unsigned int ireco = 0; ireco < recojets.size(); ireco++)
+	{
+		Jet& jet = recojets.at(ireco);
+		int gen_match = -1;
+		for (unsigned int igen = 0; igen < genjets.size(); igen++)
+		{
+			GenJet& genjet = genjets.at(igen);
+			
+			if (genjet.getIdx() == get_property(jet,Jet_genJetIdx))
+			{
+				gen_match = igen;
+				break;
+			}
+      
+		}
+		if (gen_match != -1) {
+			jet.set_genIdx(gen_match);
+			genjets.at(gen_match).set_recoIdx(ireco);
+		}
+	}
+}
+
+std::vector<int> SixB_functions::match_local_idx(std::vector<Jet> subset,std::vector<Jet> supset)
+{
+	std::vector<int> local_idxs;
+	
+	for (unsigned int i = 0; i < subset.size(); i++)
+	{
+		Jet& obj = subset.at(i);
+		int local_idx = -1;
+		for (unsigned int j = 0; j < supset.size(); j++)
+		{
+			Jet& com = supset.at(j);
+			if ( obj.getIdx() == com.getIdx() ) {
+				local_idx = j;
+				break;
+			}
+		}
+		local_idxs.push_back(local_idx);
+	}
+	return local_idxs;
+}
+
+std::vector<GenJet> SixB_functions::get_all_genjets(NanoAODTree& nat)
+{
+    std::vector<GenJet> jets;
+    jets.reserve(*(nat.nGenJet));
+    
+    for (unsigned int ij = 0; ij < *(nat.nGenJet); ++ij){
+        GenJet jet (ij, &nat);
+        jets.emplace_back(jet);
+    }
+    return jets;
+}
+
 std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
 {
     std::vector<Jet> jets;
@@ -243,6 +303,7 @@ std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vec
     // FIXME: make these selections configurable
     const double pt_min  = 20.;
     const double eta_max = 2.5;
+	const double btag_min = 0.0490;
     const int    pf_id   = 1;
     const int    pu_id   = 1;
 
@@ -252,10 +313,11 @@ std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vec
     for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
     {
         const Jet& jet = in_jets.at(ij);
-        if (jet.P4().Pt()            <= pt_min)  continue;
-        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
-        if (!checkBit(get_property(jet, Jet_jetId), pf_id)) continue;
-        if (!checkBit(get_property(jet, Jet_puId),  pu_id)) continue;
+        if (jet.get_pt()            <= pt_min)  continue;
+        if (std::abs(jet.get_eta()) >= eta_max) continue;
+		if (jet.get_btag() <= btag_min) continue;
+		if (!checkBit(jet.get_id(), pf_id)) continue;
+        if (!checkBit(jet.get_puid(),  pu_id)) continue;
 
         out_jets.emplace_back(jet);
     }
@@ -268,7 +330,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets(NanoAODTree& nat, const std::v
     std::vector<Jet> jets = in_jets;
     stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
             return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
-    ); // sort jet by deepjet score (highest to lowest)
+		); // sort jet by deepjet score (highest to lowest)
 
     int n_out = std::min<int>(jets.size(), 6);
     jets.resize(n_out);
@@ -285,7 +347,7 @@ std::vector<Jet> SixB_functions::select_ttbar_jets(NanoAODTree &nat, EventInfo &
     std::vector<Jet> jets = in_jets;
     stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
             return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
-    ); // sort jet by deepjet score (highest to lowest)
+		); // sort jet by deepjet score (highest to lowest)
 
     if (jets.size() < 2)
         return jets;

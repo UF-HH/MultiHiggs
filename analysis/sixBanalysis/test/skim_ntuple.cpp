@@ -28,6 +28,7 @@ namespace su = SkimUtils;
 
 #include "TFile.h"
 #include "TROOT.h"
+#include "TH1F.h"
 
 using namespace std;
 
@@ -246,6 +247,7 @@ int main(int argc, char** argv)
         opts["save-p4"].as<bool>(),
         map<string, bool>{
             {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
+			{"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
             {"sixb_brs",    (skim_type == ksixb)},
             {"ttbar_brs",   (skim_type == kttbar)},
             {"sig_gen_brs", (is_signal)},
@@ -255,6 +257,7 @@ int main(int argc, char** argv)
     ot.declareUserIntBranch("nfound_all",    0);
     ot.declareUserIntBranch("nfound_presel", 0);
     ot.declareUserIntBranch("nfound_sixb",   0);
+    ot.declareUserIntBranch("n_presel_jet",   0);
 
     if (save_trg_decision) {
         for (auto& tname : triggerVector)
@@ -274,12 +277,12 @@ int main(int argc, char** argv)
     }
 
     NormWeightTree nwt;
-    map<string, string> pu_data{
-        {"filename", pu_weight_file},
-        {"name_PU_w", "PUweights"},
-        {"name_PU_w_up", "PUweights_up"},
-        {"name_PU_w_do", "PUweights_down"},
-    };
+    // map<string, string> pu_data{
+    //     {"filename", pu_weight_file},
+    //     {"name_PU_w", "PUweights"},
+    //     {"name_PU_w_up", "PUweights_up"},
+    //     {"name_PU_w_do", "PUweights_down"},
+    // };
 
     // // just a test
     // nwt.add_weight("test1", {"test1_up", "test1_down"});
@@ -365,6 +368,9 @@ int main(int argc, char** argv)
         cout << "[INFO] ... running on : " << maxEvts << " events" << endl;
 
     const auto start_loop_t = chrono::high_resolution_clock::now();
+	
+	TH1F* h_n_events = new TH1F("n_events","n_events",1,0,1);
+	
     for (int iEv = 0; true; ++iEv)
     {
         if (maxEvts >= 0 && iEv >= maxEvts)
@@ -380,7 +386,7 @@ int main(int argc, char** argv)
         }
         // use the tree content to initialise weight tree in the first event
         if (iEv == 0 && !is_data){
-            nwt.init_weights(nat, pu_data); // get the syst structure from nanoAOD
+            // nwt.init_weights(nat, pu_data); // get the syst structure from nanoAOD
             su::init_gen_weights(ot, nwt);  // and forward it to the output tree
         }
 
@@ -391,10 +397,12 @@ int main(int argc, char** argv)
         EventInfo ei;
         ot.clear();
 
+		h_n_events->Fill(0);
+
         loop_timer.click("Input read");
 
         if (!is_data){
-            nwt.read_weights(nat);
+            // nwt.read_weights(nat);
             // example to fill user weights
             // auto& w1 = nwt.get_weight("test1");
             // auto& w2 = nwt.get_weight("test2");
@@ -405,8 +413,8 @@ int main(int argc, char** argv)
             // w1.syst_val = {iEv + 1., iEv - 1.};
             // w2.syst_val = {10. * iEv - 10, 10. * iEv - 20, 10. * iEv - 30};
             // w3.syst_val = {};
-            nwt.fill();
-            loop_timer.click("Norm weight read + fill");
+            // nwt.fill();
+            // loop_timer.click("Norm weight read + fill");
         }
         // ------- events can start be filtered from here (after saving all gen weights)
         
@@ -436,6 +444,14 @@ int main(int argc, char** argv)
         std::vector<Jet> all_jets    = sbf.get_all_jets (nat);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
         ot.userInt("nfound_all")    = nfound_all;
+
+		if (!is_data) {
+			std::vector<GenJet> all_genjets = sbf.get_all_genjets(nat);
+			sbf.match_genjets_to_reco(all_genjets,all_jets);
+
+			ei.genjet_list = all_genjets;
+		}
+		
         loop_timer.click("All jets copy");
 
         if (!is_data){
@@ -446,8 +462,15 @@ int main(int argc, char** argv)
         }
 
         std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);
+		std::vector<int> presel_jet_idxs = sbf.match_local_idx(presel_jets,all_jets);
+		int n_presel_jet = presel_jets.size();
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
         ot.userInt("nfound_presel") = nfound_presel;
+
+		ei.jet_list = all_jets;
+		ei.presel_jet_idxs = presel_jet_idxs;
+		ot.userInt("n_presel_jet") = n_presel_jet;
+		
         loop_timer.click("Preselection");
 
         if (skim_type == ksixb){
@@ -494,9 +517,10 @@ int main(int argc, char** argv)
     const auto end_loop_t = chrono::high_resolution_clock::now();
 
     outputFile.cd();
+	h_n_events->Write();
     ot.write();
-    if (!is_data)
-        nwt.write();
+    // if (!is_data)
+        // nwt.write();
     const auto end_prog_t = chrono::high_resolution_clock::now();
 
     // timing statistics

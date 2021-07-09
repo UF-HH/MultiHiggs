@@ -2,13 +2,13 @@
 #define EVENTINFO_H
 
 /**
-** class  : EventInfo
-** author : L. Cadamuro (UF)
-** date   : 10/01/2018
-** brief  : Struct that contains all the inforrmation elaborated during the skim
-**          (e.g., which jets are selected, whic triggers fire etc...)
-**          each object is wrapped in a boost::optional class so that it can be autmatically unitialized
-**/
+ ** class  : EventInfo
+ ** author : L. Cadamuro (UF)
+ ** date   : 10/01/2018
+ ** brief  : Struct that contains all the inforrmation elaborated during the skim
+ **          (e.g., which jets are selected, whic triggers fire etc...)
+ **          each object is wrapped in a boost::optional class so that it can be autmatically unitialized
+ **/
 
 #include <boost/optional.hpp>
 
@@ -29,7 +29,9 @@ struct EventInfo{
     boost::optional<int>    n_pu;
     boost::optional<double> n_true_int;
     boost::optional<double> rhofastjet_all;
-
+	
+    boost::optional<int>    n_jet;
+    boost::optional<int>    n_genjet;
 
     boost::optional<GenPart>  gen_X_fc; // first copy at LHE
     boost::optional<GenPart>  gen_X;
@@ -75,6 +77,10 @@ struct EventInfo{
     boost::optional<Jet> HY1_b2;
     boost::optional<Jet> HY2_b1;
     boost::optional<Jet> HY2_b2;
+
+	boost::optional< std::vector<GenJet> > genjet_list;
+	boost::optional< std::vector<Jet> > jet_list;
+	boost::optional< std::vector<int> > presel_jet_idxs;
 
     // for ttbar skims
     boost::optional<Jet> bjet1;
