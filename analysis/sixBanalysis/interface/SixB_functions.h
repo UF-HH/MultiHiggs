@@ -33,7 +33,6 @@ public:
 	
 	void match_genjets_to_reco(std::vector<GenJet>& genjets,std::vector<Jet>& recojets);
 
-	std::vector<int> match_local_idx(std::vector<Jet> subset,std::vector<Jet> supset);
 	////////////////////////////////////////////////////
 	/// jet selection functions
 	////////////////////////////////////////////////////
@@ -56,12 +55,24 @@ public:
 	// pair the jets and assign them into the 6b candidates - will be stored in the EventInfo
 	void pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
+	// get the local idx in the supset for each jet in the subset
+	std::vector<int> match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset);
+
+	// sort jets with btag bias pt ordering
+	void btag_bias_pt_sort(std::vector<Jet>& in_jets);
+
 	////////////////////////////////////////////////////
 	/// other jet utilities
 	////////////////////////////////////////////////////
 
 	// counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
 	int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+	
+	// match signal to genjets
+	void match_signal_genjets(EventInfo& ei, std::vector<GenJet>& in_jets);
+	
+	// match signal to recojets
+	void match_signal_recojets(EventInfo& ei, std::vector<Jet>& in_jets);
 
 	////////////////////////////////////////////////////
 	/// non-jet functions

@@ -15,7 +15,7 @@ void SixB_functions::copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc
 
     ei.n_other_pv                    = *(nat.nOtherPV);
     ei.rhofastjet_all                = *(nat.fixedGridRhoFastjetAll);
-	ei.n_jet                         = *(nat.nJet);
+	ei.n_total_jet                   = *(nat.nJet);
 
     // mc-only
     if (is_mc){
@@ -247,31 +247,10 @@ void SixB_functions::match_genjets_to_reco(std::vector<GenJet>& genjets,std::vec
       
 		}
 		if (gen_match != -1) {
-			jet.set_genIdx(gen_match);
+			recojets.at(ireco).set_genIdx(gen_match);
 			genjets.at(gen_match).set_recoIdx(ireco);
 		}
 	}
-}
-
-std::vector<int> SixB_functions::match_local_idx(std::vector<Jet> subset,std::vector<Jet> supset)
-{
-	std::vector<int> local_idxs;
-	
-	for (unsigned int i = 0; i < subset.size(); i++)
-	{
-		Jet& obj = subset.at(i);
-		int local_idx = -1;
-		for (unsigned int j = 0; j < supset.size(); j++)
-		{
-			Jet& com = supset.at(j);
-			if ( obj.getIdx() == com.getIdx() ) {
-				local_idx = j;
-				break;
-			}
-		}
-		local_idxs.push_back(local_idx);
-	}
-	return local_idxs;
 }
 
 std::vector<GenJet> SixB_functions::get_all_genjets(NanoAODTree& nat)
@@ -370,6 +349,55 @@ std::vector<Jet> SixB_functions::select_ttbar_jets(NanoAODTree &nat, EventInfo &
 }
 
 
+std::vector<int> SixB_functions::match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset)
+{
+	std::vector<int> local_idxs;
+	
+	for (unsigned int i = 0; i < subset.size(); i++)
+	{
+		const Jet& obj = subset.at(i);
+		int local_idx = -1;
+		for (unsigned int j = 0; j < supset.size(); j++)
+		{
+			const Jet& com = supset.at(j);
+			if ( obj.getIdx() == com.getIdx() ) {
+				local_idx = j;
+				break;
+			}
+		}
+		local_idxs.push_back(local_idx);
+	}
+	return local_idxs;
+}
+
+void SixB_functions::btag_bias_pt_sort(std::vector<Jet>& in_jets)
+{
+	std::vector<float> btag_wps = {0.0490, 0.2783, 0.7100};
+	std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
+
+	auto loose_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[btag_wps](Jet& j){ return j.get_btag()>btag_wps[0]; });
+	auto medium_it= std::find_if(in_jets.rbegin(),in_jets.rend(),[btag_wps](Jet& j){ return j.get_btag()>btag_wps[1]; });
+	auto tight_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[btag_wps](Jet& j){ return j.get_btag()>btag_wps[2]; });
+
+	auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
+
+	int tight_idx = std::distance(in_jets.begin(),tight_it.base())-1;
+	int medium_idx = std::distance(in_jets.begin(),medium_it.base())-1;
+	int loose_idx = std::distance(in_jets.begin(),loose_it.base())-1;
+
+	std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
+	auto start = in_jets.begin();
+	for (int wp_idx : wp_idxs)
+	{
+		if (wp_idx != -1 && start != in_jets.end()) {
+			auto end = in_jets.begin() + wp_idx + 1;
+			std::sort(start,end,pt_sort);
+			start = end;
+		}
+	}
+}
+
+
 void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
     // FIXME: here a switch for the pairing algo
@@ -453,6 +481,56 @@ int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
     }
 
     return nfound;
+}
+
+void SixB_functions::match_signal_genjets(EventInfo& ei, std::vector<GenJet>& in_jets)
+{
+    std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
+    if (ei.gen_HX_b1_genjet)  matched_jets[0] = ei.gen_HX_b1_genjet->getIdx();
+    if (ei.gen_HX_b2_genjet)  matched_jets[1] = ei.gen_HX_b2_genjet->getIdx();
+    if (ei.gen_HY1_b1_genjet) matched_jets[2] = ei.gen_HY1_b1_genjet->getIdx();
+    if (ei.gen_HY1_b2_genjet) matched_jets[3] = ei.gen_HY1_b2_genjet->getIdx();
+    if (ei.gen_HY2_b1_genjet) matched_jets[4] = ei.gen_HY2_b1_genjet->getIdx();
+    if (ei.gen_HY2_b2_genjet) matched_jets[5] = ei.gen_HY2_b2_genjet->getIdx();
+
+    for (GenJet& gj : in_jets)
+	{
+        int gj_idx = gj.getIdx();
+		if (gj_idx == -1) continue;
+		
+		for (int id = 0; id < 6; id++)
+		{
+			if (matched_jets[id] == gj_idx)
+			{
+				gj.set_signalId(id);
+			}
+		}
+	}
+}
+
+void SixB_functions::match_signal_recojets(EventInfo& ei,std::vector<Jet>& in_jets)
+{
+    std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
+    if (ei.gen_HX_b1_recojet)  matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
+    if (ei.gen_HX_b2_recojet)  matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
+    if (ei.gen_HY1_b1_recojet) matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
+    if (ei.gen_HY1_b2_recojet) matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
+    if (ei.gen_HY2_b1_recojet) matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
+    if (ei.gen_HY2_b2_recojet) matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
+
+    for (Jet& j : in_jets)
+	{
+        int j_idx = j.getIdx();
+		if (j_idx == -1) continue;
+		
+		for (int id = 0; id < 6; id++)
+		{
+			if (matched_jets[id] == j_idx)
+			{
+				j.set_signalId(id);
+			}
+		}
+	}
 }
 
 void SixB_functions::select_leptons(NanoAODTree &nat, EventInfo &ei)

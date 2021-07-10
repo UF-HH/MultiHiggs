@@ -151,11 +151,12 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
         if (is_enabled("gen_brs")) tree_->Branch("bjet2_hadflav", &bjet2_hadflav);
     }
 
-	tree_->Branch("n_jet",&n_jet);
+	tree_->Branch("n_total_jet",&n_total_jet);
 	
 	if (is_enabled("jet_coll"))
 	{
 		std::cout << "[INFO] OutputTree : enabling jet collection branches" << std::endl;
+		tree_->Branch("n_jet",         &n_jet);
 		tree_->Branch("jet_E",         &jet_E);	    
 		tree_->Branch("jet_m",         &jet_m);		
 		tree_->Branch("jet_pt",        &jet_pt);		
@@ -169,7 +170,6 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 		tree_->Branch("jet_qgl",       &jet_qgl);
 		tree_->Branch("jet_id",        &jet_id);
 		tree_->Branch("jet_puid",      &jet_puid);
-		tree_->Branch("presel_jet_idxs",&presel_jet_idxs);
 	}
 
     if (is_enabled("gen_brs"))

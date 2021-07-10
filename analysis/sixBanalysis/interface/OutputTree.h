@@ -95,6 +95,7 @@ public:
 	double rhofastjet_all;
 
 	int n_genjet;
+	int n_total_jet;
 	int n_jet;
 	
 	std::vector<float> genjet_E;	    
@@ -120,7 +121,6 @@ public:
 	std::vector<float> jet_qgl;
 	std::vector<int>   jet_id;
 	std::vector<int>   jet_puid;
-	std::vector<int> presel_jet_idxs;
 
 	DECLARE_m_pt_eta_phi_p4(gen_X_fc);
 	DECLARE_m_pt_eta_phi_p4(gen_X);

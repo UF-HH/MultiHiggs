@@ -257,7 +257,6 @@ int main(int argc, char** argv)
     ot.declareUserIntBranch("nfound_all",    0);
     ot.declareUserIntBranch("nfound_presel", 0);
     ot.declareUserIntBranch("nfound_sixb",   0);
-    ot.declareUserIntBranch("n_presel_jet",   0);
 
     if (save_trg_decision) {
         for (auto& tname : triggerVector)
@@ -444,13 +443,6 @@ int main(int argc, char** argv)
         std::vector<Jet> all_jets    = sbf.get_all_jets (nat);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
         ot.userInt("nfound_all")    = nfound_all;
-
-		if (!is_data) {
-			std::vector<GenJet> all_genjets = sbf.get_all_genjets(nat);
-			sbf.match_genjets_to_reco(all_genjets,all_jets);
-
-			ei.genjet_list = all_genjets;
-		}
 		
         loop_timer.click("All jets copy");
 
@@ -462,21 +454,32 @@ int main(int argc, char** argv)
         }
 
         std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);
+		sbf.btag_bias_pt_sort(presel_jets);
 		std::vector<int> presel_jet_idxs = sbf.match_local_idx(presel_jets,all_jets);
 		int n_presel_jet = presel_jets.size();
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
         ot.userInt("nfound_presel") = nfound_presel;
+        ei.n_jet = n_presel_jet;
+		
 
-		ei.jet_list = all_jets;
-		ei.presel_jet_idxs = presel_jet_idxs;
-		ot.userInt("n_presel_jet") = n_presel_jet;
+		if (!is_data) {
+			std::vector<GenJet> all_genjets = sbf.get_all_genjets(nat);
+			sbf.match_genjets_to_reco(all_genjets,presel_jets);
+
+			if (skim_type == ksixb) {
+				sbf.match_signal_genjets(ei,all_genjets);
+			}
+			ei.genjet_list = all_genjets;
+		}
 		
         loop_timer.click("Preselection");
 
         if (skim_type == ksixb){
             if (presel_jets.size() < 6)
                 continue;
-
+			
+			sbf.match_signal_recojets(ei,presel_jets);
+			
             std::vector<Jet> sixb_jets = sbf.select_sixb_jets(nat, presel_jets);
             int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
             ot.userInt("nfound_sixb")   = nfound_sixb;
@@ -486,6 +489,7 @@ int main(int argc, char** argv)
             //     continue;
             // sbf.pair_jets(nat, ei, sixb_jets);
         }
+		ei.jet_list = presel_jets;
 
         if (skim_type == kttbar){
             if (presel_jets.size() < 2)

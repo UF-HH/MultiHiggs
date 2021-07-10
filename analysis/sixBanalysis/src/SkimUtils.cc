@@ -93,6 +93,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     if(ei.n_true_int)     ot.n_true_int      = *ei.n_true_int;
     if(ei.rhofastjet_all) ot.rhofastjet_all  = *ei.rhofastjet_all;
 	if(ei.n_jet)          ot.n_jet           = *ei.n_jet;
+	if(ei.n_total_jet)    ot.n_total_jet     = *ei.n_total_jet;
 	if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
 
 	if (ei.jet_list) {
@@ -111,7 +112,6 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 			ot.jet_id.push_back( jet.get_id() );
 			ot.jet_puid.push_back( jet.get_puid() );
 		}
-		ot.presel_jet_idxs = ei.presel_jet_idxs.get();
 	}
 
 	if (ei.genjet_list) {
