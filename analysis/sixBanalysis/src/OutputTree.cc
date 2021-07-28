@@ -165,6 +165,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 		tree_->Branch("jet_partonFlav",&jet_partonFlav);
 		tree_->Branch("jet_hadronFlav",&jet_hadronFlav);
 		tree_->Branch("jet_signalId",  &jet_signalId);
+		tree_->Branch("jet_higgsId",   &jet_higgsId);
 		tree_->Branch("jet_genIdx",    &jet_genIdx);
 		tree_->Branch("jet_btag",      &jet_btag);
 		tree_->Branch("jet_qgl",       &jet_qgl);
@@ -220,6 +221,7 @@ void OutputTree::clear()
 
 	n_jet = 0;
 	n_genjet = 0;
+	n_higgs = 0;
 
 	genjet_E.clear();	    
 	genjet_m.clear();		
@@ -239,11 +241,18 @@ void OutputTree::clear()
 	jet_partonFlav.clear();
 	jet_hadronFlav.clear();
 	jet_signalId.clear();
+	jet_higgsId.clear();
 	jet_genIdx.clear();
 	jet_btag.clear();
 	jet_qgl.clear();
 	jet_id.clear();
 	jet_puid.clear();
+	
+	higgs_E.clear();	    
+	higgs_m.clear();		
+	higgs_pt.clear();		
+	higgs_eta.clear();		
+	higgs_phi.clear();
 
     CLEAR_m_pt_eta_phi_p4(gen_X_fc);
     CLEAR_m_pt_eta_phi_p4(gen_X);

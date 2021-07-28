@@ -502,6 +502,7 @@ int main(int argc, char** argv)
 			std::vector<p4_t> all_higgs = sbf.get_all_higgs_pairs(presel_jets);
 			ei.n_higgs = all_higgs.size();
 			ei.higgs_list = all_higgs;
+			ei.jet_list = presel_jets;
 			
             std::vector<Jet> sixb_jets = sbf.select_sixb_jets(nat, presel_jets);
             int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
