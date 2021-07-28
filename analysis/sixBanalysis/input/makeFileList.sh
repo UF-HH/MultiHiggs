@@ -2,6 +2,11 @@ XRDSERVER="root://cmsxrootd.fnal.gov/"
 SAMPLENAME=$1
 OUTNAME=$2
 
+if [ -d "$OUTNAME" ] ; then
+    PROCESS=$(echo $SAMPLENAME | tr "/" " " | awk '{print $1}')
+    OUTNAME=$OUTNAME/${PROCESS}.txt
+fi
+
 if [ -z "$SAMPLENAME" ] ; then
     echo "... please provide a dataset name"
     echo "... usage: source makeFileList.sh DATASETNAME OUTPUTNAME"
@@ -18,7 +23,7 @@ echo "... running on $SAMPLENAME"
 echo "... saving output to $OUTNAME"
 echo "... prepending server name $XRDSERVER"
 
-dasgoclient --query="file dataset=$SAMPLENAME" --unique > $OUTNAME
+dasgoclient --query="file dataset=$SAMPLENAME" --unique >> $OUTNAME
 sed -i -e "s#^#$XRDSERVER#" $OUTNAME
 
 NFILES=`cat $OUTNAME | grep .root | wc -l`

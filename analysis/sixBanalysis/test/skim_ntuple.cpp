@@ -134,6 +134,7 @@ int main(int argc, char** argv)
     {
         ksixb,
         kttbar,
+		kcr,
         knull
     };
 
@@ -142,6 +143,7 @@ int main(int argc, char** argv)
     const SkimTypes skim_type = (
         skim_type_name == "sixb"  ? ksixb  :
         skim_type_name == "ttbar" ? kttbar :
+		skim_type_name == "cr"    ? kcr    :
                                     knull
     );
     if (skim_type == knull)
@@ -310,6 +312,8 @@ int main(int argc, char** argv)
     const int nMinBtag = config.readIntOpt("configurations::nMinBtag");
     const int bTagWP   = config.readIntOpt("configurations::bTagWP");
 
+	sbf.set_btag_WPs(config.readDoubleListOpt("configurations::bTagWPDef"));
+
     cout << "[INFO] ... events must contain >= " << nMinBtag << " jets passing WP (0:L, 1:M, 2:T) : " << bTagWP << endl;
     cout << "[INFO] ... the WPs are: (L/M/T) : " << btag_WPs.at(0) << "/" << btag_WPs.at(1) << "/" << btag_WPs.at(2) << endl;
 
@@ -319,6 +323,17 @@ int main(int argc, char** argv)
         btsf.init_reader("DeepJet", btsffile);
         btsf.set_WPs(btag_WPs.at(0), btag_WPs.at(1), btag_WPs.at(2));
     }
+
+	// -----------
+
+	const bool applyJetCuts = config.readBoolOpt("configurations::applyJetCuts");
+    std::vector<double> pt_cuts; 
+	std::vector<int> btagWP_cuts;
+
+	if (applyJetCuts) {
+		pt_cuts = config.readDoubleListOpt("configurations::pt_cuts");	  
+		btagWP_cuts = config.readIntListOpt("configurations::btagWP_cuts");
+	}
 
     // -----------
 
@@ -459,9 +474,9 @@ int main(int argc, char** argv)
 		int n_presel_jet = presel_jets.size();
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
         ot.userInt("nfound_presel") = nfound_presel;
+		sbf.match_signal_recojets(ei,presel_jets);
         ei.n_jet = n_presel_jet;
 		
-
 		if (!is_data) {
 			std::vector<GenJet> all_genjets = sbf.get_all_genjets(nat);
 			sbf.match_genjets_to_reco(all_genjets,presel_jets);
@@ -472,13 +487,17 @@ int main(int argc, char** argv)
 			ei.genjet_list = all_genjets;
 		}
 		
+		ei.jet_list = presel_jets;
+		
         loop_timer.click("Preselection");
+
 
         if (skim_type == ksixb){
             if (presel_jets.size() < 6)
                 continue;
-			
-			sbf.match_signal_recojets(ei,presel_jets);
+
+			if ( applyJetCuts && !sbf.pass_jet_cut(pt_cuts,btagWP_cuts,presel_jets) )
+				continue;
 			
             std::vector<Jet> sixb_jets = sbf.select_sixb_jets(nat, presel_jets);
             int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
@@ -489,7 +508,6 @@ int main(int argc, char** argv)
             //     continue;
             // sbf.pair_jets(nat, ei, sixb_jets);
         }
-		ei.jet_list = presel_jets;
 
         if (skim_type == kttbar){
             if (presel_jets.size() < 2)

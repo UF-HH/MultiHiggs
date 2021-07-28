@@ -282,7 +282,7 @@ std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vec
     // FIXME: make these selections configurable
     const double pt_min  = 20.;
     const double eta_max = 2.5;
-	const double btag_min = 0.0490;
+	const double btag_min = btag_WPs.at(0);
     const int    pf_id   = 1;
     const int    pu_id   = 1;
 
@@ -294,7 +294,7 @@ std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vec
         const Jet& jet = in_jets.at(ij);
         if (jet.get_pt()            <= pt_min)  continue;
         if (std::abs(jet.get_eta()) >= eta_max) continue;
-		if (jet.get_btag() <= btag_min) continue;
+		// if (jet.get_btag() <= btag_min) continue;
 		if (!checkBit(jet.get_id(), pf_id)) continue;
         if (!checkBit(jet.get_puid(),  pu_id)) continue;
 
@@ -372,12 +372,11 @@ std::vector<int> SixB_functions::match_local_idx(std::vector<Jet>& subset,std::v
 
 void SixB_functions::btag_bias_pt_sort(std::vector<Jet>& in_jets)
 {
-	std::vector<float> btag_wps = {0.0490, 0.2783, 0.7100};
 	std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
 
-	auto loose_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[btag_wps](Jet& j){ return j.get_btag()>btag_wps[0]; });
-	auto medium_it= std::find_if(in_jets.rbegin(),in_jets.rend(),[btag_wps](Jet& j){ return j.get_btag()>btag_wps[1]; });
-	auto tight_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[btag_wps](Jet& j){ return j.get_btag()>btag_wps[2]; });
+	auto loose_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
+	auto medium_it= std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
+	auto tight_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
 
 	auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
 
@@ -395,6 +394,27 @@ void SixB_functions::btag_bias_pt_sort(std::vector<Jet>& in_jets)
 			start = end;
 		}
 	}
+}
+
+bool SixB_functions::pass_jet_cut(const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets)
+{
+	std::vector<int> ijet_passed;
+	for (unsigned int icut = 0; icut < pt_cuts.size(); icut++)
+	{
+		bool pass = false;
+		for (const Jet& jet : in_jets)
+		{
+			if (std::count(ijet_passed.begin(),ijet_passed.end(),jet.getIdx())) continue;
+			pass = (jet.get_pt() > pt_cuts[icut] && jet.get_btag() > btag_WPs[btagWP_cuts[icut]]);
+
+			if (pass) {
+				ijet_passed.push_back(jet.getIdx());
+				break;
+			}
+		}
+		if (!pass) return false;
+	}
+	return true;
 }
 
 

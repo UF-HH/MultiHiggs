@@ -61,6 +61,9 @@ public:
 	// sort jets with btag bias pt ordering
 	void btag_bias_pt_sort(std::vector<Jet>& in_jets);
 
+	// pass event if jet collection passes input pt and btag cuts
+	bool pass_jet_cut(const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets);
+
 	////////////////////////////////////////////////////
 	/// other jet utilities
 	////////////////////////////////////////////////////
@@ -80,7 +83,11 @@ public:
 
 	void select_leptons(NanoAODTree& nat, EventInfo& ei);
 
+	void set_btag_WPs(std::vector<double> btag_wps) { btag_WPs = btag_wps; }
 private:
+
+	std::vector<double> btag_WPs;
+	
 	// loops on targets, and assigns value to the first element of target that is found to be uninitialized
 	// returns false if none could be assigned, else return true
 	// if throw = true, throws an error if none could be assigned
