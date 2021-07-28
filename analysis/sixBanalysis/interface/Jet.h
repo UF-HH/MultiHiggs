@@ -30,8 +30,12 @@ public:
 	int signalId = -1;
 	void set_signalId(int id) { signalId = id; }
 
+	int higgsId = -1;
+	void set_higgsId(int id) { higgsId = id; }
+	
 	int genIdx = -1;
 	void set_genIdx(int idx) { genIdx = idx; }
+
 	
 	float get_E() const        { return this->P4().E(); }
 	float get_m() const        { return this->P4().M(); }
@@ -41,6 +45,7 @@ public:
 	int get_partonFlav() const { return get_property ((*this), Jet_partonFlavour); }
 	int get_hadronFlav() const { return get_property ((*this), Jet_hadronFlavour); }
 	int get_signalId() const   { return signalId; }
+	int get_higgsId() const    { return higgsId; }
 	int get_genIdx() const     { return genIdx; }
 	float get_btag() const     { return get_property ((*this), Jet_btagDeepFlavB); }
 	float get_qgl() const      { return get_property ((*this), Jet_qgl); }

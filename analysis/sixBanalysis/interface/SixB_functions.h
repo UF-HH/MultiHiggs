@@ -43,7 +43,7 @@ public:
 	// create a vector with all jets in the event
 	std::vector<Jet> get_all_jets(NanoAODTree& nat);
 
-	// create a vector with all jets in the event
+	// create a vector with all preselected jets in the event
 	std::vector<Jet> preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
 
 	// select up to six jet candidates out of the input jets
@@ -63,6 +63,9 @@ public:
 
 	// pass event if jet collection passes input pt and btag cuts
 	bool pass_jet_cut(const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets);
+
+	// create vector of all higgs resonances 
+	std::vector<p4_t> get_all_higgs_pairs(std::vector<Jet>& in_jets);
 
 	////////////////////////////////////////////////////
 	/// other jet utilities

@@ -95,6 +95,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 	if(ei.n_jet)          ot.n_jet           = *ei.n_jet;
 	if(ei.n_total_jet)    ot.n_total_jet     = *ei.n_total_jet;
 	if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
+	if(ei.n_higgs)        ot.n_higgs         = *ei.n_higgs;
 
 	if (ei.jet_list) {
 		for (Jet& jet : ei.jet_list.get()) {
@@ -106,11 +107,22 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 			ot.jet_partonFlav.push_back( jet.get_partonFlav() );
 			ot.jet_hadronFlav.push_back( jet.get_hadronFlav() );
 			ot.jet_signalId.push_back( jet.get_signalId() );
+			ot.jet_higgsId.push_back( jet.get_higgsId() );
 			ot.jet_genIdx.push_back( jet.get_genIdx() );
 			ot.jet_btag.push_back( jet.get_btag() );
 			ot.jet_qgl.push_back( jet.get_qgl() );
 			ot.jet_id.push_back( jet.get_id() );
 			ot.jet_puid.push_back( jet.get_puid() );
+		}
+	}
+
+	if (ei.higgs_list) {
+		for (p4_t& higgs : ei.higgs_list.get()) {
+			ot.higgs_E.push_back( higgs.E() );
+			ot.higgs_m.push_back( higgs.M() );
+			ot.higgs_pt.push_back( higgs.Pt() );
+			ot.higgs_eta.push_back( higgs.Eta() );
+			ot.higgs_phi.push_back( higgs.Phi() );
 		}
 	}
 

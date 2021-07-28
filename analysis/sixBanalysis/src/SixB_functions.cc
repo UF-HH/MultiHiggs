@@ -294,7 +294,7 @@ std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vec
         const Jet& jet = in_jets.at(ij);
         if (jet.get_pt()            <= pt_min)  continue;
         if (std::abs(jet.get_eta()) >= eta_max) continue;
-		// if (jet.get_btag() <= btag_min) continue;
+		if (jet.get_btag() <= btag_min) continue;
 		if (!checkBit(jet.get_id(), pf_id)) continue;
         if (!checkBit(jet.get_puid(),  pu_id)) continue;
 
@@ -415,6 +415,40 @@ bool SixB_functions::pass_jet_cut(const std::vector<double> pt_cuts,const std::v
 		if (!pass) return false;
 	}
 	return true;
+}
+
+std::vector<p4_t> SixB_functions::get_all_higgs_pairs(std::vector<Jet>& in_jets)
+{
+	std::vector<p4_t> higgs_list;
+	
+	for (unsigned int i = 0; i < in_jets.size(); i++)
+	{
+		if (higgs_list.size() == 3) break;
+		
+		Jet& j1 = in_jets[i];
+		if (j1.get_higgsId() != -1) continue;
+
+		std::vector<std::pair<int,p4_t>> dijet_pairs;
+		for (unsigned int k = i+1; k < in_jets.size(); k++)
+		{
+			Jet& j2 = in_jets[k];
+			if (j2.get_higgsId() != -1) continue;
+			
+			p4_t dijet_p4 = j1.P4Regressed()+j2.P4Regressed();
+			dijet_pairs.push_back( std::make_pair(k,dijet_p4) );
+		}
+		if (dijet_pairs.size() == 0) continue;
+		std::sort(dijet_pairs.begin(),dijet_pairs.end(),[](auto di1,auto di2){ return fabs(di1.second.M()-125)<fabs(di2.second.M()-125); });
+		
+		int pair_idx = dijet_pairs[0].first;
+		p4_t higgs_p4 = dijet_pairs[0].second;
+		Jet& j2 = in_jets[pair_idx];
+				  
+		j1.set_higgsId( higgs_list.size() );
+		j2.set_higgsId( higgs_list.size() );
+		higgs_list.push_back(higgs_p4);
+	}
+	return higgs_list;
 }
 
 

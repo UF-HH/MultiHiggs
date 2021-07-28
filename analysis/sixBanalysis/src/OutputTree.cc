@@ -170,6 +170,13 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 		tree_->Branch("jet_qgl",       &jet_qgl);
 		tree_->Branch("jet_id",        &jet_id);
 		tree_->Branch("jet_puid",      &jet_puid);
+
+		tree_->Branch("n_higgs",       &n_higgs);
+		tree_->Branch("higgs_E",       &higgs_E);	    
+		tree_->Branch("higgs_m",       &higgs_m);		
+		tree_->Branch("higgs_pt",      &higgs_pt);		
+		tree_->Branch("higgs_eta",     &higgs_eta);		
+		tree_->Branch("higgs_phi",     &higgs_phi);
 	}
 
     if (is_enabled("gen_brs"))
