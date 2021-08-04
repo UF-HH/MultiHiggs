@@ -16,9 +16,15 @@ class NormSample:
     def __init__(self, name, treename):
         self.name        = name
         self.treename    = treename
-        self.verb        = 2
         self.use_cache   = True 
         self.cache_dir   = 'norm_cache' 
+
+        # verbosity
+        # 0: no printout at all
+        # 1: only essential printouts (start/stop/etc)
+        # 2: logging of actions (histos booked, etc)
+        # 3: debug
+        self.verb        = 1
 
     def build_dataframe(self, files):
         """ build the dataframe from a list of file names """
@@ -58,14 +64,14 @@ class NormSample:
             normws = tuple(sorted([x for x in wlist if x in normweights])) # only norm weights
             if normws not in self.normwdef: # this is a new set of norm weight products
                 normwname = 'NORMW_{}'.format(len(self.normwdef))
-                if self.verb >= 2: print("[DEBUG] NormSample", self.name, "created new norm weight", normwname, '->', normws) 
+                if self.verb >= 3: print("[DEBUG] NormSample", self.name, "created new norm weight", normwname, '->', normws) 
                 self.normwdef[normws] = normwname
             self.normwremap[wname] = self.normwdef[normws]
 
         # define these weights as new columns in the rdf
         for wlist, wname in self.normwdef.items():
             self.rdf = self.rdf.Define(wname, '*'.join(wlist))
-            if self.verb >= 2: print("[DEBUG] NormSample", self.name, "created weight", wname, '->', wlist)
+            if self.verb >= 3: print("[DEBUG] NormSample", self.name, "created weight", wname, '->', wlist)
 
     def build_norms(self):
         if self.verb >= 1:  print("[INFO] NormSample", self.name, ": booking sum of weights.")
@@ -77,7 +83,7 @@ class NormSample:
             self.cache = self.get_cache()
             cached = self.cache.keys()
             if self.verb >= 1:  print("[INFO] NormSample", self.name, ": found", len(cached), 'cached weights')
-            if self.verb >= 2:  print("[DEBUG] NormSample", self.name, ": cached weights", cached)
+            if self.verb >= 3:  print("[DEBUG] NormSample", self.name, ": cached weights", cached)
 
         for wlist, wname in self.normwdef.items():
             if wlist not in cached:
@@ -88,10 +94,10 @@ class NormSample:
         self.norms = {}
         for wlist, wname in self.normwdef.items():
             if wlist in cached:
-                if self.verb >= 2:  print("[DEBUG] NormSample", self.name, 'weight', wname, '-->', wlist, 'read from cache')
+                if self.verb >= 3:  print("[DEBUG] NormSample", self.name, 'weight', wname, '-->', wlist, 'read from cache')
                 self.norms[wname] = self.cache[wlist]
             else:
-                if self.verb >= 2:  print("[DEBUG] NormSample", self.name, 'weight', wname, '-->', wlist, 'computed')
+                if self.verb >= 3:  print("[DEBUG] NormSample", self.name, 'weight', wname, '-->', wlist, 'computed')
                 self.norms[wname] = self.bookednorms[wname].GetValue()
 
     def get_norm(self, wname):
@@ -100,9 +106,9 @@ class NormSample:
         return self.norms[thisname]
 
     def cache_file_name(self):
-        if self.verb >= 2 : print('[DEBUG] NormSample:', self.name, 'file list abs path:', self.filelistname)
+        if self.verb >= 3 : print('[DEBUG] NormSample:', self.name, 'file list abs path:', self.filelistname)
         cachename = hashlib.md5(self.filelistname.encode('utf-8')).hexdigest() + '.pkl'
-        if self.verb >= 2 : print('[DEBUG] NormSample:', self.name, 'cache name:', cachename)
+        if self.verb >= 3 : print('[DEBUG] NormSample:', self.name, 'cache name:', cachename)
         return cachename
 
     def cache_full_name(self):
@@ -112,11 +118,11 @@ class NormSample:
 
         """ get the cache dictionary, None if could not open """
         cachename = self.cache_full_name()
-        if self.verb >= 2 : print('[DEBUG] NormSample:', self.name, 'cache is in:', cachename)
+        if self.verb >= 3 : print('[DEBUG] NormSample:', self.name, 'cache is in:', cachename)
         try:
             f = open(cachename, 'rb')
         except IOError:
-            if self.verb >= 2 : print('[DEBUG] NormSample:', self.name, 'could not open cache (IOError)')
+            if self.verb >= 3 : print('[DEBUG] NormSample:', self.name, 'could not open cache (IOError)')
             return None
 
         data = pickle.load(f)
@@ -133,7 +139,7 @@ class NormSample:
     def cache_exists(self):
         cn = self.cache_full_name()
         exists = os.path.isfile(cn)
-        if self.verb >= 2 : print('[DEBUG] NormSample:', self.name, 'cache exists?', exists)
+        if self.verb >= 3 : print('[DEBUG] NormSample:', self.name, 'cache exists?', exists)
         return exists
 
     def cache_is_recent(self):
@@ -146,12 +152,12 @@ class NormSample:
             is_recent = True
         else:
             is_recent = False
-        if self.verb >= 2 : print('[DEBUG] NormSample:', self.name, 'cache is recent?', is_recent)
+        if self.verb >= 3 : print('[DEBUG] NormSample:', self.name, 'cache is recent?', is_recent)
         return is_recent
 
     def merge_caches(self, cache1, cache2):
         """ merge the caches. for common keys, verify compatibility """
-        if self.verb >= 2 : print('[DEBUG] NormSample:', self.name, 'merging caches')
+        if self.verb >= 3 : print('[DEBUG] NormSample:', self.name, 'merging caches')
 
         cout = {}
 
@@ -192,10 +198,10 @@ class NormSample:
 
         try:
             self.cache
-            if self.verb >= 2 : print('[DEBUG] NormSample:', self.name, 'will update existing cache')
+            if self.verb >= 1 : print('[INFO] NormSample:', self.name, 'will update existing cache')
             out_cache = self.merge_caches(self.cache, reidx_norms)
         except AttributeError:
-            if self.verb >= 2 : print('[DEBUG] NormSample:', self.name, 'will create a new cache file')
+            if self.verb >= 1 : print('[INFO] NormSample:', self.name, 'will create a new cache file')
             out_cache = reidx_norms
 
         odata = {}
