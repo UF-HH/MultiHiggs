@@ -7,11 +7,13 @@ source scripts/setup.sh
 output="output-tree.root"
 
 # --input input/Run2_UL/2018/QCD_Pt_600to800_TuneCP5_13TeV_pythia8.txt \
+
+# input="input/Run2_UL/2018/JetHT_Run2018C.txt --is-data "
+input="input/PrivateMC_2021/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt --is-signal"
     
 make exe -j && \
     bin/skim_ntuple.exe \
-	--input input/PrivateMC_2021/NMSSM_XYH_YToHH_6b_MX_700_MY_400-v2.txt \
-	--is-signal \
-	--cfg config/skim_ntuple_2018.cfg \
+	--input $input\
+	--cfg config/skim_ntuple_2018_cr.cfg \
 	--output $output \
 	$@
