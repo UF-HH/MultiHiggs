@@ -18,6 +18,7 @@
 #include "Electron.h"
 #include "GenPart.h"
 #include "GenJet.h"
+#include "EventShapeCalculator.h"
 
 struct EventInfo{
 
@@ -84,6 +85,8 @@ struct EventInfo{
 	boost::optional< std::vector<Jet> > jet_list;
 	boost::optional< std::vector<int> > presel_jet_idxs;
 	boost::optional< std::vector<p4_t> > higgs_list;
+
+	boost::optional<EventShapes> event_shapes;
 
     // for ttbar skims
     boost::optional<Jet> bjet1;

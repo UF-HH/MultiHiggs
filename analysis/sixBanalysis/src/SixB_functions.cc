@@ -451,6 +451,20 @@ std::vector<p4_t> SixB_functions::get_all_higgs_pairs(std::vector<Jet>& in_jets)
 	return higgs_list;
 }
 
+bool SixB_functions::pass_higgs_cr(const std::vector<p4_t>& in_dijets)
+{
+	//
+	
+	float higgs_mass = 125;
+	float mass_sideband = 30;
+	
+	for (p4_t dijet : in_dijets)
+		if ( fabs(dijet.M() - higgs_mass) <= mass_sideband )
+			return false;
+	
+	return true;
+}
+
 
 void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {

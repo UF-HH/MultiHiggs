@@ -23,6 +23,7 @@ namespace su = SkimUtils;
 #include "SixB_functions.h"
 #include "JetTools.h"
 #include "BtagSF.h"
+#include "EventShapeCalculator.h"
 
 #include "Timer.h"
 
@@ -134,16 +135,18 @@ int main(int argc, char** argv)
     {
         ksixb,
         kttbar,
-		kcr,
+		kshapecr,
+		khiggscr,
         knull
     };
 
     string skim_type_name = config.readStringOpt("configurations::skimType");
     cout << "[INFO] ... skim type " << skim_type_name << endl;
     const SkimTypes skim_type = (
-        skim_type_name == "sixb"  ? ksixb  :
-        skim_type_name == "ttbar" ? kttbar :
-		skim_type_name == "cr"    ? kcr    :
+        skim_type_name == "sixb"    ? ksixb    :
+        skim_type_name == "ttbar"   ? kttbar   :
+		skim_type_name == "shapecr" ? kshapecr :
+		skim_type_name == "higgscr" ? khiggscr :
                                     knull
     );
     if (skim_type == knull)
@@ -250,6 +253,7 @@ int main(int argc, char** argv)
         map<string, bool>{
             {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
 			{"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
+			{"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
             {"sixb_brs",    (skim_type == ksixb)},
             {"ttbar_brs",   (skim_type == kttbar)},
             {"sig_gen_brs", (is_signal)},
@@ -475,7 +479,10 @@ int main(int argc, char** argv)
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
         ot.userInt("nfound_presel") = nfound_presel;
 		sbf.match_signal_recojets(ei,presel_jets);
-        ei.n_jet = n_presel_jet;
+		
+		std::vector<p4_t> all_higgs = sbf.get_all_higgs_pairs(presel_jets);
+		ei.n_higgs = all_higgs.size();
+		ei.higgs_list = all_higgs;
 		
 		if (!is_data) {
 			std::vector<GenJet> all_genjets = sbf.get_all_genjets(nat);
@@ -487,10 +494,15 @@ int main(int argc, char** argv)
 			ei.genjet_list = all_genjets;
 		}
 		
+		EventShapeCalculator esc(presel_jets);
+		EventShapes event_shapes = esc.get_sphericity_shapes();
+		ei.event_shapes = event_shapes;
+		
 		ei.jet_list = presel_jets;
+        ei.n_jet = n_presel_jet;
+
 		
         loop_timer.click("Preselection");
-
 
         if (skim_type == ksixb){
             if (presel_jets.size() < 6)
@@ -498,20 +510,24 @@ int main(int argc, char** argv)
 
 			if ( applyJetCuts && !sbf.pass_jet_cut(pt_cuts,btagWP_cuts,presel_jets) )
 				continue;
-
-			std::vector<p4_t> all_higgs = sbf.get_all_higgs_pairs(presel_jets);
-			ei.n_higgs = all_higgs.size();
-			ei.higgs_list = all_higgs;
-			ei.jet_list = presel_jets;
 			
             std::vector<Jet> sixb_jets = sbf.select_sixb_jets(nat, presel_jets);
             int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
             ot.userInt("nfound_sixb")   = nfound_sixb;
             loop_timer.click("Six b selection");
+        }
 
-            // if (sixb_jets.size() < 6)
-            //     continue;
-            // sbf.pair_jets(nat, ei, sixb_jets);
+        if (skim_type == khiggscr){
+            if (presel_jets.size() < 6)
+                continue;
+
+			if ( applyJetCuts && !sbf.pass_jet_cut(pt_cuts,btagWP_cuts,presel_jets) )
+				continue;
+
+			if ( !sbf.pass_higgs_cr(all_higgs) )
+				continue;
+			
+            loop_timer.click("Higgs CR selection");
         }
 
         if (skim_type == kttbar){

@@ -162,8 +162,8 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 		tree_->Branch("jet_pt",        &jet_pt);		
 		tree_->Branch("jet_eta",       &jet_eta);		
 		tree_->Branch("jet_phi",       &jet_phi);		
-		tree_->Branch("jet_partonFlav",&jet_partonFlav);
-		tree_->Branch("jet_hadronFlav",&jet_hadronFlav);
+		// tree_->Branch("jet_partonFlav",&jet_partonFlav);
+		// tree_->Branch("jet_hadronFlav",&jet_hadronFlav);
 		tree_->Branch("jet_signalId",  &jet_signalId);
 		tree_->Branch("jet_higgsId",   &jet_higgsId);
 		tree_->Branch("jet_genIdx",    &jet_genIdx);
@@ -202,6 +202,14 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 			tree_->Branch("genjet_recoIdx",   &genjet_recoIdx);
 		}
     }
+
+	if (is_enabled("shape_brs"))
+	{
+        std::cout << "[INFO] OutputTree : enabling shape-only related branches" << std::endl;
+		tree_->Branch("sphericity",  &sphericity);
+		tree_->Branch("sphericity_t",&sphericity_t);
+		tree_->Branch("aplanarity",  &aplanarity);
+	}
 
 	
 

@@ -67,6 +67,9 @@ public:
 	// create vector of all higgs resonances 
 	std::vector<p4_t> get_all_higgs_pairs(std::vector<Jet>& in_jets);
 
+	// passes event if all dijets mass is greater than 30 from higgs mass
+	bool pass_higgs_cr(const std::vector<p4_t>& in_dijets);
+
 	////////////////////////////////////////////////////
 	/// other jet utilities
 	////////////////////////////////////////////////////

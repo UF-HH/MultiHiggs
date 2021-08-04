@@ -98,6 +98,10 @@ public:
 	int n_total_jet;
 	int n_jet;
 	int n_higgs;
+
+	float sphericity;
+	float sphericity_t;
+	float aplanarity;
 	
 	std::vector<float> genjet_E;	    
 	std::vector<float> genjet_m;		

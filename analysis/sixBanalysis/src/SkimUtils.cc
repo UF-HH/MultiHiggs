@@ -101,11 +101,11 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 		for (Jet& jet : ei.jet_list.get()) {
 			ot.jet_E.push_back( jet.get_E() );	    
 			ot.jet_m.push_back( jet.get_m() );		
-			ot.jet_pt.push_back( jet.get_pt() );		
+			ot.jet_pt.push_back( jet.get_pt() );
 			ot.jet_eta.push_back( jet.get_eta() );		
 			ot.jet_phi.push_back( jet.get_phi() );		
-			ot.jet_partonFlav.push_back( jet.get_partonFlav() );
-			ot.jet_hadronFlav.push_back( jet.get_hadronFlav() );
+			// ot.jet_partonFlav.push_back( jet.get_partonFlav() );
+			// ot.jet_hadronFlav.push_back( jet.get_hadronFlav() );
 			ot.jet_signalId.push_back( jet.get_signalId() );
 			ot.jet_higgsId.push_back( jet.get_higgsId() );
 			ot.jet_genIdx.push_back( jet.get_genIdx() );
@@ -138,6 +138,12 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 			ot.genjet_signalId.push_back( jet.get_signalId() );
 			ot.genjet_recoIdx.push_back( jet.get_recoIdx() );
 		}
+	}
+
+	if (ei.event_shapes) {
+		ot.sphericity = ei.event_shapes.get().sphericity;
+		ot.sphericity_t = ei.event_shapes.get().transverse_sphericity;
+		ot.aplanarity = ei.event_shapes.get().aplanarity;
 	}
 
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
