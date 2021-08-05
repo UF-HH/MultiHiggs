@@ -1,5 +1,7 @@
 #include "SixB_functions.h"
 #include "Math/VectorUtil.h"
+#include "Math/Vector3D.h"
+#include "Math/Functions.h"
 
 #include <iostream>
 #include <tuple>
@@ -417,7 +419,7 @@ bool SixB_functions::pass_jet_cut(const std::vector<double> pt_cuts,const std::v
 	return true;
 }
 
-std::vector<p4_t> SixB_functions::get_all_higgs_pairs(std::vector<Jet>& in_jets)
+std::vector<p4_t> pair_best_higgs_method(std::vector<Jet>& in_jets)
 {
 	std::vector<p4_t> higgs_list;
 	
@@ -449,6 +451,93 @@ std::vector<p4_t> SixB_functions::get_all_higgs_pairs(std::vector<Jet>& in_jets)
 		higgs_list.push_back(higgs_p4);
 	}
 	return higgs_list;
+}
+
+// All the different dijet pairs for 6 jets
+const std::vector<std::vector<int>> dijet_pairings = {
+	{0, 1},{0, 2},{0, 3},{0, 4},{0, 5},
+	{1, 2},{1, 3},{1, 4},{1, 5},
+	{2, 3},{2, 4},{2, 5},
+	{3, 4},{3, 5},
+	{4, 5}
+};
+
+// All the different 3 higgs pairs for 3 dijets of 6 jets
+const std::vector<std::vector<int>> triH_pairings = {
+	{0,  9, 14},
+	{0, 10, 13},
+	{0, 11, 12},
+	{1,  6, 14},
+	{1,  7, 13},
+	{1,  8, 12},
+	{2,  5, 14},
+	{2,  7, 11},
+	{2,  8, 10},
+	{3,  5, 13},
+	{3,  6, 11},
+	{3,  8,  9},
+	{4,  5, 12},
+	{4,  6, 10},
+	{4,  7,  9}
+};
+
+std::vector<p4_t> pair_D_HHH_method(std::vector<Jet>& in_jets)
+{
+
+	// Optimial 3D Line to select most signal like higgs
+	const float phi = 0.78;
+	const float theta = 0.96;
+	const ROOT::Math::Polar3DVectorF r_vec(1,theta,phi);
+	
+	std::vector<p4_t> dijet_pairs;
+	for (const std::vector<int> ijets : dijet_pairings)
+	{
+		int ij1 = ijets[0]; int ij2 = ijets[1];
+		p4_t dijet_p4 = in_jets[ij1].P4Regressed() + in_jets[ij2].P4Regressed();
+		dijet_pairs.push_back( dijet_p4 );
+	}
+	
+	std::vector< std::pair<float,int> > triH_d_hhh;
+	for (unsigned int i = 0; i < triH_pairings.size(); i++)
+	{
+		std::vector<int> idijets = triH_pairings[i];
+		int id1 = idijets[0]; int id2 = idijets[1]; int id3 = idijets[2];
+		ROOT::Math::XYZVectorF m_vec(dijet_pairs[id1].M(),dijet_pairs[id2].M(),dijet_pairs[id3].M());
+		float d_hhh = m_vec.Cross(r_vec).R();
+		triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
+	}
+
+	// Choose the closest triH vector to the r_vec line
+	std::sort(triH_d_hhh.begin(),triH_d_hhh.end(),[](std::pair<float,int> h1,std::pair<float,int> h2){ return h1.first<h2.first; });
+
+	int itriH = triH_d_hhh[0].second;
+	std::vector<int> idijets = triH_pairings[itriH];
+
+	// Order dijets by highest Pt
+	std::sort(idijets.begin(),idijets.end(),[dijet_pairs](int id1,int id2){ return dijet_pairs[id1].Pt() > dijet_pairs[id2].Pt(); });
+	std::vector<p4_t> higgs_list;
+	
+	for (unsigned int i = 0; i < idijets.size(); i++)
+	{
+		int id = idijets[i];
+		for (int ij : dijet_pairings[id])
+		{
+			Jet& jet = in_jets[ij];
+			jet.set_higgsId(i);
+		}
+		
+		p4_t dijet = dijet_pairs[id];
+
+		higgs_list.push_back(dijet);
+	}
+	
+	return higgs_list;
+}
+
+
+std::vector<p4_t> SixB_functions::get_all_higgs_pairs(std::vector<Jet>& in_jets)
+{
+	return pair_D_HHH_method(in_jets);
 }
 
 bool SixB_functions::pass_higgs_cr(const std::vector<p4_t>& in_dijets)

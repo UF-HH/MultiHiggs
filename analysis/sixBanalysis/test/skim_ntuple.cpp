@@ -24,6 +24,7 @@ namespace su = SkimUtils;
 #include "JetTools.h"
 #include "BtagSF.h"
 #include "EventShapeCalculator.h"
+#include "Cutflow.h"
 
 #include "Timer.h"
 
@@ -137,6 +138,7 @@ int main(int argc, char** argv)
         kttbar,
 		kshapecr,
 		khiggscr,
+		kqcd,
         knull
     };
 
@@ -147,6 +149,7 @@ int main(int argc, char** argv)
         skim_type_name == "ttbar"   ? kttbar   :
 		skim_type_name == "shapecr" ? kshapecr :
 		skim_type_name == "higgscr" ? khiggscr :
+		skim_type_name == "qcd"     ? kqcd     :
                                     knull
     );
     if (skim_type == knull)
@@ -386,8 +389,8 @@ int main(int argc, char** argv)
         cout << "[INFO] ... running on : " << maxEvts << " events" << endl;
 
     const auto start_loop_t = chrono::high_resolution_clock::now();
-	
-	TH1F* h_n_events = new TH1F("n_events","n_events",1,0,1);
+
+	Cutflow cutflow;
 	
     for (int iEv = 0; true; ++iEv)
     {
@@ -415,7 +418,7 @@ int main(int argc, char** argv)
         EventInfo ei;
         ot.clear();
 
-		h_n_events->Fill(0);
+		cutflow.add("total");
 
         loop_timer.click("Input read");
 
@@ -479,10 +482,14 @@ int main(int argc, char** argv)
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
         ot.userInt("nfound_presel") = nfound_presel;
 		sbf.match_signal_recojets(ei,presel_jets);
-		
-		std::vector<p4_t> all_higgs = sbf.get_all_higgs_pairs(presel_jets);
-		ei.n_higgs = all_higgs.size();
-		ei.higgs_list = all_higgs;
+
+		std::vector<p4_t> all_higgs;
+		if (n_presel_jet >= 6) {
+			// Make sure there are 6 jets to be able to do the pairings
+			all_higgs = sbf.get_all_higgs_pairs(presel_jets);
+			ei.n_higgs = all_higgs.size();
+			ei.higgs_list = all_higgs;
+		}
 		
 		if (!is_data) {
 			std::vector<GenJet> all_genjets = sbf.get_all_genjets(nat);
@@ -491,6 +498,7 @@ int main(int argc, char** argv)
 			if (skim_type == ksixb) {
 				sbf.match_signal_genjets(ei,all_genjets);
 			}
+			
 			ei.genjet_list = all_genjets;
 		}
 		
@@ -500,16 +508,25 @@ int main(int argc, char** argv)
 		
 		ei.jet_list = presel_jets;
         ei.n_jet = n_presel_jet;
-
 		
         loop_timer.click("Preselection");
+
+		if (skim_type == kqcd){
+            if (presel_jets.size() < 1)
+                continue;
+			cutflow.add("npresel_jets>=1");
+			
+            loop_timer.click("QCD selection");
+		}
 
         if (skim_type == ksixb){
             if (presel_jets.size() < 6)
                 continue;
+			cutflow.add("npresel_jets>=6");
 
 			if ( applyJetCuts && !sbf.pass_jet_cut(pt_cuts,btagWP_cuts,presel_jets) )
 				continue;
+			cutflow.add("sixb_jet_cut");
 			
             std::vector<Jet> sixb_jets = sbf.select_sixb_jets(nat, presel_jets);
             int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
@@ -520,12 +537,15 @@ int main(int argc, char** argv)
         if (skim_type == khiggscr){
             if (presel_jets.size() < 6)
                 continue;
+			cutflow.add("npresel_jets>=6");
 
 			if ( applyJetCuts && !sbf.pass_jet_cut(pt_cuts,btagWP_cuts,presel_jets) )
 				continue;
+			cutflow.add("sixb_jet_cut");
 
 			if ( !sbf.pass_higgs_cr(all_higgs) )
 				continue;
+			cutflow.add("higgs_veto_cr");
 			
             loop_timer.click("Higgs CR selection");
         }
@@ -533,6 +553,8 @@ int main(int argc, char** argv)
         if (skim_type == kttbar){
             if (presel_jets.size() < 2)
                 continue;
+			cutflow.add("npresel_jets>=2");
+			
             std::vector<Jet> ttjets = sbf.select_ttbar_jets(nat, ei, presel_jets); // ttjets sorted by DeepJet
             double deepjet1 = get_property(ttjets.at(0), Jet_btagDeepFlavB);
             double deepjet2 = get_property(ttjets.at(1), Jet_btagDeepFlavB);
@@ -541,6 +563,7 @@ int main(int argc, char** argv)
             if (deepjet2 > btag_WPs.at(bTagWP)) nbtag += 1;
             if (nbtag < nMinBtag)
                 continue;
+			cutflow.add("ttbar_jet_cut");
             if (!is_data)
                 ei.btagSF_WP_M = btsf.get_SF_allJetsPassWP({ttjets.at(0), ttjets.at(1)}, BtagSF::btagWP::medium);
             loop_timer.click("ttbar b jet selection");
@@ -560,7 +583,7 @@ int main(int argc, char** argv)
     const auto end_loop_t = chrono::high_resolution_clock::now();
 
     outputFile.cd();
-	h_n_events->Write();
+	cutflow.write(outputFile);
     ot.write();
     // if (!is_data)
         // nwt.write();
