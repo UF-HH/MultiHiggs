@@ -93,6 +93,7 @@ public:
 	int    n_pu;
 	double n_true_int;
 	double rhofastjet_all;
+	double lhe_ht;
 
 	int n_genjet;
 	int n_total_jet;

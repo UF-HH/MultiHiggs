@@ -3,6 +3,7 @@
 
 #include "NanoAODTree.h"
 #include "EventInfo.h"
+#include "Cutflow.h"
 
 #include "Jet.h"
 #include "GenJet.h"
@@ -61,8 +62,11 @@ public:
 	// sort jets with btag bias pt ordering
 	void btag_bias_pt_sort(std::vector<Jet>& in_jets);
 
+	// sort jets with pt regressed ordering
+	void pt_sort(std::vector<Jet>& in_jets);
+
 	// pass event if jet collection passes input pt and btag cuts
-	bool pass_jet_cut(const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets);
+	bool pass_jet_cut(Cutflow& cutflow, const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets);
 
 	// create vector of all higgs resonances 
 	std::vector<p4_t> get_all_higgs_pairs(std::vector<Jet>& in_jets);

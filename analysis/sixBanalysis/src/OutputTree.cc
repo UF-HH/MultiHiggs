@@ -185,6 +185,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
         std::cout << "[INFO] OutputTree : enabling gen-only related branches" << std::endl;
         tree_->Branch("n_pu",        &n_pu);
         tree_->Branch("n_true_int",  &n_true_int);
+		tree_->Branch("lhe_ht",         &lhe_ht);
 
         tree_->Branch("btagSF_WP_M", &btagSF_WP_M);
 		tree_->Branch("n_genjet",    &n_genjet);

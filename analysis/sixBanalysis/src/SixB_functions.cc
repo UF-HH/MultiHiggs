@@ -24,6 +24,7 @@ void SixB_functions::copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc
         ei.n_pu       = *(nat.Pileup_nPU);
         ei.n_true_int = *(nat.Pileup_nTrueInt);
 		ei.n_genjet   = *(nat.nGenJet);
+		ei.lhe_ht     = *(nat.LHE_HT);
     }
 }
 
@@ -284,7 +285,7 @@ std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vec
     // FIXME: make these selections configurable
     const double pt_min  = 20.;
     const double eta_max = 2.5;
-	const double btag_min = btag_WPs.at(0);
+	// const double btag_min = btag_WPs.at(0);
     const int    pf_id   = 1;
     const int    pu_id   = 1;
 
@@ -296,7 +297,7 @@ std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vec
         const Jet& jet = in_jets.at(ij);
         if (jet.get_pt()            <= pt_min)  continue;
         if (std::abs(jet.get_eta()) >= eta_max) continue;
-		if (jet.get_btag() <= btag_min) continue;
+		// if (jet.get_btag() <= btag_min) continue;
 		if (!checkBit(jet.get_id(), pf_id)) continue;
         if (!checkBit(jet.get_puid(),  pu_id)) continue;
 
@@ -398,23 +399,30 @@ void SixB_functions::btag_bias_pt_sort(std::vector<Jet>& in_jets)
 	}
 }
 
-bool SixB_functions::pass_jet_cut(const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets)
+void SixB_functions::pt_sort(std::vector<Jet>& in_jets)
 {
-	std::vector<int> ijet_passed;
-	for (unsigned int icut = 0; icut < pt_cuts.size(); icut++)
-	{
-		bool pass = false;
-		for (const Jet& jet : in_jets)
-		{
-			if (std::count(ijet_passed.begin(),ijet_passed.end(),jet.getIdx())) continue;
-			pass = (jet.get_pt() > pt_cuts[icut] && jet.get_btag() > btag_WPs[btagWP_cuts[icut]]);
+	std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
+}
 
-			if (pass) {
-				ijet_passed.push_back(jet.getIdx());
-				break;
-			}
-		}
-		if (!pass) return false;
+bool SixB_functions::pass_jet_cut(Cutflow& cutflow,const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets)
+{
+	std::vector<std::string> wplabels = {"loose","medium","tight"};
+	
+	unsigned int ncuts = pt_cuts.size();
+
+	if ( in_jets.size() < ncuts ) return false;
+	
+	for (unsigned int icut = 0; icut < ncuts; icut++)
+	{
+		const Jet& ijet = in_jets[icut];
+
+		double pt = pt_cuts[icut];
+		int btag_wp = btagWP_cuts[icut];
+
+		if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] )
+			return false;
+		
+		cutflow.add( "jet" + std::to_string(icut) + "_pt" + std::to_string( (int)pt ) + "_" + wplabels[btag_wp]  );
 	}
 	return true;
 }

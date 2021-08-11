@@ -324,6 +324,10 @@ int main(int argc, char** argv)
     cout << "[INFO] ... events must contain >= " << nMinBtag << " jets passing WP (0:L, 1:M, 2:T) : " << bTagWP << endl;
     cout << "[INFO] ... the WPs are: (L/M/T) : " << btag_WPs.at(0) << "/" << btag_WPs.at(1) << "/" << btag_WPs.at(2) << endl;
 
+	ot.declareUserFloatBranch("nloose_btag",  0);
+    ot.declareUserFloatBranch("nmedium_btag", 0);
+    ot.declareUserFloatBranch("ntight_btag",  0);
+
     BtagSF btsf;
     if (!is_data){
         string btsffile = config.readStringOpt("parameters::DeepJetScaleFactorFile");
@@ -442,6 +446,8 @@ int main(int argc, char** argv)
         // trigger requirements
         if (apply_trigger && !(nat.getTrgOr()) )
             continue;
+		cutflow.add("trigger");
+		
         if (save_trg_decision) {
             auto listOfPassedTriggers = nat.getTrgPassed();
             for (auto& t : listOfPassedTriggers)
@@ -477,11 +483,9 @@ int main(int argc, char** argv)
 
         std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);
 		sbf.btag_bias_pt_sort(presel_jets);
-		std::vector<int> presel_jet_idxs = sbf.match_local_idx(presel_jets,all_jets);
 		int n_presel_jet = presel_jets.size();
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
         ot.userInt("nfound_presel") = nfound_presel;
-		sbf.match_signal_recojets(ei,presel_jets);
 
 		std::vector<p4_t> all_higgs;
 		if (n_presel_jet >= 6) {
@@ -508,13 +512,34 @@ int main(int argc, char** argv)
 		
 		ei.jet_list = presel_jets;
         ei.n_jet = n_presel_jet;
+
+		std::vector<int> njet_btagwp = {0,0,0};
+		for (Jet& jet : presel_jets)
+		{
+			float btag = jet.get_btag();
+			for (int i = 0; i < 3; i++)
+				if ( btag > btag_WPs[i] )
+					njet_btagwp[i] += 1;
+		}
+
+		ot.userFloat("nloose_btag") = njet_btagwp[0];
+		ot.userFloat("nmedium_btag") = njet_btagwp[1];
+		ot.userFloat("ntight_btag") = njet_btagwp[2];
 		
         loop_timer.click("Preselection");
 
 		if (skim_type == kqcd){
-            if (presel_jets.size() < 1)
+			sbf.pt_sort(presel_jets);
+			ei.jet_list = presel_jets;
+			
+            if (presel_jets.size() < 2)
                 continue;
-			cutflow.add("npresel_jets>=1");
+			cutflow.add("npresel_jets>=2");
+			
+			if ( presel_jets[0].get_btag() > btag_WPs[2] && presel_jets[0].get_pt() > 100 &&
+				 presel_jets[1].get_btag() > btag_WPs[2] && presel_jets[1].get_pt() > 100 )
+				continue;
+			cutflow.add("highpt_tight");
 			
             loop_timer.click("QCD selection");
 		}
@@ -524,9 +549,8 @@ int main(int argc, char** argv)
                 continue;
 			cutflow.add("npresel_jets>=6");
 
-			if ( applyJetCuts && !sbf.pass_jet_cut(pt_cuts,btagWP_cuts,presel_jets) )
+			if ( applyJetCuts && !sbf.pass_jet_cut(cutflow,pt_cuts,btagWP_cuts,presel_jets) )
 				continue;
-			cutflow.add("sixb_jet_cut");
 			
             std::vector<Jet> sixb_jets = sbf.select_sixb_jets(nat, presel_jets);
             int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
@@ -539,9 +563,8 @@ int main(int argc, char** argv)
                 continue;
 			cutflow.add("npresel_jets>=6");
 
-			if ( applyJetCuts && !sbf.pass_jet_cut(pt_cuts,btagWP_cuts,presel_jets) )
+			if ( applyJetCuts && !sbf.pass_jet_cut(cutflow,pt_cuts,btagWP_cuts,presel_jets) )
 				continue;
-			cutflow.add("sixb_jet_cut");
 
 			if ( !sbf.pass_higgs_cr(all_higgs) )
 				continue;
