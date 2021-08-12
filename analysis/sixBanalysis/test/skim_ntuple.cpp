@@ -485,6 +485,7 @@ int main(int argc, char** argv)
 		sbf.btag_bias_pt_sort(presel_jets);
 		int n_presel_jet = presel_jets.size();
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
+		sbf.match_signal_recojets(ei,presel_jets);
         ot.userInt("nfound_presel") = nfound_presel;
 
 		std::vector<p4_t> all_higgs;
@@ -529,17 +530,19 @@ int main(int argc, char** argv)
         loop_timer.click("Preselection");
 
 		if (skim_type == kqcd){
-			sbf.pt_sort(presel_jets);
 			ei.jet_list = presel_jets;
 			
             if (presel_jets.size() < 2)
                 continue;
 			cutflow.add("npresel_jets>=2");
-			
-			if ( presel_jets[0].get_btag() > btag_WPs[2] && presel_jets[0].get_pt() > 100 &&
-				 presel_jets[1].get_btag() > btag_WPs[2] && presel_jets[1].get_pt() > 100 )
+
+			if (njet_btagwp[2] < 2)
 				continue;
-			cutflow.add("highpt_tight");
+			cutflow.add("ntight_btag>=2");
+			
+			if ( presel_jets[0].get_pt() <= 40 || presel_jets[1].get_pt() <= 40 )
+				continue;
+			cutflow.add("top2_jet_pt>40");
 			
             loop_timer.click("QCD selection");
 		}
