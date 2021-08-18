@@ -493,24 +493,26 @@ std::vector<p4_t> pair_D_HHH_method(std::vector<Jet>& in_jets)
 {
 
 	// Optimial 3D Line to select most signal like higgs
-	const float phi = 0.78;
-	const float theta = 0.96;
+	const float phi = 0.77;
+	const float theta = 0.98;
 	const ROOT::Math::Polar3DVectorF r_vec(1,theta,phi);
 	
-	std::vector<p4_t> dijet_pairs;
+	std::vector<p4_t> dijets;
 	for (const std::vector<int> ijets : dijet_pairings)
-	{
+	{ 
 		int ij1 = ijets[0]; int ij2 = ijets[1];
 		p4_t dijet_p4 = in_jets[ij1].P4Regressed() + in_jets[ij2].P4Regressed();
-		dijet_pairs.push_back( dijet_p4 );
+		dijets.push_back( dijet_p4 );
 	}
 	
 	std::vector< std::pair<float,int> > triH_d_hhh;
 	for (unsigned int i = 0; i < triH_pairings.size(); i++)
 	{
-		std::vector<int> idijets = triH_pairings[i];
-		int id1 = idijets[0]; int id2 = idijets[1]; int id3 = idijets[2];
-		ROOT::Math::XYZVectorF m_vec(dijet_pairs[id1].M(),dijet_pairs[id2].M(),dijet_pairs[id3].M());
+		std::vector<p4_t> tri_dijet_sys;
+		for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
+		std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](p4_t& dj1,p4_t& dj2){ return dj1.Pt()>dj2.Pt(); });
+		
+		ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].M(),tri_dijet_sys[1].M(),tri_dijet_sys[2].M());
 		float d_hhh = m_vec.Cross(r_vec).R();
 		triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
 	}
@@ -522,7 +524,7 @@ std::vector<p4_t> pair_D_HHH_method(std::vector<Jet>& in_jets)
 	std::vector<int> idijets = triH_pairings[itriH];
 
 	// Order dijets by highest Pt
-	std::sort(idijets.begin(),idijets.end(),[dijet_pairs](int id1,int id2){ return dijet_pairs[id1].Pt() > dijet_pairs[id2].Pt(); });
+	std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].Pt() > dijets[id2].Pt(); });
 	std::vector<p4_t> higgs_list;
 	
 	for (unsigned int i = 0; i < idijets.size(); i++)
@@ -534,7 +536,7 @@ std::vector<p4_t> pair_D_HHH_method(std::vector<Jet>& in_jets)
 			jet.set_higgsId(i);
 		}
 		
-		p4_t dijet = dijet_pairs[id];
+		p4_t dijet = dijets[id];
 
 		higgs_list.push_back(dijet);
 	}
