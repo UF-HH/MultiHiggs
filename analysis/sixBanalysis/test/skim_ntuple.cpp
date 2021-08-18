@@ -324,9 +324,11 @@ int main(int argc, char** argv)
     cout << "[INFO] ... events must contain >= " << nMinBtag << " jets passing WP (0:L, 1:M, 2:T) : " << bTagWP << endl;
     cout << "[INFO] ... the WPs are: (L/M/T) : " << btag_WPs.at(0) << "/" << btag_WPs.at(1) << "/" << btag_WPs.at(2) << endl;
 
-	ot.declareUserFloatBranch("nloose_btag",  0);
-    ot.declareUserFloatBranch("nmedium_btag", 0);
-    ot.declareUserFloatBranch("ntight_btag",  0);
+	ot.declareUserIntBranch("nloose_btag",  0);
+    ot.declareUserIntBranch("nmedium_btag", 0);
+    ot.declareUserIntBranch("ntight_btag",  0);
+
+	ot.declareUserFloatBranch("jet6_btagsum", 0.0);
 
     BtagSF btsf;
     if (!is_data){
@@ -514,6 +516,11 @@ int main(int argc, char** argv)
 		ei.jet_list = presel_jets;
         ei.n_jet = n_presel_jet;
 
+
+		float jet6_btagsum = 0.0;
+		for (unsigned int i = 0; i < TMath::Min(6,n_presel_jet); i++) jet6_btagsum += presel_jets[i].get_btag();
+		ot.userFloat("jet6_btagsum") = jet6_btagsum;
+			
 		std::vector<int> njet_btagwp = {0,0,0};
 		for (Jet& jet : presel_jets)
 		{
@@ -523,14 +530,13 @@ int main(int argc, char** argv)
 					njet_btagwp[i] += 1;
 		}
 
-		ot.userFloat("nloose_btag") = njet_btagwp[0];
-		ot.userFloat("nmedium_btag") = njet_btagwp[1];
-		ot.userFloat("ntight_btag") = njet_btagwp[2];
+		ot.userInt("nloose_btag") = njet_btagwp[0];
+		ot.userInt("nmedium_btag") = njet_btagwp[1];
+		ot.userInt("ntight_btag") = njet_btagwp[2];
 		
         loop_timer.click("Preselection");
 
 		if (skim_type == kqcd){
-			ei.jet_list = presel_jets;
 			
             if (presel_jets.size() < 2)
                 continue;
@@ -572,6 +578,10 @@ int main(int argc, char** argv)
 			if ( !sbf.pass_higgs_cr(all_higgs) )
 				continue;
 			cutflow.add("higgs_veto_cr");
+
+			if ( jet6_btagsum >= 3.8 )
+				continue;
+			cutflow.add("jet6_btagsum<3.8");
 			
             loop_timer.click("Higgs CR selection");
         }
