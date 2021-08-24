@@ -10,6 +10,8 @@
 #include "GenPart.h"
 #include "CompositeCandidate.h"
 
+#include "EvalNN.h"
+
 class SixB_functions{
     
 public:
@@ -69,7 +71,8 @@ public:
 	bool pass_jet_cut(Cutflow& cutflow, const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets);
 
 	// create vector of all higgs resonances 
-	std::vector<p4_t> get_all_higgs_pairs(std::vector<Jet>& in_jets);
+	std::vector<p4_t> get_tri_higgs_D_HHH(std::vector<Jet>& in_jets);
+	std::vector<p4_t> get_tri_higgs_NN(std::vector<Jet>& in_jets,EvalNN& network);
 
 	// passes event if all dijets mass is greater than 30 from higgs mass
 	bool pass_higgs_cr(const std::vector<p4_t>& in_dijets);
@@ -97,6 +100,34 @@ public:
 private:
 
 	std::vector<double> btag_WPs;
+	
+	// All the different dijet pairs for 6 jets
+	const std::vector<std::vector<int>> dijet_pairings = {
+		{0, 1},{0, 2},{0, 3},{0, 4},{0, 5},
+		{1, 2},{1, 3},{1, 4},{1, 5},
+		{2, 3},{2, 4},{2, 5},
+		{3, 4},{3, 5},
+		{4, 5}
+	};
+	
+	// All the different 3 higgs pairs for 3 dijets of 6 jets
+	const std::vector<std::vector<int>> triH_pairings = {
+		{0,  9, 14},
+		{0, 10, 13},
+		{0, 11, 12},
+		{1,  6, 14},
+		{1,  7, 13},
+		{1,  8, 12},
+		{2,  5, 14},
+		{2,  7, 11},
+		{2,  8, 10},
+		{3,  5, 13},
+		{3,  6, 11},
+		{3,  8,  9},
+		{4,  5, 12},
+		{4,  6, 10},
+		{4,  7,  9}
+	};
 	
 	// loops on targets, and assigns value to the first element of target that is found to be uninitialized
 	// returns false if none could be assigned, else return true

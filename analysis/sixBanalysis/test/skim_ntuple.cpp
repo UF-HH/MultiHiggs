@@ -25,6 +25,7 @@ namespace su = SkimUtils;
 #include "BtagSF.h"
 #include "EventShapeCalculator.h"
 #include "Cutflow.h"
+#include "EvalNN.h"
 
 #include "Timer.h"
 
@@ -348,6 +349,17 @@ int main(int argc, char** argv)
 		btagWP_cuts = config.readIntListOpt("configurations::btagWP_cuts");
 	}
 
+	// -----------
+
+	string f_2j_classifier = config.readStringOpt("configurations::2jet_classifier");
+	string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
+
+	EvalNN n_2j_classifier(f_2j_classifier);
+	EvalNN n_6j_classifier(f_6j_classifier);
+
+	cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
+	cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
+
     // -----------
 
     JetTools jt;
@@ -493,7 +505,7 @@ int main(int argc, char** argv)
 		std::vector<p4_t> all_higgs;
 		if (n_presel_jet >= 6) {
 			// Make sure there are 6 jets to be able to do the pairings
-			all_higgs = sbf.get_all_higgs_pairs(presel_jets);
+			all_higgs = sbf.get_tri_higgs_D_HHH(presel_jets);
 			ei.n_higgs = all_higgs.size();
 			ei.higgs_list = all_higgs;
 		}

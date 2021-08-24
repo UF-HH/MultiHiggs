@@ -461,35 +461,8 @@ std::vector<p4_t> pair_best_higgs_method(std::vector<Jet>& in_jets)
 	return higgs_list;
 }
 
-// All the different dijet pairs for 6 jets
-const std::vector<std::vector<int>> dijet_pairings = {
-	{0, 1},{0, 2},{0, 3},{0, 4},{0, 5},
-	{1, 2},{1, 3},{1, 4},{1, 5},
-	{2, 3},{2, 4},{2, 5},
-	{3, 4},{3, 5},
-	{4, 5}
-};
 
-// All the different 3 higgs pairs for 3 dijets of 6 jets
-const std::vector<std::vector<int>> triH_pairings = {
-	{0,  9, 14},
-	{0, 10, 13},
-	{0, 11, 12},
-	{1,  6, 14},
-	{1,  7, 13},
-	{1,  8, 12},
-	{2,  5, 14},
-	{2,  7, 11},
-	{2,  8, 10},
-	{3,  5, 13},
-	{3,  6, 11},
-	{3,  8,  9},
-	{4,  5, 12},
-	{4,  6, 10},
-	{4,  7,  9}
-};
-
-std::vector<p4_t> pair_D_HHH_method(std::vector<Jet>& in_jets)
+std::vector<p4_t> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
 {
 
 	// Optimial 3D Line to select most signal like higgs
@@ -544,11 +517,11 @@ std::vector<p4_t> pair_D_HHH_method(std::vector<Jet>& in_jets)
 	return higgs_list;
 }
 
-
-std::vector<p4_t> SixB_functions::get_all_higgs_pairs(std::vector<Jet>& in_jets)
+std::vector<p4_t> SixB_functions::get_tri_higgs_NN(std::vector<Jet>& in_jets,EvalNN& network)
 {
-	return pair_D_HHH_method(in_jets);
+	return pair_best_higgs_method(in_jets);
 }
+
 
 bool SixB_functions::pass_higgs_cr(const std::vector<p4_t>& in_dijets)
 {
