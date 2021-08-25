@@ -30,7 +30,7 @@ class EventSample:
         # 1: only essential printouts (start/stop/etc)
         # 2: logging of actions (histos booked, etc)
         # 3: debug
-        self.verb       = 2 
+        self.verb       = 1 
 
         # sampletype = sampletype.lower()
         # if not sampletype in ['data', 'mc']:
@@ -46,7 +46,7 @@ class EventSample:
 
     def add_column(self, colname, colexpr):
         if self.verb >= 1:
-            print('[INFO]: adding column', colname, 'to', self.name, 'defined as', colexpr)
+            print('[INFO] adding column', colname, 'to', self.name, 'defined as', colexpr)
         self.rdf = self.rdf.Define(colname, colexpr)
 
     def build_dataframe_from_filelist(self, filelistname):
