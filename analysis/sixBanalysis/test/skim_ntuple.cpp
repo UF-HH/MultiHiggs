@@ -503,11 +503,17 @@ int main(int argc, char** argv)
         ot.userInt("nfound_presel") = nfound_presel;
 
 		std::vector<p4_t> all_higgs;
+		std::vector<p4_t> nn_higgs;
 		if (n_presel_jet >= 6) {
 			// Make sure there are 6 jets to be able to do the pairings
 			all_higgs = sbf.get_tri_higgs_D_HHH(presel_jets);
+			nn_higgs = sbf.get_tri_higgs_NN(presel_jets,n_6j_classifier,n_2j_classifier);
+			
 			ei.n_higgs = all_higgs.size();
 			ei.higgs_list = all_higgs;
+
+			ei.n_nn_higgs = nn_higgs.size();
+			ei.nn_higgs_list = nn_higgs;
 		}
 		
 		if (!is_data) {

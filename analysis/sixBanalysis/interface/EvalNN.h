@@ -19,66 +19,28 @@ class EvalNN {
 public:
 	EvalNN(
 		   std::string graphPath,
-		   std::string input_name = "input_1",
-		   std::vector<std::string> outputs_name = {"regr/BiasAdd", "discr/Sigmoid"}
+		   std::string input_name = "dense_input",
+		   std::vector<std::string> outputs_name = {"dense_2/Softmax"},
+		   std::string modelName = "model.pb",
+		   std::string scaleName = "scaler.csv"
 		   ) ;
 	~EvalNN();
 	std::vector<float> evaluate (const std::vector<float>& inputs);
 
 private:
 	std::string graphPath_;
+	std::string modelName_;
+	std::string scaleName_;
 
 	tensorflow::GraphDef* graphDef_;
 	tensorflow::Session*  session_;
+
+	std::vector<float> scale_min_;
+	std::vector<float> scale_max_;
 
 	std::string input_name_;
 	std::vector<std::string> outputs_name_;
 
 };
-
-EvalNN::EvalNN(
-			   std::string graphPath,
-			   std::string input_name,
-			   std::vector<std::string> outputs_name
-			   )
-{
-    graphPath_    = graphPath;
-    graphDef_     = tensorflow::loadGraphDef(graphPath_);
-    session_      = tensorflow::createSession(graphDef_);
-    input_name_   = input_name;
-    outputs_name_ = outputs_name;
-}
-
-EvalNN::~EvalNN()
-{
-    // close the session
-    tensorflow::closeSession(session_);
-    session_ = nullptr;
-
-    // delete the graph
-    delete graphDef_;
-    graphDef_ = nullptr;
-}
-
-std::vector<float> EvalNN::evaluate (const std::vector<float>& inputs)
-{
-    long long int n_inputs = inputs.size();
-    tensorflow::Tensor input(tensorflow::DT_FLOAT, { 1, n_inputs });
-    for (unsigned int i = 0; i < n_inputs; ++i)
-        input.matrix<float>()(0, i) = inputs.at(i);
-
-    // define the output and run
-    // std::cout << "session.run" << std::endl;
-    std::vector<tensorflow::Tensor> outputs;
-    tensorflow::run(session_, { { input_name_, input } }, outputs_name_, &outputs);
-
-    // check and print the output
-    // std::cout << " -> " << outputs[0].matrix<float>()(0, 0) << std::endl << std::endl;
-    std::vector<float> out(outputs.size());
-    for (unsigned int o = 0; o < outputs.size(); ++o)
-        out.at(o) = outputs.at(o).matrix<float>()(0, 0);
-
-    return out;
-}
 
 #endif

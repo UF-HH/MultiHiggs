@@ -99,6 +99,7 @@ public:
 	int n_total_jet;
 	int n_jet;
 	int n_higgs;
+	int n_nn_higgs;
 
 	float sphericity;
 	float sphericity_t;
@@ -123,6 +124,7 @@ public:
 	std::vector<int> jet_hadronFlav;
 	std::vector<int> jet_signalId;
 	std::vector<int> jet_higgsId;
+	std::vector<int> jet_nn_higgsId;
 	std::vector<int> jet_genIdx;
 	std::vector<float> jet_btag;
 	std::vector<float> jet_qgl;
@@ -134,6 +136,12 @@ public:
 	std::vector<float> higgs_phi;
 	std::vector<float> higgs_m;
 	std::vector<float> higgs_E;
+	
+	std::vector<float> nn_higgs_pt;
+	std::vector<float> nn_higgs_eta;
+	std::vector<float> nn_higgs_phi;
+	std::vector<float> nn_higgs_m;
+	std::vector<float> nn_higgs_E;
 
 	DECLARE_m_pt_eta_phi_p4(gen_X_fc);
 	DECLARE_m_pt_eta_phi_p4(gen_X);

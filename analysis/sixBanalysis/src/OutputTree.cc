@@ -166,6 +166,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 		// tree_->Branch("jet_hadronFlav",&jet_hadronFlav);
 		tree_->Branch("jet_signalId",  &jet_signalId);
 		tree_->Branch("jet_higgsId",   &jet_higgsId);
+		tree_->Branch("jet_nn_higgsId",   &jet_nn_higgsId);
 		tree_->Branch("jet_genIdx",    &jet_genIdx);
 		tree_->Branch("jet_btag",      &jet_btag);
 		tree_->Branch("jet_qgl",       &jet_qgl);
@@ -178,6 +179,13 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 		tree_->Branch("higgs_pt",      &higgs_pt);		
 		tree_->Branch("higgs_eta",     &higgs_eta);		
 		tree_->Branch("higgs_phi",     &higgs_phi);
+		
+		tree_->Branch("n_nn_higgs",       &n_nn_higgs);
+		tree_->Branch("nn_higgs_E",       &nn_higgs_E);	    
+		tree_->Branch("nn_higgs_m",       &nn_higgs_m);		
+		tree_->Branch("nn_higgs_pt",      &nn_higgs_pt);		
+		tree_->Branch("nn_higgs_eta",     &nn_higgs_eta);		
+		tree_->Branch("nn_higgs_phi",     &nn_higgs_phi);
 	}
 
     if (is_enabled("gen_brs"))
@@ -231,6 +239,7 @@ void OutputTree::clear()
 	n_jet = 0;
 	n_genjet = 0;
 	n_higgs = 0;
+	n_nn_higgs = 0;
 
 	genjet_E.clear();	    
 	genjet_m.clear();		
@@ -251,6 +260,7 @@ void OutputTree::clear()
 	jet_hadronFlav.clear();
 	jet_signalId.clear();
 	jet_higgsId.clear();
+	jet_nn_higgsId.clear();
 	jet_genIdx.clear();
 	jet_btag.clear();
 	jet_qgl.clear();
@@ -262,6 +272,12 @@ void OutputTree::clear()
 	higgs_pt.clear();		
 	higgs_eta.clear();		
 	higgs_phi.clear();
+	
+	nn_higgs_E.clear();	    
+	nn_higgs_m.clear();		
+	nn_higgs_pt.clear();		
+	nn_higgs_eta.clear();		
+	nn_higgs_phi.clear();
 
     CLEAR_m_pt_eta_phi_p4(gen_X_fc);
     CLEAR_m_pt_eta_phi_p4(gen_X);

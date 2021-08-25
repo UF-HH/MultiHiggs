@@ -72,7 +72,7 @@ public:
 
 	// create vector of all higgs resonances 
 	std::vector<p4_t> get_tri_higgs_D_HHH(std::vector<Jet>& in_jets);
-	std::vector<p4_t> get_tri_higgs_NN(std::vector<Jet>& in_jets,EvalNN& network);
+	std::vector<p4_t> get_tri_higgs_NN(std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier);
 
 	// passes event if all dijets mass is greater than 30 from higgs mass
 	bool pass_higgs_cr(const std::vector<p4_t>& in_dijets);

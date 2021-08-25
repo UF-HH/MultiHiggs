@@ -454,8 +454,8 @@ std::vector<p4_t> pair_best_higgs_method(std::vector<Jet>& in_jets)
 		p4_t higgs_p4 = dijet_pairs[0].second;
 		Jet& j2 = in_jets[pair_idx];
 				  
-		j1.set_higgsId( higgs_list.size() );
-		j2.set_higgsId( higgs_list.size() );
+		j1.set_nn_higgsId( higgs_list.size() );
+		j2.set_nn_higgsId( higgs_list.size() );
 		higgs_list.push_back(higgs_p4);
 	}
 	return higgs_list;
@@ -517,7 +517,7 @@ std::vector<p4_t> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
 	return higgs_list;
 }
 
-std::vector<p4_t> SixB_functions::get_tri_higgs_NN(std::vector<Jet>& in_jets,EvalNN& network)
+std::vector<p4_t> SixB_functions::get_tri_higgs_NN(std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier)
 {
 	return pair_best_higgs_method(in_jets);
 }
