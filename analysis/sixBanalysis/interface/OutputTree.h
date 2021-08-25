@@ -101,6 +101,9 @@ public:
 	int n_higgs;
 	int n_nn_higgs;
 
+	float b_6j_score;
+	float b_3h_score;
+
 	float sphericity;
 	float sphericity_t;
 	float aplanarity;

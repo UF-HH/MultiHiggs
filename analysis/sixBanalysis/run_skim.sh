@@ -1,7 +1,7 @@
 #!/bin/sh
 
-eval `scramv1 runtime -sh`
-source scripts/setup.sh
+# eval `scramv1 runtime -sh`
+# source scripts/setup.sh
 
 # output="NMSSM_XYH_YToHH_6b_MX_700_MY_400_accstudies_500k_Jul2021-v2.root"
 output="output-tree.root"

@@ -179,6 +179,9 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 		tree_->Branch("higgs_pt",      &higgs_pt);		
 		tree_->Branch("higgs_eta",     &higgs_eta);		
 		tree_->Branch("higgs_phi",     &higgs_phi);
+
+		tree_->Branch("b_6j_score",    &b_6j_score);
+		tree_->Branch("b_3h_score",    &b_3h_score);
 		
 		tree_->Branch("n_nn_higgs",       &n_nn_higgs);
 		tree_->Branch("nn_higgs_E",       &nn_higgs_E);	    
@@ -240,6 +243,9 @@ void OutputTree::clear()
 	n_genjet = 0;
 	n_higgs = 0;
 	n_nn_higgs = 0;
+
+	b_6j_score = 0;
+	b_3h_score = 0;
 
 	genjet_E.clear();	    
 	genjet_m.clear();		

@@ -97,7 +97,10 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 	if(ei.n_total_jet)    ot.n_total_jet     = *ei.n_total_jet;
 	if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
 	if(ei.n_higgs)        ot.n_higgs         = *ei.n_higgs;
-	if(ei.n_nn_higgs)        ot.n_nn_higgs         = *ei.n_nn_higgs;
+	if(ei.n_nn_higgs)     ot.n_nn_higgs      = *ei.n_nn_higgs;
+
+	if(ei.b_6j_score)     ot.b_6j_score      = *ei.b_6j_score;
+	if(ei.b_3h_score)     ot.b_3h_score      = *ei.b_3h_score;
 
 	if (ei.jet_list) {
 		for (Jet& jet : ei.jet_list.get()) {
@@ -128,7 +131,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 			ot.higgs_phi.push_back( higgs.Phi() );
 		}
 	}
-
+	
 	if (ei.nn_higgs_list) {
 		for (p4_t& nn_higgs : ei.nn_higgs_list.get()) {
 			ot.nn_higgs_E.push_back( nn_higgs.E() );
@@ -136,7 +139,6 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 			ot.nn_higgs_pt.push_back( nn_higgs.Pt() );
 			ot.nn_higgs_eta.push_back( nn_higgs.Eta() );
 			ot.nn_higgs_phi.push_back( nn_higgs.Phi() );
-		
 		}
 	}
 
