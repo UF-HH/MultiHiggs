@@ -17,29 +17,29 @@
 
 class EvalNN {
 public:
-	EvalNN(
-		   std::string graphPath,
-		   std::string input_name = "dense_input",
-		   std::vector<std::string> outputs_name = {"dense_2/Softmax"},
-		   std::string modelName = "model.pb",
-		   std::string scaleName = "scaler.csv"
-		   ) ;
-	~EvalNN();
-	std::vector<float> evaluate (const std::vector<float>& inputs);
+  EvalNN(
+	 std::string graphPath,
+	 std::string input_name = "dense_input",
+	 std::vector<std::string> outputs_name = {"dense_2/Softmax"},
+	 std::string modelName = "model.pb",
+	 std::string scaleName = "scaler.csv"
+	 ) ;
+  ~EvalNN();
+  std::vector<float> evaluate (const std::vector<float>& inputs);
 
 private:
-	std::string graphPath_;
-	std::string modelName_;
-	std::string scaleName_;
+  std::string graphPath_;
+  std::string modelName_;
+  std::string scaleName_;
 
-	tensorflow::GraphDef* graphDef_;
-	tensorflow::Session*  session_;
+  tensorflow::GraphDef* graphDef_;
+  tensorflow::Session*  session_;
 
-	std::vector<float> scale_min_;
-	std::vector<float> scale_max_;
+  std::vector<float> scale_min_;
+  std::vector<float> scale_max_;
 
-	std::string input_name_;
-	std::vector<std::string> outputs_name_;
+  std::string input_name_;
+  std::vector<std::string> outputs_name_;
 
 };
 

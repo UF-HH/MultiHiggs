@@ -24,30 +24,30 @@
 
 class Timer
 {
-    public:
+public:
 
-        typedef std::chrono::time_point<std::chrono::high_resolution_clock> abstime_t;
-        typedef std::chrono::microseconds deltat_t;
+  typedef std::chrono::time_point<std::chrono::high_resolution_clock> abstime_t;
+  typedef std::chrono::microseconds deltat_t;
 
-        Timer()  {curr_idx_ = -1;}
-        ~Timer() {}
-        void start_lap();
-        void click(std::string name);
-        void print_summary();
+  Timer()  {curr_idx_ = -1;}
+  ~Timer() {}
+  void start_lap();
+  void click(std::string name);
+  void print_summary();
     
-    private:
-        void insert_step(std::string name);
-        std::unordered_map<std::string, int> m_idx_; // maps a string to the position of a vector for at at(idx) access
+private:
+  void insert_step(std::string name);
+  std::unordered_map<std::string, int> m_idx_; // maps a string to the position of a vector for at at(idx) access
 
-        std::vector<std::string> steps_;
-        // std::vector<abstime_t> step_time_;
-        std::vector<deltat_t> step_dt_;
-        std::vector<int> step_calls_;
+  std::vector<std::string> steps_;
+  // std::vector<abstime_t> step_time_;
+  std::vector<deltat_t> step_dt_;
+  std::vector<int> step_calls_;
                 
-        abstime_t curr_start_t_;
-        int curr_idx_;
+  abstime_t curr_start_t_;
+  int curr_idx_;
 
-        const int debug_lvl = 0; // 0 : none. 1: low verbosity. 2 : all events
+  const int debug_lvl = 0; // 0 : none. 1: low verbosity. 2 : all events
 };
 
 

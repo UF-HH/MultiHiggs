@@ -15,14 +15,14 @@
 
 class Cutflow {
 public:
-	Cutflow(TString name="h_cutflow",TString title="Selection Cutflow");
-	void add(TString entry,float value=1);
-	void write(TFile& output);
+  Cutflow(TString name="h_cutflow",TString title="Selection Cutflow");
+  void add(TString entry,float value=1);
+  void write(TFile& output);
 private:
-	TString _name;
-	TString _title;
-	std::vector<TString>    _entries;
-	std::map<TString,float> _cutflow;
+  TString _name;
+  TString _title;
+  std::vector<TString>    _entries;
+  std::map<TString,float> _cutflow;
 };
 
 #endif // CUTFLOW_H

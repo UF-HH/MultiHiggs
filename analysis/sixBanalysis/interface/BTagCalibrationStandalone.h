@@ -48,17 +48,17 @@ public:
 
     // default constructor
     Parameters(
-      OperatingPoint op=OP_TIGHT,
-      std::string measurement_type="comb",
-      std::string sys_type="central",
-      JetFlavor jf=FLAV_B,
-      float eta_min=-99999.,
-      float eta_max=99999.,
-      float pt_min=0.,
-      float pt_max=99999.,
-      float discr_min=0.,
-      float discr_max=99999.
-    );
+               OperatingPoint op=OP_TIGHT,
+               std::string measurement_type="comb",
+               std::string sys_type="central",
+               JetFlavor jf=FLAV_B,
+               float eta_min=-99999.,
+               float eta_max=99999.,
+               float pt_min=0.,
+               float pt_max=99999.,
+               float discr_min=0.,
+               float discr_max=99999.
+               );
 
   };
 
