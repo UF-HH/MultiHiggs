@@ -20,17 +20,19 @@ public:
   EvalNN(
 	 std::string graphPath,
 	 std::string input_name = "dense_input",
-	 std::vector<std::string> outputs_name = {"dense_2/Softmax"},
 	 std::string modelName = "model.pb",
-	 std::string scaleName = "scaler.csv"
+	 std::string configName = "config.cfg"
 	 ) ;
   ~EvalNN();
   std::vector<float> evaluate (const std::vector<float>& inputs);
+  void set_debug(bool debug) { debug_ = debug; }
 
 private:
+  bool debug_ = false;
+  
   std::string graphPath_;
   std::string modelName_;
-  std::string scaleName_;
+  std::string configName_;
 
   tensorflow::GraphDef* graphDef_;
   tensorflow::Session*  session_;

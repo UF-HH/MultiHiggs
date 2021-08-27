@@ -1,61 +1,43 @@
 #include "EvalNN.h"
 
-#include <fstream>
+#include "CfgParser.h"
 
-std::vector<std::string> split(std::string str,std::string delim)
+std::string vector_string(std::vector<float> array)
 {
-  std::vector<std::string> splitString;
-  char strChar[str.size() + 1];
-  strcpy(strChar,str.c_str());
-  char *token = strtok(strChar,delim.c_str());
-  while (token != NULL) {
-    splitString.push_back(std::string(token));
-    token = strtok(NULL,delim.c_str());
-  }
-  return splitString;
+  std::string str = "[ ";
+  for (float element : array) str += std::to_string(element)+" ";
+  str += "]";
+  return str;
 }
 
-std::vector< std::vector<float> > read_scale_file(std::string scalePath)
+void debug_network(std::vector<float> inputs,std::vector<float> outputs)
 {
-  std::vector<std::vector<float>> data;
-	
-  std::ifstream fin;
-  fin.open(scalePath);
-
-  std::string line;
-
-  int nline = 0;
-  while ( !fin.eof() )
-    {
-      if (nline == 2) break;
-		
-      fin >> line;
-
-      std::vector<std::string> line_data = split(line,",");
-      std::vector<float> float_data;
-      for(std::string ld : line_data) float_data.push_back( std::stof(ld) );
-      data.push_back( float_data );
-		
-      nline++;
-    }
-
-  return data;
+  std::cout << "[INPUT]: " << vector_string(inputs) << std::endl;
+  std::cout << "[OUTPUT]:" << vector_string(outputs) << std::endl;
 }
 
-EvalNN::EvalNN(std::string graphPath,std::string input_name,std::vector<std::string> outputs_name,std::string modelName,std::string scaleName)
+EvalNN::EvalNN(std::string graphPath,std::string input_name,std::string modelName,std::string configName)
 {
   graphPath_    = graphPath;
   modelName_    = modelName;
-  scaleName_    = scaleName;
+  configName_   = configName;
 	
   graphDef_     = tensorflow::loadGraphDef(graphPath_+"/"+modelName_);
   session_      = tensorflow::createSession(graphDef_);
   input_name_   = input_name;
-  outputs_name_ = outputs_name;
 
-  auto scale_data = read_scale_file(graphPath_+"/"+scaleName_);
-  scale_min_ = scale_data[0];
-  scale_max_ = scale_data[1];
+  CfgParser config;
+
+  if (!config.init(graphPath+"/"+configName_)) {
+    std::cerr << "** [ERROR] config file does not exist" << std::endl;
+  }
+
+  int n_hidden_layers = config.readIntOpt("model::num_hidden_layers");
+  std::string output_function = config.readStringOpt("model::output_activation_function");
+  outputs_name_ = {"dense_"+std::to_string(n_hidden_layers)+"/"+output_function};
+
+  scale_min_ = config.readFloatListOpt("scaler::scale_min");
+  scale_max_ = config.readFloatListOpt("scaler::scale_max");
 }
 
 EvalNN::~EvalNN()
@@ -88,5 +70,6 @@ std::vector<float> EvalNN::evaluate (const std::vector<float>& inputs)
   for (unsigned int o = 0; o < outputs.size(); ++o)
     out.at(o) = outputs.at(o).matrix<float>()(0, 0);
 
+  if (debug_) debug_network(inputs,out);
   return out;
 }
