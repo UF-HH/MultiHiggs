@@ -502,8 +502,8 @@ int main(int argc, char** argv)
       sbf.match_signal_recojets(ei,presel_jets);
       ot.userInt("nfound_presel") = nfound_presel;
 
-      std::vector<p4_t> all_higgs;
-      std::vector<p4_t> nn_higgs;
+      std::vector<DiJet> all_higgs;
+      std::vector<DiJet> nn_higgs;
       if (n_presel_jet >= 6) {
 	// Make sure there are 6 jets to be able to do the pairings
 	all_higgs = sbf.get_tri_higgs_D_HHH(presel_jets);

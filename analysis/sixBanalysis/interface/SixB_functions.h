@@ -9,6 +9,7 @@
 #include "GenJet.h"
 #include "GenPart.h"
 #include "CompositeCandidate.h"
+#include "DiJet.h"
 
 #include "EvalNN.h"
 
@@ -71,14 +72,14 @@ public:
   bool pass_jet_cut(Cutflow& cutflow, const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets);
 
   // create vector of all higgs resonances 
-  std::vector<p4_t> get_tri_higgs_D_HHH(std::vector<Jet>& in_jets);
+  std::vector<DiJet> get_tri_higgs_D_HHH(std::vector<Jet>& in_jets);
 
   std::vector<Jet> get_6jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier);
-  std::vector<p4_t> get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,std::vector<Jet>& sup_jets,EvalNN& n_2j_classifier);
-  std::vector<p4_t> get_tri_higgs_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier);
+  std::vector<DiJet> get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,std::vector<Jet>& sup_jets,EvalNN& n_2j_classifier);
+  std::vector<DiJet> get_tri_higgs_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier);
 
   // passes event if all dijets mass is greater than 30 from higgs mass
-  bool pass_higgs_cr(const std::vector<p4_t>& in_dijets);
+  bool pass_higgs_cr(const std::vector<DiJet>& in_dijets);
 
   ////////////////////////////////////////////////////
   /// other jet utilities

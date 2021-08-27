@@ -123,22 +123,24 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   }
 
   if (ei.higgs_list) {
-    for (p4_t& higgs : ei.higgs_list.get()) {
+    for (DiJet& higgs : ei.higgs_list.get()) {
       ot.higgs_E.push_back( higgs.E() );
       ot.higgs_m.push_back( higgs.M() );
       ot.higgs_pt.push_back( higgs.Pt() );
       ot.higgs_eta.push_back( higgs.Eta() );
       ot.higgs_phi.push_back( higgs.Phi() );
+      ot.higgs_signalId.push_back( higgs.get_signalId() );
     }
   }
 	
   if (ei.nn_higgs_list) {
-    for (p4_t& nn_higgs : ei.nn_higgs_list.get()) {
+    for (DiJet& nn_higgs : ei.nn_higgs_list.get()) {
       ot.nn_higgs_E.push_back( nn_higgs.E() );
       ot.nn_higgs_m.push_back( nn_higgs.M() );
       ot.nn_higgs_pt.push_back( nn_higgs.Pt() );
       ot.nn_higgs_eta.push_back( nn_higgs.Eta() );
       ot.nn_higgs_phi.push_back( nn_higgs.Phi() );
+      ot.nn_higgs_signalId.push_back( nn_higgs.get_signalId() );
     }
   }
 

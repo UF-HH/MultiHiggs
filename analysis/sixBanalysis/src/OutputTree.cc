@@ -179,6 +179,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("higgs_pt",      &higgs_pt);		
       tree_->Branch("higgs_eta",     &higgs_eta);		
       tree_->Branch("higgs_phi",     &higgs_phi);
+      tree_->Branch("higgs_signalId",&higgs_signalId);
 
       tree_->Branch("b_6j_score",    &b_6j_score);
       tree_->Branch("b_3h_score",    &b_3h_score);
@@ -189,6 +190,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("nn_higgs_pt",      &nn_higgs_pt);		
       tree_->Branch("nn_higgs_eta",     &nn_higgs_eta);		
       tree_->Branch("nn_higgs_phi",     &nn_higgs_phi);
+      tree_->Branch("nn_higgs_signalId",&nn_higgs_signalId);
     }
 
   if (is_enabled("gen_brs"))
@@ -278,12 +280,14 @@ void OutputTree::clear()
   higgs_pt.clear();		
   higgs_eta.clear();		
   higgs_phi.clear();
+  higgs_signalId.clear();
 	
   nn_higgs_E.clear();	    
   nn_higgs_m.clear();		
   nn_higgs_pt.clear();		
   nn_higgs_eta.clear();		
   nn_higgs_phi.clear();
+  nn_higgs_signalId.clear();
 
   CLEAR_m_pt_eta_phi_p4(gen_X_fc);
   CLEAR_m_pt_eta_phi_p4(gen_X);

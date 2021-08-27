@@ -428,9 +428,9 @@ bool SixB_functions::pass_jet_cut(Cutflow& cutflow,const std::vector<double> pt_
   return true;
 }
 
-std::vector<p4_t> pair_best_higgs_method(std::vector<Jet>& in_jets)
+std::vector<DiJet> pair_best_higgs_method(std::vector<Jet>& in_jets)
 {
-  std::vector<p4_t> higgs_list;
+  std::vector<DiJet> higgs_list;
 	
   for (unsigned int i = 0; i < in_jets.size(); i++)
     {
@@ -439,20 +439,20 @@ std::vector<p4_t> pair_best_higgs_method(std::vector<Jet>& in_jets)
       Jet& j1 = in_jets[i];
       if (j1.get_higgsId() != -1) continue;
 
-      std::vector<std::pair<int,p4_t>> dijet_pairs;
+      std::vector<std::pair<int,DiJet>> dijet_pairs;
       for (unsigned int k = i+1; k < in_jets.size(); k++)
 	{
 	  Jet& j2 = in_jets[k];
 	  if (j2.get_higgsId() != -1) continue;
 			
-	  p4_t dijet_p4 = j1.P4Regressed()+j2.P4Regressed();
-	  dijet_pairs.push_back( std::make_pair(k,dijet_p4) );
+	  DiJet dijet(j1,j2);
+	  dijet_pairs.push_back( std::make_pair(k,dijet) );
 	}
       if (dijet_pairs.size() == 0) continue;
       std::sort(dijet_pairs.begin(),dijet_pairs.end(),[](auto di1,auto di2){ return fabs(di1.second.M()-125)<fabs(di2.second.M()-125); });
 		
       int pair_idx = dijet_pairs[0].first;
-      p4_t higgs_p4 = dijet_pairs[0].second;
+      DiJet& higgs_p4 = dijet_pairs[0].second;
       Jet& j2 = in_jets[pair_idx];
 				  
       j1.set_nn_higgsId( higgs_list.size() );
@@ -463,7 +463,7 @@ std::vector<p4_t> pair_best_higgs_method(std::vector<Jet>& in_jets)
 }
 
 
-std::vector<p4_t> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
+std::vector<DiJet> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
 {
 
   // Optimial 3D Line to select most signal like higgs
@@ -471,20 +471,20 @@ std::vector<p4_t> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
   const float theta = 0.98;
   const ROOT::Math::Polar3DVectorF r_vec(1,theta,phi);
 	
-  std::vector<p4_t> dijets;
+  std::vector<DiJet> dijets;
   for (const std::vector<int> ijets : dijet_pairings)
     { 
       int ij1 = ijets[0]; int ij2 = ijets[1];
-      p4_t dijet_p4 = in_jets[ij1].P4Regressed() + in_jets[ij2].P4Regressed();
-      dijets.push_back( dijet_p4 );
+      DiJet dijet(in_jets[ij1],in_jets[ij2]);
+      dijets.push_back( dijet );
     }
 	
   std::vector< std::pair<float,int> > triH_d_hhh;
   for (unsigned int i = 0; i < triH_pairings.size(); i++)
     {
-      std::vector<p4_t> tri_dijet_sys;
+      std::vector<DiJet> tri_dijet_sys;
       for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
-      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](p4_t& dj1,p4_t& dj2){ return dj1.Pt()>dj2.Pt(); });
+      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](DiJet& dj1,DiJet& dj2){ return dj1.Pt()>dj2.Pt(); });
 		
       ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].M(),tri_dijet_sys[1].M(),tri_dijet_sys[2].M());
       float d_hhh = m_vec.Cross(r_vec).R();
@@ -499,7 +499,7 @@ std::vector<p4_t> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
 
   // Order dijets by highest Pt
   std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].Pt() > dijets[id2].Pt(); });
-  std::vector<p4_t> higgs_list;
+  std::vector<DiJet> higgs_list;
 	
   for (unsigned int i = 0; i < idijets.size(); i++)
     {
@@ -510,7 +510,7 @@ std::vector<p4_t> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
 	  jet.set_higgsId(i);
 	}
 		
-      p4_t dijet = dijets[id];
+      DiJet dijet = dijets[id];
 
       higgs_list.push_back(dijet);
     }
@@ -615,11 +615,11 @@ std::vector<float> build_2jet_classifier_input(const std::vector<Jet>& in_jets,c
 }
 
 
-std::vector<p4_t> SixB_functions::get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,std::vector<Jet>& sup_jets,EvalNN& n_2j_classifier)
+std::vector<DiJet> SixB_functions::get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,std::vector<Jet>& sup_jets,EvalNN& n_2j_classifier)
 {
   std::vector<int> sup_index = match_local_idx(in_jets,sup_jets);
 	
-  std::vector<p4_t> b_dijets;
+  std::vector<DiJet> b_dijets;
 	
   std::vector<float> n_2j_scores;
   for (std::vector<int> combo : dijet_pairings)
@@ -634,7 +634,7 @@ std::vector<p4_t> SixB_functions::get_2jet_NN(EventInfo& ei,std::vector<Jet>& in
     {
       float score = 0;
       for (int i : combo) score += n_2j_scores[i]*n_2j_scores[i];
-      score = sqrt(score/3.0);
+      score = sqrt(score/3);
       triH_scores.push_back( std::make_pair(-score,combo) );
     }
   std::sort(triH_scores.begin(),triH_scores.end());
@@ -652,17 +652,17 @@ std::vector<p4_t> SixB_functions::get_2jet_NN(EventInfo& ei,std::vector<Jet>& in
       j1.set_nn_higgsId(ih);
       j2.set_nn_higgsId(ih);
 		
-      p4_t dijet = j1.P4Regressed()+j2.P4Regressed();
+      DiJet dijet(j1,j2);
       b_dijets.push_back(dijet);
     }
-  std::sort(b_dijets.begin(),b_dijets.end(),[](p4_t& d1,p4_t& d2){ return d1.Pt()>d2.Pt(); });
+  std::sort(b_dijets.begin(),b_dijets.end(),[](DiJet& d1,DiJet& d2){ return d1.Pt()>d2.Pt(); });
 	
   return b_dijets;
 }
 
-std::vector<p4_t> SixB_functions::get_tri_higgs_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier)
+std::vector<DiJet> SixB_functions::get_tri_higgs_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier)
 {
-  std::vector<p4_t> higgs_list;
+  std::vector<DiJet> higgs_list;
 
   std::vector<Jet> b_jets = get_6jet_NN(ei,in_jets,n_6j_classifier);
   higgs_list = get_2jet_NN(ei,b_jets,in_jets,n_2j_classifier);
@@ -671,14 +671,14 @@ std::vector<p4_t> SixB_functions::get_tri_higgs_NN(EventInfo& ei,std::vector<Jet
 }
 
 
-bool SixB_functions::pass_higgs_cr(const std::vector<p4_t>& in_dijets)
+bool SixB_functions::pass_higgs_cr(const std::vector<DiJet>& in_dijets)
 {
   //
 	
   float higgs_mass = 125;
   float mass_sideband = 30;
 	
-  for (p4_t dijet : in_dijets)
+  for (DiJet dijet : in_dijets)
     if ( fabs(dijet.M() - higgs_mass) <= mass_sideband )
       return false;
 	
