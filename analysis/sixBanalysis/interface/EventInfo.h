@@ -40,6 +40,7 @@ struct EventInfo{
   boost::optional<int>    n_nn_higgs;
 
   boost::optional<float>  b_6j_score;
+  boost::optional<std::vector<float>> b_2j_scores;
   boost::optional<float>  b_3h_score;
 
   boost::optional<GenPart>  gen_X_fc; // first copy at LHE

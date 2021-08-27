@@ -141,6 +141,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
       ot.nn_higgs_eta.push_back( nn_higgs.Eta() );
       ot.nn_higgs_phi.push_back( nn_higgs.Phi() );
       ot.nn_higgs_signalId.push_back( nn_higgs.get_signalId() );
+      ot.nn_higgs_2j_score.push_back( nn_higgs.get_2j_score() );
     }
   }
 

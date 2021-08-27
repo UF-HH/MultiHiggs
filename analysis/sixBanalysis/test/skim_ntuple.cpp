@@ -354,7 +354,7 @@ int main(int argc, char** argv)
   string f_2j_classifier = config.readStringOpt("configurations::2jet_classifier");
   string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
 
-  EvalNN n_2j_classifier(f_2j_classifier,"dense_input",{"dense_4/Softmax"});
+  EvalNN n_2j_classifier(f_2j_classifier);
   EvalNN n_6j_classifier(f_6j_classifier);
 
   cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;

@@ -537,12 +537,12 @@ std::vector<std::vector<int>> get_6jet_index_combos(int n,int r=6)
   return index_combos;
 }
 
-std::vector<float> build_6jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices)
+std::vector<float> build_6jet_classifier_input(const std::vector<Jet>& in_jets,std::vector<int>& indices)
 {
   std::vector<float> input_array;
 	
   std::vector<std::vector<float>> input_matrix;
-  // std::sort(indices.begin(),indices.end(),[in_jets](int i1,int i2){ return in_jets[i1].get_pt()>in_jets[i2].get_pt(); });
+  std::sort(indices.begin(),indices.end(),[in_jets](int i1,int i2){ return in_jets[i1].get_pt()>in_jets[i2].get_pt(); });
 
   int nvar = 5;
   for (int i = 0; i < nvar; i++) input_matrix.push_back(std::vector<float>());
@@ -588,12 +588,13 @@ std::vector<Jet> SixB_functions::get_6jet_NN(EventInfo& ei,std::vector<Jet>& in_
 }
 
 
-std::vector<float> build_2jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices)
+std::vector<float> build_2jet_classifier_input(const std::vector<Jet>& in_jets,std::vector<int>& indices)
 {
   std::vector<float> input_array;
 	
   std::vector<std::vector<float>> input_matrix;
-  // std::sort(indices.begin(),indices.end(),[in_jets](int i1,int i2){ return in_jets[i1].get_pt()>in_jets[i2].get_pt(); });
+  
+  std::sort(indices.begin(),indices.end(),[in_jets](int i1,int i2){ return in_jets[i1].get_pt()>in_jets[i2].get_pt(); });
 
   int nvar = 5;
   for (int i = 0; i < nvar; i++) input_matrix.push_back(std::vector<float>());
@@ -638,8 +639,11 @@ std::vector<DiJet> SixB_functions::get_2jet_NN(EventInfo& ei,std::vector<Jet>& i
       triH_scores.push_back( std::make_pair(-score,combo) );
     }
   std::sort(triH_scores.begin(),triH_scores.end());
-  float b_3h_score = -triH_scores[0].first;
   std::vector<int> b_index_combo = triH_scores[0].second;
+  
+  float b_3h_score = -triH_scores[0].first;
+  std::vector<float> b_2j_scores;
+  for (int i : b_index_combo) b_2j_scores.push_back(n_2j_scores[i]);
 
   ei.b_3h_score = b_3h_score;
 
@@ -653,6 +657,8 @@ std::vector<DiJet> SixB_functions::get_2jet_NN(EventInfo& ei,std::vector<Jet>& i
       j2.set_nn_higgsId(ih);
 		
       DiJet dijet(j1,j2);
+
+      dijet.set_2j_score(n_2j_scores[id]);
       b_dijets.push_back(dijet);
     }
   std::sort(b_dijets.begin(),b_dijets.end(),[](DiJet& d1,DiJet& d2){ return d1.Pt()>d2.Pt(); });

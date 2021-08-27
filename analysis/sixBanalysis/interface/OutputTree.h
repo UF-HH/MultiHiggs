@@ -147,6 +147,7 @@ public:
   std::vector<float> nn_higgs_m;
   std::vector<float> nn_higgs_E;
   std::vector<int>   nn_higgs_signalId;
+  std::vector<float> nn_higgs_2j_score;
 
   DECLARE_m_pt_eta_phi_p4(gen_X_fc);
   DECLARE_m_pt_eta_phi_p4(gen_X);
