@@ -64,11 +64,10 @@ std::vector<float> EvalNN::evaluate (const std::vector<float>& inputs)
   std::vector<tensorflow::Tensor> outputs;
   tensorflow::run(session_, { { input_name_, input } }, outputs_name_, &outputs);
 
-  // check and print the output
-  // std::cout << " -> " << outputs[0].matrix<float>()(0, 0) << std::endl << std::endl;
-  std::vector<float> out(outputs.size());
-  for (unsigned int o = 0; o < outputs.size(); ++o)
-    out.at(o) = outputs.at(o).matrix<float>()(0, 0);
+  auto output = outputs[0].tensor<float,2>();
+
+  std::vector<float> out(output.size());
+  for (int i = 0; i < output.size(); i++) out[i] = output(0,i);
 
   if (debug_) debug_network(inputs,out);
   return out;

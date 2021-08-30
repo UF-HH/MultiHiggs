@@ -25,6 +25,7 @@ public:
 	 ) ;
   ~EvalNN();
   std::vector<float> evaluate (const std::vector<float>& inputs);
+  void set_output(std::string output) { outputs_name_ = {output}; }
   void set_debug(bool debug) { debug_ = debug; }
 
 private:
