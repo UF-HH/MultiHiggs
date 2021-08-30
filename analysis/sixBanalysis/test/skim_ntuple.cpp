@@ -353,15 +353,15 @@ int main(int argc, char** argv)
   // -----------
 
   string f_2j_classifier = config.readStringOpt("configurations::2jet_classifier");
-  string f_3d_classifier = config.readStringOpt("configurations::3dijet_classifier");
+  // string f_3d_classifier = config.readStringOpt("configurations::3dijet_classifier");
   string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
 
   EvalNN n_2j_classifier(f_2j_classifier);
-  EvalNN n_3d_classifier(f_3d_classifier);
+  // EvalNN n_3d_classifier(f_3d_classifier);
   EvalNN n_6j_classifier(f_6j_classifier);
 
   cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
-  cout << "[INFO] Loading 3 DiJet Classifier: " << f_3d_classifier << endl;
+  // cout << "[INFO] Loading 3 DiJet Classifier: " << f_3d_classifier << endl;
   cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
 
   // -----------
@@ -575,8 +575,8 @@ int main(int argc, char** argv)
 
 	std::vector<Jet> nn_jets = sbf.get_6jet_NN(ei,presel_jets,n_6j_classifier);
 	
-	std::vector<DiJet> nn_dijets = sbf.get_3dijet_NN(ei,nn_jets,n_3d_classifier);
-	// std::vector<DiJet> nn_dijets = sbf.get_2jet_NN(ei,nn_jets,n_2j_classifier);
+	// std::vector<DiJet> nn_dijets = sbf.get_3dijet_NN(ei,nn_jets,n_3d_classifier);
+	std::vector<DiJet> nn_dijets = sbf.get_2jet_NN(ei,nn_jets,n_2j_classifier);
 	
 	int nfound_nn = sbf.n_gjmatched_in_jetcoll(nat, ei, nn_jets);
 	
