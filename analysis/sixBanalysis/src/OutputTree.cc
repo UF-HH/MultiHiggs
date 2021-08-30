@@ -165,8 +165,8 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       // tree_->Branch("jet_partonFlav",&jet_partonFlav);
       // tree_->Branch("jet_hadronFlav",&jet_hadronFlav);
       tree_->Branch("jet_signalId",  &jet_signalId);
-      tree_->Branch("jet_higgsId",   &jet_higgsId);
-      tree_->Branch("jet_nn_higgsId",   &jet_nn_higgsId);
+      tree_->Branch("jet_higgsIdx",   &jet_higgsIdx);
+      tree_->Branch("jet_nn_higgsIdx",   &jet_nn_higgsIdx);
       tree_->Branch("jet_genIdx",    &jet_genIdx);
       tree_->Branch("jet_btag",      &jet_btag);
       tree_->Branch("jet_qgl",       &jet_qgl);
@@ -182,7 +182,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("higgs_signalId",&higgs_signalId);
 
       tree_->Branch("b_6j_score",    &b_6j_score);
-      tree_->Branch("b_3h_score",    &b_3h_score);
+      tree_->Branch("b_3d_score",    &b_3d_score);
 		
       tree_->Branch("n_nn_higgs",       &n_nn_higgs);
       tree_->Branch("nn_higgs_E",       &nn_higgs_E);	    
@@ -248,7 +248,7 @@ void OutputTree::clear()
   n_nn_higgs = 0;
 
   b_6j_score = 0;
-  b_3h_score = 0;
+  b_3d_score = 0;
 
   genjet_E.clear();	    
   genjet_m.clear();		
@@ -268,8 +268,8 @@ void OutputTree::clear()
   jet_partonFlav.clear();
   jet_hadronFlav.clear();
   jet_signalId.clear();
-  jet_higgsId.clear();
-  jet_nn_higgsId.clear();
+  jet_higgsIdx.clear();
+  jet_nn_higgsIdx.clear();
   jet_genIdx.clear();
   jet_btag.clear();
   jet_qgl.clear();

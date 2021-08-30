@@ -102,7 +102,7 @@ public:
   int n_nn_higgs;
 
   float b_6j_score;
-  float b_3h_score;
+  float b_3d_score;
 
   float sphericity;
   float sphericity_t;
@@ -126,8 +126,8 @@ public:
   std::vector<int> jet_partonFlav;
   std::vector<int> jet_hadronFlav;
   std::vector<int> jet_signalId;
-  std::vector<int> jet_higgsId;
-  std::vector<int> jet_nn_higgsId;
+  std::vector<int> jet_higgsIdx;
+  std::vector<int> jet_nn_higgsIdx;
   std::vector<int> jet_genIdx;
   std::vector<float> jet_btag;
   std::vector<float> jet_qgl;
