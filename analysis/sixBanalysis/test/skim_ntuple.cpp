@@ -266,7 +266,8 @@ int main(int argc, char** argv)
 
   ot.declareUserIntBranch("nfound_all",    0);
   ot.declareUserIntBranch("nfound_presel", 0);
-  ot.declareUserIntBranch("nfound_sixb",   0);
+  ot.declareUserIntBranch("nfound_t6",   0);
+  ot.declareUserIntBranch("nfound_nn",   0);
 
   if (save_trg_decision) {
     for (auto& tname : triggerVector)
@@ -352,12 +353,15 @@ int main(int argc, char** argv)
   // -----------
 
   string f_2j_classifier = config.readStringOpt("configurations::2jet_classifier");
+  string f_3d_classifier = config.readStringOpt("configurations::3dijet_classifier");
   string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
 
   EvalNN n_2j_classifier(f_2j_classifier);
+  EvalNN n_3d_classifier(f_3d_classifier);
   EvalNN n_6j_classifier(f_6j_classifier);
 
   cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
+  cout << "[INFO] Loading 3 DiJet Classifier: " << f_3d_classifier << endl;
   cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
 
   // -----------
@@ -501,20 +505,6 @@ int main(int argc, char** argv)
       int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
       sbf.match_signal_recojets(ei,presel_jets);
       ot.userInt("nfound_presel") = nfound_presel;
-
-      std::vector<DiJet> all_higgs;
-      std::vector<DiJet> nn_higgs;
-      if (n_presel_jet >= 6) {
-	// Make sure there are 6 jets to be able to do the pairings
-	all_higgs = sbf.get_tri_higgs_D_HHH(presel_jets);
-	nn_higgs = sbf.get_tri_higgs_NN(ei,presel_jets,n_6j_classifier,n_2j_classifier);
-            
-	ei.n_higgs = all_higgs.size();
-	ei.higgs_list = all_higgs;
-
-	ei.n_nn_higgs = nn_higgs.size();
-	ei.nn_higgs_list = nn_higgs;
-      }
         
       if (!is_data) {
 	std::vector<GenJet> all_genjets = sbf.get_all_genjets(nat);
@@ -527,12 +517,12 @@ int main(int argc, char** argv)
 	ei.genjet_list = all_genjets;
       }
         
+      ei.jet_list = presel_jets;
+      ei.n_jet = n_presel_jet;
+        
       EventShapeCalculator esc(presel_jets);
       EventShapes event_shapes = esc.get_sphericity_shapes();
       ei.event_shapes = event_shapes;
-        
-      ei.jet_list = presel_jets;
-      ei.n_jet = n_presel_jet;
 
 
       float jet6_btagsum = 0.0;
@@ -578,10 +568,28 @@ int main(int argc, char** argv)
 
 	if ( applyJetCuts && !sbf.pass_jet_cut(cutflow,pt_cuts,btagWP_cuts,presel_jets) )
 	  continue;
-            
-	std::vector<Jet> sixb_jets = sbf.select_sixb_jets(nat, presel_jets);
-	int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
-	ot.userInt("nfound_sixb")   = nfound_sixb;
+
+	std::vector<Jet> t6_jets = sbf.get_6jet_top(presel_jets);
+	std::vector<DiJet> t6_dijets = sbf.get_tri_higgs_D_HHH(t6_jets);
+	int nfound_t6 = sbf.n_gjmatched_in_jetcoll(nat, ei, t6_jets);
+
+	std::vector<Jet> nn_jets = sbf.get_6jet_NN(ei,presel_jets,n_6j_classifier);
+	
+	std::vector<DiJet> nn_dijets = sbf.get_3dijet_NN(ei,nn_jets,n_3d_classifier);
+	// std::vector<DiJet> nn_dijets = sbf.get_2jet_NN(ei,nn_jets,n_2j_classifier);
+	
+	int nfound_nn = sbf.n_gjmatched_in_jetcoll(nat, ei, nn_jets);
+	
+	ot.userInt("nfound_t6")   = nfound_t6;
+	ot.userInt("nfound_nn")     = nfound_nn;
+
+	ei.t6_jet_list = t6_jets;
+	ei.t6_higgs_list = t6_dijets;
+	ei.n_higgs = t6_dijets.size();
+
+	ei.nn_jet_list = nn_jets;
+	ei.nn_higgs_list = nn_dijets;
+	
 	loop_timer.click("Six b selection");
       }
 
@@ -593,9 +601,9 @@ int main(int argc, char** argv)
 	if ( applyJetCuts && !sbf.pass_jet_cut(cutflow,pt_cuts,btagWP_cuts,presel_jets) )
 	  continue;
 
-	if ( !sbf.pass_higgs_cr(all_higgs) )
-	  continue;
-	cutflow.add("higgs_veto_cr");
+	// if ( !sbf.pass_higgs_cr(all_higgs) )
+	//   continue;
+	// cutflow.add("higgs_veto_cr");
 
 	if ( jet6_btagsum >= 3.8 )
 	  continue;

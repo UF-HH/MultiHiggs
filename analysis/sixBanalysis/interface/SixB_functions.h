@@ -74,8 +74,11 @@ public:
   // create vector of all higgs resonances 
   std::vector<DiJet> get_tri_higgs_D_HHH(std::vector<Jet>& in_jets);
 
+  std::vector<Jet> get_6jet_top(std::vector<Jet>& in_jets);
   std::vector<Jet> get_6jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier);
-  std::vector<DiJet> get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,std::vector<Jet>& sup_jets,EvalNN& n_2j_classifier);
+
+  
+  std::vector<DiJet> get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_2j_classifier);
   std::vector<DiJet> get_3dijet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_3d_classifier);
   std::vector<DiJet> get_tri_higgs_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier);
 

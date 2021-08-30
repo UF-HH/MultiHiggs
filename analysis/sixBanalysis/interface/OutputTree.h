@@ -55,7 +55,32 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   float OBJ ## _DeepJet;					\
   p4_t  OBJ ## _p4;
 
-#define DECLARE_jet_collection(OBJ)		\
+#define DECLARE_jet_list(OBJ)			\
+  std::vector<float> OBJ ## _E;			\
+  std::vector<float> OBJ ## _m;			\
+  std::vector<float> OBJ ## _pt;		\
+  std::vector<float> OBJ ## _eta;		\
+  std::vector<float> OBJ ## _phi;		\
+  std::vector<int> OBJ ## _partonFlav;		\
+  std::vector<int> OBJ ## _hadronFlav;		\
+  std::vector<int> OBJ ## _signalId;		\
+  std::vector<int> OBJ ## _higgsIdx;		\
+  std::vector<int> OBJ ## _genIdx;		\
+  std::vector<float> OBJ ## _btag;		\
+  std::vector<float> OBJ ## _qgl;		\
+  std::vector<int>   OBJ ## _id;		\
+  std::vector<int>   OBJ ## _puid;		\
+  std::vector<int> OBJ ## _preselIdx;
+
+#define DECLARE_dijet_list(OBJ)			\
+  std::vector<float> OBJ ## _pt;		\
+  std::vector<float> OBJ ## _eta;		\
+  std::vector<float> OBJ ## _phi;		\
+  std::vector<float> OBJ ## _m;			\
+  std::vector<float> OBJ ## _E;			\
+  std::vector<int>   OBJ ## _signalId;		\
+  std::vector<float> OBJ ## _2j_score;		
+  
 
 class OutputTree : public BaseOutTree {
     
@@ -99,7 +124,6 @@ public:
   int n_total_jet;
   int n_jet;
   int n_higgs;
-  int n_nn_higgs;
 
   float b_6j_score;
   float b_3d_score;
@@ -117,37 +141,13 @@ public:
   std::vector<int> genjet_hadronFlav;
   std::vector<int> genjet_signalId;
   std::vector<int> genjet_recoIdx;
-	
-  std::vector<float> jet_E;	    
-  std::vector<float> jet_m;		
-  std::vector<float> jet_pt;		
-  std::vector<float> jet_eta;		
-  std::vector<float> jet_phi;		
-  std::vector<int> jet_partonFlav;
-  std::vector<int> jet_hadronFlav;
-  std::vector<int> jet_signalId;
-  std::vector<int> jet_higgsIdx;
-  std::vector<int> jet_nn_higgsIdx;
-  std::vector<int> jet_genIdx;
-  std::vector<float> jet_btag;
-  std::vector<float> jet_qgl;
-  std::vector<int>   jet_id;
-  std::vector<int>   jet_puid;
 
-  std::vector<float> higgs_pt;
-  std::vector<float> higgs_eta;
-  std::vector<float> higgs_phi;
-  std::vector<float> higgs_m;
-  std::vector<float> higgs_E;
-  std::vector<int>   higgs_signalId;
-	
-  std::vector<float> nn_higgs_pt;
-  std::vector<float> nn_higgs_eta;
-  std::vector<float> nn_higgs_phi;
-  std::vector<float> nn_higgs_m;
-  std::vector<float> nn_higgs_E;
-  std::vector<int>   nn_higgs_signalId;
-  std::vector<float> nn_higgs_2j_score;
+  DECLARE_jet_list(jet);
+  DECLARE_jet_list(t6_jet);
+  DECLARE_jet_list(nn_jet);
+
+  DECLARE_dijet_list(t6_higgs);
+  DECLARE_dijet_list(nn_higgs);
 
   DECLARE_m_pt_eta_phi_p4(gen_X_fc);
   DECLARE_m_pt_eta_phi_p4(gen_X);

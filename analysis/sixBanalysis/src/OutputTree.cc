@@ -53,6 +53,57 @@ using namespace std;
   OBJ ## _DeepJet       = -999.;			\
   OBJ ## _p4            . SetCoordinates(0,0,0,0);
 
+#define BRANCH_jet_list(OBJ)					\
+  tree_->Branch(#OBJ "_E", &OBJ ## _E);				\
+  tree_->Branch(#OBJ "_m", &OBJ ## _m);				\
+  tree_->Branch(#OBJ "_pt", &OBJ ## _pt);			\
+  tree_->Branch(#OBJ "_eta", &OBJ ## _eta);			\
+  tree_->Branch(#OBJ "_phi", &OBJ ## _phi);			\
+  tree_->Branch(#OBJ "_signalId", &OBJ ## _signalId);		\
+  tree_->Branch(#OBJ "_higgsIdx", &OBJ ## _higgsIdx);		\
+  tree_->Branch(#OBJ "_genIdx", &OBJ ## _genIdx);		\
+  tree_->Branch(#OBJ "_btag", &OBJ ## _btag);			\
+  tree_->Branch(#OBJ "_qgl", &OBJ ## _qgl);			\
+  tree_->Branch(#OBJ "_id", &OBJ ## _id);			\
+  tree_->Branch(#OBJ "_puid", &OBJ ## _puid);			\
+  tree_->Branch(#OBJ "_preselIdx", &OBJ ## _preselIdx);
+
+#define CLEAR_jet_list(OBJ)			\
+  OBJ ## _E.clear();				\
+  OBJ ## _m.clear();				\
+  OBJ ## _pt.clear();				\
+  OBJ ## _eta.clear();				\
+  OBJ ## _phi.clear();				\
+  OBJ ## _partonFlav.clear();			\
+  OBJ ## _hadronFlav.clear();			\
+  OBJ ## _signalId.clear();			\
+  OBJ ## _higgsIdx.clear();			\
+  OBJ ## _genIdx.clear();			\
+  OBJ ## _btag.clear();				\
+  OBJ ## _qgl.clear();				\
+  OBJ ## _id.clear();				\
+  OBJ ## _puid.clear();				\
+  OBJ ## _preselIdx.clear();
+
+#define BRANCH_dijet_list(OBJ)				\
+  tree_->Branch(#OBJ "_pt", &OBJ ## _pt);		\
+  tree_->Branch(#OBJ "_eta", &OBJ ## _eta);		\
+  tree_->Branch(#OBJ "_phi", &OBJ ## _phi);		\
+  tree_->Branch(#OBJ "_m", &OBJ ## _m);			\
+  tree_->Branch(#OBJ "_E", &OBJ ## _E);			\
+  tree_->Branch(#OBJ "_signalId", &OBJ ## _signalId);	\
+  tree_->Branch(#OBJ "_2j_score", &OBJ ## _2j_score);           
+
+#define CLEAR_dijet_list(OBJ)			\
+  OBJ ## _pt.clear();				\
+  OBJ ## _eta.clear();				\
+  OBJ ## _phi.clear();				\
+  OBJ ## _m.clear();				\
+  OBJ ## _E.clear();				\
+  OBJ ## _signalId.clear();			\
+  OBJ ## _2j_score.clear();           
+  
+
 OutputTree::OutputTree(bool savetlv, std::map<std::string, bool> branch_switches, string name, string title) :
 BaseOutTree(name, title, "OutputTree"),
   savetlv_(savetlv)
@@ -157,41 +208,19 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     {
       std::cout << "[INFO] OutputTree : enabling jet collection branches" << std::endl;
       tree_->Branch("n_jet",         &n_jet);
-      tree_->Branch("jet_E",         &jet_E);	    
-      tree_->Branch("jet_m",         &jet_m);		
-      tree_->Branch("jet_pt",        &jet_pt);		
-      tree_->Branch("jet_eta",       &jet_eta);		
-      tree_->Branch("jet_phi",       &jet_phi);		
-      // tree_->Branch("jet_partonFlav",&jet_partonFlav);
-      // tree_->Branch("jet_hadronFlav",&jet_hadronFlav);
-      tree_->Branch("jet_signalId",  &jet_signalId);
-      tree_->Branch("jet_higgsIdx",   &jet_higgsIdx);
-      tree_->Branch("jet_nn_higgsIdx",   &jet_nn_higgsIdx);
-      tree_->Branch("jet_genIdx",    &jet_genIdx);
-      tree_->Branch("jet_btag",      &jet_btag);
-      tree_->Branch("jet_qgl",       &jet_qgl);
-      tree_->Branch("jet_id",        &jet_id);
-      tree_->Branch("jet_puid",      &jet_puid);
 
-      tree_->Branch("n_higgs",       &n_higgs);
-      tree_->Branch("higgs_E",       &higgs_E);	    
-      tree_->Branch("higgs_m",       &higgs_m);		
-      tree_->Branch("higgs_pt",      &higgs_pt);		
-      tree_->Branch("higgs_eta",     &higgs_eta);		
-      tree_->Branch("higgs_phi",     &higgs_phi);
-      tree_->Branch("higgs_signalId",&higgs_signalId);
-
+      BRANCH_jet_list(jet);
+      BRANCH_jet_list(t6_jet);
+      
       tree_->Branch("b_6j_score",    &b_6j_score);
+      BRANCH_jet_list(nn_jet);
+
+      tree_->Branch("n_higgs", &n_higgs);
+      
+      BRANCH_dijet_list(t6_higgs);
+      
       tree_->Branch("b_3d_score",    &b_3d_score);
-		
-      tree_->Branch("n_nn_higgs",       &n_nn_higgs);
-      tree_->Branch("nn_higgs_E",       &nn_higgs_E);	    
-      tree_->Branch("nn_higgs_m",       &nn_higgs_m);		
-      tree_->Branch("nn_higgs_pt",      &nn_higgs_pt);		
-      tree_->Branch("nn_higgs_eta",     &nn_higgs_eta);		
-      tree_->Branch("nn_higgs_phi",     &nn_higgs_phi);
-      tree_->Branch("nn_higgs_signalId",&nn_higgs_signalId);
-      tree_->Branch("nn_higgs_2j_score",&nn_higgs_2j_score);
+      BRANCH_dijet_list(nn_higgs);
     }
 
   if (is_enabled("gen_brs"))
@@ -245,7 +274,6 @@ void OutputTree::clear()
   n_jet = 0;
   n_genjet = 0;
   n_higgs = 0;
-  n_nn_higgs = 0;
 
   b_6j_score = 0;
   b_3d_score = 0;
@@ -259,37 +287,13 @@ void OutputTree::clear()
   genjet_hadronFlav.clear();
   genjet_signalId.clear();
   genjet_recoIdx.clear();
-	
-  jet_E.clear();	    
-  jet_m.clear();		
-  jet_pt.clear();		
-  jet_eta.clear();		
-  jet_phi.clear();		
-  jet_partonFlav.clear();
-  jet_hadronFlav.clear();
-  jet_signalId.clear();
-  jet_higgsIdx.clear();
-  jet_nn_higgsIdx.clear();
-  jet_genIdx.clear();
-  jet_btag.clear();
-  jet_qgl.clear();
-  jet_id.clear();
-  jet_puid.clear();
-	
-  higgs_E.clear();	    
-  higgs_m.clear();		
-  higgs_pt.clear();		
-  higgs_eta.clear();		
-  higgs_phi.clear();
-  higgs_signalId.clear();
-	
-  nn_higgs_E.clear();	    
-  nn_higgs_m.clear();		
-  nn_higgs_pt.clear();		
-  nn_higgs_eta.clear();		
-  nn_higgs_phi.clear();
-  nn_higgs_signalId.clear();
-  nn_higgs_2j_score.clear();
+
+  CLEAR_jet_list(jet);
+  CLEAR_jet_list(t6_jet);
+  CLEAR_jet_list(nn_jet);
+
+  CLEAR_dijet_list(t6_higgs);
+  CLEAR_dijet_list(nn_higgs);
 
   CLEAR_m_pt_eta_phi_p4(gen_X_fc);
   CLEAR_m_pt_eta_phi_p4(gen_X);

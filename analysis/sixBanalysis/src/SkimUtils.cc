@@ -56,6 +56,39 @@ using namespace std;
     ot.OBJ ## _DeepJet      = get_property( ei. OBJ .get(), Jet_btagDeepFlavB); \
     ot.OBJ ## _p4           = ei. OBJ -> P4();				\
   }
+
+#define COPY_OPTIONAL_jet_list(OBJ)				\
+  if (ei.OBJ ## _list) {					\
+  for (Jet& jet : ei.OBJ ## _list.get()) {			\
+    ot.OBJ ## _E.push_back( jet.get_E() );			\
+    ot.OBJ ## _m.push_back( jet.get_m() );			\
+    ot.OBJ ## _pt.push_back( jet.get_pt() );			\
+    ot.OBJ ## _eta.push_back( jet.get_eta() );			\
+    ot.OBJ ## _phi.push_back( jet.get_phi() );			\
+    ot.OBJ ## _signalId.push_back( jet.get_signalId() );	\
+    ot.OBJ ## _higgsIdx.push_back( jet.get_higgsIdx() );	\
+    ot.OBJ ## _genIdx.push_back( jet.get_genIdx() );		\
+    ot.OBJ ## _btag.push_back( jet.get_btag() );		\
+    ot.OBJ ## _qgl.push_back( jet.get_qgl() );			\
+    ot.OBJ ## _id.push_back( jet.get_id() );			\
+    ot.OBJ ## _puid.push_back( jet.get_puid() );		\
+    ot.OBJ ## _preselIdx.push_back( jet.get_preselIdx() );	\
+  }								\
+}
+
+#define COPY_OPTIONAL_dijet_list(OBJ)				\
+  if (ei.OBJ ## _list) {					\
+  for (DiJet& dijet : ei.OBJ ## _list.get()) {			\
+    ot.OBJ ## _E.push_back( dijet.E() );			\
+    ot.OBJ ## _m.push_back( dijet.M() );			\
+    ot.OBJ ## _pt.push_back( dijet.Pt() );			\
+    ot.OBJ ## _eta.push_back( dijet.Eta() );			\
+    ot.OBJ ## _phi.push_back( dijet.Phi() );			\
+    ot.OBJ ## _signalId.push_back( dijet.get_signalId() );	\
+    ot.OBJ ## _2j_score.push_back( dijet.get_2j_score() );	\
+  }								\
+}
+
 // --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - 
 
 int SkimUtils::appendFromFileList (TChain* chain, string filename)
@@ -96,54 +129,17 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if(ei.n_jet)          ot.n_jet           = *ei.n_jet;
   if(ei.n_total_jet)    ot.n_total_jet     = *ei.n_total_jet;
   if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
-  if(ei.n_higgs)        ot.n_higgs         = *ei.n_higgs;
-  if(ei.n_nn_higgs)     ot.n_nn_higgs      = *ei.n_nn_higgs;
+  if(ei.n_higgs)        ot.n_higgs      = *ei.n_higgs;
 
   if(ei.b_6j_score)     ot.b_6j_score      = *ei.b_6j_score;
   if(ei.b_3d_score)     ot.b_3d_score      = *ei.b_3d_score;
 
-  if (ei.jet_list) {
-    for (Jet& jet : ei.jet_list.get()) {
-      ot.jet_E.push_back( jet.get_E() );	    
-      ot.jet_m.push_back( jet.get_m() );		
-      ot.jet_pt.push_back( jet.get_pt() );
-      ot.jet_eta.push_back( jet.get_eta() );		
-      ot.jet_phi.push_back( jet.get_phi() );		
-      // ot.jet_partonFlav.push_back( jet.get_partonFlav() );
-      // ot.jet_hadronFlav.push_back( jet.get_hadronFlav() );
-      ot.jet_signalId.push_back( jet.get_signalId() );
-      ot.jet_higgsIdx.push_back( jet.get_higgsIdx() );
-      ot.jet_nn_higgsIdx.push_back( jet.get_nn_higgsIdx() );
-      ot.jet_genIdx.push_back( jet.get_genIdx() );
-      ot.jet_btag.push_back( jet.get_btag() );
-      ot.jet_qgl.push_back( jet.get_qgl() );
-      ot.jet_id.push_back( jet.get_id() );
-      ot.jet_puid.push_back( jet.get_puid() );
-    }
-  }
+  COPY_OPTIONAL_jet_list(jet);
+  COPY_OPTIONAL_jet_list(t6_jet);
+  COPY_OPTIONAL_jet_list(nn_jet);
 
-  if (ei.higgs_list) {
-    for (DiJet& higgs : ei.higgs_list.get()) {
-      ot.higgs_E.push_back( higgs.E() );
-      ot.higgs_m.push_back( higgs.M() );
-      ot.higgs_pt.push_back( higgs.Pt() );
-      ot.higgs_eta.push_back( higgs.Eta() );
-      ot.higgs_phi.push_back( higgs.Phi() );
-      ot.higgs_signalId.push_back( higgs.get_signalId() );
-    }
-  }
-	
-  if (ei.nn_higgs_list) {
-    for (DiJet& nn_higgs : ei.nn_higgs_list.get()) {
-      ot.nn_higgs_E.push_back( nn_higgs.E() );
-      ot.nn_higgs_m.push_back( nn_higgs.M() );
-      ot.nn_higgs_pt.push_back( nn_higgs.Pt() );
-      ot.nn_higgs_eta.push_back( nn_higgs.Eta() );
-      ot.nn_higgs_phi.push_back( nn_higgs.Phi() );
-      ot.nn_higgs_signalId.push_back( nn_higgs.get_signalId() );
-      ot.nn_higgs_2j_score.push_back( nn_higgs.get_2j_score() );
-    }
-  }
+  COPY_OPTIONAL_dijet_list(t6_higgs);
+  COPY_OPTIONAL_dijet_list(nn_higgs);
 
   if (ei.genjet_list) {
     for (GenJet& jet : ei.genjet_list.get()) {

@@ -32,12 +32,12 @@ public:
 
   int higgsIdx = -1;
   void set_higgsIdx(int id) { higgsIdx = id; }
-
-  int nn_higgsIdx = -1;
-  void set_nn_higgsIdx(int id) { nn_higgsIdx = id; }
 	
   int genIdx = -1;
   void set_genIdx(int idx) { genIdx = idx; }
+
+  int preselIdx = -1;
+  void set_preselIdx(int idx) { preselIdx = idx; }
 
 	
   float get_E() const        { return this->P4().E(); }
@@ -49,12 +49,12 @@ public:
   int get_hadronFlav() const { return get_property ((*this), Jet_hadronFlavour); }
   int get_signalId() const   { return signalId; }
   int get_higgsIdx() const    { return higgsIdx; }
-  int get_nn_higgsIdx() const    { return nn_higgsIdx; }
   int get_genIdx() const     { return genIdx; }
   float get_btag() const     { return get_property ((*this), Jet_btagDeepFlavB); }
   float get_qgl() const      { return get_property ((*this), Jet_qgl); }
   int get_id() const         { return get_property ((*this),Jet_jetId); }
   int get_puid() const       { return get_property ((*this), Jet_puId); }
+  int get_preselIdx() const  { return preselIdx; }
 private:
   void buildP4() override; 
 
