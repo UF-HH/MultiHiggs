@@ -6,6 +6,22 @@
 
 using namespace std;
 
+
+void test_3d_classifier()
+{
+  string f_classifier = "/uscms/home/srosenzw/nobackup/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixb/6jet_classifier/models/20210831_dijet/";
+  cout << "[INFO] Testing Classifier: " << f_classifier << endl;
+
+  EvalNN network(f_classifier);
+  // network.set_output("training/Nadam/dense_2/bias/v");
+  network.set_debug(true);
+    
+  vector<float> inputs = {51.999,45.525,98.381,39.749,151.839,146.689,-0.057,1.525,0.101,-0.023,2.09,1.779,1.288,-0.672,2.648,-1.766,-2.625,3.119,0.935,0.893,0.952,0.923,0.275,0.469,54.57,94.686,287.716};
+
+  
+  vector<float> outputs = network.evaluate(inputs);
+}
+
 void test_6j_multi_classifier()
 {
   string f_classifier = "/uscms/home/srosenzw/nobackup/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixb/6jet_classifier/models/20210828_multiclass_nsignal/";
@@ -61,7 +77,8 @@ void test_2j_classifier()
 }
 
 int main() {
-  test_6j_multi_classifier();
-  test_6j_classifier();
+  test_3d_classifier();
+  // test_6j_multi_classifier();
+  // test_6j_classifier();
   // test_2j_classifier();
 }

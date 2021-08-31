@@ -19,6 +19,16 @@ std::vector<std::vector<int>> get_6jet_index_combos(int n,int r)
   return index_combos;
 }
 
+float get_dijet_dr(const Jet& j1,const Jet& j2)
+{
+  return ROOT::Math::VectorUtil::DeltaR( j1.P4Regressed(),j2.P4Regressed() );
+}
+
+float get_dijet_pt(const Jet& j1,const Jet& j2)
+{
+  return (j1.P4Regressed()+j2.P4Regressed()).Pt();
+}
+
 std::vector<float> build_6jet_classifier_input(std::vector<Jet> in_jets)
 {
   std::vector<float> input_array;
@@ -62,12 +72,11 @@ std::vector<float> build_3dijet_classifier_input(std::vector<Jet> in_jets)
     {in_jets[4],in_jets[5]}
   };
 
-  auto get_dijet_pt = [](std::vector<Jet> d){ return (d[0].P4Regressed()+d[1].P4Regressed()).Pt(); };
-  std::sort(dijets.begin(),dijets.end(),[get_dijet_pt](std::vector<Jet> d1,std::vector<Jet> d2){ return get_dijet_pt(d1) > get_dijet_pt(d2); });
+  std::sort(dijets.begin(),dijets.end(),[](std::vector<Jet> d1,std::vector<Jet> d2){ return get_dijet_pt(d1[0],d1[1]) > get_dijet_pt(d2[0],d2[1]); });
   for (int i = 0; i < 3; i++) std::sort(dijets[i].begin(),dijets[i].end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
 
   std::vector<std::vector<float>> input_matrix;
-  int nvars = 5;
+  int nvars = 6;
   for (int i = 0; i < nvars; i++) input_matrix.push_back(std::vector<float>());
   
   for ( std::vector<Jet> jet_pair : dijets )
@@ -79,7 +88,8 @@ std::vector<float> build_3dijet_classifier_input(std::vector<Jet> in_jets)
 	  input_matrix[2].push_back( j.get_phi() );
 	  input_matrix[3].push_back( j.get_btag() );
 	}
-      input_matrix[4].push_back( get_dijet_pt(jet_pair) );
+      input_matrix[4].push_back( get_dijet_pt(jet_pair[0],jet_pair[1]) );
+      input_matrix[5].push_back( get_dijet_dr(jet_pair[0],jet_pair[1]) );
     }
   
   for ( std::vector<float> input : input_matrix ) input_array.insert(input_array.end(),input.begin(),input.end());
@@ -113,9 +123,7 @@ std::vector<float> build_2jet_classifier_input(std::vector<Jet> in_jets)
       input_matrix[2].push_back( j.get_phi() );
       input_matrix[3].push_back( j.get_btag() );
     }
-
-  float dr = ROOT::Math::VectorUtil::DeltaR( in_jets[0].P4Regressed(),in_jets[1].P4Regressed() );
-  input_matrix[4].push_back( dr );
+  input_matrix[4].push_back( get_dijet_dr(in_jets[0],in_jets[1]) );
 
   for ( std::vector<float> input : input_matrix ) input_array.insert(input_array.end(),input.begin(),input.end());
 
