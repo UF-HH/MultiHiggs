@@ -89,6 +89,9 @@ public:
   /// other jet utilities
   ////////////////////////////////////////////////////
 
+  // counts how many valid gen higgs are in the in_dijets collection
+  int n_gjmatched_in_dijetcoll(const std::vector<DiJet>& in_dijets);
+
   // counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
   int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 	

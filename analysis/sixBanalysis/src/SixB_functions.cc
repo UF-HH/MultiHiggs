@@ -734,6 +734,16 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
 
   return std::make_tuple(HX, HY1, HY2);
 }
+int SixB_functions::n_gjmatched_in_dijetcoll(const std::vector<DiJet>& in_dijets)
+{
+
+  int nfound = 0;
+  for (const DiJet& d : in_dijets)
+    if (d.get_signalId() != -1)
+      nfound += 1;
+
+  return nfound;
+}
 
 int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {

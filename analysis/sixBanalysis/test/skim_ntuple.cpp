@@ -268,6 +268,9 @@ int main(int argc, char** argv)
   ot.declareUserIntBranch("nfound_presel", 0);
   ot.declareUserIntBranch("nfound_t6",   0);
   ot.declareUserIntBranch("nfound_nn",   0);
+  
+  ot.declareUserIntBranch("nfound_t6_h",   0);
+  ot.declareUserIntBranch("nfound_nn_h",   0);
 
   if (save_trg_decision) {
     for (auto& tname : triggerVector)
@@ -357,7 +360,7 @@ int main(int argc, char** argv)
   string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
 
   EvalNN n_2j_classifier(f_2j_classifier);
-  // EvalNN n_3d_classifier(f_3d_classifier);
+  // EvalNN n_3d_classifier(f_3d_classifier);// n_3d_classifier.set_debug(true);
   EvalNN n_6j_classifier(f_6j_classifier);
 
   cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
@@ -571,17 +574,23 @@ int main(int argc, char** argv)
 
 	std::vector<Jet> t6_jets = sbf.get_6jet_top(presel_jets);
 	std::vector<DiJet> t6_dijets = sbf.get_tri_higgs_D_HHH(t6_jets);
+
+	int nfound_t6_h = sbf.n_gjmatched_in_dijetcoll(t6_dijets);
 	int nfound_t6 = sbf.n_gjmatched_in_jetcoll(nat, ei, t6_jets);
 
 	std::vector<Jet> nn_jets = sbf.get_6jet_NN(ei,presel_jets,n_6j_classifier);
 	
 	// std::vector<DiJet> nn_dijets = sbf.get_3dijet_NN(ei,nn_jets,n_3d_classifier);
 	std::vector<DiJet> nn_dijets = sbf.get_2jet_NN(ei,nn_jets,n_2j_classifier);
+
 	
+	int nfound_nn_h = sbf.n_gjmatched_in_dijetcoll(nn_dijets);
 	int nfound_nn = sbf.n_gjmatched_in_jetcoll(nat, ei, nn_jets);
 	
 	ot.userInt("nfound_t6")   = nfound_t6;
+	ot.userInt("nfound_t6_h") = nfound_t6_h;
 	ot.userInt("nfound_nn")     = nfound_nn;
+	ot.userInt("nfound_nn_h")     = nfound_nn_h;
 
 	ei.t6_jet_list = t6_jets;
 	ei.t6_higgs_list = t6_dijets;
