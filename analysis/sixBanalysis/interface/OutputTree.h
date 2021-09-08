@@ -78,6 +78,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   std::vector<float> OBJ ## _phi;		\
   std::vector<float> OBJ ## _m;			\
   std::vector<float> OBJ ## _E;			\
+  std::vector<float> OBJ ## _dr;		\
   std::vector<int>   OBJ ## _signalId;		\
   std::vector<float> OBJ ## _2j_score;		
   
@@ -128,10 +129,6 @@ public:
   float b_6j_score;
   float b_3d_score;
 
-  float sphericity;
-  float sphericity_t;
-  float aplanarity;
-	
   std::vector<float> genjet_E;	    
   std::vector<float> genjet_m;		
   std::vector<float> genjet_pt;		
@@ -144,7 +141,13 @@ public:
 
   DECLARE_jet_list(jet);
   DECLARE_jet_list(t6_jet);
+  float t6_sphericity;
+  float t6_sphericity_t;
+  float t6_aplanarity;
   DECLARE_jet_list(nn_jet);
+  float nn_sphericity;
+  float nn_sphericity_t;
+  float nn_aplanarity;
 
   DECLARE_dijet_list(t6_higgs);
   DECLARE_dijet_list(nn_higgs);
