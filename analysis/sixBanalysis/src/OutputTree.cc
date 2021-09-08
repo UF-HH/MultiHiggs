@@ -91,6 +91,7 @@ using namespace std;
   tree_->Branch(#OBJ "_phi", &OBJ ## _phi);		\
   tree_->Branch(#OBJ "_m", &OBJ ## _m);			\
   tree_->Branch(#OBJ "_E", &OBJ ## _E);			\
+  tree_->Branch(#OBJ "_dr", &OBJ ## _dr);		\
   tree_->Branch(#OBJ "_signalId", &OBJ ## _signalId);	\
   tree_->Branch(#OBJ "_2j_score", &OBJ ## _2j_score);           
 
@@ -100,6 +101,7 @@ using namespace std;
   OBJ ## _phi.clear();				\
   OBJ ## _m.clear();				\
   OBJ ## _E.clear();				\
+  OBJ ## _dr.clear();				\
   OBJ ## _signalId.clear();			\
   OBJ ## _2j_score.clear();           
   
@@ -250,9 +252,13 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
   if (is_enabled("shape_brs"))
     {
       std::cout << "[INFO] OutputTree : enabling shape-only related branches" << std::endl;
-      tree_->Branch("sphericity",  &sphericity);
-      tree_->Branch("sphericity_t",&sphericity_t);
-      tree_->Branch("aplanarity",  &aplanarity);
+      tree_->Branch("t6_sphericity",  &t6_sphericity);
+      tree_->Branch("t6_sphericity_t",&t6_sphericity_t);
+      tree_->Branch("t6_aplanarity",  &t6_aplanarity);
+      
+      tree_->Branch("nn_sphericity",  &nn_sphericity);
+      tree_->Branch("nn_sphericity_t",&nn_sphericity_t);
+      tree_->Branch("nn_aplanarity",  &nn_aplanarity);
     }
 
 	

@@ -84,6 +84,7 @@ using namespace std;
     ot.OBJ ## _pt.push_back( dijet.Pt() );			\
     ot.OBJ ## _eta.push_back( dijet.Eta() );			\
     ot.OBJ ## _phi.push_back( dijet.Phi() );			\
+    ot.OBJ ## _dr.push_back( dijet.dR() );			\
     ot.OBJ ## _signalId.push_back( dijet.get_signalId() );	\
     ot.OBJ ## _2j_score.push_back( dijet.get_2j_score() );	\
   }								\
@@ -129,7 +130,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if(ei.n_jet)          ot.n_jet           = *ei.n_jet;
   if(ei.n_total_jet)    ot.n_total_jet     = *ei.n_total_jet;
   if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
-  if(ei.n_higgs)        ot.n_higgs      = *ei.n_higgs;
+  if(ei.n_higgs)        ot.n_higgs         = *ei.n_higgs;
 
   if(ei.b_6j_score)     ot.b_6j_score      = *ei.b_6j_score;
   if(ei.b_3d_score)     ot.b_3d_score      = *ei.b_3d_score;
@@ -155,10 +156,16 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     }
   }
 
-  if (ei.event_shapes) {
-    ot.sphericity = ei.event_shapes.get().sphericity;
-    ot.sphericity_t = ei.event_shapes.get().transverse_sphericity;
-    ot.aplanarity = ei.event_shapes.get().aplanarity;
+  if (ei.t6_event_shapes) {
+    ot.t6_sphericity = ei.t6_event_shapes.get().sphericity;
+    ot.t6_sphericity_t = ei.t6_event_shapes.get().transverse_sphericity;
+    ot.t6_aplanarity = ei.t6_event_shapes.get().aplanarity;
+  }
+  
+  if (ei.nn_event_shapes) {
+    ot.nn_sphericity = ei.nn_event_shapes.get().sphericity;
+    ot.nn_sphericity_t = ei.nn_event_shapes.get().transverse_sphericity;
+    ot.nn_aplanarity = ei.nn_event_shapes.get().aplanarity;
   }
 
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);

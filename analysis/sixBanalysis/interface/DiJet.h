@@ -18,10 +18,12 @@ public:
   float Phi() const          { return p4.Phi(); }
   float M() const            { return p4.M(); }
   float E() const            { return p4.E(); }
+  float dR() const           { return dr_; }
 
 private:
   int signalId = -1;
   float n_2j_score = -1;
+  float dr_ = -1;
   p4_t p4;
   
 };
