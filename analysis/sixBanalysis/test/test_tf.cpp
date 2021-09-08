@@ -9,7 +9,7 @@ using namespace std;
 
 void test_3d_classifier()
 {
-  string f_classifier = "/uscms/home/srosenzw/nobackup/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixb/6jet_classifier/models/20210831_dijet/";
+  string f_classifier = "models/3dijet_classifier/";
   cout << "[INFO] Testing Classifier: " << f_classifier << endl;
 
   EvalNN network(f_classifier);
