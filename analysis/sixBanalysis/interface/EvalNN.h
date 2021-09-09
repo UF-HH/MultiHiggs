@@ -13,11 +13,14 @@
 
 #include <string>
 #include <iostream>
+#include "CfgParser.h"
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+#include "TFile.h"
 
 class EvalNN {
 public:
   EvalNN(
+	 std::string name,
 	 std::string graphPath,
 	 std::string input_name = "dense_input",
 	 std::string modelName = "model.pb",
@@ -27,14 +30,17 @@ public:
   std::vector<float> evaluate (const std::vector<float>& inputs);
   void set_output(std::string output) { outputs_name_ = {output}; }
   void set_debug(bool debug) { debug_ = debug; }
+  void write(TFile& tfile);
 
 private:
   bool debug_ = false;
-  
+
+  std::string name_;
   std::string graphPath_;
   std::string modelName_;
   std::string configName_;
 
+  CfgParser config_;
   tensorflow::GraphDef* graphDef_;
   tensorflow::Session*  session_;
 

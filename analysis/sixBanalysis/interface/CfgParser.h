@@ -10,14 +10,16 @@
 
 #include <iostream>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <utility>
 #include <vector>
 
+
+typedef std::map<std::string, std::string> optionBlock;
+typedef std::map<std::string, optionBlock> cfgBlock;
+
 class CfgParser
 {
-  typedef std::unordered_map<std::string, std::string> optionBlock;
-  typedef std::unordered_map<std::string, optionBlock> cfgBlock;
     
 public:
   CfgParser();
@@ -72,7 +74,7 @@ public:
 
 private:
   std::string filename_;
-  std::unordered_map<std::string, optionBlock> config_;
+  std::map<std::string, optionBlock> config_;
   std::string lSecBlockSymb_;
   std::string rSecBlockSymb_;  // define a new section block
   std::string optAssignSymb_;  // used to assign value to option 

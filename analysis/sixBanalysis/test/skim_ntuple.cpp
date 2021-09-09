@@ -360,9 +360,13 @@ int main(int argc, char** argv)
   // string f_3d_classifier = config.readStringOpt("configurations::3dijet_classifier");
   string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
 
-  EvalNN n_2j_classifier(f_2j_classifier);
-  // EvalNN n_3d_classifier(f_3d_classifier);
-  EvalNN n_6j_classifier(f_6j_classifier);
+  EvalNN n_2j_classifier("n_2j_classifier",f_2j_classifier);
+  // EvalNN n_3d_classifier("n_3d_classifier",f_3d_classifier);
+  EvalNN n_6j_classifier("n_6j_classifier",f_6j_classifier);
+
+  n_2j_classifier.write(outputFile);
+  // n_3d_classifier.write(outputFile);
+  n_6j_classifier.write(outputFile);
 
   cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
   // cout << "[INFO] Loading 3 DiJet Classifier: " << f_3d_classifier << endl;

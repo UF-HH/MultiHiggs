@@ -1,6 +1,7 @@
 #include "EvalNN.h"
 
-#include "CfgParser.h"
+#include "TNamed.h"
+#include "TH1.h"
 
 std::string vector_string(std::vector<float> array)
 {
@@ -16,8 +17,9 @@ void debug_network(std::vector<float> inputs,std::vector<float> outputs)
   std::cout << "[OUTPUT]:" << vector_string(outputs) << std::endl;
 }
 
-EvalNN::EvalNN(std::string graphPath,std::string input_name,std::string modelName,std::string configName)
+EvalNN::EvalNN(std::string name,std::string graphPath,std::string input_name,std::string modelName,std::string configName)
 {
+  name_         = name;
   graphPath_    = graphPath;
   modelName_    = modelName;
   configName_   = configName;
@@ -26,18 +28,16 @@ EvalNN::EvalNN(std::string graphPath,std::string input_name,std::string modelNam
   session_      = tensorflow::createSession(graphDef_);
   input_name_   = input_name;
 
-  CfgParser config;
-
-  if (!config.init(graphPath+"/"+configName_)) {
+  if (!config_.init(graphPath+"/"+configName_)) {
     std::cerr << "** [ERROR] config file does not exist" << std::endl;
   }
 
-  int n_hidden_layers = config.readIntOpt("model::num_hidden_layers");
-  std::string output_function = config.readStringOpt("model::output_activation_function");
+  int n_hidden_layers = config_.readIntOpt("model::num_hidden_layers");
+  std::string output_function = config_.readStringOpt("model::output_activation_function");
   outputs_name_ = {"dense_"+std::to_string(n_hidden_layers)+"/"+output_function};
 
-  scale_min_ = config.readFloatListOpt("scaler::scale_min");
-  scale_max_ = config.readFloatListOpt("scaler::scale_max");
+  scale_min_ = config_.readFloatListOpt("scaler::scale_min");
+  scale_max_ = config_.readFloatListOpt("scaler::scale_max");
 }
 
 EvalNN::~EvalNN()
@@ -71,4 +71,32 @@ std::vector<float> EvalNN::evaluate (const std::vector<float>& inputs)
 
   if (debug_) debug_network(inputs,out);
   return out;
+}
+
+void EvalNN::write(TFile& tfile)
+{
+  tfile.cd();
+  
+  auto base = tfile.mkdir(name_.c_str());
+  base->cd();
+  
+  const cfgBlock cfg = config_.getCfg();
+  for ( const auto it : cfg )
+    { 
+      std::string block = it.first;
+      auto d_block = base->mkdir(block.c_str());
+      d_block->cd();
+
+      for ( const auto kv : it.second )
+	{
+	  std::string key = kv.first;
+	  std::string value = kv.second;
+
+	  TH1F kv_(key.c_str(),value.c_str(),1,0,1);
+	  kv_.Write();
+	}
+      d_block->Write();
+    }
+  base->Write();
+  tfile.cd();
 }
