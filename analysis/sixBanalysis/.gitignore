@@ -1,3 +1,6 @@
 *.root
 *~
 .nfs*
+compile_commands.json
+.projectile
+.vscode
