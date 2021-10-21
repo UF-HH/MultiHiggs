@@ -127,6 +127,15 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
         BRANCH_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
         BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
         BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+
+        tree_->Branch("HX_b1_genHflag",  &HX_b1_genHflag);
+        tree_->Branch("HX_b2_genHflag",  &HX_b2_genHflag);
+        tree_->Branch("HY1_b1_genHflag", &HY1_b1_genHflag);
+        tree_->Branch("HY1_b2_genHflag", &HY1_b2_genHflag);
+        tree_->Branch("HY2_b1_genHflag", &HY2_b1_genHflag);
+        tree_->Branch("HY2_b2_genHflag", &HY2_b2_genHflag);
+
+        tree_->Branch("nsel_from_H", &nsel_from_H);
     }
 
     tree_->Branch("n_mu_loose",  &n_mu_loose);
@@ -218,6 +227,15 @@ void OutputTree::clear()
     CLEAR_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
     CLEAR_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
     CLEAR_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+
+    HX_b1_genHflag  = -999;
+    HX_b2_genHflag  = -999;
+    HY1_b1_genHflag = -999;
+    HY1_b2_genHflag = -999;
+    HY2_b1_genHflag = -999;
+    HY2_b2_genHflag = -999;
+
+    nsel_from_H = -999;
 
     CLEAR_m_pt_eta_phi_p4(mu_1);
     CLEAR_m_pt_eta_phi_p4(mu_2);

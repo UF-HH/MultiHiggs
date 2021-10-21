@@ -76,6 +76,15 @@ struct EventInfo{
     boost::optional<Jet> HY2_b1;
     boost::optional<Jet> HY2_b2;
 
+    boost::optional<int> HX_b1_genHflag;
+    boost::optional<int> HX_b2_genHflag;
+    boost::optional<int> HY1_b1_genHflag;
+    boost::optional<int> HY1_b2_genHflag;
+    boost::optional<int> HY2_b1_genHflag;
+    boost::optional<int> HY2_b2_genHflag;
+
+    boost::optional<int> nsel_from_H;
+
     // for ttbar skims
     boost::optional<Jet> bjet1;
     boost::optional<Jet> bjet2;

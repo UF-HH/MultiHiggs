@@ -459,9 +459,14 @@ int main(int argc, char** argv)
             ot.userInt("nfound_sixb")   = nfound_sixb;
             loop_timer.click("Six b selection");
 
-            // if (sixb_jets.size() < 6)
-            //     continue;
-            // sbf.pair_jets(nat, ei, sixb_jets);
+            sbf.pair_jets(nat, ei, sixb_jets);
+            loop_timer.click("Six b pairing");
+
+            if (is_signal){
+                sbf.compute_seljets_genmatch_flags(nat, ei);
+                loop_timer.click("Six b pairing flags");                
+            }
+
         }
 
         if (skim_type == kttbar){

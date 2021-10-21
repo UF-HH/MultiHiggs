@@ -138,6 +138,15 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
     COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
 
+    if (ei.HX_b1_genHflag)  ot.HX_b1_genHflag  = *ei.HX_b1_genHflag;
+    if (ei.HX_b2_genHflag)  ot.HX_b2_genHflag  = *ei.HX_b2_genHflag;
+    if (ei.HY1_b1_genHflag) ot.HY1_b1_genHflag = *ei.HY1_b1_genHflag;
+    if (ei.HY1_b2_genHflag) ot.HY1_b2_genHflag = *ei.HY1_b2_genHflag;
+    if (ei.HY2_b1_genHflag) ot.HY2_b1_genHflag = *ei.HY2_b1_genHflag;
+    if (ei.HY2_b2_genHflag) ot.HY2_b2_genHflag = *ei.HY2_b2_genHflag;
+
+    if (ei.nsel_from_H) ot.nsel_from_H = *ei.nsel_from_H;
+
     COPY_OPTIONAL_m_pt_eta_phi_p4(mu_1);
     COPY_OPTIONAL_m_pt_eta_phi_p4(mu_2);
     COPY_OPTIONAL_m_pt_eta_phi_p4(ele_1);
