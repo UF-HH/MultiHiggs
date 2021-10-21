@@ -55,7 +55,7 @@ void NormWeightTree::init_pu_weight(std::string filename, std::string name_PU_w,
 
   if (verbosity_ >= 1)
     cout << "[INFO] NormWeightTree : PU weights will use file " << filename << " and histo " << name_PU_w  << " . up/down: " << name_PU_w_up << "/" << name_PU_w_do << endl;
-  pu_wread_.init_data(filename, name_PU_w, name_PU_w_up, name_PU_w_do);
+  if (!filename.empty()) pu_wread_.init_data(filename, name_PU_w, name_PU_w_up, name_PU_w_do);
 
   pu_w_.w         = 1.0;
   pu_w_.name      = "PUWeight";

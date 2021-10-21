@@ -63,6 +63,57 @@ Variation string_to_jer_variation (std::string s)
   throw std::runtime_error(string("Cannot parse the variation ") + s);
 }
 
+// -----------------------------------
+// shortcuts to access cfgParser options with defaults
+
+template <typename T>
+T readCfgOptWithDefault(CfgParser& config, std::string optName, T default_ret){
+  throw std::runtime_error("please provide an override template implementation for this type");
+}
+
+template <>
+bool readCfgOptWithDefault<bool>(CfgParser& config, std::string optName, bool default_ret){
+  if (config.hasOpt(optName))
+    return config.readBoolOpt(optName);
+  else
+    return default_ret;
+}
+
+template <>
+int readCfgOptWithDefault<int>(CfgParser& config, std::string optName, int default_ret){
+  if (config.hasOpt(optName))
+    return config.readIntOpt(optName);
+  else
+    return default_ret;
+}
+
+template <>
+float readCfgOptWithDefault<float>(CfgParser& config, std::string optName, float default_ret){
+  if (config.hasOpt(optName))
+    return config.readFloatOpt(optName);
+  else
+    return default_ret;
+}
+
+template <>
+double readCfgOptWithDefault<double>(CfgParser& config, std::string optName, double default_ret){
+  if (config.hasOpt(optName))
+    return config.readDoubleOpt(optName);
+  else
+    return default_ret;
+}
+
+template <>
+std::string readCfgOptWithDefault<std::string>(CfgParser& config, std::string optName, std::string default_ret){
+  if (config.hasOpt(optName))
+    return config.readStringOpt(optName);
+  else
+    return default_ret;
+}
+
+// -----------------------------------
+
+
 int main(int argc, char** argv)
 {
   cout << "[INFO] ... starting program" << endl;
@@ -100,6 +151,8 @@ int main(int argc, char** argv)
     ("is-signal",     po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false), "mark as a HH signal sample (default is false)")
     //
     ("save-p4",       po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false), "save the tlorentzvectors in the output")
+    //
+    ("no-genw-tree",  po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false), "disable the storage of the genweight tree for normalizations")
     ;
 
   po::variables_map opts;
@@ -125,6 +178,9 @@ int main(int argc, char** argv)
 
   const bool is_signal = (is_data ? false : opts["is-signal"].as<bool>());
   cout << "[INFO] ... is a signal sample? " << std::boolalpha << is_signal << std::noboolalpha << endl;
+
+  const bool save_genw_tree = (is_data ? false : !opts["no-genw-tree"].as<bool>());
+  cout << "[INFO] ... will save the gen weight NormTree ? " << std::boolalpha << save_genw_tree << std::noboolalpha << endl;
 
   CfgParser config;
   if (!config.init(opts["cfg"].as<string>())){
@@ -255,9 +311,12 @@ int main(int argc, char** argv)
   OutputTree ot(
                 opts["save-p4"].as<bool>(),
                 map<string, bool>{
-                  {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
-                  {"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
-                  {"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
+                  // {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
+                  // {"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
+                  // {"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
+                  {"leptons_p4",  readCfgOptWithDefault<bool>(config, "configurations::saveLeptons", false)},
+                  {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
+                  {"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes",  false)},
                   {"sixb_brs",    (skim_type == ksixb)},
                   {"ttbar_brs",   (skim_type == kttbar)},
                   {"sig_gen_brs", (is_signal)},
@@ -285,17 +344,18 @@ int main(int argc, char** argv)
     }
     else { // revert to default in skim cfg
       cout << "[INFO] Using PU weight file from skim cfg" << endl;
-      pu_weight_file = config.readStringOpt("parameters::PUweightFile");
+      // pu_weight_file = config.readStringOpt("parameters::PUweightFile");
+      pu_weight_file = readCfgOptWithDefault<string>(config, "parameters::PUweightFile", "");
     }
   }
 
   NormWeightTree nwt;
-  // map<string, string> pu_data{
-  //     {"filename", pu_weight_file},
-  //     {"name_PU_w", "PUweights"},
-  //     {"name_PU_w_up", "PUweights_up"},
-  //     {"name_PU_w_do", "PUweights_down"},
-  // };
+  map<string, string> pu_data{
+      {"filename", pu_weight_file},
+      {"name_PU_w", "PUweights"},
+      {"name_PU_w_up", "PUweights_up"},
+      {"name_PU_w_do", "PUweights_down"},
+  };
 
   // // just a test
   // nwt.add_weight("test1", {"test1_up", "test1_down"});
@@ -345,7 +405,8 @@ int main(int argc, char** argv)
 
   // -----------
 
-  const bool applyJetCuts = config.readBoolOpt("configurations::applyJetCuts");
+  // const bool applyJetCuts = config.readBoolOpt("configurations::applyJetCuts");
+  const bool applyJetCuts = readCfgOptWithDefault<bool>(config, "configurations::applyJetCuts", false);
   std::vector<double> pt_cuts; 
   std::vector<int> btagWP_cuts;
 
@@ -356,21 +417,40 @@ int main(int argc, char** argv)
 
   // -----------
 
-  string f_2j_classifier = config.readStringOpt("configurations::2jet_classifier");
-  // string f_3d_classifier = config.readStringOpt("configurations::3dijet_classifier");
-  string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
+  // string f_2j_classifier = config.readStringOpt("configurations::2jet_classifier");
+  // // string f_3d_classifier = config.readStringOpt("configurations::3dijet_classifier");
+  // string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
 
-  EvalNN n_2j_classifier("n_2j_classifier",f_2j_classifier);
-  // EvalNN n_3d_classifier("n_3d_classifier",f_3d_classifier);
-  EvalNN n_6j_classifier("n_6j_classifier",f_6j_classifier);
+  // EvalNN n_2j_classifier("n_2j_classifier",f_2j_classifier);
+  // // EvalNN n_3d_classifier("n_3d_classifier",f_3d_classifier);
+  // EvalNN n_6j_classifier("n_6j_classifier",f_6j_classifier);
 
-  n_2j_classifier.write(outputFile);
-  // n_3d_classifier.write(outputFile);
-  n_6j_classifier.write(outputFile);
+  // n_2j_classifier.write(outputFile);
+  // // n_3d_classifier.write(outputFile);
+  // n_6j_classifier.write(outputFile);
 
-  cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
-  // cout << "[INFO] Loading 3 DiJet Classifier: " << f_3d_classifier << endl;
-  cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
+  // cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
+  // // cout << "[INFO] Loading 3 DiJet Classifier: " << f_3d_classifier << endl;
+  // cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
+
+  string f_2j_classifier = readCfgOptWithDefault<string>(config, "configurations::2jet_classifier", "");
+  string f_6j_classifier = readCfgOptWithDefault<string>(config, "configurations::6jet_classifier", "");
+
+  std::unique_ptr<EvalNN> n_2j_classifier;
+  std::unique_ptr<EvalNN> n_6j_classifier;
+
+  if (!f_2j_classifier.empty()){
+    n_2j_classifier = std::unique_ptr<EvalNN> (new EvalNN("n_2j_classifier",f_2j_classifier));
+    n_2j_classifier -> write(outputFile);
+    cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
+  }
+
+  if (!f_6j_classifier.empty()){
+    n_6j_classifier = std::unique_ptr<EvalNN> (new EvalNN("n_6j_classifier",f_6j_classifier));
+    n_6j_classifier -> write(outputFile);
+    cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
+  }
+
 
   // -----------
 
@@ -436,8 +516,8 @@ int main(int argc, char** argv)
         // cout << "... tree basket size (branch Run) : " << bsize  << endl;
       }
       // use the tree content to initialise weight tree in the first event
-      if (iEv == 0 && !is_data){
-        // nwt.init_weights(nat, pu_data); // get the syst structure from nanoAOD
+      if (iEv == 0 && !is_data && save_genw_tree){
+        nwt.init_weights(nat, pu_data); // get the syst structure from nanoAOD
         su::init_gen_weights(ot, nwt);  // and forward it to the output tree
       }
 
@@ -566,8 +646,8 @@ int main(int argc, char** argv)
         int nfound_t6_h = sbf.n_gjmatched_in_dijetcoll(t6_dijets);
         int nfound_t6 = sbf.n_gjmatched_in_jetcoll(nat, ei, t6_jets); 
 
-        std::vector<Jet> nn_jets = sbf.get_6jet_NN(ei,presel_jets,n_6j_classifier);
-        std::vector<DiJet> nn_dijets = sbf.get_2jet_NN(ei,nn_jets,n_2j_classifier); 
+        std::vector<Jet> nn_jets = sbf.get_6jet_NN(ei,presel_jets, *n_6j_classifier);
+        std::vector<DiJet> nn_dijets = sbf.get_2jet_NN(ei,nn_jets, *n_2j_classifier); 
         // std::vector<DiJet> nn_dijets = sbf.get_3dijet_NN(ei,nn_jets,n_3d_classifier);
 
         EventShapeCalculator nn_esc(nn_jets);
@@ -637,7 +717,7 @@ int main(int argc, char** argv)
       sbf.select_leptons(nat, ei);
       loop_timer.click("Lepton selection");
 
-      if (!is_data){
+      if (!is_data && save_genw_tree){
         su::copy_gen_weights(ot, nwt);
         loop_timer.click("Read and copy gen weights");
       }
