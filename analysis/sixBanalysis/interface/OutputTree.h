@@ -141,13 +141,18 @@ public:
 
   DECLARE_jet_list(jet);
   DECLARE_jet_list(t6_jet);
-  float t6_sphericity;
-  float t6_sphericity_t;
-  float t6_aplanarity;
+  // float t6_sphericity;
+  // float t6_sphericity_t;
+  // float t6_aplanarity;
   DECLARE_jet_list(nn_jet);
-  float nn_sphericity;
-  float nn_sphericity_t;
-  float nn_aplanarity;
+  // float nn_sphericity;
+  // float nn_sphericity_t;
+  // float nn_aplanarity;
+
+  float sphericity;
+  float sphericity_t;
+  float aplanarity;
+
 
   DECLARE_dijet_list(t6_higgs);
   DECLARE_dijet_list(nn_higgs);

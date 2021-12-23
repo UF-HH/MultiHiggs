@@ -94,8 +94,11 @@ struct EventInfo{
   boost::optional< std::vector<DiJet> > t6_higgs_list;
   boost::optional< std::vector<DiJet> > nn_higgs_list;
 
-  boost::optional<EventShapes> t6_event_shapes;
-  boost::optional<EventShapes> nn_event_shapes;
+  // boost::optional<EventShapes> t6_event_shapes;
+  // boost::optional<EventShapes> nn_event_shapes;
+  boost::optional<EventShapes> event_shapes;
+
+
 
   // for ttbar skims
   boost::optional<Jet> bjet1;

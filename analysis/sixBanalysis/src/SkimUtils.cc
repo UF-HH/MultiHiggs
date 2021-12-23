@@ -156,17 +156,24 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     }
   }
 
-  if (ei.t6_event_shapes) {
-    ot.t6_sphericity = ei.t6_event_shapes.get().sphericity;
-    ot.t6_sphericity_t = ei.t6_event_shapes.get().transverse_sphericity;
-    ot.t6_aplanarity = ei.t6_event_shapes.get().aplanarity;
-  }
+  // if (ei.t6_event_shapes) {
+  //   ot.t6_sphericity = ei.t6_event_shapes.get().sphericity;
+  //   ot.t6_sphericity_t = ei.t6_event_shapes.get().transverse_sphericity;
+  //   ot.t6_aplanarity = ei.t6_event_shapes.get().aplanarity;
+  // }
   
-  if (ei.nn_event_shapes) {
-    ot.nn_sphericity = ei.nn_event_shapes.get().sphericity;
-    ot.nn_sphericity_t = ei.nn_event_shapes.get().transverse_sphericity;
-    ot.nn_aplanarity = ei.nn_event_shapes.get().aplanarity;
+  // if (ei.nn_event_shapes) {
+  //   ot.nn_sphericity = ei.nn_event_shapes.get().sphericity;
+  //   ot.nn_sphericity_t = ei.nn_event_shapes.get().transverse_sphericity;
+  //   ot.nn_aplanarity = ei.nn_event_shapes.get().aplanarity;
+  // }
+
+  if (ei.event_shapes) {
+    ot.sphericity   = ei.event_shapes.get().sphericity;
+    ot.sphericity_t = ei.event_shapes.get().transverse_sphericity;
+    ot.aplanarity   = ei.event_shapes.get().aplanarity;
   }
+
 
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);

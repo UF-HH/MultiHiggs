@@ -1,17 +1,17 @@
 #include "BuildClassifierInput.h"
 
-std::vector<std::vector<int>> get_6jet_index_combos(int n,int r)
+std::vector<std::vector<int>> buildClassifierInput::get_6jet_index_combos(int n,int r)
 {
   std::vector<std::vector<int>> index_combos;
-	
+  
   std::vector<bool> v(n);
   std::fill(v.end() - r, v.end(), true);
-	
+  
   do {
     std::vector<int> combo;
     for (int i = 0; i < n; ++i) {
       if (v[i]) {
-	combo.push_back(i);
+        combo.push_back(i);
       }
     }
     index_combos.push_back(combo);
@@ -29,11 +29,11 @@ float get_dijet_pt(const Jet& j1,const Jet& j2)
   return (j1.P4Regressed()+j2.P4Regressed()).Pt();
 }
 
-std::vector<float> build_6jet_classifier_input(std::vector<Jet> in_jets)
+std::vector<float> buildClassifierInput::build_6jet_classifier_input(std::vector<Jet> in_jets)
 {
   std::vector<float> input_array;
   if (in_jets.size() != 6) return input_array;
-	
+  
   std::vector<std::vector<float>> input_matrix;
   // std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
 
@@ -55,14 +55,14 @@ std::vector<float> build_6jet_classifier_input(std::vector<Jet> in_jets)
   return input_array;
 }
 
-std::vector<float> build_6jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices)
+std::vector<float> buildClassifierInput::build_6jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices)
 {
   std::vector<Jet> input_jets;
   for (int i : indices) input_jets.push_back( in_jets[i] );
   return build_6jet_classifier_input(input_jets);
 }
 
-std::vector<float> build_3dijet_classifier_input(std::vector<Jet> in_jets)
+std::vector<float> buildClassifierInput::build_3dijet_classifier_input(std::vector<Jet> in_jets)
 {
   std::vector<float> input_array;
   if (in_jets.size() != 6) return input_array;
@@ -82,12 +82,12 @@ std::vector<float> build_3dijet_classifier_input(std::vector<Jet> in_jets)
   for ( std::vector<Jet> jet_pair : dijets )
     {
       for (Jet& j : jet_pair)
-	{
-	  input_matrix[0].push_back( j.get_pt() );
-	  input_matrix[1].push_back( j.get_eta() );
-	  input_matrix[2].push_back( j.get_phi() );
-	  input_matrix[3].push_back( j.get_btag() );
-	}
+  {
+    input_matrix[0].push_back( j.get_pt() );
+    input_matrix[1].push_back( j.get_eta() );
+    input_matrix[2].push_back( j.get_phi() );
+    input_matrix[3].push_back( j.get_btag() );
+  }
       input_matrix[4].push_back( get_dijet_pt(jet_pair[0],jet_pair[1]) );
       input_matrix[5].push_back( get_dijet_dr(jet_pair[0],jet_pair[1]) );
     }
@@ -96,7 +96,7 @@ std::vector<float> build_3dijet_classifier_input(std::vector<Jet> in_jets)
   return input_array;
 }
 
-std::vector<float> build_3dijet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices)
+std::vector<float> buildClassifierInput::build_3dijet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices)
 { 
   std::vector<Jet> input_jets;
   for (int i : indices) input_jets.push_back( in_jets[i] );
@@ -104,11 +104,11 @@ std::vector<float> build_3dijet_classifier_input(const std::vector<Jet>& in_jets
 }
 
 
-std::vector<float> build_2jet_classifier_input(std::vector<Jet> in_jets)
+std::vector<float> buildClassifierInput::build_2jet_classifier_input(std::vector<Jet> in_jets)
 {
   std::vector<float> input_array;
   if (in_jets.size() != 2) return input_array;
-	
+  
   std::vector<std::vector<float>> input_matrix;
   
   std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
@@ -130,7 +130,7 @@ std::vector<float> build_2jet_classifier_input(std::vector<Jet> in_jets)
   return input_array;
 }
 
-std::vector<float> build_2jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices)
+std::vector<float> buildClassifierInput::build_2jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices)
 {
   std::vector<Jet> input_jets;
   for (int i : indices) input_jets.push_back( in_jets[i] );

@@ -5,12 +5,72 @@
 
 #include "BuildClassifierInput.h"
 
+#include "DebugUtils.h"
+
 #include <iostream>
 #include <tuple>
 #include <algorithm>
 
 #include "Electron.h"
 #include "Muon.h"
+
+using namespace std;
+
+void SixB_functions::initialize_params_from_cfg(CfgParser& config)
+{
+  // preselections
+  pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
+  pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
+  pmap.insert_param<int>   ("presel", "pf_id",   config.readIntOpt("presel::pf_id"));
+  pmap.insert_param<int>   ("presel", "pu_id",   config.readIntOpt("presel::pu_id"));
+
+  // six jet choice
+  pmap.insert_param<string>("configurations", "sixbJetChoice", config.readStringOpt("configurations::sixbJetChoice"));
+
+  // HHH pairing
+  pmap.insert_param<string>("configurations", "jetPairsChoice", config.readStringOpt("configurations::jetPairsChoice"));
+
+  // HHH pairing
+  pmap.insert_param<string>("configurations", "XYHChoice", config.readStringOpt("configurations::XYHChoice"));
+
+  // H done with regressed pT
+  pmap.insert_param<bool>("configurations", "useRegressedPtForHp4", config.readBoolOpt("configurations::useRegressedPtForHp4"));
+
+  // parse specific parameters for various functions
+  if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "bias_pt_sort") {
+      pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
+      pmap.insert_param<vector<double>>("bias_pt_sort", "pt_cuts",      config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
+      pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
+  }
+
+  if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "6jet_DNN") {
+      pmap.insert_param<string> ("6jet_DNN", "model_path", config.readStringOpt("6jet_DNN::model_path"));
+  }
+
+  if (pmap.get_param<string> ("configurations", "jetPairsChoice") == "2jet_DNN") {
+      pmap.insert_param<string> ("2jet_DNN", "model_path", config.readStringOpt("2jet_DNN::model_path"));
+  }
+
+  if (pmap.get_param<string>("configurations", "XYHChoice") == "leadJetInX") {
+    pmap.insert_param<bool> ("leadJetInX", "useRegressedPt", config.readBoolOpt("leadJetInX::useRegressedPt"));
+  }
+}
+
+void SixB_functions::initialize_functions(TFile& outputFile)
+{
+  if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "6jet_DNN") {
+    cout << "[INFO] ... Loading 6 Jet Classifier: " << pmap.get_param<string>("6jet_DNN", "model_path") << endl;
+    n_6j_classifier_ = std::unique_ptr<EvalNN> (new EvalNN("n_6j_classifier", pmap.get_param<string>("6jet_DNN", "model_path")));
+    n_6j_classifier_->write(outputFile);
+  }
+
+  if (pmap.get_param<string> ("configurations", "jetPairsChoice") == "2jet_DNN") {
+    cout << "[INFO] ... Loading 2 Jet Classifier: " << pmap.get_param<string>("2jet_DNN", "model_path") << endl;
+    n_2j_classifier_ = std::unique_ptr<EvalNN> (new EvalNN("n_2j_classifier", pmap.get_param<string>("2jet_DNN", "model_path")));
+    n_2j_classifier_->write(outputFile);
+  }
+
+}
 
 void SixB_functions::copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc)
 {
@@ -234,30 +294,31 @@ int SixB_functions::find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj)
   return -1;
 }
 
-void SixB_functions::match_genjets_to_reco(std::vector<GenJet>& genjets,std::vector<Jet>& recojets)
-{
+// EDITED FOR CODE REVIEW - FIXME
+// void SixB_functions::match_genjets_to_reco(std::vector<GenJet>& genjets,std::vector<Jet>& recojets)
+// {
   
-  for (unsigned int ireco = 0; ireco < recojets.size(); ireco++)
-    {
-      Jet& jet = recojets.at(ireco);
-      int gen_match = -1;
-      for (unsigned int igen = 0; igen < genjets.size(); igen++)
-	{
-	  GenJet& genjet = genjets.at(igen);
+//   for (unsigned int ireco = 0; ireco < recojets.size(); ireco++)
+//     {
+//       Jet& jet = recojets.at(ireco);
+//       int gen_match = -1;
+//       for (unsigned int igen = 0; igen < genjets.size(); igen++)
+// 	{
+// 	  GenJet& genjet = genjets.at(igen);
 			
-	  if (genjet.getIdx() == get_property(jet,Jet_genJetIdx))
-	    {
-	      gen_match = igen;
-	      break;
-	    }
+// 	  if (genjet.getIdx() == get_property(jet,Jet_genJetIdx))
+// 	    {
+// 	      gen_match = igen;
+// 	      break;
+// 	    }
       
-	}
-      if (gen_match != -1) {
-	recojets.at(ireco).set_genIdx(gen_match);
-	genjets.at(gen_match).set_recoIdx(ireco);
-      }
-    }
-}
+// 	}
+//       if (gen_match != -1) {
+// 	recojets.at(ireco).set_genIdx(gen_match);
+// 	genjets.at(gen_match).set_recoIdx(ireco);
+//       }
+//     }
+// }
 
 std::vector<GenJet> SixB_functions::get_all_genjets(NanoAODTree& nat)
 {
@@ -286,31 +347,69 @@ std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
 std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets)
 {
   // FIXME: make these selections configurable
-  const double pt_min  = 20.;
-  const double eta_max = 2.5;
+  // const double pt_min  = 20.;
+  // const double eta_max = 2.5;
+  // // const double btag_min = btag_WPs.at(0);
+  // const int    pf_id   = 1;
+  // const int    pu_id   = 1;
+
+  // const double pt_min  = std::any_cast<double>(params_["presel::pt_min"]);
+  // const double eta_max = std::any_cast<double>(params_["presel::eta_max"]);
+  // // const double btag_min = btag_WPs.at(0);
+  // const int    pf_id   = std::any_cast<int>(params_["presel::pf_id"]);
+  // const int    pu_id   = std::any_cast<int>(params_["presel::pu_id"]);
+
+  const double pt_min  = pmap.get_param<double>("presel", "pt_min");
+  const double eta_max = pmap.get_param<double>("presel", "eta_max");
   // const double btag_min = btag_WPs.at(0);
-  const int    pf_id   = 1;
-  const int    pu_id   = 1;
+  const int    pf_id   = pmap.get_param<int>("presel", "pf_id");
+  const int    pu_id   = pmap.get_param<int>("presel", "pu_id");
+
 
   std::vector<Jet> out_jets;
   out_jets.reserve(in_jets.size());
 
   for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
-    {
-      const Jet& jet = in_jets.at(ij);
-      if (jet.get_pt()            <= pt_min)  continue;
-      if (std::abs(jet.get_eta()) >= eta_max) continue;
-      // if (jet.get_btag() <= btag_min) continue;
-      if (!checkBit(jet.get_id(), pf_id)) continue;
-      if (!checkBit(jet.get_puid(),  pu_id)) continue;
+  {
+    const Jet& jet = in_jets.at(ij);
+    if (jet.P4().Pt() <= pt_min)            continue;
+    if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+    // if (jet.get_btag() <= btag_min) continue;
+    if (!checkBit(jet.get_id(), pf_id))     continue;
+    if (jet.P4().Pt() < 50 && !checkBit(jet.get_puid(),  pu_id)) continue; // PU ID only applies to jet with pT < 50 GeV
 
-      out_jets.emplace_back(jet);
-    }
+    out_jets.emplace_back(jet);
+  }
 
   return out_jets;
 }
 
-std::vector<Jet> SixB_functions::select_sixb_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets)
+////////////////////////////////////////////////////////////////////
+////////////////////// sixB jet selections//////////////////////////
+////////////////////////////////////////////////////////////////////
+
+std::vector<Jet> SixB_functions::select_sixb_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+  std::string sel_type = pmap.get_param<std::string>("configurations", "sixbJetChoice");
+
+  if (sel_type == "btag_order")
+    return select_sixb_jets_btag_order(nat, ei, in_jets);
+
+  else if (sel_type == "bias_pt_sort")
+    return select_sixb_jets_bias_pt_sort(nat, ei, in_jets);
+
+  else if (sel_type == "pt_sort")
+    return select_sixb_jets_pt_sort(nat, ei, in_jets);
+
+  else if (sel_type == "6jet_DNN")
+    return select_sixb_jets_6jet_DNN(nat, ei, in_jets);
+
+  else
+    throw std::runtime_error(std::string("SixB_functions::select_sixb_jets : sixbJetChoice ") + sel_type + std::string("not understood"));
+}
+
+
+std::vector<Jet> SixB_functions::select_sixb_jets_btag_order(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
   std::vector<Jet> jets = in_jets;
   stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
@@ -326,6 +425,175 @@ std::vector<Jet> SixB_functions::select_sixb_jets(NanoAODTree& nat, const std::v
 
   return jets;
 }
+
+
+std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+{
+  // std::vector<Jet> jets = in_jets;
+
+  // std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
+
+  // auto loose_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
+  // auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
+  // auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
+
+  // auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
+
+  // int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
+  // int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
+  // int loose_idx  = std::distance(jets.begin(),loose_it.base())-1;
+
+  // std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
+  // auto start = jets.begin();
+  // for (int wp_idx : wp_idxs)
+  // {
+  //   if (wp_idx != -1 && start != jets.end()) {
+	//     auto end = jets.begin() + wp_idx + 1;
+	//     std::sort(start,end,pt_sort);
+	//     start = end;
+  //   }
+  // }
+  
+  std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
+
+  int n_out = std::min<int>(jets.size(), 6);
+  jets.resize(n_out); // take top 6
+
+  if (debug_) dumpObjColl(jets, "==== JETS SELECTED IN bias_pt_sort BEFORE CUTS ===");
+
+  // apply a set of dedicated cuts
+  // NOTE: these cuts are applied in the *order* in which jets are passed
+  // this means that these
+  // pt_cuts     = 60, 40, 40, 20
+  // btagWP_cuts =  2,  2,  1,  1
+  // will be satisfied by a set of jets like the one below
+  // pT :: 100 50 45 25
+  // WP ::  2  2  2  1
+  // but not by the jets below:
+  // pT :: 100 50 25 45
+  // WP ::  2  2  2  1
+  // so these cuts do NOT mean "at least 2 tight jets with pt 60/40 + at least two medium jets with pT 40/20"
+
+  bool apply_cuts = pmap.get_param<bool>("bias_pt_sort", "applyJetCuts");
+
+  if (apply_cuts){
+    bool pass_cuts = true;
+    
+    std::vector<double> pt_cuts     = pmap.get_param<std::vector<double>>("bias_pt_sort", "pt_cuts");
+    std::vector<int>    btagWP_cuts = pmap.get_param<std::vector<int>>("bias_pt_sort", "btagWP_cuts");
+    
+    unsigned int ncuts = pt_cuts.size();
+    if (jets.size() < ncuts)
+      pass_cuts = false;
+
+    else {
+      for (unsigned int icut = 0; icut < ncuts; icut++){
+        const Jet& ijet = jets[icut];
+        double pt   = pt_cuts[icut];
+        int btag_wp = btagWP_cuts[icut];
+        if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] ){
+	        if (debug_){
+            cout << "==> the jet nr " << icut << " fails cuts, jet dumped below" << endl;
+            cout << getObjDescr(ijet) << endl;
+          }
+          pass_cuts = false;
+          break;
+        }
+      }
+    }
+
+    if (!pass_cuts)
+      jets.resize(0); // empty this vector if cuts were not passed
+  }
+
+  return jets;  
+}
+
+
+std::vector<Jet> SixB_functions::select_sixb_jets_pt_sort (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+{
+  std::vector<Jet> jets = in_jets;
+  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
+
+  int n_out = std::min<int>(jets.size(), 6);
+  jets.resize(n_out); // take top 6
+
+  return jets;  
+}
+
+std::vector<Jet> SixB_functions::select_sixb_jets_6jet_DNN (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+{
+    // std::vector<Jet> jets = in_jets;
+    // FIXME: make sorting configurable from cfg
+    std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
+
+    std::vector<std::vector<int>> index_combos = buildClassifierInput::get_6jet_index_combos(jets.size());
+    if (debug_){
+      cout << "select_sixb_jets_6jet_DNN : DEBUG : combo jet list" << endl; 
+      for (auto combo : index_combos) cout << combo << endl; // parammap overloads << for vector so can print
+    }
+    std::vector< std::pair<float,std::vector<int>> > n_6j_scores;
+
+    for (std::vector<int> combo : index_combos)
+    {
+      std::vector<float> input = buildClassifierInput::build_6jet_classifier_input(jets,combo);
+      float score = n_6j_classifier_->evaluate(input)[0];
+      if (debug_){
+        // cout << "select_sixb_jets_6jet_DNN : DEBUG : input list and score below" << endl; 
+        cout << "select_sixb_jets_6jet_DNN : DEBUG : inputs to DNN" << input << endl;
+        cout << "select_sixb_jets_6jet_DNN : DEBUG : --> score " << score << endl;
+      }
+      n_6j_scores.push_back( std::make_pair(-score,combo) );
+    }
+    std::sort(n_6j_scores.begin(),n_6j_scores.end());
+    float b_6j_score = -n_6j_scores[0].first;
+    std::vector<int> b_index_combo = n_6j_scores[0].second;
+
+    if (debug_) cout << "select_sixb_jets_6jet_DNN : DEBUG : b_index_combo : " << b_index_combo << endl;
+
+    ei.b_6j_score = b_6j_score;
+    std::vector<Jet> b_jets;
+    for (int ij : b_index_combo)
+    {
+      Jet& j = jets[ij];
+      // j.set_preselIdx(ij);
+      b_jets.push_back( j );
+    }
+    return b_jets;
+}
+
+
+std::vector<Jet> SixB_functions::bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+{
+  std::vector<Jet> jets = in_jets;
+  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
+
+  auto loose_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
+  auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
+  auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
+
+  auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
+
+  int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
+  int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
+  int loose_idx  = std::distance(jets.begin(),loose_it.base())-1;
+
+  std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
+  auto start = jets.begin();
+  for (int wp_idx : wp_idxs)
+  {
+    if (wp_idx != -1 && start != jets.end()) {
+	    auto end = jets.begin() + wp_idx + 1;
+	    std::sort(start,end,pt_sort);
+	    start = end;
+    }
+  }
+  return jets;
+}
+
+
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 std::vector<Jet> SixB_functions::select_ttbar_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets)
 {
@@ -376,59 +644,59 @@ std::vector<int> SixB_functions::match_local_idx(std::vector<Jet>& subset,std::v
   return local_idxs;
 }
 
-void SixB_functions::btag_bias_pt_sort(std::vector<Jet>& in_jets)
-{
-  std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
+// void SixB_functions::btag_bias_pt_sort(std::vector<Jet>& in_jets)
+// {
+//   std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
 
-  auto loose_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
-  auto medium_it= std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
-  auto tight_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
+//   auto loose_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
+//   auto medium_it= std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
+//   auto tight_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
 
-  auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
+//   auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
 
-  int tight_idx = std::distance(in_jets.begin(),tight_it.base())-1;
-  int medium_idx = std::distance(in_jets.begin(),medium_it.base())-1;
-  int loose_idx = std::distance(in_jets.begin(),loose_it.base())-1;
+//   int tight_idx = std::distance(in_jets.begin(),tight_it.base())-1;
+//   int medium_idx = std::distance(in_jets.begin(),medium_it.base())-1;
+//   int loose_idx = std::distance(in_jets.begin(),loose_it.base())-1;
 
-  std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
-  auto start = in_jets.begin();
-  for (int wp_idx : wp_idxs)
-    {
-      if (wp_idx != -1 && start != in_jets.end()) {
-	auto end = in_jets.begin() + wp_idx + 1;
-	std::sort(start,end,pt_sort);
-	start = end;
-      }
-    }
-}
+//   std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
+//   auto start = in_jets.begin();
+//   for (int wp_idx : wp_idxs)
+//     {
+//       if (wp_idx != -1 && start != in_jets.end()) {
+// 	auto end = in_jets.begin() + wp_idx + 1;
+// 	std::sort(start,end,pt_sort);
+// 	start = end;
+//       }
+//     }
+// }
 
-void SixB_functions::pt_sort(std::vector<Jet>& in_jets)
-{
-  std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
-}
+// void SixB_functions::pt_sort(std::vector<Jet>& in_jets)
+// {
+//   std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
+// }
 
-bool SixB_functions::pass_jet_cut(Cutflow& cutflow,const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets)
-{
-  std::vector<std::string> wplabels = {"loose","medium","tight"};
-	
-  unsigned int ncuts = pt_cuts.size();
+// bool SixB_functions::pass_jet_cut(Cutflow& cutflow,const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets)
+// {
+//   std::vector<std::string> wplabels = {"loose","medium","tight"};
+  
+//   unsigned int ncuts = pt_cuts.size();
 
-  if ( in_jets.size() < ncuts ) return false;
-	
-  for (unsigned int icut = 0; icut < ncuts; icut++)
-    {
-      const Jet& ijet = in_jets[icut];
+//   if ( in_jets.size() < ncuts ) return false;
 
-      double pt = pt_cuts[icut];
-      int btag_wp = btagWP_cuts[icut];
+//   for (unsigned int icut = 0; icut < ncuts; icut++)
+//   {
+//     const Jet& ijet = in_jets[icut];
 
-      if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] )
-	return false;
-		
-      cutflow.add( "jet" + std::to_string(icut) + "_pt" + std::to_string( (int)pt ) + "_" + wplabels[btag_wp]  );
-    }
-  return true;
-}
+//     double pt = pt_cuts[icut];
+//     int btag_wp = btagWP_cuts[icut];
+
+//     if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] )
+//       return false;
+
+//     cutflow.add( "jet" + std::to_string(icut) + "_pt" + std::to_string( (int)pt ) + "_" + wplabels[btag_wp]  );
+//   }
+//   return true;
+// }
 
 std::vector<DiJet> pair_best_higgs_method(std::vector<Jet>& in_jets)
 {
@@ -465,150 +733,150 @@ std::vector<DiJet> pair_best_higgs_method(std::vector<Jet>& in_jets)
 }
 
 
-std::vector<DiJet> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
-{
+// std::vector<DiJet> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
+// {
 
-  // Optimial 3D Line to select most signal like higgs
-  const float phi = 0.77;
-  const float theta = 0.98;
-  const ROOT::Math::Polar3DVectorF r_vec(1,theta,phi);
+//   // Optimial 3D Line to select most signal like higgs
+//   const float phi = 0.77;
+//   const float theta = 0.98;
+//   const ROOT::Math::Polar3DVectorF r_vec(1,theta,phi);
 	
-  std::vector<DiJet> dijets;
-  for (const std::vector<int> ijets : dijet_pairings)
-    { 
-      int ij1 = ijets[0]; int ij2 = ijets[1];
-      DiJet dijet(in_jets[ij1],in_jets[ij2]);
-      dijets.push_back( dijet );
-    }
+//   std::vector<DiJet> dijets;
+//   for (const std::vector<int> ijets : dijet_pairings)
+//     { 
+//       int ij1 = ijets[0]; int ij2 = ijets[1];
+//       DiJet dijet(in_jets[ij1],in_jets[ij2]);
+//       dijets.push_back( dijet );
+//     }
 	
-  std::vector< std::pair<float,int> > triH_d_hhh;
-  for (unsigned int i = 0; i < triH_pairings.size(); i++)
-    {
-      std::vector<DiJet> tri_dijet_sys;
-      for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
-      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](DiJet& dj1,DiJet& dj2){ return dj1.Pt()>dj2.Pt(); });
+//   std::vector< std::pair<float,int> > triH_d_hhh;
+//   for (unsigned int i = 0; i < triH_pairings.size(); i++)
+//     {
+//       std::vector<DiJet> tri_dijet_sys;
+//       for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
+//       std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](DiJet& dj1,DiJet& dj2){ return dj1.Pt()>dj2.Pt(); });
 		
-      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].M(),tri_dijet_sys[1].M(),tri_dijet_sys[2].M());
-      float d_hhh = m_vec.Cross(r_vec).R();
-      triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
-    }
+//       ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].M(),tri_dijet_sys[1].M(),tri_dijet_sys[2].M());
+//       float d_hhh = m_vec.Cross(r_vec).R();
+//       triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
+//     }
 
-  // Choose the closest triH vector to the r_vec line
-  std::sort(triH_d_hhh.begin(),triH_d_hhh.end(),[](std::pair<float,int> h1,std::pair<float,int> h2){ return h1.first<h2.first; });
+//   // Choose the closest triH vector to the r_vec line
+//   std::sort(triH_d_hhh.begin(),triH_d_hhh.end(),[](std::pair<float,int> h1,std::pair<float,int> h2){ return h1.first<h2.first; });
 
-  int itriH = triH_d_hhh[0].second;
-  std::vector<int> idijets = triH_pairings[itriH];
+//   int itriH = triH_d_hhh[0].second;
+//   std::vector<int> idijets = triH_pairings[itriH];
 
-  // Order dijets by highest Pt
-  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].Pt() > dijets[id2].Pt(); });
-  std::vector<DiJet> higgs_list;
+//   // Order dijets by highest Pt
+//   std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].Pt() > dijets[id2].Pt(); });
+//   std::vector<DiJet> higgs_list;
 	
-  for (unsigned int i = 0; i < idijets.size(); i++)
-    {
-      int id = idijets[i];
-      for (int ij : dijet_pairings[id])
-	{
-	  Jet& jet = in_jets[ij];
-	  jet.set_higgsIdx(i);
-	}
+//   for (unsigned int i = 0; i < idijets.size(); i++)
+//     {
+//       int id = idijets[i];
+//       for (int ij : dijet_pairings[id])
+// 	{
+// 	  Jet& jet = in_jets[ij];
+// 	  jet.set_higgsIdx(i);
+// 	}
 		
-      DiJet dijet = dijets[id];
+//       DiJet dijet = dijets[id];
 
-      higgs_list.push_back(dijet);
-    }
+//       higgs_list.push_back(dijet);
+//     }
 	
-  return higgs_list;
-}
+//   return higgs_list;
+// }
 
-std::vector<Jet> SixB_functions::get_6jet_top(std::vector<Jet>& in_jets)
-{
-  std::vector<Jet> b_jets;
-  for (int i = 0; i < 6; i++)
-    {
-      Jet& j = in_jets[i];
-      j.set_preselIdx(i);
-      b_jets.push_back(j);
-    }
-  return b_jets;
-}
+// std::vector<Jet> SixB_functions::get_6jet_top(std::vector<Jet>& in_jets)
+// {
+//   std::vector<Jet> b_jets;
+//   for (int i = 0; i < 6; i++)
+//     {
+//       Jet& j = in_jets[i];
+//       j.set_preselIdx(i);
+//       b_jets.push_back(j);
+//     }
+//   return b_jets;
+// }
 
-std::vector<Jet> SixB_functions::get_6jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier)
-{
-  std::vector<Jet> b_jets;
+// std::vector<Jet> SixB_functions::get_6jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier)
+// {
+//   std::vector<Jet> b_jets;
 	
-  std::vector<std::vector<int>> index_combos = get_6jet_index_combos(in_jets.size());
+//   std::vector<std::vector<int>> index_combos = get_6jet_index_combos(in_jets.size());
 	
-  std::vector< std::pair<float,std::vector<int>> > n_6j_scores;
-  for (std::vector<int> combo : index_combos)
-    {
-      std::vector<float> input = build_6jet_classifier_input(in_jets,combo);
-      float score = n_6j_classifier.evaluate(input)[0];
-      n_6j_scores.push_back( std::make_pair(-score,combo) );
-    }
-  std::sort(n_6j_scores.begin(),n_6j_scores.end());
-  float b_6j_score = -n_6j_scores[0].first;
-  std::vector<int> b_index_combo = n_6j_scores[0].second;
+//   std::vector< std::pair<float,std::vector<int>> > n_6j_scores;
+//   for (std::vector<int> combo : index_combos)
+//     {
+//       std::vector<float> input = build_6jet_classifier_input(in_jets,combo);
+//       float score = n_6j_classifier.evaluate(input)[0];
+//       n_6j_scores.push_back( std::make_pair(-score,combo) );
+//     }
+//   std::sort(n_6j_scores.begin(),n_6j_scores.end());
+//   float b_6j_score = -n_6j_scores[0].first;
+//   std::vector<int> b_index_combo = n_6j_scores[0].second;
   
-  ei.b_6j_score = b_6j_score;
+//   ei.b_6j_score = b_6j_score;
   
-  for (int ij : b_index_combo)
-    {
-      Jet& j = in_jets[ij];
-      j.set_preselIdx(ij);
-      b_jets.push_back( j );
-    }
+//   for (int ij : b_index_combo)
+//     {
+//       Jet& j = in_jets[ij];
+//       j.set_preselIdx(ij);
+//       b_jets.push_back( j );
+//     }
 	
-  return b_jets;
-}
+//   return b_jets;
+// }
 
 
-std::vector<DiJet> SixB_functions::get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_2j_classifier)
-{
-  std::vector<DiJet> b_dijets;
+// std::vector<DiJet> SixB_functions::get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_2j_classifier)
+// {
+//   std::vector<DiJet> b_dijets;
 	
-  std::vector<float> n_2j_scores;
-  for (std::vector<int> combo : dijet_pairings)
-    {
-      std::vector<float> input = build_2jet_classifier_input(in_jets,combo);
-      float score = n_2j_classifier.evaluate(input)[0];
-      n_2j_scores.push_back(score);
-    }
+//   std::vector<float> n_2j_scores;
+//   for (std::vector<int> combo : dijet_pairings)
+//     {
+//       std::vector<float> input = buildClassifierInput::build_2jet_classifier_input(in_jets,combo);
+//       float score = n_2j_classifier.evaluate(input)[0];
+//       n_2j_scores.push_back(score);
+//     }
 
-  std::vector< std::pair<float,std::vector<int>> > triH_scores;
-  for (std::vector<int> combo : triH_pairings)
-    {
-      float score = 0;
-      for (int i : combo) score += n_2j_scores[i]*n_2j_scores[i];
-      score = sqrt(score/3);
-      triH_scores.push_back( std::make_pair(-score,combo) );
-    }
-  std::sort(triH_scores.begin(),triH_scores.end());
-  std::vector<int> b_index_combo = triH_scores[0].second;
+//   std::vector< std::pair<float,std::vector<int>> > triH_scores;
+//   for (std::vector<int> combo : triH_pairings)
+//     {
+//       float score = 0;
+//       for (int i : combo) score += n_2j_scores[i]*n_2j_scores[i];
+//       score = sqrt(score/3);
+//       triH_scores.push_back( std::make_pair(-score,combo) );
+//     }
+//   std::sort(triH_scores.begin(),triH_scores.end());
+//   std::vector<int> b_index_combo = triH_scores[0].second;
   
-  float b_3d_score = -triH_scores[0].first;
-  std::vector<float> b_2j_scores;
-  for (int i : b_index_combo) b_2j_scores.push_back(n_2j_scores[i]);
+//   float b_3d_score = -triH_scores[0].first;
+//   std::vector<float> b_2j_scores;
+//   for (int i : b_index_combo) b_2j_scores.push_back(n_2j_scores[i]);
 
-  ei.b_3d_score = b_3d_score;
+//   ei.b_3d_score = b_3d_score;
 
-  for (int ih = 0; ih < 3; ih++)
-    {
-      int id = b_index_combo[ih];
-      std::vector<int> ijs = dijet_pairings[id];
-      Jet& j1 = in_jets[ ijs[0] ]; Jet& j2 = in_jets[ ijs[1] ];
+//   for (int ih = 0; ih < 3; ih++)
+//     {
+//       int id = b_index_combo[ih];
+//       std::vector<int> ijs = dijet_pairings[id];
+//       Jet& j1 = in_jets[ ijs[0] ]; Jet& j2 = in_jets[ ijs[1] ];
 
-      j1.set_higgsIdx(ih);
-      j2.set_higgsIdx(ih);
+//       j1.set_higgsIdx(ih);
+//       j2.set_higgsIdx(ih);
 		
-      DiJet dijet(j1,j2);
+//       DiJet dijet(j1,j2);
 
-      dijet.set_2j_score(n_2j_scores[id]);
-      b_dijets.push_back(dijet);
-    }
-  std::sort(b_dijets.begin(),b_dijets.end(),[](DiJet& d1,DiJet& d2){ return d1.Pt()>d2.Pt(); });
+//       dijet.set_2j_score(n_2j_scores[id]);
+//       b_dijets.push_back(dijet);
+//     }
+//   std::sort(b_dijets.begin(),b_dijets.end(),[](DiJet& d1,DiJet& d2){ return d1.Pt()>d2.Pt(); });
 	
-  return b_dijets;
-}
+//   return b_dijets;
+// }
 
 std::vector<DiJet> SixB_functions::get_3dijet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_3d_classifier)
 {
@@ -620,7 +888,7 @@ std::vector<DiJet> SixB_functions::get_3dijet_NN(EventInfo& ei,std::vector<Jet>&
       std::vector<int> jet_combo;
       for (int id : combo) jet_combo.insert(jet_combo.end(),dijet_pairings[id].begin(),dijet_pairings[id].end());
 
-      std::vector<float> input = build_3dijet_classifier_input(in_jets,jet_combo);
+      std::vector<float> input = buildClassifierInput::build_3dijet_classifier_input(in_jets,jet_combo);
       float score = n_3d_classifier.evaluate(input)[0];
       triH_scores.push_back( std::make_pair(-score,combo) );
     }
@@ -647,15 +915,15 @@ std::vector<DiJet> SixB_functions::get_3dijet_NN(EventInfo& ei,std::vector<Jet>&
   return b_dijets;
 }
 
-std::vector<DiJet> SixB_functions::get_tri_higgs_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier)
-{
-  std::vector<DiJet> higgs_list;
+// std::vector<DiJet> SixB_functions::get_tri_higgs_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier)
+// {
+//   std::vector<DiJet> higgs_list;
 
-  std::vector<Jet> b_jets = get_6jet_NN(ei,in_jets,n_6j_classifier);
-  higgs_list = get_2jet_NN(ei,b_jets,n_2j_classifier);
+//   std::vector<Jet> b_jets = get_6jet_NN(ei,in_jets,n_6j_classifier);
+//   higgs_list = get_2jet_NN(ei,b_jets,n_2j_classifier);
 	
-  return higgs_list;
-}
+//   return higgs_list;
+// }
 
 
 bool SixB_functions::pass_higgs_cr(const std::vector<DiJet>& in_dijets)
@@ -675,20 +943,41 @@ bool SixB_functions::pass_higgs_cr(const std::vector<DiJet>& in_dijets)
 
 void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
-  // FIXME: here a switch for the pairing algo
-  const std::string pairAlgo = "passthrough";
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_Hs;
 
   // call the desired algo - expected interface is input jets -> output 3 composite candidate HX, HY1. HY2
   // the order of HY1, HY2 and of the jets does not matter - they will be reordered after
 
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_Hs;
+  std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
   if (pairAlgo == "passthrough")
-    reco_Hs = pair_passthrough(in_jets);
+    reco_Hs = pair_passthrough(nat, ei, in_jets);
+  else if (pairAlgo == "D_HHH")
+    reco_Hs = pair_D_HHH(nat, ei, in_jets);
+  else if (pairAlgo == "2jet_DNN")
+    reco_Hs = pair_2jet_DNN(nat, ei, in_jets);
+
+
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_HX_HY_HY;
+
+  std::string XYHAlgo = pmap.get_param<std::string>("configurations", "XYHChoice");
+  if (XYHAlgo == "passthrough")
+    reco_HX_HY_HY = reco_Hs;
+  else if (XYHAlgo == "leadJetInX")
+    reco_HX_HY_HY = select_XYH_leadJetInX(nat, ei, reco_Hs);
+
+  // call the al
 
   // reorder objects
-  CompositeCandidate HX  = std::get<0>(reco_Hs);
-  CompositeCandidate HY1 = std::get<1>(reco_Hs);
-  CompositeCandidate HY2 = std::get<2>(reco_Hs);
+  CompositeCandidate HX  = std::get<0>(reco_HX_HY_HY);
+  CompositeCandidate HY1 = std::get<1>(reco_HX_HY_HY);
+  CompositeCandidate HY2 = std::get<2>(reco_HX_HY_HY);
+
+  // rebuild p4 with regressed pT if required
+  if (pmap.get_param<bool>("configurations", "useRegressedPtForHp4")){
+    HX.rebuildP4UsingRegressedPt(true, true);
+    HY1.rebuildP4UsingRegressedPt(true, true);
+    HY2.rebuildP4UsingRegressedPt(true, true);
+  }
 
   if (HY1.P4().Pt() < HY2.P4().Pt())
     std::swap(HY1, HY2);
@@ -723,7 +1012,7 @@ void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vecto
 
 }
 
-std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_passthrough (std::vector<Jet> jets)
+std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets)
 {
   if (jets.size() != 6)
     throw std::runtime_error("The jet pairing -passthrough- function requires 6 jets");
@@ -734,6 +1023,174 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
 
   return std::make_tuple(HX, HY1, HY2);
 }
+
+std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_D_HHH (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+  // Optimial 3D Line to select most signal like higgs
+  const float phi = 0.77;
+  const float theta = 0.98;
+  const ROOT::Math::Polar3DVectorF r_vec(1,theta,phi);
+
+  // NOTE: p4 is constructed using unregressed pT
+  // to update if it needs to use the regressed pT by calling CompositeCandiadte.rebuildP4UsingRegressedPt
+
+  std::vector<CompositeCandidate> dijets;
+  for (const std::vector<int> ijets : dijet_pairings)
+  { 
+    int ij1 = ijets[0]; int ij2 = ijets[1];
+    CompositeCandidate dijet(in_jets[ij1],in_jets[ij2]);
+    dijets.push_back( dijet );
+  }
+
+
+  std::vector< std::pair<float,int> > triH_d_hhh;
+  for (unsigned int i = 0; i < triH_pairings.size(); i++)
+    {
+      std::vector<CompositeCandidate> tri_dijet_sys;
+      for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
+
+      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4().Pt()>dj2.P4().Pt(); });
+        
+      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4().M(),tri_dijet_sys[1].P4().M(),tri_dijet_sys[2].P4().M());
+      float d_hhh = m_vec.Cross(r_vec).R();
+      triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
+    }
+
+
+  // Choose the closest triH vector to the r_vec line
+  std::sort(triH_d_hhh.begin(),triH_d_hhh.end(),[](std::pair<float,int> h1,std::pair<float,int> h2){ return h1.first<h2.first; });
+
+  int itriH = triH_d_hhh[0].second;
+  std::vector<int> idijets = triH_pairings[itriH];
+
+
+  // Order dijets by highest Pt
+  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4().Pt() > dijets[id2].P4().Pt(); });
+
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> higgs_cands = std::make_tuple(dijets[idijets[0]], dijets[idijets[1]], dijets[idijets[2]]);
+  return higgs_cands;
+
+  // std::vector<CompositeCandidate> higgs_list;
+    
+  // for (unsigned int i = 0; i < idijets.size(); i++)
+  //   {
+  //     int id = idijets[i];
+  //     for (int ij : dijet_pairings[id])
+  //     {
+  //       Jet& jet = in_jets[ij];
+  //       jet.set_higgsIdx(i);
+  //     }
+        
+  //     DiJet dijet = dijets[id];
+
+  //     higgs_list.push_back(dijet);
+  //   }
+    
+  // return higgs_list;  
+}
+
+std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_2jet_DNN (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+
+  std::vector<Jet> jets = in_jets;
+  
+  std::vector<float> n_2j_scores;
+
+  for (std::vector<int> combo : dijet_pairings)
+  {
+    std::vector<float> input = buildClassifierInput::build_2jet_classifier_input(jets,combo);
+    float score = n_2j_classifier_->evaluate(input)[0];
+    n_2j_scores.push_back(score);
+  }
+
+  std::vector< std::pair<float,std::vector<int>> > triH_scores;
+  for (std::vector<int> combo : triH_pairings)
+  {
+    float score = 0;
+    for (int i : combo) score += n_2j_scores[i]*n_2j_scores[i];
+    score = sqrt(score/3);
+    triH_scores.push_back( std::make_pair(-score,combo) );
+  }
+  std::sort(triH_scores.begin(),triH_scores.end());
+  std::vector<int> b_index_combo = triH_scores[0].second;
+
+  float b_3d_score = -triH_scores[0].first;
+  std::vector<float> b_2j_scores;
+  for (int i : b_index_combo) b_2j_scores.push_back(n_2j_scores[i]);
+
+  ei.b_3d_score = b_3d_score;
+
+  std::vector<CompositeCandidate> b_dijets_vec;
+  for (int ih = 0; ih < 3; ih++)
+  {
+    int id = b_index_combo[ih];
+    std::vector<int> ijs = dijet_pairings[id];
+    Jet& j1 = jets[ ijs[0] ]; Jet& j2 = jets[ ijs[1] ];
+
+    // j1.set_higgsIdx(ih);
+    // j2.set_higgsIdx(ih);
+
+    CompositeCandidate dijet(j1,j2);
+
+    // dijet.set_2j_score(n_2j_scores[id]);
+    b_dijets_vec.push_back(dijet);
+  }
+
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> b_dijets = make_tuple(b_dijets_vec.at(0), b_dijets_vec.at(1), b_dijets_vec.at(2));
+
+  // skip sorting, since anyway this is redone in the parent function to assign elements and H to the ei
+  // std::sort(b_dijets.begin(),b_dijets.end(),[](DiJet& d1,DiJet& d2){ return d1.Pt()>d2.Pt(); });
+
+  return b_dijets;
+}
+
+
+
+std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::select_XYH_leadJetInX (
+  NanoAODTree& nat, EventInfo& ei, std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_Hs)
+{
+  std::array<CompositeCandidate, 3> reco_Hs_arr = {
+    std::get<0>(reco_Hs),
+    std::get<1>(reco_Hs),
+    std::get<2>(reco_Hs)
+  };
+
+  std::vector<std::pair<double, int>> leadPt(3);
+
+  if (pmap.get_param<bool>("leadJetInX", "useRegressedPt")){
+    leadPt.at(0) = make_pair(std::max(dynamic_cast<Jet&>(reco_Hs_arr.at(0).getComponent1()).P4Regressed().Pt(), dynamic_cast<Jet&>(reco_Hs_arr.at(0).getComponent2()).P4Regressed().Pt()), 0);
+    leadPt.at(1) = make_pair(std::max(dynamic_cast<Jet&>(reco_Hs_arr.at(1).getComponent1()).P4Regressed().Pt(), dynamic_cast<Jet&>(reco_Hs_arr.at(1).getComponent2()).P4Regressed().Pt()), 1);
+    leadPt.at(2) = make_pair(std::max(dynamic_cast<Jet&>(reco_Hs_arr.at(2).getComponent1()).P4Regressed().Pt(), dynamic_cast<Jet&>(reco_Hs_arr.at(2).getComponent2()).P4Regressed().Pt()), 2);    
+  }
+  
+  else {
+    leadPt.at(0) = make_pair(std::max(reco_Hs_arr.at(0).getComponent1().P4().Pt(), reco_Hs_arr.at(0).getComponent2().P4().Pt()), 0);
+    leadPt.at(1) = make_pair(std::max(reco_Hs_arr.at(1).getComponent1().P4().Pt(), reco_Hs_arr.at(1).getComponent2().P4().Pt()), 1);
+    leadPt.at(2) = make_pair(std::max(reco_Hs_arr.at(2).getComponent1().P4().Pt(), reco_Hs_arr.at(2).getComponent2().P4().Pt()), 2);
+  }
+
+  sort(leadPt.begin(), leadPt.end());
+  
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> ret_tuple = make_tuple(
+    reco_Hs_arr.at(leadPt.at(2).second),
+    reco_Hs_arr.at(leadPt.at(1).second),
+    reco_Hs_arr.at(leadPt.at(0).second)
+  );
+
+  return ret_tuple;
+}
+
+
+
+
+void SixB_functions::compute_event_shapes(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+{
+  EventShapeCalculator esc(in_jets);
+  EventShapes event_shapes = esc.get_sphericity_shapes();
+  ei.event_shapes = event_shapes;
+}
+
+
 int SixB_functions::n_gjmatched_in_dijetcoll(const std::vector<DiJet>& in_dijets)
 {
 
@@ -768,55 +1225,57 @@ int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
   return nfound;
 }
 
-void SixB_functions::match_signal_genjets(EventInfo& ei, std::vector<GenJet>& in_jets)
-{
-  std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
-  if (ei.gen_HX_b1_genjet)  matched_jets[0] = ei.gen_HX_b1_genjet->getIdx();
-  if (ei.gen_HX_b2_genjet)  matched_jets[1] = ei.gen_HX_b2_genjet->getIdx();
-  if (ei.gen_HY1_b1_genjet) matched_jets[2] = ei.gen_HY1_b1_genjet->getIdx();
-  if (ei.gen_HY1_b2_genjet) matched_jets[3] = ei.gen_HY1_b2_genjet->getIdx();
-  if (ei.gen_HY2_b1_genjet) matched_jets[4] = ei.gen_HY2_b1_genjet->getIdx();
-  if (ei.gen_HY2_b2_genjet) matched_jets[5] = ei.gen_HY2_b2_genjet->getIdx();
+// EDITED FOR CODE REVIEW - FIXME
+// void SixB_functions::match_signal_genjets(EventInfo& ei, std::vector<GenJet>& in_jets)
+// {
+//   std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
+//   if (ei.gen_HX_b1_genjet)  matched_jets[0] = ei.gen_HX_b1_genjet->getIdx();
+//   if (ei.gen_HX_b2_genjet)  matched_jets[1] = ei.gen_HX_b2_genjet->getIdx();
+//   if (ei.gen_HY1_b1_genjet) matched_jets[2] = ei.gen_HY1_b1_genjet->getIdx();
+//   if (ei.gen_HY1_b2_genjet) matched_jets[3] = ei.gen_HY1_b2_genjet->getIdx();
+//   if (ei.gen_HY2_b1_genjet) matched_jets[4] = ei.gen_HY2_b1_genjet->getIdx();
+//   if (ei.gen_HY2_b2_genjet) matched_jets[5] = ei.gen_HY2_b2_genjet->getIdx();
 
-  for (GenJet& gj : in_jets)
-    {
-      int gj_idx = gj.getIdx();
-      if (gj_idx == -1) continue;
+//   for (GenJet& gj : in_jets)
+//     {
+//       int gj_idx = gj.getIdx();
+//       if (gj_idx == -1) continue;
 		
-      for (int id = 0; id < 6; id++)
-	{
-	  if (matched_jets[id] == gj_idx)
-	    {
-	      gj.set_signalId(id);
-	    }
-	}
-    }
-}
+//       for (int id = 0; id < 6; id++)
+// 	{
+// 	  if (matched_jets[id] == gj_idx)
+// 	    {
+// 	      gj.set_signalId(id);
+// 	    }
+// 	}
+//     }
+// }
 
-void SixB_functions::match_signal_recojets(EventInfo& ei,std::vector<Jet>& in_jets)
-{
-  std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
-  if (ei.gen_HX_b1_recojet)  matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
-  if (ei.gen_HX_b2_recojet)  matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
-  if (ei.gen_HY1_b1_recojet) matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
-  if (ei.gen_HY1_b2_recojet) matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
-  if (ei.gen_HY2_b1_recojet) matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
-  if (ei.gen_HY2_b2_recojet) matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
+// EDITED FOR CODE REVIEW - FIXME
+// void SixB_functions::match_signal_recojets(EventInfo& ei,std::vector<Jet>& in_jets)
+// {
+//   std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
+//   if (ei.gen_HX_b1_recojet)  matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
+//   if (ei.gen_HX_b2_recojet)  matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
+//   if (ei.gen_HY1_b1_recojet) matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
+//   if (ei.gen_HY1_b2_recojet) matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
+//   if (ei.gen_HY2_b1_recojet) matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
+//   if (ei.gen_HY2_b2_recojet) matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
 
-  for (Jet& j : in_jets)
-    {
-      int j_idx = j.getIdx();
-      if (j_idx == -1) continue;
+//   for (Jet& j : in_jets)
+//     {
+//       int j_idx = j.getIdx();
+//       if (j_idx == -1) continue;
 		
-      for (int id = 0; id < 6; id++)
-	{
-	  if (matched_jets[id] == j_idx)
-	    {
-	      j.set_signalId(id);
-	    }
-	}
-    }
-}
+//       for (int id = 0; id < 6; id++)
+// 	{
+// 	  if (matched_jets[id] == j_idx)
+// 	    {
+// 	      j.set_signalId(id);
+// 	    }
+// 	}
+//     }
+// }
 
 void SixB_functions::select_leptons(NanoAODTree &nat, EventInfo &ei)
 {
