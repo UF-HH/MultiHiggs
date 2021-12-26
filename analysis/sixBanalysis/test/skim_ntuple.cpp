@@ -694,6 +694,11 @@ int main(int argc, char** argv)
       sbf.pair_jets(nat, ei, selected_jets);
       loop_timer.click("Six b jet pairing");
 
+      if (is_signal){
+        sbf.compute_seljets_genmatch_flags(nat, ei);
+        loop_timer.click("Six b pairing flags");                
+      }
+
       sbf.compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
 

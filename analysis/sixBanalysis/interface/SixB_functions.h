@@ -93,13 +93,15 @@ public:
   // use the 2jet DNN
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_2jet_DNN (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
+  // build the pairs leading to the min mass difference across them
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_min_diag_distance (NanoAODTree& nat, EventInfo& ei, std::vector<Jet> jets);
+
 
   ////////////////////////////////////////////////////
   /// HYX reconstruction functions
   ////////////////////////////////////////////////////
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> select_XYH_leadJetInX (
     NanoAODTree& nat, EventInfo& ei, std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_Hs);
-
 
   // get the local idx in the supset for each jet in the subset
   std::vector<int> match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset);
@@ -129,10 +131,13 @@ public:
   bool pass_higgs_cr(const std::vector<DiJet>& in_dijets);
 
   //////////// functions for the jet selection
-  std::vector<Jet> select_sixb_jets_btag_order    (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by b tag (highest first)
-  std::vector<Jet> select_sixb_jets_bias_pt_sort  (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by the b tag groups + pt within
-  std::vector<Jet> select_sixb_jets_pt_sort       (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by pt (highest first)
-  std::vector<Jet> select_sixb_jets_6jet_DNN      (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);  // use the 6 jet classifier
+  // std::vector<Jet> select_sixb_jets_btag_order     (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by b tag (highest first)
+  std::vector<Jet> select_sixb_jets_bias_pt_sort   (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by the b tag groups + pt within
+  std::vector<Jet> select_sixb_jets_pt_sort        (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by pt (highest first)
+  std::vector<Jet> select_sixb_jets_6jet_DNN       (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // use the 6 jet classifier
+  std::vector<Jet> select_sixb_jets_maxbtag        (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets); // by b tag (highest first)
+  std::vector<Jet> select_sixb_jets_maxbtag_highpT (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, int nleadbtag);
+
 
   // reorder the collection of the input jets according to the bias pt sort order (b tag groups + pt order inside each group) - used by select_sixb_jets_bias_pt_sort
   std::vector<Jet> bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
@@ -152,6 +157,10 @@ public:
 
   // counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
   int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+
+  // add match flags to the selected jets (from which H are the selected jets?)
+  int get_jet_genmatch_flag (NanoAODTree& nat, EventInfo& ei, const Jet& jet); // -1: other, 0: HX, 1: HY1, 2: HY2
+  void compute_seljets_genmatch_flags(NanoAODTree& nat, EventInfo& ei);
 
   // match signal to genjets
   // void match_signal_genjets(EventInfo& ei, std::vector<GenJet>& in_jets); // EDITED FOR CODE REVIEW - FIXME
