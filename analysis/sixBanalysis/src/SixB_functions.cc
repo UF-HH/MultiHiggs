@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void SixB_functions::initialize_params_from_cfg(CfgParser& config)
+void SixB_functions::initialize_params_from_cfg_sixbskim(CfgParser& config)
 {
   // preselections
   pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
@@ -56,7 +56,16 @@ void SixB_functions::initialize_params_from_cfg(CfgParser& config)
   }
 }
 
-void SixB_functions::initialize_functions(TFile& outputFile)
+void SixB_functions::initialize_params_from_cfg_ttbarskim(CfgParser& config)
+{
+  // preselections
+  pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
+  pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
+  pmap.insert_param<int>   ("presel", "pf_id",   config.readIntOpt("presel::pf_id"));
+  pmap.insert_param<int>   ("presel", "pu_id",   config.readIntOpt("presel::pu_id"));
+}
+
+void SixB_functions::initialize_functions_sixbskim(TFile& outputFile)
 {
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "6jet_DNN") {
     cout << "[INFO] ... Loading 6 Jet Classifier: " << pmap.get_param<string>("6jet_DNN", "model_path") << endl;

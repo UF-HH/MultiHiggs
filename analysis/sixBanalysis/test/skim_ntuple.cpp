@@ -487,8 +487,13 @@ int main(int argc, char** argv)
   // ----------- configure the sixB functions
   cout << "[INFO] ... configurations read from the config file" << endl;
 
-  sbf.initialize_params_from_cfg(config);
-  sbf.initialize_functions(outputFile);
+  if      (skim_type == ksixb){
+    sbf.initialize_params_from_cfg_sixbskim(config);
+    sbf.initialize_functions_sixbskim(outputFile);
+  }
+  else if (skim_type == kttbar){
+    sbf.initialize_params_from_cfg_ttbarskim(config);
+  }
 
   // sbf.pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
   // sbf.pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));

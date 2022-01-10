@@ -29,10 +29,11 @@ public:
   ////////////////////////////////////////////////////
 
   // read all the info needed by the six functions from the config - to be done once before the event loop starts
-  void initialize_params_from_cfg(CfgParser& cfgr);
+  void initialize_params_from_cfg_sixbskim(CfgParser& cfgr);
+  void initialize_params_from_cfg_ttbarskim(CfgParser& cfgr);
   
   // using the internally stored parameters, initialize the function methods
-  void initialize_functions(TFile& outputFile);
+  void initialize_functions_sixbskim(TFile& outputFile);
 
   void set_debug(bool debug) {debug_ = debug;}
 
