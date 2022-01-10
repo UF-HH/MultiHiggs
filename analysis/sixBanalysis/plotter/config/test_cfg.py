@@ -10,10 +10,16 @@ lumi_info = {'lumi' : 59.740, 'lumi_units' : 'fbinv'}
 ###################### SAMPLES #######################
 ## all samples to be processed should be in a "samples" list
 
-ttbar = sam.Sample(name='ttbar', sampletype='mc', filelist='../skim_filelists/ttbar_2018_1Mag2021_2b/TTJets.txt',
+ttbar = sam.Sample(name='ttbar', sampletype='mc', filelist='../skim_filelists/ttbar_2018_10Jan2022/TTJets.txt',
     sampledesc= {**lumi_info, 'xs' : 815.96, 'xs_units' : 'pb'}
 )
-data_obs = sam.Sample(name='data_obs', sampletype='data', filelist='../skim_filelists/ttbar_2018_1Mag2021_2b/SingleMuon_Run2.txt')
+data_obs = sam.Sample(name='data_obs', sampletype='data', filelist='../skim_filelists/ttbar_2018_10Jan2022/SingleMuon_Run2.txt')
+
+# ttbar = sam.Sample(name='ttbar', sampletype='mc', files=['../prova_ttbar.root'],
+#     sampledesc= {**lumi_info, 'xs' : 815.96, 'xs_units' : 'pb'}
+# )
+# data_obs = sam.Sample(name='data_obs', sampletype='data', files=['../prova_singlemu_ttbarskim.root'])
+
 
 samples = [ttbar, data_obs]
 
@@ -49,49 +55,64 @@ selections_defs = {
 # weights that appear in norm_weights undergo a rescaling by sum(w) when filling the plots
 # these weights must be defined both in the norm_tree and in the event_tree
 
-norm_weights = ['genWeight', 'PUWeight']
+# norm_weights = ['genWeight', 'PUWeight']
+norm_weights = ['genWeight']
 
 ###################### HISTOGRAMS DESCRIPTIONS #######################
 # all histograms should be listed in a "histos" list
 # a histogram is represented by a dictionary containing its description
+
+# histos_descs = [
+#     {
+#         'var'        : 'bjet1_pt',
+#         'weightlist' : ['genWeight'],
+#         'bins'       : (100, 0, 400),
+#         'nametag'    : 'gw'
+#     },
+#     {
+#         'var'        : 'bjet1_pt',
+#         'weightlist' : ['genWeight', 'PUWeight'],
+#         'bins'       : (100, 0, 400),
+#         'nametag'    : 'gw_pu'
+#     },
+#     {
+#         'var'        : 'bjet1_pt',
+#         'weightlist' : ['genWeight', 'PUWeight', 'btagSF_WP_M'],
+#         'bins'       : (100, 0, 400),
+#         'nametag'    : 'gw_pu_btagsf'
+#     },
+#     {
+#         'var'        : 'rhofastjet_all',
+#         'weightlist' : ['genWeight'],
+#         'bins'       : (100, 0, 100),
+#         'nametag'    : 'gw'
+#     },
+#     {
+#         'var'        : 'rhofastjet_all',
+#         'weightlist' : ['genWeight', 'PUWeight'],
+#         'bins'       : (100, 0, 100),
+#         'nametag'    : 'gw_pu'
+#     },
+#     {
+#         'var'        : 'rhofastjet_all',
+#         'weightlist' : ['genWeight', 'PUWeight', 'btagSF_WP_M'],
+#         'bins'       : (100, 0, 100),
+#         'nametag'    : 'gw_pu_btagsf'
+#     },    
+# ]
 
 histos_descs = [
     {
         'var'        : 'bjet1_pt',
         'weightlist' : ['genWeight'],
         'bins'       : (100, 0, 400),
-        'nametag'    : 'gw'
-    },
+    }, 
     {
         'var'        : 'bjet1_pt',
-        'weightlist' : ['genWeight', 'PUWeight'],
+        'weightlist' : ['genWeight', 'btagSF_WP_M'],
         'bins'       : (100, 0, 400),
-        'nametag'    : 'gw_pu'
-    },
-    {
-        'var'        : 'bjet1_pt',
-        'weightlist' : ['genWeight', 'PUWeight', 'btagSF_WP_M'],
-        'bins'       : (100, 0, 400),
-        'nametag'    : 'gw_pu_btagsf'
-    },
-    {
-        'var'        : 'rhofastjet_all',
-        'weightlist' : ['genWeight'],
-        'bins'       : (100, 0, 100),
-        'nametag'    : 'gw'
-    },
-    {
-        'var'        : 'rhofastjet_all',
-        'weightlist' : ['genWeight', 'PUWeight'],
-        'bins'       : (100, 0, 100),
-        'nametag'    : 'gw_pu'
-    },
-    {
-        'var'        : 'rhofastjet_all',
-        'weightlist' : ['genWeight', 'PUWeight', 'btagSF_WP_M'],
-        'bins'       : (100, 0, 100),
-        'nametag'    : 'gw_pu_btagsf'
-    },    
+        'nametag'    : "btagsf",
+    }, 
 ]
 
 ### declare the histograms - make one histogram for every selection declared

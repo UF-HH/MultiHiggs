@@ -815,13 +815,13 @@ int main(int argc, char** argv)
   outputFile.cd();
   cutflow.write(outputFile);
   ot.write();
-  // if (!is_data)
-  // nwt.write();
+  if (!is_data)
+    nwt.write();
   const auto end_prog_t = chrono::high_resolution_clock::now();
 
   // timing statistics
   cout << endl;
-  cout << "[INFO] : sumary of skim loop execution time" << endl;
+  cout << "[INFO] : summary of skim loop execution time" << endl;
   loop_timer.print_summary();
   cout << endl;
   cout << "[INFO] : total elapsed time : " << chrono::duration_cast<chrono::milliseconds>(end_prog_t - start_prog_t).count()/1000.   << " s" << endl;
