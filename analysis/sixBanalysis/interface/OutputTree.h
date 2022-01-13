@@ -43,6 +43,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
     float OBJ ## _ptRegressed; \
     float OBJ ## _eta; \
     float OBJ ## _phi; \
+    float OBJ ## _deepJet; \
     p4_t  OBJ ## _p4;
 
 // helper: declares the m/pt/eta/phi/p4/DeepJet of a variable OBJ
@@ -86,6 +87,7 @@ class OutputTree : public BaseOutTree {
         unsigned int           Run;
         unsigned int           LumiSec;
         unsigned long long int Event;
+        unsigned int           njet;
 
         int    n_other_pv;
         int    n_pu;

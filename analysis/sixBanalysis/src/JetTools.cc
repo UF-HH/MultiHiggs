@@ -90,6 +90,7 @@ std::vector<Jet> JetTools::smear_jets(NanoAODTree& nat, const std::vector<Jet>& 
         //Procedure for b-regressed jets 
         //Step1: Check if genjet is found, then use the dedicated smearing and regression
         double bregcorr          = jet.getBregCorr();
+        float deepJet = jet.getDeepJet();
         double smearedbreg_jetpt = unsmeared_jetP4.Pt()* bregcorr;
         double smearedbreg_jeten = unsmeared_jetP4.E() * bregcorr; 
         if(genJetId >= 0 && genJetId < numberOfGenJets) //generated jet was found and saved

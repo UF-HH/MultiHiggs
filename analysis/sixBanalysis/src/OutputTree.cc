@@ -25,6 +25,7 @@ using namespace std;
     tree_->Branch(#OBJ "_ptRegressed",  &OBJ ## _ptRegressed); \
     tree_->Branch(#OBJ "_eta"        , &OBJ ## _eta); \
     tree_->Branch(#OBJ "_phi"        , &OBJ ## _phi); \
+    tree_->Branch(#OBJ "_deepJet"    , &OBJ ## _deepJet); \
     if (savetlv_) tree_->Branch(#OBJ "_p4", &OBJ ## _p4);
 
 #define CLEAR_m_pt_ptRegressed_eta_phi_p4(OBJ) \
@@ -33,29 +34,12 @@ using namespace std;
     OBJ ## _ptRegressed   = -999.; \
     OBJ ## _eta           = -999.; \
     OBJ ## _phi           = -999.; \
+    OBJ ## _deepJet       = -999.; \
     OBJ ## _p4            . SetCoordinates(0,0,0,0);
 
-#define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
-    tree_->Branch(#OBJ "_m"          ,  &OBJ ## _m); \
-    tree_->Branch(#OBJ "_pt"         ,  &OBJ ## _pt); \
-    tree_->Branch(#OBJ "_ptRegressed",  &OBJ ## _ptRegressed); \
-    tree_->Branch(#OBJ "_eta"        , &OBJ ## _eta); \
-    tree_->Branch(#OBJ "_phi"        , &OBJ ## _phi); \
-    tree_->Branch(#OBJ "_DeepJet"    , &OBJ ## _DeepJet); \
-    if (savetlv_) tree_->Branch(#OBJ "_p4", &OBJ ## _p4);
 
-#define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
-    OBJ ## _m             = -999.; \
-    OBJ ## _pt            = -999.; \
-    OBJ ## _ptRegressed   = -999.; \
-    OBJ ## _eta           = -999.; \
-    OBJ ## _phi           = -999.; \
-    OBJ ## _DeepJet       = -999.; \
-    OBJ ## _p4            . SetCoordinates(0,0,0,0);
-
-OutputTree::OutputTree(bool savetlv, std::map<std::string, bool> branch_switches, string name, string title) :
-    BaseOutTree(name, title, "OutputTree"),
-    savetlv_(savetlv)
+OutputTree::OutputTree (bool savetlv, string name, string title) :
+savetlv_ (savetlv)
 {
     init_branches(branch_switches);
     clear();
@@ -74,6 +58,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     tree_->Branch("Run",     &Run);
     tree_->Branch("LumiSec", &LumiSec);
     tree_->Branch("Event",   &Event);
+    tree_->Branch("njet",    &njet);
 
     tree_->Branch("n_other_pv",     &n_other_pv);
     tree_->Branch("rhofastjet_all", &rhofastjet_all);
@@ -177,6 +162,7 @@ void OutputTree::clear()
     Run     = 0;
     LumiSec = 0;
     Event   = 0;
+    njet    = 0;
 
     n_other_pv     = 0;
     n_pu           = 0;

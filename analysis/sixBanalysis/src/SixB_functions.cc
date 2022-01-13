@@ -261,6 +261,20 @@ int SixB_functions::find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj)
     return -1;
 }
 
+int SixB_functions::njets_preselections (const std::vector<Jet>& in_jets)
+{
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    int count = 0;
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        count++;
+    }
+    return count;
+}
+
 std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
 {
     std::vector<Jet> jets;

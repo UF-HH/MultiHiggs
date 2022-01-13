@@ -255,6 +255,7 @@ int main(int argc, char** argv)
     ot.declareUserIntBranch("nfound_all",    0);
     ot.declareUserIntBranch("nfound_presel", 0);
     ot.declareUserIntBranch("nfound_sixb",   0);
+    ot.declareUserIntBranch("njet_presel",   0);
 
     if (save_trg_decision) {
         for (auto& tname : triggerVector)
@@ -386,39 +387,12 @@ int main(int argc, char** argv)
 
         if (is_data && !jlf.isValid(*nat.run, *nat.luminosityBlock)){
             continue; // not a valid lumi
-        }
+        } 
 
         EventInfo ei;
         ot.clear();
 
-        loop_timer.click("Input read");
-
-        if (!is_data){
-            nwt.read_weights(nat);
-            // example to fill user weights
-            // auto& w1 = nwt.get_weight("test1");
-            // auto& w2 = nwt.get_weight("test2");
-            // auto& w3 = nwt.get_weight("test3");
-            // w1.w = iEv;
-            // w2.w = 10*iEv;
-            // w3.w = 100*iEv;
-            // w1.syst_val = {iEv + 1., iEv - 1.};
-            // w2.syst_val = {10. * iEv - 10, 10. * iEv - 20, 10. * iEv - 30};
-            // w3.syst_val = {};
-            nwt.fill();
-            loop_timer.click("Norm weight read + fill");
-        }
-        // ------- events can start be filtered from here (after saving all gen weights)
-        
-        // trigger requirements
-        if (apply_trigger && !(nat.getTrgOr()) )
-            continue;
-        if (save_trg_decision) {
-            auto listOfPassedTriggers = nat.getTrgPassed();
-            for (auto& t : listOfPassedTriggers)
-                ot.userInt(t) = 1; // defaults are left to 0
-        }
-        loop_timer.click("Trigger");
+        ei.njet = *(nat.nJet);
 
         // global event info
         sbf.copy_event_info(nat, ei, !is_data);
@@ -432,8 +406,9 @@ int main(int argc, char** argv)
             loop_timer.click("Signal gen level");
         }
 
-        // jet selections
-        std::vector<Jet> all_jets    = sbf.get_all_jets (nat);
+        // // jet selections
+        std::vector<Jet> all_jets    = sbf.get_all_jets     (nat);
+        int njet_presel = sbf.njets_preselections(all_jets);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
         ot.userInt("nfound_all")    = nfound_all;
         loop_timer.click("All jets copy");
@@ -459,39 +434,10 @@ int main(int argc, char** argv)
             ot.userInt("nfound_sixb")   = nfound_sixb;
             loop_timer.click("Six b selection");
 
-            sbf.pair_jets(nat, ei, sixb_jets);
-            loop_timer.click("Six b pairing");
-
-            if (is_signal){
-                sbf.compute_seljets_genmatch_flags(nat, ei);
-                loop_timer.click("Six b pairing flags");                
-            }
-
-        }
-
-        if (skim_type == kttbar){
-            if (presel_jets.size() < 2)
-                continue;
-            std::vector<Jet> ttjets = sbf.select_ttbar_jets(nat, ei, presel_jets); // ttjets sorted by DeepJet
-            double deepjet1 = get_property(ttjets.at(0), Jet_btagDeepFlavB);
-            double deepjet2 = get_property(ttjets.at(1), Jet_btagDeepFlavB);
-            int nbtag = 0;
-            if (deepjet1 > btag_WPs.at(bTagWP)) nbtag += 1;
-            if (deepjet2 > btag_WPs.at(bTagWP)) nbtag += 1;
-            if (nbtag < nMinBtag)
-                continue;
-            if (!is_data)
-                ei.btagSF_WP_M = btsf.get_SF_allJetsPassWP({ttjets.at(0), ttjets.at(1)}, BtagSF::btagWP::medium);
-            loop_timer.click("ttbar b jet selection");
-        }
-
-        sbf.select_leptons(nat, ei);
-        loop_timer.click("Lepton selection");
-
-        if (!is_data){
-            su::copy_gen_weights(ot, nwt);
-            loop_timer.click("Read and copy gen weights");
-        }
+        ot.userInt("nfound_all")    = nfound_all;
+        ot.userInt("nfound_presel") = nfound_presel;
+        ot.userInt("nfound_sixb")   = nfound_sixb;
+        ot.userInt("njet_presel")   = njet_presel;
 
         su::fill_output_tree(ot, nat, ei);
         loop_timer.click("Output tree fill");
