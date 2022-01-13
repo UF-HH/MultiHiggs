@@ -283,7 +283,7 @@ std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
   return jets;
 }
 
-std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets)
+std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets, const bool& applyPreselections)
 {
   // FIXME: make these selections configurable
   const double pt_min  = 20.;
@@ -298,12 +298,13 @@ std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vec
   for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
     {
       const Jet& jet = in_jets.at(ij);
-      if (jet.get_pt()            <= pt_min)  continue;
-      if (std::abs(jet.get_eta()) >= eta_max) continue;
-      // if (jet.get_btag() <= btag_min) continue;
-      if (!checkBit(jet.get_id(), pf_id)) continue;
-      if (!checkBit(jet.get_puid(),  pu_id)) continue;
-
+      if (applyPreselections) {
+        if (jet.get_pt()            <= pt_min)  continue;
+        if (std::abs(jet.get_eta()) >= eta_max) continue;
+        // if (jet.get_btag() <= btag_min) continue;
+        if (!checkBit(jet.get_id(), pf_id)) continue;
+        if ((jet.get_pt() < 50 && !checkBit(jet.get_puid(),  pu_id))) continue;
+      }
       out_jets.emplace_back(jet);
     }
 
@@ -402,6 +403,13 @@ void SixB_functions::btag_bias_pt_sort(std::vector<Jet>& in_jets)
     }
 }
 
+// Suzanne, 16 Dec 2021
+// To compare sorting purely by btag with the btag pt bias method
+void SixB_functions::btag_sort(std::vector<Jet>& in_jets)
+{
+  std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
+}
+
 void SixB_functions::pt_sort(std::vector<Jet>& in_jets)
 {
   std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
@@ -413,7 +421,7 @@ bool SixB_functions::pass_jet_cut(Cutflow& cutflow,const std::vector<double> pt_
 	
   unsigned int ncuts = pt_cuts.size();
 
-  if ( in_jets.size() < ncuts ) return false;
+  // if ( in_jets.size() < ncuts ) return false;
 	
   for (unsigned int icut = 0; icut < ncuts; icut++)
     {
@@ -721,6 +729,14 @@ void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vecto
   ei.HY2_b1 = static_cast<Jet&>(HY2.getComponent1());
   ei.HY2_b2 = static_cast<Jet&>(HY2.getComponent2());
 
+}
+
+
+float SixB_functions::get_X(EventInfo& ei, const std::vector<Jet>& in_jets) 
+{
+  p4_t X_p4 = in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed();
+
+  return X_p4.M();
 }
 
 std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_passthrough (std::vector<Jet> jets)
