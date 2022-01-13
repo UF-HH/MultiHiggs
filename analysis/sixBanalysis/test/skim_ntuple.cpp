@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 // skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
 // skim_ntuple.exe --input input/Run2_UL/2018/TTJets.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_ttbar.root
 // skim_ntuple.exe --input input/Run2_UL/2018/SingleMuon_Run2.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_singlemu_ttbarskim.root --is-data
+=======
+>>>>>>> ae2ad916f162dd3fc5729fffb6628d530478ef2c
 
+// skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -310,7 +314,9 @@ int main(int argc, char** argv)
   if (is_data)
     jlf.loadJSON(config.readStringOpt("data::lumimask")); // just read the info for data, so if I just skim MC I'm not forced to parse a JSON
 
-  // -----------
+        if (is_data && !jlf.isValid(*nat.run, *nat.luminosityBlock)){
+            continue; // not a valid lumi
+        } 
 
   Timer loop_timer;
 
@@ -539,6 +545,7 @@ int main(int argc, char** argv)
               njet_btagwp[i] += 1;
         }
 
+<<<<<<< HEAD
       ot.userInt("nloose_btag") = njet_btagwp[0];
       ot.userInt("nmedium_btag") = njet_btagwp[1];
       ot.userInt("ntight_btag") = njet_btagwp[2];
@@ -594,6 +601,18 @@ int main(int argc, char** argv)
         ei.t6_jet_list = t6_jets;
         ei.t6_higgs_list = t6_dijets;
         ei.n_higgs = t6_dijets.size();
+=======
+        std::vector<int> jet_idx    = sbf.get_all_jet_genidx(ei, all_jets);
+        ei.jet_idx = jet_idx;
+        // if (sixb_jets.size() < 6)
+        //     continue;
+        // sbf.pair_jets(nat, ei, sixb_jets);
+
+        ot.userInt("nfound_all")    = nfound_all;
+        ot.userInt("nfound_presel") = nfound_presel;
+        ot.userInt("nfound_sixb")   = nfound_sixb;
+        ot.userInt("njet_presel")   = njet_presel;
+>>>>>>> ae2ad916f162dd3fc5729fffb6628d530478ef2c
 
         ei.nn_jet_list = nn_jets;
         ei.nn_higgs_list = nn_dijets;

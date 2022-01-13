@@ -96,117 +96,83 @@ public:
   // int fill()  {return tree_->Fill();}
   // int write() {return tree_->Write();}
     
-  // // returns false if the branch could not be created, true if all ok
-  // // thje second optional value specifies what the branch should be reset to at clear()
-  // bool declareUserIntBranch   (std::string name, int defaultClearValue = 0);
-  // bool declareUserFloatBranch (std::string name, float defaultClearValue = 0.0);
-  // //XYH
-  // bool declareUserIntBranchList(std::vector<std::string> nameList, int defaultClearValue = 0);
+        // returns false if the branch could not be created, true if all ok
+        // thje second optional value specifies what the branch should be reset to at clear()
+        bool declareUserIntBranch   (std::string name, int defaultClearValue = 0);
+        bool declareUserFloatBranch (std::string name, float defaultClearValue = 0.0);
+        //XYH
+        bool declareUserIntBranchList(std::vector<std::string> nameList, int defaultClearValue = 0);
 
-  // // throws an exception if the branch name was not declared
-  // int&   userInt   (std::string name) {return userInts_   . getVal(name);}
-  // float& userFloat (std::string name) {return userFloats_ . getVal(name);}
+        // throws an exception if the branch name was not declared
+        int&   userInt   (std::string name) {return userInts_   . getVal(name);}
+        float& userFloat (std::string name) {return userFloats_ . getVal(name);}
 
-  //////////////////////////
-  //// saved variables
-  //////////////////////////
+        //////////////////////////
+        //// saved variables
+        //////////////////////////
 
-  unsigned int           Run;
-  unsigned int           LumiSec;
-  unsigned long long int Event;
+        unsigned int           Run;
+        unsigned int           LumiSec;
+        unsigned long long int Event;
+        unsigned int           njet;
+        std::vector<float>     jet_pt;
+        std::vector<float>     jet_eta;
+        std::vector<float>     jet_phi;
+        std::vector<float>     jet_m;
+        std::vector<float>     jet_btag;
+        std::vector<float>     jet_qgl;
+        std::vector<int>       jet_hadronFlav;
+        std::vector<int>       jet_partonFlav;
+        std::vector<int>       jet_idx;
 
-  int    n_other_pv;
-  int    n_pu;
-  double n_true_int;
-  double rhofastjet_all;
-  double lhe_ht;
+        DECLARE_m_pt_eta_phi_p4(gen_X_fc);
+        DECLARE_m_pt_eta_phi_p4(gen_X);
+        DECLARE_m_pt_eta_phi_p4(gen_Y);
+        DECLARE_m_pt_eta_phi_p4(gen_HX);
+        DECLARE_m_pt_eta_phi_p4(gen_HY1);
+        DECLARE_m_pt_eta_phi_p4(gen_HY2);
 
-  int n_genjet;
-  int n_total_jet;
-  int n_jet;
-  int n_higgs;
+        DECLARE_m_pt_eta_phi_p4(gen_HX_b1);
+        DECLARE_m_pt_eta_phi_p4(gen_HX_b2);
+        DECLARE_m_pt_eta_phi_p4(gen_HY1_b1);
+        DECLARE_m_pt_eta_phi_p4(gen_HY1_b2);
+        DECLARE_m_pt_eta_phi_p4(gen_HY2_b1);
+        DECLARE_m_pt_eta_phi_p4(gen_HY2_b2);
 
-  float b_6j_score;
-  float b_3d_score;
+        DECLARE_m_pt_eta_phi_p4(gen_HX_b1_genjet);
+        DECLARE_m_pt_eta_phi_p4(gen_HX_b2_genjet);
+        DECLARE_m_pt_eta_phi_p4(gen_HY1_b1_genjet);
+        DECLARE_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
+        DECLARE_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
+        DECLARE_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
 
-  std::vector<float> genjet_E;	    
-  std::vector<float> genjet_m;		
-  std::vector<float> genjet_pt;		
-  std::vector<float> genjet_eta;		
-  std::vector<float> genjet_phi;		
-  std::vector<int> genjet_partonFlav;
-  std::vector<int> genjet_hadronFlav;
-  std::vector<int> genjet_signalId;
-  std::vector<int> genjet_recoIdx;
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+        int gen_bs_N_reco_match;
+        int gen_bs_N_reco_match_in_acc;
+        double gen_bs_match_recojet_minv;
+        double gen_bs_match_in_acc_recojet_minv;
 
-  DECLARE_jet_list(jet);
-  DECLARE_jet_list(t6_jet);
-  float t6_sphericity;
-  float t6_sphericity_t;
-  float t6_aplanarity;
-  DECLARE_jet_list(nn_jet);
-  float nn_sphericity;
-  float nn_sphericity_t;
-  float nn_aplanarity;
+        DECLARE_m_pt_eta_phi_p4(X);
+        DECLARE_m_pt_eta_phi_p4(Y);
+        DECLARE_m_pt_eta_phi_p4(HX);
+        DECLARE_m_pt_eta_phi_p4(HY1);
+        DECLARE_m_pt_eta_phi_p4(HY2);
 
-  DECLARE_dijet_list(t6_higgs);
-  DECLARE_dijet_list(nn_higgs);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(HX_b1);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(HX_b2);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
+        DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
 
-  DECLARE_m_pt_eta_phi_p4(gen_X_fc);
-  DECLARE_m_pt_eta_phi_p4(gen_X);
-  DECLARE_m_pt_eta_phi_p4(gen_Y);
-  DECLARE_m_pt_eta_phi_p4(gen_HX);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2);
 
-  DECLARE_m_pt_eta_phi_p4(gen_HX_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_HX_b2);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1_b2);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2_b2);
-
-  DECLARE_m_pt_eta_phi_p4(gen_HX_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HX_b2_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
-
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
-  int gen_bs_N_reco_match;
-  int gen_bs_N_reco_match_in_acc;
-  double gen_bs_match_recojet_minv;
-  double gen_bs_match_in_acc_recojet_minv;
-
-  DECLARE_m_pt_eta_phi_p4(X);
-  DECLARE_m_pt_eta_phi_p4(Y);
-  DECLARE_m_pt_eta_phi_p4(HX);
-  DECLARE_m_pt_eta_phi_p4(HY1);
-  DECLARE_m_pt_eta_phi_p4(HY2);
-
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HX_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HX_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
-
-  DECLARE_m_pt_eta_phi_p4(mu_1);
-  DECLARE_m_pt_eta_phi_p4(mu_2);
-  DECLARE_m_pt_eta_phi_p4(ele_1);
-  DECLARE_m_pt_eta_phi_p4(ele_2);
-
-  int n_mu_loose;
-  int n_ele_loose;
-
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
-  int bjet1_hadflav;
+        // DECLARE_m_pt_eta_phi_p4(gen_H1)
+        // DECLARE_m_pt_ptRegressed_eta_phi_p4(HH_btag_b1)
         
   DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
   int bjet2_hadflav;

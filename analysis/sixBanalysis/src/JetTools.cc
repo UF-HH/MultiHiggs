@@ -84,50 +84,51 @@ std::vector<Jet> JetTools::smear_jets(NanoAODTree& nat, const std::vector<Jet>& 
       smearFactor = MIN_JET_ENERGY / jet.P4().E();
     }
         
-    //Make standard smearing to the jet
-    jet.setP4(unsmeared_jetP4 * smearFactor);
+        //Make standard smearing to the jet
+        jet.setP4(unsmeared_jetP4 * smearFactor);
 
-    //Procedure for b-regressed jets 
-      //Step1: Check if genjet is found, then use the dedicated smearing and regression
-    double bregcorr          = jet.getBregCorr();
-    double smearedbreg_jetpt = unsmeared_jetP4.Pt()* bregcorr;
-    double smearedbreg_jeten = unsmeared_jetP4.E() * bregcorr; 
-    if(genJetId >= 0 && genJetId < numberOfGenJets) //generated jet was found and saved
-      {
-	//Get the genjet P4
-	GenJet genjet = GenJet(genJetId, &nat);
-	p4_t genjetP4 = genjet.P4();
-	p4_t gennuP4 (0,0,0,0);
-	//Compute the nearby neutrinos p4
-	for (uint igp = 0; igp < *(nat.nGenPart); ++igp)
-	  {
-	    GenPart nu (igp, &nat);
-	    if (     get_property(nu, GenPart_status) == 1  && 
-		     (abs(get_property(nu, GenPart_pdgId)) == 12 || 
-		      abs(get_property(nu, GenPart_pdgId)) == 14 ||
-		      abs(get_property(nu, GenPart_pdgId)) == 16) )
-	      {
-		if( ROOT::Math::VectorUtil::DeltaR(genjetP4, nu.P4()) < 0.4)
-		  gennuP4 = gennuP4 + nu.P4();
-	      }
-	  }
-	//Add the neutrinos to the genjet
-	p4_t genjetwithnuP4 = genjetP4 + gennuP4;
-	//Derive the new values of regressed/smeared pt and energy to build the dedicated regressed p4
-	float resSmear;
-	if (breg_jer_var      == Variation::NOMINAL)
-	  resSmear = 1.1;
-	else if (breg_jer_var == Variation::UP)
-	  resSmear = 1.2;
-	else if (breg_jer_var == Variation::DOWN)
-	  resSmear = 1.0;
-	else
-	  throw std::runtime_error("JetTools::smear_jets : did not recognise b jet variation");
+        //Procedure for b-regressed jets 
+        //Step1: Check if genjet is found, then use the dedicated smearing and regression
+        double bregcorr          = jet.getBregCorr();
+        float deepJet = jet.getDeepJet();
+        double smearedbreg_jetpt = unsmeared_jetP4.Pt()* bregcorr;
+        double smearedbreg_jeten = unsmeared_jetP4.E() * bregcorr; 
+        if(genJetId >= 0 && genJetId < numberOfGenJets) //generated jet was found and saved
+        {
+            //Get the genjet P4
+            GenJet genjet = GenJet(genJetId, &nat);
+            p4_t genjetP4 = genjet.P4();
+            p4_t gennuP4 (0,0,0,0);
+            //Compute the nearby neutrinos p4
+            for (uint igp = 0; igp < *(nat.nGenPart); ++igp)
+            {
+                GenPart nu (igp, &nat);
+                if (     get_property(nu, GenPart_status) == 1  && 
+                    (abs(get_property(nu, GenPart_pdgId)) == 12 || 
+                     abs(get_property(nu, GenPart_pdgId)) == 14 ||
+                     abs(get_property(nu, GenPart_pdgId)) == 16) )
+                {
+                    if( ROOT::Math::VectorUtil::DeltaR(genjetP4, nu.P4()) < 0.4)
+                        gennuP4 = gennuP4 + nu.P4();
+                }
+            }
+            //Add the neutrinos to the genjet
+            p4_t genjetwithnuP4 = genjetP4 + gennuP4;
+            //Derive the new values of regressed/smeared pt and energy to build the dedicated regressed p4
+            float resSmear;
+            if (breg_jer_var      == Variation::NOMINAL)
+                resSmear = 1.1;
+            else if (breg_jer_var == Variation::UP)
+                resSmear = 1.2;
+            else if (breg_jer_var == Variation::DOWN)
+                resSmear = 1.0;
+            else
+                throw std::runtime_error("JetTools::smear_jets : did not recognise b jet variation");
 
-	double dpt         = smearedbreg_jetpt - genjetwithnuP4.Pt();
-	smearedbreg_jetpt  = genjetwithnuP4.Pt() + resSmear*dpt;
-	double den         = smearedbreg_jeten - genjetwithnuP4.E();
-	smearedbreg_jeten  = genjetwithnuP4.E()  + resSmear*den;
+            double dpt         = smearedbreg_jetpt - genjetwithnuP4.Pt();
+            smearedbreg_jetpt  = genjetwithnuP4.Pt() + resSmear*dpt;
+            double den         = smearedbreg_jeten - genjetwithnuP4.E();
+            smearedbreg_jeten  = genjetwithnuP4.E()  + resSmear*den;
             
 	//Save the correct p4 for b-regressed jets
 	ROOT::Math::PtEtaPhiEVector smearedbreg_jetP4_ptetaphie;

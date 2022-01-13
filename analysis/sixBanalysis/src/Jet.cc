@@ -43,6 +43,30 @@ float Jet::getBregRes()
   return res;
 }
 
+float Jet::getDeepJet() 
+{
+    deepJet = get_property((*this),Jet_btagDeepFlavB);
+    return deepJet;
+}
+
+int Jet::getJetHadronFlavour() 
+{
+    hadronFlavour = get_property((*this),Jet_hadronFlavour);
+    return hadronFlavour;
+}
+
+int Jet::getJetPartonFlavour() 
+{
+    partonFlavour = get_property((*this),Jet_partonFlavour);
+    return partonFlavour;
+}
+
+float Jet::getJetQGL() // quark-gluon likelihood 
+{
+    qgl = get_property((*this),Jet_qgl);
+    return qgl;
+}
+
 void Jet::buildP4Regressed()
 {
   if(p4_.Pt()==0.) this->buildP4();
