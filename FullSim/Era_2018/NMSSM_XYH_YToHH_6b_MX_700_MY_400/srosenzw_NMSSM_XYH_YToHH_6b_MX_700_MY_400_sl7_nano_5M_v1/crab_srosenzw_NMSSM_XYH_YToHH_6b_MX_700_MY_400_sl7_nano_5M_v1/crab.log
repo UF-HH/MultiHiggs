@@ -1,0 +1,429 @@
+Updating process to run DeepBoostedJet on datasets before 103X
+Updating process to run DeepDoubleX on datasets before 104X
+Will recalculate the following discriminators on AK8 jets: pfDeepBoostedJetTags:probTbcq, pfDeepBoostedJetTags:probTbqq, pfDeepBoostedJetTags:probTbc, pfDeepBoostedJetTags:probTbq, pfDeepBoostedJetTags:probWcq, pfDeepBoostedJetTags:probWqq, pfDeepBoostedJetTags:probZbb, pfDeepBoostedJetTags:probZcc, pfDeepBoostedJetTags:probZqq, pfDeepBoostedJetTags:probHbb, pfDeepBoostedJetTags:probHcc, pfDeepBoostedJetTags:probHqqqq, pfDeepBoostedJetTags:probQCDbb, pfDeepBoostedJetTags:probQCDcc, pfDeepBoostedJetTags:probQCDb, pfDeepBoostedJetTags:probQCDc, pfDeepBoostedJetTags:probQCDothers, pfDeepBoostedDiscriminatorsJetTags:TvsQCD, pfDeepBoostedDiscriminatorsJetTags:WvsQCD, pfDeepBoostedDiscriminatorsJetTags:ZvsQCD, pfDeepBoostedDiscriminatorsJetTags:ZbbvsQCD, pfDeepBoostedDiscriminatorsJetTags:HbbvsQCD, pfDeepBoostedDiscriminatorsJetTags:H4qvsQCD, pfMassDecorrelatedDeepBoostedJetTags:probTbcq, pfMassDecorrelatedDeepBoostedJetTags:probTbqq, pfMassDecorrelatedDeepBoostedJetTags:probTbc, pfMassDecorrelatedDeepBoostedJetTags:probTbq, pfMassDecorrelatedDeepBoostedJetTags:probWcq, pfMassDecorrelatedDeepBoostedJetTags:probWqq, pfMassDecorrelatedDeepBoostedJetTags:probZbb, pfMassDecorrelatedDeepBoostedJetTags:probZcc, pfMassDecorrelatedDeepBoostedJetTags:probZqq, pfMassDecorrelatedDeepBoostedJetTags:probHbb, pfMassDecorrelatedDeepBoostedJetTags:probHcc, pfMassDecorrelatedDeepBoostedJetTags:probHqqqq, pfMassDecorrelatedDeepBoostedJetTags:probQCDbb, pfMassDecorrelatedDeepBoostedJetTags:probQCDcc, pfMassDecorrelatedDeepBoostedJetTags:probQCDb, pfMassDecorrelatedDeepBoostedJetTags:probQCDc, pfMassDecorrelatedDeepBoostedJetTags:probQCDothers, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:TvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:WvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZHbbvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZbbvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:HbbvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:H4qvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZHccvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:bbvsLight, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ccvsLight, pfDeepDoubleBvLJetTags:probHbb, pfDeepDoubleCvLJetTags:probHcc, pfDeepDoubleCvBJetTags:probHcc, pfMassIndependentDeepDoubleBvLJetTags:probHbb, pfMassIndependentDeepDoubleCvLJetTags:probHcc, pfMassIndependentDeepDoubleCvBJetTags:probHcc
+DEBUG 2021-07-20 17:18:24.049 UTC: 	 CRAB Client version: v3.210610
+DEBUG 2021-07-20 17:18:24.049 UTC: 	 Running on: Linux cmslpc116.fnal.gov 3.10.0-1160.31.1.el7.x86_64 #1 SMP Tue Jun 15 10:20:52 CDT 2021 x86_64 x86_64 x86_64 GNU/Linux - Scientific Linux 7.9 (Nitrogen)
+DEBUG 2021-07-20 17:18:24.049 UTC: 	 Executing command: 'submit'
+DEBUG 2021-07-20 17:18:24.050 UTC: 	 Found CRAB cache file /uscms/home/srosenzw/.crab3
+INFO 2021-07-20 17:18:24.052 UTC: 	 Will use CRAB configuration file crabConfig.py
+DEBUG 2021-07-20 17:18:24.052 UTC: 	 Loading CRAB configuration file.
+DEBUG 2021-07-20 17:18:24.062 UTC: 	 Will use CRAB PrivateMC plugin (i.e. will run a MC generation job type).
+DEBUG 2021-07-20 17:18:24.108 UTC: 	 Checking credentials
+DEBUG 2021-07-20 17:18:24.109 UTC: 	 Found proxy file /uscms/home/srosenzw/x509up_u56140
+DEBUG 2021-07-20 17:18:24.109 UTC: 	 Getting proxy life time left
+DEBUG 2021-07-20 17:18:24.213 UTC: 	 Executing : 
+ command : voms-proxy-info -file /uscms/home/srosenzw/x509up_u56140 -timeleft
+ output : 533667
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:18:24.318 UTC: 	 Executing : 
+ command : voms-proxy-info -file /uscms/home/srosenzw/x509up_u56140 -actimeleft
+ output : 533667
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:18:24.318 UTC: 	 Proxy valid for 148:14:27 hours
+DEBUG 2021-07-20 17:18:24.426 UTC: 	 Executing : 
+ command : env X509_USER_PROXY=/uscms/home/srosenzw/x509up_u56140 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:18:25.001 UTC: 	 Registering user credentials for server /DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch
+DEBUG 2021-07-20 17:18:25.113 UTC: 	 Executing : 
+ command : voms-proxy-info -file /uscms/home/srosenzw/x509up_u56140 -identity
+ output : /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:18:25.121 UTC: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2021-07-20 17:18:25.121 UTC: 	 using 60ee80196627500d7a5aa5d9c723db8790c95cf4 as credential login name
+DEBUG 2021-07-20 17:18:26.228 UTC: 	 Executing : 
+ command : myproxy-info -l 60ee80196627500d7a5aa5d9c723db8790c95cf4 -s myproxy.cern.ch
+ output : username: 60ee80196627500d7a5aa5d9c723db8790c95cf4
+owner: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig
+  renewal policy: /DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch
+  trusted retrieval policy: /DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch
+  timeleft: 529:40:04  (22.1 days)
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:18:26.230 UTC: 	 Myproxy is valid: 1906804
+DEBUG 2021-07-20 17:18:26.230 UTC: 	 Retrieving username ...
+DEBUG 2021-07-20 17:18:26.230 UTC: 	 Retrieving username from CRIC...
+DEBUG 2021-07-20 17:18:27.703 UTC: 	 username is srosenzw
+DEBUG 2021-07-20 17:18:27.710 UTC: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2021-07-20 17:18:27.711 UTC: 	 using srosenzw_CRAB as credential login name
+DEBUG 2021-07-20 17:18:28.622 UTC: 	 Executing : 
+ command : myproxy-info -l srosenzw_CRAB -s myproxy.cern.ch
+ output : 
+ error: ERROR from myproxy-server:
+no credentials found for user srosenzw_CRAB, owner "/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig" 
+
+ retcode : 1
+DEBUG 2021-07-20 17:18:28.623 UTC: 	 Myproxy is valid: -1
+DEBUG 2021-07-20 17:18:28.931 UTC: 	 Executing : 
+ command : openssl x509 -noout -in ~/.globus/usercert.pem -dates
+ output : notBefore=Aug 26 14:14:29 2020 GMT
+notAfter=Sep 30 14:14:29 2021 GMT
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:18:28.943 UTC: 	 Delegating a myproxy for 720:00 hours
+DEBUG 2021-07-20 17:18:28.943 UTC: 	 using srosenzw_CRAB as credential login name
+DEBUG 2021-07-20 17:24:12.228 UTC: 	 Executing : 
+ command : export GT_PROXY_MODE=rfc ; myproxy-init -d -n -s myproxy.cern.ch -x -R '/DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch' -x -Z '/DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch' -l 'srosenzw_CRAB' -t 168:00 -c 720:00
+ output : Your identity: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig
+Creating proxy ................................................................................. Done
+Proxy Verify OK
+Your proxy is valid until: Thu Aug 19 13:24:12 2021
+
+ error: Failed reading length 0
+Error authenticating: Connection closed.
+
+ retcode : 1
+DEBUG 2021-07-20 17:24:12.229 UTC: 	 using srosenzw_CRAB as credential login name
+DEBUG 2021-07-20 17:24:13.238 UTC: 	 Executing : 
+ command : myproxy-info -l srosenzw_CRAB -s myproxy.cern.ch
+ output : 
+ error: ERROR from myproxy-server:
+no credentials found for user srosenzw_CRAB, owner "/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig" 
+
+ retcode : 1
+DEBUG 2021-07-20 17:24:13.239 UTC: 	 Result of myproxy credential check:
+  Credential exists on myproxy: username: 60ee80196627500d7a5aa5d9c723db8790c95cf4  - validity: 22 days, 1:40:04
+  Error trying to create credential:
+ Problems delegating My-proxy. It seems your proxy has not been delegated to myproxy. Please check the logfile for the exact error (it might simply you typed a wrong password)
+DEBUG 2021-07-20 17:24:13.239 UTC: 	 Command use: submit
+DEBUG 2021-07-20 17:24:13.239 UTC: 	 Options use: ['crabConfig.py']
+DEBUG 2021-07-20 17:24:13.837 UTC: 	 CRABClient version: v3.210610
+DEBUG 2021-07-20 17:24:13.837 UTC: 	 Instance is prod
+DEBUG 2021-07-20 17:24:13.837 UTC: 	 Server base url is cmsweb.cern.ch
+DEBUG 2021-07-20 17:24:13.837 UTC: 	 Command api workflow
+DEBUG 2021-07-20 17:24:13.837 UTC: 	 Started submission
+DEBUG 2021-07-20 17:24:13.837 UTC: 	 Working on /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1
+DEBUG 2021-07-20 17:24:14.554 UTC: 	 Loading required information from the environment
+DEBUG 2021-07-20 17:24:14.554 UTC: 	 Found CMSSW_10_2_18 for slc7_amd64_gcc700 with base /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18
+DEBUG 2021-07-20 17:24:14.554 UTC: 	 UNIQUE NAME: tarUUID 5ddea39a-279b-4051-bc08-4fe70e080fd3 
+DEBUG 2021-07-20 17:24:14.554 UTC: 	 self.config: from WMCore.Configuration import Configuration
+config = Configuration()
+config.section_('General')
+config.General.transferLogs = False
+config.General.transferOutputs = True
+config.General.workArea = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1'
+config.General.requestName = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1'
+config.section_('JobType')
+config.JobType.numCores = 2
+config.JobType.maxMemoryMB = 3500
+config.JobType.scriptExe = 'scriptExe.sh'
+config.JobType.pluginName = 'PrivateMC'
+config.JobType.psetName = 'nanoAOD_step_fake.py'
+config.JobType.inputFiles = ['scriptExe.sh', 'genSim_step.py', 'digiRaw_step.py', 'recoAOD_step.py', 'miniAOD_step.py', 'nanoAOD_step.py', 'pileup.py', 'NMSSM_XYH_YToHH_6b_MX_700_MY_400_slc7_amd64_gcc700_CMSSW_10_6_0_tarball2.tar.xz']
+config.section_('Data')
+config.Data.outputDatasetTag = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1'
+config.Data.publication = False
+config.Data.unitsPerJob = 500
+config.Data.splitting = 'EventBased'
+config.Data.outLFNDirBase = '/store/group/lpchbb/srosenzw/XYH_YToHH/'
+config.Data.totalUnits = 5000000
+config.section_('Site')
+config.Site.storageSite = 'T3_US_FNALLPC'
+config.section_('User')
+config.section_('Debug')
+
+DEBUG 2021-07-20 17:24:14.554 UTC: 	 self.config.JobType.psetName: nanoAOD_step_fake.py
+INFO 2021-07-20 17:24:14.555 UTC: 	 Importing CMSSW configuration nanoAOD_step_fake.py
+INFO 2021-07-20 17:24:45.885 UTC: 	 Finished importing CMSSW configuration nanoAOD_step_fake.py
+INFO 2021-07-20 17:24:45.885 UTC: 	 You are requesting more than 1 core per job. Please make sure that your multi-threaded code is thread-safe and CPU-efficient, and request the correct amount of memory since the default 'maxMemoryMB' value is meant for single core jobs.
+DEBUG 2021-07-20 17:24:45.886 UTC: 	 Writing CMSSW configuration to /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/inputs/PSet.py
+DEBUG 2021-07-20 17:24:47.796 UTC: 	 The following EDM output files will be collected: ['nanoAOD_step.root']
+DEBUG 2021-07-20 17:24:47.796 UTC: 	 The following TFile output files will be collected: []
+DEBUG 2021-07-20 17:24:47.796 UTC: 	 The following user output files (not listed as PoolOuputModule or TFileService in the CMSSW PSet) will be collected: 
+DEBUG 2021-07-20 17:24:47.796 UTC: 	 Loading required information from the environment
+DEBUG 2021-07-20 17:24:47.796 UTC: 	 Found CMSSW_10_2_18 for slc7_amd64_gcc700 with base /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18
+DEBUG 2021-07-20 17:24:47.796 UTC: 	 Making tarball in /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/inputs/5ddea39a-279b-4051-bc08-4fe70e080fd3default.tgz
+DEBUG 2021-07-20 17:24:47.799 UTC: 	 Checking directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/lib
+DEBUG 2021-07-20 17:24:47.799 UTC: 	 Adding directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/lib to tarball
+DEBUG 2021-07-20 17:24:49.841 UTC: 	 Checking directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/biglib
+DEBUG 2021-07-20 17:24:49.841 UTC: 	 Adding directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/biglib to tarball
+DEBUG 2021-07-20 17:24:49.843 UTC: 	 Checking directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/module
+DEBUG 2021-07-20 17:24:51.435 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/CommonTools/Utils/interface to tarball
+DEBUG 2021-07-20 17:24:52.717 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/CondFormats/JetMETObjects/data to tarball
+DEBUG 2021-07-20 17:24:54.338 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/CondFormats/JetMETObjects/interface to tarball
+DEBUG 2021-07-20 17:24:54.584 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/CondFormats/Serialization/interface to tarball
+DEBUG 2021-07-20 17:24:54.934 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/FWCore/MessageLogger/interface to tarball
+DEBUG 2021-07-20 17:24:55.579 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/FWCore/Utilities/interface to tarball
+DEBUG 2021-07-20 17:24:56.669 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/JetMETCorrections/Modules/interface to tarball
+DEBUG 2021-07-20 17:25:04.368 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/MadGraph/MG5_aMC_v2_6_5/tests/unit_tests/interface to tarball
+DEBUG 2021-07-20 17:25:05.102 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/MadGraph/MG5_aMC_v2_6_5/Template/MadWeight/transfer_function/data to tarball
+DEBUG 2021-07-20 17:25:06.874 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/MadGraph/MG5_aMC_v2_6_5/madgraph/interface to tarball
+DEBUG 2021-07-20 17:26:06.309 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/analysis/sixBanalysis/data to tarball
+DEBUG 2021-07-20 17:26:07.974 UTC: 	 Adding data directory /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/analysis/sixBanalysis/interface to tarball
+DEBUG 2021-07-20 17:26:09.663 UTC: 	 Adding file scriptExe.sh to tarball
+DEBUG 2021-07-20 17:26:09.683 UTC: 	 Adding file genSim_step.py to tarball
+DEBUG 2021-07-20 17:26:09.684 UTC: 	 Adding file digiRaw_step.py to tarball
+DEBUG 2021-07-20 17:26:09.699 UTC: 	 Adding file recoAOD_step.py to tarball
+DEBUG 2021-07-20 17:26:09.701 UTC: 	 Adding file miniAOD_step.py to tarball
+DEBUG 2021-07-20 17:26:09.719 UTC: 	 Adding file nanoAOD_step.py to tarball
+DEBUG 2021-07-20 17:26:09.730 UTC: 	 Adding file pileup.py to tarball
+DEBUG 2021-07-20 17:26:23.979 UTC: 	 Adding file NMSSM_XYH_YToHH_6b_MX_700_MY_400_slc7_amd64_gcc700_CMSSW_10_6_0_tarball2.tar.xz to tarball
+DEBUG 2021-07-20 17:26:33.354 UTC: 	 Uploading archive /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/inputs/5ddea39a-279b-4051-bc08-4fe70e080fd3default.tgz (47 MB) to the CRAB cache. Using URI https://cmsweb.cern.ch/S3/crabcache_prod
+DEBUG 2021-07-20 17:26:49.792 UTC: 	 Will execute:
+curl -f -v -X POST  -H "User-Agent: CRAB" -F "key=srosenzw/sandboxes/318d9f15884b41b0bb74d48e35dd9e9e244671ce07bb8f5e4da047f7bddccd66.tar.gz" -F "AWSAccessKeyId=ab00fcc889f248c495d2875f15a3badb" -F "policy=eyJjb25kaXRpb25zIjogW3siYnVja2V0IjogImNyYWJjYWNoZV9wcm9kIn0sIHsia2V5IjogInNyb3Nlbnp3L3NhbmRib3hlcy8zMThkOWYxNTg4NGI0MWIwYmI3NGQ0OGUzNWRkOWU5ZTI0NDY3MWNlMDdiYjhmNWU0ZGEwNDdmN2JkZGNjZDY2LnRhci5neiJ9XSwgImV4cGlyYXRpb24iOiAiMjAyMS0wNy0yMFQxODoyNjo0OVoifQ==" -F "signature=8aRpBKGXdTyzlICh8KjREYnzd40=" -F "file=@/uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/inputs/5ddea39a-279b-4051-bc08-4fe70e080fd3default.tgz" "https://s3.cern.ch/crabcache_prod"
+DEBUG 2021-07-20 17:26:54.408 UTC: 	 exitcode: 0
+stdout: 
+stderr: Note: Unnecessary use of -X or --request, POST is already inferred.
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 137.138.44.245...
+* TCP_NODELAY set
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Connected to s3.cern.ch (137.138.44.245) port 443 (#0)
+* ALPN, offering http/1.1
+* Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
+* successfully set certificate verify locations:
+  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+  CApath: none
+* TLSv1.2 (OUT), TLS header, Certificate Status (22):
+} [5 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server hello (2):
+{ [70 bytes data]
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+{ [4780 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+{ [333 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+{ [4 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+} [70 bytes data]
+* TLSv1.2 (OUT), TLS change cipher, Client hello (1):
+} [1 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+} [16 bytes data]
+* TLSv1.2 (IN), TLS change cipher, Client hello (1):
+{ [1 bytes data]
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+{ [16 bytes data]
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256
+* ALPN, server accepted to use http/1.1
+* Server certificate:
+*  subject: C=CH; ST=Genève; L=Meyrin; O=Organisation européenne pour la Recherche nucléaire (CERN); CN=*.s3.cern.ch
+*  start date: Mar 10 00:00:00 2021 GMT
+*  expire date: Mar 10 23:59:59 2022 GMT
+*  subjectAltName: host "s3.cern.ch" matched cert's "s3.cern.ch"
+*  issuer: C=GB; ST=Greater Manchester; L=Salford; O=Sectigo Limited; CN=Sectigo RSA Organization Validation Secure Server CA
+*  SSL certificate verify ok.
+} [5 bytes data]
+> POST /crabcache_prod HTTP/1.1
+> Host: s3.cern.ch
+> Accept: */*
+> User-Agent: CRAB
+> Content-Length: 50214778
+> Content-Type: multipart/form-data; boundary=------------------------67316e63914b1b88
+> Expect: 100-continue
+> 
+* Done waiting for 100-continue
+  0 47.8M    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0} [5 bytes data]
+< HTTP/1.1 100 Continue
+} [5 bytes data]
+  5 47.8M    0     0    5 2640k      0  1236k  0:00:39  0:00:02  0:00:37 1235k 49 47.8M    0     0   49 23.7M      0  7738k  0:00:06  0:00:03  0:00:03 7738k 97 47.8M    0     0   97 46.8M      0  11.4M  0:00:04  0:00:04 --:--:-- 11.4M< HTTP/1.1 204 No Content
+< Accept-Ranges: bytes
+< Bucket: crabcache_prod
+< Date: Tue, 20 Jul 2021 17:26:54 GMT
+< X-Amz-Request-Id: tx00000000000000005c720-0060f7075a-1dd26384-default
+< 
+100 47.8M    0     0  100 47.8M      0  10.4M  0:00:04  0:00:04 --:--:-- 10.7M
+* Connection #0 to host s3.cern.ch left intact
+
+DEBUG 2021-07-20 17:26:54.409 UTC: 	 sandbox /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/inputs/5ddea39a-279b-4051-bc08-4fe70e080fd3default.tgz successully uploaded to S3
+DEBUG 2021-07-20 17:26:54.409 UTC: 	 Loading required information from the environment
+DEBUG 2021-07-20 17:26:54.409 UTC: 	 Found CMSSW_10_2_18 for slc7_amd64_gcc700 with base /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18
+DEBUG 2021-07-20 17:26:54.409 UTC: 	 Making tarball in /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/inputs/debugFiles.tgz
+DEBUG 2021-07-20 17:26:54.417 UTC: 	 Uploading archive /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/inputs/debugFiles.tgz (2 KB) to the CRAB cache. Using URI https://cmsweb.cern.ch/S3/crabcache_prod
+DEBUG 2021-07-20 17:26:55.031 UTC: 	 Will execute:
+curl -f -v -X POST  -H "User-Agent: CRAB" -F "key=srosenzw/sandboxes/72fc2054e6e2255109b1e8eb9a2d78538c62395f29539d9818af65359d24df9f.tar.gz" -F "AWSAccessKeyId=ab00fcc889f248c495d2875f15a3badb" -F "policy=eyJjb25kaXRpb25zIjogW3siYnVja2V0IjogImNyYWJjYWNoZV9wcm9kIn0sIHsia2V5IjogInNyb3Nlbnp3L3NhbmRib3hlcy83MmZjMjA1NGU2ZTIyNTUxMDliMWU4ZWI5YTJkNzg1MzhjNjIzOTVmMjk1MzlkOTgxOGFmNjUzNTlkMjRkZjlmLnRhci5neiJ9XSwgImV4cGlyYXRpb24iOiAiMjAyMS0wNy0yMFQxODoyNjo1NFoifQ==" -F "signature=QC7d2MiRdOcFlThwdS3QRW9A5Xk=" -F "file=@/uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/inputs/debugFiles.tgz" "https://s3.cern.ch/crabcache_prod"
+DEBUG 2021-07-20 17:26:56.518 UTC: 	 exitcode: 0
+stdout: 
+stderr: Note: Unnecessary use of -X or --request, POST is already inferred.
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 137.138.33.24...
+* TCP_NODELAY set
+* Connected to s3.cern.ch (137.138.33.24) port 443 (#0)
+* ALPN, offering http/1.1
+* Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
+* successfully set certificate verify locations:
+  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+  CApath: none
+* TLSv1.2 (OUT), TLS header, Certificate Status (22):
+} [5 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server hello (2):
+{ [70 bytes data]
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+{ [4780 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+{ [333 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+{ [4 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+} [70 bytes data]
+* TLSv1.2 (OUT), TLS change cipher, Client hello (1):
+} [1 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+} [16 bytes data]
+* TLSv1.2 (IN), TLS change cipher, Client hello (1):
+{ [1 bytes data]
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+{ [16 bytes data]
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256
+* ALPN, server accepted to use http/1.1
+* Server certificate:
+*  subject: C=CH; ST=Genève; L=Meyrin; O=Organisation européenne pour la Recherche nucléaire (CERN); CN=*.s3.cern.ch
+*  start date: Mar 10 00:00:00 2021 GMT
+*  expire date: Mar 10 23:59:59 2022 GMT
+*  subjectAltName: host "s3.cern.ch" matched cert's "s3.cern.ch"
+*  issuer: C=GB; ST=Greater Manchester; L=Salford; O=Sectigo Limited; CN=Sectigo RSA Organization Validation Secure Server CA
+*  SSL certificate verify ok.
+} [5 bytes data]
+> POST /crabcache_prod HTTP/1.1
+> Host: s3.cern.ch
+> Accept: */*
+> User-Agent: CRAB
+> Content-Length: 3597
+> Content-Type: multipart/form-data; boundary=------------------------7273b18c9e994119
+> Expect: 100-continue
+> 
+* Done waiting for 100-continue
+  0  3597    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0} [5 bytes data]
+< HTTP/1.1 100 Continue
+{ [5 bytes data]
+< HTTP/1.1 204 No Content
+< Accept-Ranges: bytes
+< Bucket: crabcache_prod
+< Date: Tue, 20 Jul 2021 17:26:56 GMT
+< X-Amz-Request-Id: tx000000000000002dbc94e-0060f7075f-1e049818-default
+< 
+100  3597    0     0  100  3597      0   2463  0:00:01  0:00:01 --:--:--  2463
+* Connection #0 to host s3.cern.ch left intact
+
+DEBUG 2021-07-20 17:26:56.518 UTC: 	 sandbox /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/inputs/debugFiles.tgz successully uploaded to S3
+DEBUG 2021-07-20 17:26:56.518 UTC: 	 Result uploading input files: 318d9f15884b41b0bb74d48e35dd9e9e244671ce07bb8f5e4da047f7bddccd66.tar.gz 
+INFO 2021-07-20 17:26:56.519 UTC: 	 Sending the request to the server at cmsweb.cern.ch
+DEBUG 2021-07-20 17:26:56.520 UTC: 	 Submitting {'maxjobruntime': 1250, 'extrajdl': [], 'lfn': '/store/group/lpchbb/srosenzw/XYH_YToHH/', 'savelogsflag': 0, 'useparent': 0, 'scriptexe': 'scriptExe.sh', 'asyncdest': 'T3_US_FNALLPC', 'algoargs': 500, 'cachefilename': '318d9f15884b41b0bb74d48e35dd9e9e244671ce07bb8f5e4da047f7bddccd66.tar.gz', 'numcores': 2, 'addoutputfiles': [], 'generator': 'pythia', 'maxmemory': 3500, 'publishdbsurl': 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSWriter', 'priority': 10, 'jobsw': 'CMSSW_10_2_18', 'edmoutfiles': ['nanoAOD_step.root'], 'userfiles': [], 'primarydataset': 'CRAB_PrivateMC', 'inputdata': '', 'ignorelocality': 0, 'dryrun': 0, 'workflow': 'crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1', 'cacheurl': u'https://cmsweb.cern.ch/S3/crabcache_prod', 'nonprodsw': 0, 'tfileoutfiles': [], 'oneEventMode': 0, 'debugfilename': '72fc2054e6e2255109b1e8eb9a2d78538c62395f29539d9818af65359d24df9f.tar.gz', 'saveoutput': 1, 'publication': 0, 'jobarch': 'slc7_amd64_gcc700', 'totalunits': 5000000, 'splitalgo': 'EventBased', 'ignoreglobalblacklist': 0, 'nonvaliddata': 0, 'dbsurl': 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader', 'publishgroupname': 0, 'jobtype': 'PrivateMC', 'publishname2': 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1'} 
+DEBUG 2021-07-20 17:26:56.520 UTC: 	 Encoded submit request: maxjobruntime=1250&lfn=%2Fstore%2Fgroup%2Flpchbb%2Fsrosenzw%2FXYH_YToHH%2F&savelogsflag=0&useparent=0&scriptexe=scriptExe.sh&asyncdest=T3_US_FNALLPC&algoargs=500&cachefilename=318d9f15884b41b0bb74d48e35dd9e9e244671ce07bb8f5e4da047f7bddccd66.tar.gz&numcores=2&generator=pythia&maxmemory=3500&publishdbsurl=https%3A%2F%2Fcmsweb.cern.ch%2Fdbs%2Fprod%2Fphys03%2FDBSWriter&priority=10&jobsw=CMSSW_10_2_18&primarydataset=CRAB_PrivateMC&inputdata=&ignorelocality=0&dryrun=0&workflow=crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1&cacheurl=https%3A%2F%2Fcmsweb.cern.ch%2FS3%2Fcrabcache_prod&nonprodsw=0&oneEventMode=0&debugfilename=72fc2054e6e2255109b1e8eb9a2d78538c62395f29539d9818af65359d24df9f.tar.gz&saveoutput=1&publication=0&jobarch=slc7_amd64_gcc700&totalunits=5000000&splitalgo=EventBased&ignoreglobalblacklist=0&nonvaliddata=0&dbsurl=https%3A%2F%2Fcmsweb.cern.ch%2Fdbs%2Fprod%2Fglobal%2FDBSReader&publishgroupname=0&jobtype=PrivateMC&publishname2=srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1&edmoutfiles=nanoAOD_step.root
+DEBUG 2021-07-20 17:26:57.552 UTC: 	 Result: {u'result': [{u'RequestName': u'210720_172657:srosenzw_crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1'}]}
+INFO 2021-07-20 17:26:57.557 UTC: 	 Success: Your task has been delivered to the prod CRAB3 server.
+INFO 2021-07-20 17:26:57.557 UTC: 	 Task name: 210720_172657:srosenzw_crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1
+INFO 2021-07-20 17:26:57.557 UTC: 	 Project dir: srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1
+INFO 2021-07-20 17:26:57.557 UTC: 	 Please use ' crab status -d srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1 ' to check how the submission process proceeds.
+DEBUG 2021-07-20 17:26:57.557 UTC: 	 About to return
+INFO 2021-07-20 17:26:57.562 UTC: 	 Log file is /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab.log
+DEBUG 2021-07-20 17:27:50.758 UTC: 	 CRAB Client version: v3.210610
+DEBUG 2021-07-20 17:27:50.758 UTC: 	 Running on: Linux cmslpc116.fnal.gov 3.10.0-1160.31.1.el7.x86_64 #1 SMP Tue Jun 15 10:20:52 CDT 2021 x86_64 x86_64 x86_64 GNU/Linux - Scientific Linux 7.9 (Nitrogen)
+DEBUG 2021-07-20 17:27:50.758 UTC: 	 Executing command: 'status'
+DEBUG 2021-07-20 17:27:50.759 UTC: 	 Found CRAB cache file /uscms/home/srosenzw/.crab3
+DEBUG 2021-07-20 17:27:50.786 UTC: 	 Checking credentials
+DEBUG 2021-07-20 17:27:50.787 UTC: 	 Found proxy file /uscms/home/srosenzw/x509up_u56140
+DEBUG 2021-07-20 17:27:50.787 UTC: 	 Getting proxy life time left
+DEBUG 2021-07-20 17:27:50.892 UTC: 	 Executing : 
+ command : voms-proxy-info -file /uscms/home/srosenzw/x509up_u56140 -timeleft
+ output : 533101
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:27:50.998 UTC: 	 Executing : 
+ command : voms-proxy-info -file /uscms/home/srosenzw/x509up_u56140 -actimeleft
+ output : 533101
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:27:50.999 UTC: 	 Proxy valid for 148:05:01 hours
+DEBUG 2021-07-20 17:27:51.586 UTC: 	 Registering user credentials for server /DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch
+DEBUG 2021-07-20 17:27:51.699 UTC: 	 Executing : 
+ command : voms-proxy-info -file /uscms/home/srosenzw/x509up_u56140 -identity
+ output : /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:27:51.709 UTC: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2021-07-20 17:27:51.710 UTC: 	 using 60ee80196627500d7a5aa5d9c723db8790c95cf4 as credential login name
+DEBUG 2021-07-20 17:27:52.718 UTC: 	 Executing : 
+ command : myproxy-info -l 60ee80196627500d7a5aa5d9c723db8790c95cf4 -s myproxy.cern.ch
+ output : username: 60ee80196627500d7a5aa5d9c723db8790c95cf4
+owner: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig
+  renewal policy: /DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch
+  trusted retrieval policy: /DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch
+  timeleft: 529:30:38  (22.1 days)
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:27:52.719 UTC: 	 Myproxy is valid: 1906238
+DEBUG 2021-07-20 17:27:52.719 UTC: 	 Retrieving username ...
+DEBUG 2021-07-20 17:27:52.719 UTC: 	 Retrieving username from CRIC...
+DEBUG 2021-07-20 17:27:54.398 UTC: 	 username is srosenzw
+DEBUG 2021-07-20 17:27:54.403 UTC: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2021-07-20 17:27:54.403 UTC: 	 using srosenzw_CRAB as credential login name
+DEBUG 2021-07-20 17:27:55.309 UTC: 	 Executing : 
+ command : myproxy-info -l srosenzw_CRAB -s myproxy.cern.ch
+ output : 
+ error: ERROR from myproxy-server:
+no credentials found for user srosenzw_CRAB, owner "/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig" 
+
+ retcode : 1
+DEBUG 2021-07-20 17:27:55.310 UTC: 	 Myproxy is valid: -1
+DEBUG 2021-07-20 17:27:55.415 UTC: 	 Executing : 
+ command : openssl x509 -noout -in ~/.globus/usercert.pem -dates
+ output : notBefore=Aug 26 14:14:29 2020 GMT
+notAfter=Sep 30 14:14:29 2021 GMT
+
+ error: 
+ retcode : 0
+DEBUG 2021-07-20 17:27:55.424 UTC: 	 Delegating a myproxy for 720:00 hours
+DEBUG 2021-07-20 17:27:55.425 UTC: 	 using srosenzw_CRAB as credential login name
+DEBUG 2021-07-20 17:28:07.154 UTC: 	 Executing : 
+ command : export GT_PROXY_MODE=rfc ; myproxy-init -d -n -s myproxy.cern.ch -x -R '/DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch' -x -Z '/DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch' -l 'srosenzw_CRAB' -t 168:00 -c 720:00
+ output : Your identity: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig
+Creating proxy .......................................................................................... Done
+Proxy Verify OK
+Your proxy is valid until: Thu Aug 19 13:28:06 2021
+
+ error: ERROR from myproxy-server:
+Credentials are already stored for user srosenzw_CRAB
+and they are not owned by
+"/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig",
+so you may not overwrite them.
+Please choose a different username or credential name or
+contact your myproxy-server administrator.
+
+ retcode : 1
+DEBUG 2021-07-20 17:28:07.155 UTC: 	 using srosenzw_CRAB as credential login name
+DEBUG 2021-07-20 17:28:08.366 UTC: 	 Executing : 
+ command : myproxy-info -l srosenzw_CRAB -s myproxy.cern.ch
+ output : 
+ error: ERROR from myproxy-server:
+no credentials found for user srosenzw_CRAB, owner "/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig" 
+
+ retcode : 1
+DEBUG 2021-07-20 17:28:08.366 UTC: 	 Result of myproxy credential check:
+  Credential exists on myproxy: username: 60ee80196627500d7a5aa5d9c723db8790c95cf4  - validity: 22 days, 1:30:38
+  Error trying to create credential:
+ Problems delegating My-proxy. It seems your proxy has not been delegated to myproxy. Please check the logfile for the exact error (it might simply you typed a wrong password)
+DEBUG 2021-07-20 17:28:08.369 UTC: 	 Command use: status
+DEBUG 2021-07-20 17:28:08.369 UTC: 	 Options use: ['-d', 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1']
+DEBUG 2021-07-20 17:28:09.016 UTC: 	 CRABClient version: v3.210610
+DEBUG 2021-07-20 17:28:09.016 UTC: 	 Instance is prod
+DEBUG 2021-07-20 17:28:09.016 UTC: 	 Server base url is cmsweb.cern.ch
+DEBUG 2021-07-20 17:28:09.016 UTC: 	 Command api workflow
+DEBUG 2021-07-20 17:28:09.618 UTC: 	 Got information from server oracle database: {u'result': [u'210720_172657:srosenzw_crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1', u'None', u'None', u'QUEUED', u'SUBMIT', u'2021-07-20 17:26:57.489276', u'None', u'None', u'None', u'CMSSW_10_2_18', u'slc7_amd64_gcc700', u'None', u'F', u'0', u'[]', u'[]', u'EventBased', u"{'splitOnRun': False, 'events_per_job': 500, 'halt_job_on_file_boundaries': False, 'runs': [], 'lumis': []}", u'318d9f15884b41b0bb74d48e35dd9e9e244671ce07bb8f5e4da047f7bddccd66.tar.gz', u'https://cmsweb.cern.ch/S3/crabcache_prod', u'srosenzw', u'/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig', u'cms', u'None', u'None', u'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1-00000000000000000000000000000000', u'F', u'T3_US_FNALLPC', u'https://cmsweb.cern.ch/dbs/prod/global/DBSReader', u'https://cmsweb.cern.ch/dbs/prod/phys03/DBSWriter', u'F', u'[]', u'[]', u"[b'nanoAOD_step.root']", u'PrivateMC', u'pythia', u'None', u'{}', u'[]', u'F', u'crab-prod-tw01', u'[]', u'1250', u'2', u'3500', u'10', u'None', u'[]', u'None', u'scriptExe.sh', u'[]', u'[]', u'https://cmsweb.cern.ch/crabserver/prod', u'cmsgwms-collector-global.cern.ch:9620,cmsgwms-collector-global.fnal.gov:9620', u'None', u'F', u'[]', u'T', u'/store/group/lpchbb/srosenzw/XYH_YToHH/', u'F', u'None', u'F', u'None', u'CRAB_PrivateMC', u'None', u'72fc2054e6e2255109b1e8eb9a2d78538c62395f29539d9818af65359d24df9f.tar.gz', u'None', u'filetransfers', u'F', u'188.184.97.219', u'5000000.0', u'None'], u'desc': {u'columns': [u'tm_taskname', u'tm_activity', u'panda_jobset_id', u'tm_task_status', u'tm_task_command', u'tm_start_time', u'tm_start_injection', u'tm_end_injection', u'tm_task_failure', u'tm_job_sw', u'tm_job_arch', u'tm_input_dataset', u'tm_nonvalid_input_dataset', u'tm_use_parent', u'tm_site_whitelist', u'tm_site_blacklist', u'tm_split_algo', u'tm_split_args', u'tm_user_sandbox', u'tm_cache_url', u'tm_username', u'tm_user_dn', u'tm_user_vo', u'tm_user_role', u'tm_user_group', u'tm_publish_name', u'tm_publish_groupname', u'tm_asyncdest', u'tm_dbs_url', u'tm_publish_dbs_url', u'tm_publication', u'tm_outfiles', u'tm_tfile_outfiles', u'tm_edm_outfiles', u'tm_job_type', u'tm_generator', u'tm_events_per_lumi', u'tm_arguments', u'panda_resubmitted_jobs', u'tm_save_logs', u'tw_name', u'tm_user_infiles', u'tm_maxjobruntime', u'tm_numcores', u'tm_maxmemory', u'tm_priority', u'tm_output_dataset', u'tm_task_warnings', u'tm_user_webdir', u'tm_scriptexe', u'tm_scriptargs', u'tm_extrajdl', u'tm_asourl', u'tm_collector', u'tm_schedd', u'tm_dry_run', u'tm_user_files', u'tm_transfer_outputs', u'tm_output_lfn', u'tm_ignore_locality', u'tm_fail_limit', u'tm_one_event_mode', u'tm_secondary_input_dataset', u'tm_primary_dataset', u'tm_last_publication', u'tm_debug_files', u'clusterid', u'tm_asodb', u'tm_ignore_global_blacklist', u'tm_submitter_ip_addr', u'tm_totalunits', u'tm_ddm_reqid']}}
+INFO 2021-07-20 17:28:09.618 UTC: 	 CRAB project directory:		/uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1
+INFO 2021-07-20 17:28:09.618 UTC: 	 Task name:			210720_172657:srosenzw_crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1
+INFO 2021-07-20 17:28:09.619 UTC: 	 Grid scheduler - Task Worker:	N/A yet - crab-prod-tw01
+INFO 2021-07-20 17:28:09.619 UTC: 	 Status on the CRAB server:	QUEUED on command SUBMIT
+INFO 2021-07-20 17:28:09.619 UTC: 	 Task URL to use for HELP:	https://cmsweb.cern.ch/crabserver/ui/task/210720_172657%3Asrosenzw_crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1
+INFO 2021-07-20 17:28:09.620 UTC: 	 Dashboard monitoring URL:	https://monit-grafana.cern.ch/d/cmsTMDetail/cms-task-monitoring-task-view?orgId=11&var-user=srosenzw&var-task=210720_172657%3Asrosenzw_crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1&from=1626798417000&to=now
+DEBUG 2021-07-20 17:28:09.621 UTC: 	 The task has not been submitted to the Grid scheduler yet. Not printing job information.
+INFO 2021-07-20 17:28:09.624 UTC: 	 Log file is /uscms_data/d3/srosenzw/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_5M_v1/crab.log

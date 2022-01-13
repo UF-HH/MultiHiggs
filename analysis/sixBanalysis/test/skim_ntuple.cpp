@@ -2,6 +2,7 @@
 // skim_ntuple.exe --input input/Run2_UL/2018/TTJets.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_ttbar.root
 // skim_ntuple.exe --input input/Run2_UL/2018/SingleMuon_Run2.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_singlemu_ttbarskim.root --is-data
 
+// skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -401,13 +402,14 @@ int main(int argc, char** argv)
         // signal-specific gen info
         if (is_signal){
             sbf.select_gen_particles   (nat, ei);
-            sbf.match_genbs_to_genjets (nat, ei);
+            sbf.match_genbs_to_genjets (nat, ei, true);
             sbf.match_genbs_genjets_to_reco (nat, ei);
             loop_timer.click("Signal gen level");
         }
 
         // // jet selections
         std::vector<Jet> all_jets    = sbf.get_all_jets     (nat);
+
         int njet_presel = sbf.njets_preselections(all_jets);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
         ot.userInt("nfound_all")    = nfound_all;

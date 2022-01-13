@@ -287,11 +287,195 @@ std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
     return jets;
 }
 
+std::vector<float> SixB_functions::get_all_jet_pt(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        jets.emplace_back(jet.P4().Pt());
+    }
+
+    return jets;
+}
+
+
+std::vector<int> SixB_functions::get_all_jet_genidx(EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+    std::vector<int> jets;
+    jets.reserve(in_jets.size());
+
+    int id1 = -1;
+    int id2 = -1;
+    int id3 = -1;
+    int id4 = -1;
+    int id5 = -1;
+    int id6 = -1;
+
+    if (ei.gen_HX_b1_recojet) {id1 = ei.gen_HX_b1_recojet->getIdx();}
+    if (ei.gen_HX_b2_recojet) {id2 = ei.gen_HX_b2_recojet->getIdx();}
+    if (ei.gen_HY1_b1_recojet) {id3 = ei.gen_HY1_b1_recojet->getIdx();}
+    if (ei.gen_HY1_b2_recojet) {id4 = ei.gen_HY1_b2_recojet->getIdx();}
+    if (ei.gen_HY2_b1_recojet) {id5 = ei.gen_HY2_b1_recojet->getIdx();}
+    if (ei.gen_HY2_b2_recojet) {id6 = ei.gen_HY2_b2_recojet->getIdx();}
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+
+        // std::cout << jet.getIdx() << std::endl;
+
+        if (id1 == jet.getIdx()) {jets.emplace_back(0);}
+        else if (id2 == jet.getIdx()) {jets.emplace_back(1);}
+        else if (id3 == jet.getIdx()) {jets.emplace_back(2);}
+        else if (id4 == jet.getIdx()) {jets.emplace_back(3);}
+        else if (id5 == jet.getIdx()) {jets.emplace_back(4);}
+        else if (id6 == jet.getIdx()) {jets.emplace_back(5);}
+        else {jets.emplace_back(-1);}
+    }
+
+    return jets;
+}
+
+
+std::vector<float> SixB_functions::get_all_jet_eta(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        jets.emplace_back(jet.P4().Eta());
+    }
+    return jets;
+}
+
+std::vector<float> SixB_functions::get_all_jet_phi(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        jets.emplace_back(jet.P4().Phi());
+    }
+    return jets;
+}
+
+std::vector<float> SixB_functions::get_all_jet_mass(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        jets.emplace_back(jet.P4().M());
+    }
+    return jets;
+}
+
+std::vector<float> SixB_functions::get_all_jet_btag(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        float btag = get_property (jet, Jet_btagDeepFlavB);
+        jets.emplace_back(btag);
+    }
+    return jets;
+}
+
+std::vector<float> SixB_functions::get_all_jet_qgl(const std::vector<Jet>& in_jets)
+{
+    std::vector<float> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        float qgl = get_property (jet, Jet_qgl);
+        jets.emplace_back(qgl);
+    }
+    return jets;
+}
+
+std::vector<int> SixB_functions::get_all_jet_partonFlavour(const std::vector<Jet>& in_jets)
+{
+    std::vector<int> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        int partonFlavour = get_property (jet, Jet_partonFlavour);
+        jets.emplace_back(partonFlavour);
+    }
+    return jets;
+}
+
+std::vector<int> SixB_functions::get_all_jet_hadronFlavour(const std::vector<Jet>& in_jets)
+{
+    std::vector<int> jets;
+    jets.reserve(in_jets.size());
+
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
+    
+    for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+        const Jet& jet = in_jets.at(ij);
+        if (jet.P4().Pt()            <= pt_min)  continue;
+        if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+        int hadronFlavour = get_property (jet, Jet_hadronFlavour);
+        jets.emplace_back(hadronFlavour);
+    }
+    return jets;
+}
+
 std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets)
 {
     // FIXME: make these selections configurable
-    const double pt_min  = 20.;
-    const double eta_max = 2.5;
+    const double pt_min  = 30.;
+    const double eta_max = 2.4;
     const int    pf_id   = 1;
     const int    pu_id   = 1;
 
