@@ -48,7 +48,7 @@ public:
   std::vector<Jet> get_all_jets(NanoAODTree& nat);
 
   // create a vector with all preselected jets in the event
-  std::vector<Jet> preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
+  std::vector<Jet> preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets, const bool& applyPreselections);
 
   // select up to six jet candidates out of the input jets
   std::vector<Jet> select_sixb_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
@@ -59,11 +59,17 @@ public:
   // pair the jets and assign them into the 6b candidates - will be stored in the EventInfo
   void pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
+  //
+  float get_X(EventInfo& ei, const std::vector<Jet>& in_jets);
+
   // get the local idx in the supset for each jet in the subset
   std::vector<int> match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset);
 
   // sort jets with btag bias pt ordering
   void btag_bias_pt_sort(std::vector<Jet>& in_jets);
+
+  // sort jets by btag
+  void btag_sort(std::vector<Jet>& in_jets);
 
   // sort jets with pt regressed ordering
   void pt_sort(std::vector<Jet>& in_jets);
