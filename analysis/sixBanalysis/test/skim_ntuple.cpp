@@ -345,6 +345,7 @@ int main(int argc, char** argv)
 
   // -----------
 
+  const bool applyPreselections = config.readBoolOpt("configurations::applyPreselections");
   const bool applyJetCuts = config.readBoolOpt("configurations::applyJetCuts");
   std::vector<double> pt_cuts; 
   std::vector<int> btagWP_cuts;
@@ -507,7 +508,7 @@ int main(int argc, char** argv)
         loop_timer.click("JEC + JER");
       }
 
-      std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);
+      std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets, applyPreselections);
       sbf.btag_bias_pt_sort(presel_jets);
       int n_presel_jet = presel_jets.size();
       int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
@@ -543,6 +544,10 @@ int main(int argc, char** argv)
       ot.userInt("ntight_btag") = njet_btagwp[2];
         
       loop_timer.click("Preselection");
+
+      if (skim_type == kpass) {
+        loop_timer.click("No selection");
+      }
 
       if (skim_type == ksixb){
         if (presel_jets.size() < 6)
