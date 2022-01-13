@@ -167,17 +167,24 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     }
   }
 
-  if (ei.t6_event_shapes) {
-    ot.t6_sphericity = ei.t6_event_shapes.get().sphericity;
-    ot.t6_sphericity_t = ei.t6_event_shapes.get().transverse_sphericity;
-    ot.t6_aplanarity = ei.t6_event_shapes.get().aplanarity;
-  }
+  // if (ei.t6_event_shapes) {
+  //   ot.t6_sphericity = ei.t6_event_shapes.get().sphericity;
+  //   ot.t6_sphericity_t = ei.t6_event_shapes.get().transverse_sphericity;
+  //   ot.t6_aplanarity = ei.t6_event_shapes.get().aplanarity;
+  // }
   
-  if (ei.nn_event_shapes) {
-    ot.nn_sphericity = ei.nn_event_shapes.get().sphericity;
-    ot.nn_sphericity_t = ei.nn_event_shapes.get().transverse_sphericity;
-    ot.nn_aplanarity = ei.nn_event_shapes.get().aplanarity;
+  // if (ei.nn_event_shapes) {
+  //   ot.nn_sphericity = ei.nn_event_shapes.get().sphericity;
+  //   ot.nn_sphericity_t = ei.nn_event_shapes.get().transverse_sphericity;
+  //   ot.nn_aplanarity = ei.nn_event_shapes.get().aplanarity;
+  // }
+
+  if (ei.event_shapes) {
+    ot.sphericity   = ei.event_shapes.get().sphericity;
+    ot.sphericity_t = ei.event_shapes.get().transverse_sphericity;
+    ot.aplanarity   = ei.event_shapes.get().aplanarity;
   }
+
 
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);
@@ -223,6 +230,15 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+
+  if (ei.HX_b1_genHflag)  ot.HX_b1_genHflag  = *ei.HX_b1_genHflag;
+  if (ei.HX_b2_genHflag)  ot.HX_b2_genHflag  = *ei.HX_b2_genHflag;
+  if (ei.HY1_b1_genHflag) ot.HY1_b1_genHflag = *ei.HY1_b1_genHflag;
+  if (ei.HY1_b2_genHflag) ot.HY1_b2_genHflag = *ei.HY1_b2_genHflag;
+  if (ei.HY2_b1_genHflag) ot.HY2_b1_genHflag = *ei.HY2_b1_genHflag;
+  if (ei.HY2_b2_genHflag) ot.HY2_b2_genHflag = *ei.HY2_b2_genHflag;
+
+  if (ei.nsel_from_H) ot.nsel_from_H = *ei.nsel_from_H;
 
   COPY_OPTIONAL_m_pt_eta_phi_p4(mu_1);
   COPY_OPTIONAL_m_pt_eta_phi_p4(mu_2);

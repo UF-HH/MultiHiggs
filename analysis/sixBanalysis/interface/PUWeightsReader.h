@@ -7,7 +7,7 @@
 
 class PUWeightsReader {
 public:
-  PUWeightsReader(){}
+  PUWeightsReader();
   ~PUWeightsReader(){}
   void init_data(
 		 std::string filename,

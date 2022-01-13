@@ -11,18 +11,21 @@
 
 #include "Jet.h"
 
-std::vector<std::vector<int>> get_6jet_index_combos(int n,int r=6);
+namespace buildClassifierInput{
 
-std::vector<float> build_6jet_classifier_input(std::vector<Jet> in_jets);
+    std::vector<std::vector<int>> get_6jet_index_combos(int n,int r=6);
 
-std::vector<float> build_6jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices);
+    std::vector<float> build_6jet_classifier_input(std::vector<Jet> in_jets);
 
-std::vector<float> build_3dijet_classifier_input(std::vector<Jet> in_jets);
+    std::vector<float> build_6jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices);
 
-std::vector<float> build_3dijet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices);
+    std::vector<float> build_3dijet_classifier_input(std::vector<Jet> in_jets);
 
-std::vector<float> build_2jet_classifier_input(std::vector<Jet> in_jets);
+    std::vector<float> build_3dijet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices);
 
-std::vector<float> build_2jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices);
+    std::vector<float> build_2jet_classifier_input(std::vector<Jet> in_jets);
+
+    std::vector<float> build_2jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices);
+}
 
 #endif

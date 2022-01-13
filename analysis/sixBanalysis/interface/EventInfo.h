@@ -87,6 +87,13 @@ struct EventInfo{
   boost::optional<Jet> HY2_b1;
   boost::optional<Jet> HY2_b2;
 
+  boost::optional<int> HX_b1_genHflag;
+  boost::optional<int> HX_b2_genHflag;
+  boost::optional<int> HY1_b1_genHflag;
+  boost::optional<int> HY1_b2_genHflag;
+  boost::optional<int> HY2_b1_genHflag;
+  boost::optional<int> HY2_b2_genHflag;
+
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
   boost::optional< std::vector<Jet> > t6_jet_list;
@@ -94,8 +101,11 @@ struct EventInfo{
   boost::optional< std::vector<DiJet> > t6_higgs_list;
   boost::optional< std::vector<DiJet> > nn_higgs_list;
 
-  boost::optional<EventShapes> t6_event_shapes;
-  boost::optional<EventShapes> nn_event_shapes;
+  // boost::optional<EventShapes> t6_event_shapes;
+  // boost::optional<EventShapes> nn_event_shapes;
+  boost::optional<EventShapes> event_shapes;
+
+  boost::optional<int> nsel_from_H;
 
   // for ttbar skims
   boost::optional<Jet> bjet1;

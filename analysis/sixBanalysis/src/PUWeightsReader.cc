@@ -4,6 +4,15 @@
 #include <algorithm>
 #include <iostream>
 
+PUWeightsReader::PUWeightsReader()
+{
+  // dummy values in case of no initialization
+  bin_edges_ = {0, 9999};
+  PU_w_      = {1};
+  PU_w_up_   = {1};
+  PU_w_do_   = {1};
+}
+
 void PUWeightsReader::init_data(std::string filename, std::string name_PU_w, std::string name_PU_w_up, std::string name_PU_w_do)
 {
   TFile* fIn = TFile::Open(filename.c_str());
