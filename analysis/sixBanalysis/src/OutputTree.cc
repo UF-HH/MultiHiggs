@@ -41,73 +41,118 @@ using namespace std;
 OutputTree::OutputTree (bool savetlv, string name, string title) :
 savetlv_ (savetlv)
 {
-    tree_ = std::unique_ptr<TTree> (new TTree(name.c_str(), title.c_str()));
-    
-    init_branches();
+    init_branches(branch_switches);
     clear();
 }
 
-void OutputTree::init_branches()
+void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 {
+    auto is_enabled = [&branch_switches](std::string opt) -> bool {
+        auto search = branch_switches.find(opt);
+        if (search == branch_switches.end())
+            return true; // if no opt given, enabled by default
+        return search->second; // otherwise, use the value of the option
+    };
+
     //event information
     tree_->Branch("Run",     &Run);
     tree_->Branch("LumiSec", &LumiSec);
     tree_->Branch("Event",   &Event);
     tree_->Branch("njet",    &njet);
-    tree_->Branch("jet_pt", "std::vector<float>", &jet_pt);
-    tree_->Branch("jet_eta", "std::vector<float>", &jet_eta);
-    tree_->Branch("jet_phi", "std::vector<float>", &jet_phi);
-    tree_->Branch("jet_m", "std::vector<float>", &jet_m);
-    tree_->Branch("jet_btag", "std::vector<float>", &jet_btag);
-    tree_->Branch("jet_qgl", "std::vector<float>", &jet_qgl);
-    tree_->Branch("jet_hadronFlav", "std::vector<int>", &jet_hadronFlav);
-    tree_->Branch("jet_partonFlav", "std::vector<int>", &jet_partonFlav);
-    tree_->Branch("jet_idx", "std::vector<int>", &jet_idx);
 
-    BRANCH_m_pt_eta_phi_p4(gen_X_fc);
-    BRANCH_m_pt_eta_phi_p4(gen_X);
-    BRANCH_m_pt_eta_phi_p4(gen_Y);
-    BRANCH_m_pt_eta_phi_p4(gen_HX);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2);
+    tree_->Branch("n_other_pv",     &n_other_pv);
+    tree_->Branch("rhofastjet_all", &rhofastjet_all);
 
-    BRANCH_m_pt_eta_phi_p4(gen_HX_b1);
-    BRANCH_m_pt_eta_phi_p4(gen_HX_b2);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1_b1);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1_b2);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2_b1);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2_b2);
+    if (is_enabled("sig_gen_brs"))
+    {
+        BRANCH_m_pt_eta_phi_p4(gen_X_fc);
+        BRANCH_m_pt_eta_phi_p4(gen_X);
+        BRANCH_m_pt_eta_phi_p4(gen_Y);
+        BRANCH_m_pt_eta_phi_p4(gen_HX);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2);
 
-    BRANCH_m_pt_eta_phi_p4(gen_HX_b1_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HX_b2_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1_b1_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
-    BRANCH_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HX_b1);
+        BRANCH_m_pt_eta_phi_p4(gen_HX_b2);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1_b1);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1_b2);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2_b1);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2_b2);
 
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
-    tree_->Branch("gen_bs_N_reco_match",        &gen_bs_N_reco_match);
-    tree_->Branch("gen_bs_N_reco_match_in_acc", &gen_bs_N_reco_match_in_acc);
-    tree_->Branch("gen_bs_match_recojet_minv",        &gen_bs_match_recojet_minv);
-    tree_->Branch("gen_bs_match_in_acc_recojet_minv", &gen_bs_match_in_acc_recojet_minv);
+        BRANCH_m_pt_eta_phi_p4(gen_HX_b1_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HX_b2_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1_b1_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
+        BRANCH_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
 
-    BRANCH_m_pt_eta_phi_p4(X);
-    BRANCH_m_pt_eta_phi_p4(Y);
-    BRANCH_m_pt_eta_phi_p4(HX);
-    BRANCH_m_pt_eta_phi_p4(HY1);
-    BRANCH_m_pt_eta_phi_p4(HY2);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+        tree_->Branch("gen_bs_N_reco_match",        &gen_bs_N_reco_match);
+        tree_->Branch("gen_bs_N_reco_match_in_acc", &gen_bs_N_reco_match_in_acc);
+        tree_->Branch("gen_bs_match_recojet_minv",        &gen_bs_match_recojet_minv);
+        tree_->Branch("gen_bs_match_in_acc_recojet_minv", &gen_bs_match_in_acc_recojet_minv);
+    }
 
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HX_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HX_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+    if (is_enabled("sixb_brs"))
+    {
+        BRANCH_m_pt_eta_phi_p4(X);
+        BRANCH_m_pt_eta_phi_p4(Y);
+        BRANCH_m_pt_eta_phi_p4(HX);
+        BRANCH_m_pt_eta_phi_p4(HY1);
+        BRANCH_m_pt_eta_phi_p4(HY2);
+
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HX_b1);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HX_b2);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
+        BRANCH_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+
+        tree_->Branch("HX_b1_genHflag",  &HX_b1_genHflag);
+        tree_->Branch("HX_b2_genHflag",  &HX_b2_genHflag);
+        tree_->Branch("HY1_b1_genHflag", &HY1_b1_genHflag);
+        tree_->Branch("HY1_b2_genHflag", &HY1_b2_genHflag);
+        tree_->Branch("HY2_b1_genHflag", &HY2_b1_genHflag);
+        tree_->Branch("HY2_b2_genHflag", &HY2_b2_genHflag);
+
+        tree_->Branch("nsel_from_H", &nsel_from_H);
+    }
+
+    tree_->Branch("n_mu_loose",  &n_mu_loose);
+    tree_->Branch("n_ele_loose", &n_ele_loose);
+    
+    if (is_enabled("leptons_p4"))
+    {
+        std::cout << "[INFO] OutputTree : enabling lepton p4 branches" << std::endl;
+        BRANCH_m_pt_eta_phi_p4(mu_1);
+        BRANCH_m_pt_eta_phi_p4(mu_2);
+        BRANCH_m_pt_eta_phi_p4(ele_1);
+        BRANCH_m_pt_eta_phi_p4(ele_2);
+    }
+
+    if (is_enabled("ttbar_brs"))
+    {
+        std::cout << "[INFO] OutputTree : enabling ttbar branches" << std::endl;
+        BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+        if (is_enabled("gen_brs")) tree_->Branch("bjet1_hadflav", &bjet1_hadflav);
+
+        BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+        if (is_enabled("gen_brs")) tree_->Branch("bjet2_hadflav", &bjet2_hadflav);
+    }
+
+    if (is_enabled("gen_brs"))
+    {
+        std::cout << "[INFO] OutputTree : enabling gen-only related branches" << std::endl;
+        tree_->Branch("n_pu",        &n_pu);
+        tree_->Branch("n_true_int",  &n_true_int);
+
+        tree_->Branch("btagSF_WP_M", &btagSF_WP_M);
+    }
 
     // note that the initialization of the user branches is made separately when calling declareUser*Branch
 }
@@ -118,6 +163,11 @@ void OutputTree::clear()
     LumiSec = 0;
     Event   = 0;
     njet    = 0;
+
+    n_other_pv     = 0;
+    n_pu           = 0;
+    n_true_int     = 0;
+    rhofastjet_all = 0;
 
     CLEAR_m_pt_eta_phi_p4(gen_X_fc);
     CLEAR_m_pt_eta_phi_p4(gen_X);
@@ -163,59 +213,34 @@ void OutputTree::clear()
     CLEAR_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
     CLEAR_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
     CLEAR_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
-  
+
+    HX_b1_genHflag  = -999;
+    HX_b2_genHflag  = -999;
+    HY1_b1_genHflag = -999;
+    HY1_b2_genHflag = -999;
+    HY2_b1_genHflag = -999;
+    HY2_b2_genHflag = -999;
+
+    nsel_from_H = -999;
+
+    CLEAR_m_pt_eta_phi_p4(mu_1);
+    CLEAR_m_pt_eta_phi_p4(mu_2);
+    CLEAR_m_pt_eta_phi_p4(ele_1);
+    CLEAR_m_pt_eta_phi_p4(ele_2);
+
+    n_mu_loose  = 0;
+    n_ele_loose = 0;
+
+    CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+    CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+
+    bjet1_hadflav = -999;
+    bjet2_hadflav = -999;
+
+    btagSF_WP_M = -999.;
+
     // reset all user-defined branches
     userFloats_.resetAll();
     userInts_.resetAll();
 
-}
-
-bool OutputTree::declareUserIntBranch (std::string name, int defaultClearValue)
-{
-    // check if the branch exists -- the check in the same collection is done by UserVal internally, but I have to do the cross-checks
-    if (userFloats_.hasVal(name)){
-        cout << "[WARNING] OutputTree : declareUserIntBranch : branch " << name << " was already found as a userFloat, cannot create it" << endl;
-        return false;
-    }
-    
-    if (!userInts_.addVal(name, defaultClearValue)){
-        cout << "[WARNING] OutputTree : declareUserIntBranch : branch " << name << " was already found as a userInt, cannot create it" << endl;
-        return false;
-    }
-
-    cout << "[INFO] OutputTree : creating userIntBranch " << name << " (" << defaultClearValue << ")" << endl;
-
-    // set the branch
-    tree_->Branch(name.c_str(), userInts_.getValPtr(name));
-    return true;
-}
-
-bool OutputTree::declareUserFloatBranch (std::string name, float defaultClearValue)
-{
-    // check if the branch exists -- the check in the same collection is done by UserVal internally, but I have to do the cross-checks
-    if (userInts_.hasVal(name)){
-        cout << "[WARNING] OutputTree : declareUserFloatBranch : branch " << name << " was already found as a userInt, cannot create it" << endl;
-        return false;
-    }
-    
-    if (!userFloats_.addVal(name, defaultClearValue)){
-        cout << "[WARNING] OutputTree : declareUserFloatBranch : branch " << name << " was already found as a userFloat, cannot create it" << endl;
-        return false;
-    }
-
-    cout << "[INFO] OutputTree : creating userFloatBranch " << name << " (" << defaultClearValue << ")" << endl;
-
-    // set the branch
-    tree_->Branch(name.c_str(), userFloats_.getValPtr(name));
-    return true;
-}
-
-bool OutputTree::declareUserIntBranchList(std::vector<std::string> nameList, int defaultClearValue)
-{
-    for(const auto& name : nameList)
-    {
-        bool success = declareUserIntBranch(name, defaultClearValue);
-        if(!success) return false;
-    }
-    return true;
 }

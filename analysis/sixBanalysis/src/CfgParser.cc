@@ -228,6 +228,19 @@ float CfgParser::readFloatOpt(string compact)
     return readFloatOpt(split.first, split.second);        
 }
 
+double CfgParser::readDoubleOpt(string section, string option)
+{
+    string s = readStringOpt(section, option);
+    return stod(s);
+}
+
+double CfgParser::readDoubleOpt(string compact)
+{
+    auto split = splitCompact(compact);
+    return readDoubleOpt(split.first, split.second);        
+}
+
+
 vector<string> CfgParser::readStringListOpt(string section, string option)
 {
     //  if(!hasOpt(section,option)){
@@ -298,6 +311,21 @@ vector<float> CfgParser::readFloatListOpt(string compact)
 {
     auto split = splitCompact(compact);
     return readFloatListOpt(split.first, split.second);        
+}
+
+vector<double> CfgParser::readDoubleListOpt(string section, string option)
+{
+    vector<string> vs = readStringListOpt(section, option);
+    vector<double> result;
+    for (string s : vs)
+        result.push_back(stod(getTrimmedLine(s)));
+    return result;
+}
+
+vector<double> CfgParser::readDoubleListOpt(string compact)
+{
+    auto split = splitCompact(compact);
+    return readDoubleListOpt(split.first, split.second);        
 }
 
 bool CfgParser::hasOpt (std::string section, std::string option)

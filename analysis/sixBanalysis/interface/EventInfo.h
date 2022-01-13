@@ -14,8 +14,8 @@
 
 #include "CompositeCandidate.h"
 #include "Jet.h"
-// #include "Muon.h"
-// #include "Electron.h"
+#include "Muon.h"
+#include "Electron.h"
 #include "GenPart.h"
 #include "GenJet.h"
 
@@ -25,6 +25,12 @@ struct EventInfo{
     boost::optional<unsigned int>           LumiSec;
     boost::optional<unsigned long long int> Event;
     boost::optional<unsigned int>           njet;
+
+    boost::optional<int>    n_other_pv;
+    boost::optional<int>    n_pu;
+    boost::optional<double> n_true_int;
+    boost::optional<double> rhofastjet_all;
+
 
     boost::optional<GenPart>  gen_X_fc; // first copy at LHE
     boost::optional<GenPart>  gen_X;
@@ -71,16 +77,31 @@ struct EventInfo{
     boost::optional<Jet> HY2_b1;
     boost::optional<Jet> HY2_b2;
 
-    std::vector<float> jet_pt;
-    std::vector<float> jet_eta;
-    std::vector<float> jet_phi;
-    std::vector<float> jet_m;
-    std::vector<float> jet_btag;
-    std::vector<float> jet_qgl;
-    std::vector<int> jet_hadronFlavour;
-    std::vector<int> jet_partonFlavour;
-    std::vector<int>   jet_idx;
+    boost::optional<int> HX_b1_genHflag;
+    boost::optional<int> HX_b2_genHflag;
+    boost::optional<int> HY1_b1_genHflag;
+    boost::optional<int> HY1_b2_genHflag;
+    boost::optional<int> HY2_b1_genHflag;
+    boost::optional<int> HY2_b2_genHflag;
 
+    boost::optional<int> nsel_from_H;
+
+    // for ttbar skims
+    boost::optional<Jet> bjet1;
+    boost::optional<Jet> bjet2;
+
+    // info on leptons in the event
+    boost::optional<Muon> mu_1;
+    boost::optional<Muon> mu_2;
+    boost::optional<Electron> ele_1;
+    boost::optional<Electron> ele_2;
+    boost::optional<int> n_mu_loose;
+    boost::optional<int> n_ele_loose;
+    // boost::optional<int> n_mu_tight;
+    // boost::optional<int> n_ele_tight;
+
+    // scale factors
+    boost::optional<double> btagSF_WP_M;
 };
 
 #endif

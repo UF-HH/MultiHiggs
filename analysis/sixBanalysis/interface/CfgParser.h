@@ -43,6 +43,9 @@ class CfgParser
         float       readFloatOpt(std::string section, std::string option);
         float       readFloatOpt(std::string compact);
 
+        double      readDoubleOpt(std::string section, std::string option);
+        double      readDoubleOpt(std::string compact);
+
         std::vector<std::string> readStringListOpt(std::string section, std::string option);
         std::vector<std::string> readStringListOpt(std::string compact);
 
@@ -54,6 +57,9 @@ class CfgParser
 
         std::vector<float>       readFloatListOpt(std::string section, std::string option);
         std::vector<float>       readFloatListOpt(std::string compact);
+
+        std::vector<double>       readDoubleListOpt(std::string section, std::string option);
+        std::vector<double>       readDoubleListOpt(std::string compact);
 
         bool hasOpt (std::string section, std::string option);
         bool hasOpt (std::string compact);

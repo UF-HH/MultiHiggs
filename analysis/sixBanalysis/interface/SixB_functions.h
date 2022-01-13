@@ -18,7 +18,7 @@ class SixB_functions{
         ////////////////////////////////////////////////////
 
         // copy general event-level into to ei
-        void copy_event_info(NanoAODTree& nat, EventInfo& ei);
+        void copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc);
         
         // select the gen-level six b candidates (bs, bosons)
         void select_gen_particles(NanoAODTree& nat, EventInfo& ei);
@@ -30,6 +30,10 @@ class SixB_functions{
 
         // match the genjets associated to the 6 gen b quarks to reco jets
         void match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei);
+
+        // add match flags to the selected jets (from which H are the selected jets?)
+        int get_jet_genmatch_flag (NanoAODTree& nat, EventInfo& ei, const Jet& jet); // -1: other, 0: HX, 1: HY1, 2: HY2
+        void compute_seljets_genmatch_flags(NanoAODTree& nat, EventInfo& ei);
 
         ////////////////////////////////////////////////////
         /// jet selection functions
@@ -54,6 +58,11 @@ class SixB_functions{
 
         // select up to six jet candidates out of the input jets
         std::vector<Jet> select_sixb_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
+        std::vector<Jet> select_sixb_jets_maxbtag(NanoAODTree& nat, const std::vector<Jet>& in_jets);
+        std::vector<Jet> select_sixb_jets_maxbtag_highpT(NanoAODTree& nat, const std::vector<Jet>& in_jets, int nleadbtag);
+
+        // two most b tagged jets for ttbar events
+        std::vector<Jet> select_ttbar_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
 
         // pair the jets and assign them into the 6b candidates - will be stored in the EventInfo
         void pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
@@ -65,6 +74,11 @@ class SixB_functions{
         // counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
         int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
+        ////////////////////////////////////////////////////
+        /// non-jet functions
+        ////////////////////////////////////////////////////
+
+        void select_leptons(NanoAODTree& nat, EventInfo& ei);
 
     private:
         // loops on targets, and assigns value to the first element of target that is found to be uninitialized
@@ -85,6 +99,9 @@ class SixB_functions{
 
         // just pair jets as they are incoming - for debug
         std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (std::vector<Jet> jets);
+
+        // build the pairs leading to the min mass difference across them
+        std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_min_diag_distance (std::vector<Jet> jets);
 
 
 };

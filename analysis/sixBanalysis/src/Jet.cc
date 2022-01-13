@@ -40,7 +40,13 @@ float Jet::getBregRes()
     }
     // else //Do nothing, use the NANOAOD correction value
 
-    return corr;
+    return res;
+}
+
+float Jet::getDeepJet() 
+{
+    deepJet = get_property((*this),Jet_btagDeepFlavB);
+    return deepJet;
 }
 
 float Jet::getDeepJet() 

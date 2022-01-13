@@ -1,16 +1,20 @@
+// skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
+// skim_ntuple.exe --input input/Run2_UL/2018/TTJets.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_ttbar.root
+// skim_ntuple.exe --input input/Run2_UL/2018/SingleMuon_Run2.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_singlemu_ttbarskim.root --is-data
 
 // skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
 #include <iostream>
 #include <string>
 #include <iomanip>
 #include <any>
+#include <chrono>
 
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
 #include "CfgParser.h"
 #include "NanoAODTree.h"
-
+#include "NormWeightTree.h"
 #include "SkimUtils.h"
 namespace su = SkimUtils;
 
@@ -19,6 +23,9 @@ namespace su = SkimUtils;
 
 #include "SixB_functions.h"
 #include "JetTools.h"
+#include "BtagSF.h"
+
+#include "Timer.h"
 
 #include "TFile.h"
 #include "TROOT.h"
@@ -56,6 +63,7 @@ Variation string_to_jer_variation (std::string s)
 int main(int argc, char** argv)
 {
     cout << "[INFO] ... starting program" << endl;
+    const auto start_prog_t = chrono::high_resolution_clock::now();
 
     ////////////////////////////////////////////////////////////////////////
     // Declare command line options
@@ -122,6 +130,23 @@ int main(int argc, char** argv)
     }
     cout << "[INFO] ... using config file " << opts["cfg"].as<string>() << endl;
 
+    enum SkimTypes
+    {
+        ksixb,
+        kttbar,
+        knull
+    };
+
+    string skim_type_name = config.readStringOpt("configurations::skimType");
+    cout << "[INFO] ... skim type " << skim_type_name << endl;
+    const SkimTypes skim_type = (
+        skim_type_name == "sixb"  ? ksixb  :
+        skim_type_name == "ttbar" ? kttbar :
+                                    knull
+    );
+    if (skim_type == knull)
+        throw std::runtime_error("skim type not recognized");
+
     ////////////////////////////////////////////////////////////////////////
     // Prepare event loop
     ////////////////////////////////////////////////////////////////////////
@@ -153,14 +178,18 @@ int main(int argc, char** argv)
 
     cout << "[INFO] ... loading " << config.readStringListOpt("triggers::makeORof").size() << " triggers" << endl;
 
-    const bool apply_trigger =  config.readBoolOpt("triggers::applyTrigger");
+    const bool apply_trigger     = config.readBoolOpt("triggers::applyTrigger");
+    const bool save_trg_decision = config.readBoolOpt("triggers::saveDecision");
     cout << "[INFO] ... is the OR decision of these triggers applied? " << std::boolalpha << apply_trigger << std::noboolalpha << endl;
+    cout << "[INFO] ... will save the trigger decision? " << std::boolalpha << save_trg_decision << std::noboolalpha << endl;
 
-    std::vector<std::string> triggerAndNameVector;
-    if(apply_trigger) triggerAndNameVector = config.readStringListOpt("triggers::makeORof");
-    std::vector<std::string> triggerVector;
+    // std::vector<std::string> triggerAndNameVector;
+    // if(apply_trigger) triggerAndNameVector = config.readStringListOpt("triggers::makeORof");
     // <triggerName , < objectBit, minNumber> >
-    std::map<std::string, std::map< std::pair<int,int>, int > > triggerObjectAndMinNumberMap;
+    // std::map<std::string, std::map< std::pair<int,int>, int > > triggerObjectAndMinNumberMap;
+
+    std::vector<std::string> triggerAndNameVector = config.readStringListOpt("triggers::makeORof");
+    std::vector<std::string> triggerVector;
 
     cout << "[INFO] ... listing the triggers applied" << endl;
     for (auto & trigger : triggerAndNameVector)
@@ -215,32 +244,91 @@ int main(int argc, char** argv)
     cout << "[INFO] ... saving output to file : " << outputFileName << endl;
     TFile outputFile(outputFileName.c_str(), "recreate");
     OutputTree ot(
-        opts["save-p4"].as<bool>()
-    );
+        opts["save-p4"].as<bool>(),
+        map<string, bool>{
+            {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
+            {"sixb_brs",    (skim_type == ksixb)},
+            {"ttbar_brs",   (skim_type == kttbar)},
+            {"sig_gen_brs", (is_signal)},
+            {"gen_brs",     (!is_data)},
+        });
 
     ot.declareUserIntBranch("nfound_all",    0);
     ot.declareUserIntBranch("nfound_presel", 0);
     ot.declareUserIntBranch("nfound_sixb",   0);
     ot.declareUserIntBranch("njet_presel",   0);
 
+    if (save_trg_decision) {
+        for (auto& tname : triggerVector)
+            ot.declareUserIntBranch(tname,   0);
+    }
+
+    std::string pu_weight_file;
+    if (!is_data){
+        if (opts["puWeight"].as<string>().size() != 0){ // a valid option is passed from cmd line
+            cout << "[INFO] Using custom PU weight file passed from cmd line options" << endl;
+            pu_weight_file = opts["puWeight"].as<string>();
+        }
+        else { // revert to default in skim cfg
+            cout << "[INFO] Using PU weight file from skim cfg" << endl;
+            pu_weight_file = config.readStringOpt("parameters::PUweightFile");
+        }
+    }
+
+    NormWeightTree nwt;
+    map<string, string> pu_data{
+        {"filename", pu_weight_file},
+        {"name_PU_w", "PUweights"},
+        {"name_PU_w_up", "PUweights_up"},
+        {"name_PU_w_do", "PUweights_down"},
+    };
+
+    // // just a test
+    // nwt.add_weight("test1", {"test1_up", "test1_down"});
+    // nwt.add_weight("test2", {"test2_A", "test2_B", "test2_C"});
+    // nwt.add_weight("test3", {});
+
     ////////////////////////////////////////////////////////////////////////
     // All pre-running configurations (corrections, methods from cfg, etc)
     ////////////////////////////////////////////////////////////////////////
-  
+
     jsonLumiFilter jlf;
     if (is_data)
         jlf.loadJSON(config.readStringOpt("data::lumimask")); // just read the info for data, so if I just skim MC I'm not forced to parse a JSON
 
+    // -----------
+
+    Timer loop_timer;
+
+    // -----------
 
     SixB_functions sbf;
+
+    // -----------
     
+    const std::vector<double> btag_WPs = config.readDoubleListOpt("configurations::bTagWPDef");
+    const int nMinBtag = config.readIntOpt("configurations::nMinBtag");
+    const int bTagWP   = config.readIntOpt("configurations::bTagWP");
+
+    cout << "[INFO] ... events must contain >= " << nMinBtag << " jets passing WP (0:L, 1:M, 2:T) : " << bTagWP << endl;
+    cout << "[INFO] ... the WPs are: (L/M/T) : " << btag_WPs.at(0) << "/" << btag_WPs.at(1) << "/" << btag_WPs.at(2) << endl;
+
+    BtagSF btsf;
+    if (!is_data){
+        string btsffile = config.readStringOpt("parameters::DeepJetScaleFactorFile");
+        btsf.init_reader("DeepJet", btsffile);
+        btsf.set_WPs(btag_WPs.at(0), btag_WPs.at(1), btag_WPs.at(2));
+    }
+
+    // -----------
+
     JetTools jt;
 
     string jes_shift = opts["jes-shift-syst"].as<string>();
     bool do_jes_shift = (jes_shift != "nominal");
     cout << "[INFO] ... shifting jet energy scale? " << std::boolalpha << do_jes_shift << std::noboolalpha << endl;
     bool dir_jes_shift_is_up;
-    if (do_jes_shift){
+    if (do_jes_shift && !is_data){
         string JECFileName = config.readStringOpt("parameters::JECFileName");
         auto tokens = split_by_delimiter(opts["jes-shift-syst"].as<string>(), ":");
         if (tokens.size() != 2)
@@ -255,6 +343,7 @@ int main(int argc, char** argv)
         jt.init_jec_shift(JECFileName, jes_syst_name);
     }
 
+    // FIXME: block below to be run only if !is_data?
     string JERScaleFactorFile = config.readStringOpt("parameters::JERScaleFactorFile");
     string JERResolutionFile  = config.readStringOpt("parameters::JERResolutionFile");
     const int rndm_seed = opts["seed"].as<int>();
@@ -273,17 +362,29 @@ int main(int argc, char** argv)
     // Execute event loop
     ////////////////////////////////////////////////////////////////////////
 
-    int maxEvts = opts["maxEvts"].as<int>();
+    const int maxEvts = opts["maxEvts"].as<int>();
     if (maxEvts >= 0)
         cout << "[INFO] ... running on : " << maxEvts << " events" << endl;
 
+    const auto start_loop_t = chrono::high_resolution_clock::now();
     for (int iEv = 0; true; ++iEv)
     {
         if (maxEvts >= 0 && iEv >= maxEvts)
             break;
 
+        loop_timer.start_lap();
+
         if (!nat.Next()) break;
-        if (iEv % 10000 == 0) cout << "... processing event " << iEv << endl;
+        if (iEv % 10000 == 0) {
+            cout << "... processing event " << iEv << endl;
+            // auto bsize  = ot.getTree()->GetBranch("Run")->GetBasketSize();
+            // cout << "... tree basket size (branch Run) : " << bsize  << endl;
+        }
+        // use the tree content to initialise weight tree in the first event
+        if (iEv == 0 && !is_data){
+            nwt.init_weights(nat, pu_data); // get the syst structure from nanoAOD
+            su::init_gen_weights(ot, nwt);  // and forward it to the output tree
+        }
 
         if (is_data && !jlf.isValid(*nat.run, *nat.luminosityBlock)){
             continue; // not a valid lumi
@@ -295,54 +396,45 @@ int main(int argc, char** argv)
         ei.njet = *(nat.nJet);
 
         // global event info
-        sbf.copy_event_info(nat, ei);
+        sbf.copy_event_info(nat, ei, !is_data);
+        loop_timer.click("Global info");
 
         // signal-specific gen info
         if (is_signal){
             sbf.select_gen_particles   (nat, ei);
             sbf.match_genbs_to_genjets (nat, ei, true);
             sbf.match_genbs_genjets_to_reco (nat, ei);
+            loop_timer.click("Signal gen level");
         }
 
         // // jet selections
         std::vector<Jet> all_jets    = sbf.get_all_jets     (nat);
 
-        // Preselections applied to all jets
-        std::vector<float> jet_pt    = sbf.get_all_jet_pt   (all_jets);
-        std::vector<float> jet_eta   = sbf.get_all_jet_eta  (all_jets);
-        std::vector<float> jet_phi   = sbf.get_all_jet_phi  (all_jets);
-        std::vector<float> jet_m     = sbf.get_all_jet_mass (all_jets);
-        std::vector<float> jet_btag  = sbf.get_all_jet_btag (all_jets);
-        std::vector<int> jet_hadronFlavour  = sbf.get_all_jet_hadronFlavour (all_jets);
-        std::vector<int> jet_partonFlavour  = sbf.get_all_jet_partonFlavour (all_jets);
-        std::vector<float> jet_qgl  = sbf.get_all_jet_qgl (all_jets);
-        ei.jet_pt = jet_pt;
-        ei.jet_eta = jet_eta;
-        ei.jet_phi = jet_phi;
-        ei.jet_m = jet_m;
-        ei.jet_btag = jet_btag;
-        ei.jet_qgl = jet_qgl;
-        ei.jet_hadronFlavour = jet_hadronFlavour;
-        ei.jet_partonFlavour = jet_partonFlavour;
-
         int njet_presel = sbf.njets_preselections(all_jets);
         int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
+        ot.userInt("nfound_all")    = nfound_all;
+        loop_timer.click("All jets copy");
+
         if (!is_data){
             if (do_jes_shift)
                 all_jets = jt.jec_shift_jets(nat, all_jets, dir_jes_shift_is_up);
             all_jets = jt.smear_jets(nat, all_jets, jer_var, bjer_var);
+            loop_timer.click("JEC + JER");
         }
+
         std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);
         int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
+        ot.userInt("nfound_presel") = nfound_presel;
+        loop_timer.click("Preselection");
 
-        std::vector<Jet> sixb_jets   = sbf.select_sixb_jets (nat, presel_jets);
-        int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
+        if (skim_type == ksixb){
+            if (presel_jets.size() < 6)
+                continue;
 
-        std::vector<int> jet_idx    = sbf.get_all_jet_genidx(ei, all_jets);
-        ei.jet_idx = jet_idx;
-        // if (sixb_jets.size() < 6)
-        //     continue;
-        // sbf.pair_jets(nat, ei, sixb_jets);
+            std::vector<Jet> sixb_jets = sbf.select_sixb_jets(nat, presel_jets);
+            int nfound_sixb = sbf.n_gjmatched_in_jetcoll(nat, ei, sixb_jets);
+            ot.userInt("nfound_sixb")   = nfound_sixb;
+            loop_timer.click("Six b selection");
 
         ot.userInt("nfound_all")    = nfound_all;
         ot.userInt("nfound_presel") = nfound_presel;
@@ -350,8 +442,26 @@ int main(int argc, char** argv)
         ot.userInt("njet_presel")   = njet_presel;
 
         su::fill_output_tree(ot, nat, ei);
+        loop_timer.click("Output tree fill");
     }
+    const auto end_loop_t = chrono::high_resolution_clock::now();
 
     outputFile.cd();
     ot.write();
+    if (!is_data)
+        nwt.write();
+    const auto end_prog_t = chrono::high_resolution_clock::now();
+
+    // timing statistics
+    cout << endl;
+    cout << "[INFO] : sumary of skim loop execution time" << endl;
+    loop_timer.print_summary();
+    cout << endl;
+    cout << "[INFO] : total elapsed time : " << chrono::duration_cast<chrono::milliseconds>(end_prog_t - start_prog_t).count()/1000.   << " s" << endl;
+    cout << "       : startup time       : " << chrono::duration_cast<chrono::milliseconds>(start_loop_t - start_prog_t).count()/1000. << " s" << endl;
+    cout << "       : loop time          : " << chrono::duration_cast<chrono::milliseconds>(end_loop_t - start_loop_t).count()/1000.   << " s" << endl;
+    cout << "       : post-loop time     : " << chrono::duration_cast<chrono::milliseconds>(end_prog_t - end_loop_t).count()/1000.     << " s" << endl;
+
+    cout << endl;
+    cout << "[INFO] ... skim finished" << endl;
 }

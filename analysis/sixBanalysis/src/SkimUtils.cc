@@ -47,6 +47,17 @@ using namespace std;
     ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
     ot.OBJ ## _p4           = ei. OBJ -> P4();\
     }
+
+ #define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
+    if (ei.OBJ) { \
+    ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
+    ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
+    ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
+    ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
+    ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
+    ot.OBJ ## _DeepJet      = get_property( ei. OBJ .get(), Jet_btagDeepFlavB); \
+    ot.OBJ ## _p4           = ei. OBJ -> P4();\
+    }   
 // --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - 
 
 int SkimUtils::appendFromFileList (TChain* chain, string filename)
@@ -79,15 +90,11 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     ot.LumiSec  = *ei.LumiSec;
     ot.Event    = *ei.Event;
     ot.njet     = *ei.njet;
-    ot.jet_pt   = ei.jet_pt;
-    ot.jet_eta  = ei.jet_eta;
-    ot.jet_phi  = ei.jet_phi;
-    ot.jet_m    = ei.jet_m;
-    ot.jet_btag = ei.jet_btag;
-    ot.jet_qgl  = ei.jet_qgl;
-    ot.jet_idx  = ei.jet_idx;
-    ot.jet_hadronFlav  = ei.jet_hadronFlavour;
-    ot.jet_partonFlav  = ei.jet_partonFlavour;
+
+    if(ei.n_other_pv)     ot.n_other_pv      = *ei.n_other_pv;
+    if(ei.n_pu)           ot.n_pu            = *ei.n_pu;
+    if(ei.n_true_int)     ot.n_true_int      = *ei.n_true_int;
+    if(ei.rhofastjet_all) ot.rhofastjet_all  = *ei.rhofastjet_all;
 
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
     COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);

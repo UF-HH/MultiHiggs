@@ -13,8 +13,12 @@
 **        :
 **        : remember that the variables are set (from the EventInfo) in the SkimUtils::fill_output_tree function
 **        : so put the set instructions of the new variables there
+**
+**  NOTE 2 : handling of tree pointer and userFloat/int is done in the BaseOutTree class
+**         : so OutputTree only takes care of defining and resetting the outout variables
 **/
 
+#include "BaseOutTree.h"
 #include "TTree.h"
 #include "Math/Vector4D.h"
 typedef ROOT::Math::PtEtaPhiMVector p4_t;
@@ -22,6 +26,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 #include "UserValCollection.h"
 #include <string>
 #include <memory>
+#include <map>
 
 // helper: declares the m/pt/eta/phi/p4 of a variable OBJ
 #define DECLARE_m_pt_eta_phi_p4(OBJ) \
@@ -41,26 +46,39 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
     float OBJ ## _deepJet; \
     p4_t  OBJ ## _p4;
 
-class OutputTree {
+// helper: declares the m/pt/eta/phi/p4/DeepJet of a variable OBJ
+#define DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
+    float OBJ ## _m; \
+    float OBJ ## _pt; \
+    float OBJ ## _ptRegressed; \
+    float OBJ ## _eta; \
+    float OBJ ## _phi; \
+    float OBJ ## _DeepJet; \
+    p4_t  OBJ ## _p4;
+
+class OutputTree : public BaseOutTree {
     
     public:
-        OutputTree (bool savetlv = false, std::string name = "sixBtree", std::string title = "sixBtree");
+        // branch_switches are forwarded to init_branches
+        // they can be used to turn on (true) or off (false) some branches creation
+
+        OutputTree(bool savetlv = false, std::map<std::string, bool> branch_switches = {}, std::string name = "sixBtree", std::string title = "sixBtree");
         ~OutputTree(){};
         
         void clear(); // to be called to reset the var values
-        int fill()  {return tree_->Fill();}
-        int write() {return tree_->Write();}
+        // int fill()  {return tree_->Fill();}
+        // int write() {return tree_->Write();}
     
-        // returns false if the branch could not be created, true if all ok
-        // thje second optional value specifies what the branch should be reset to at clear()
-        bool declareUserIntBranch   (std::string name, int defaultClearValue = 0);
-        bool declareUserFloatBranch (std::string name, float defaultClearValue = 0.0);
-        //XYH
-        bool declareUserIntBranchList(std::vector<std::string> nameList, int defaultClearValue = 0);
+        // // returns false if the branch could not be created, true if all ok
+        // // thje second optional value specifies what the branch should be reset to at clear()
+        // bool declareUserIntBranch   (std::string name, int defaultClearValue = 0);
+        // bool declareUserFloatBranch (std::string name, float defaultClearValue = 0.0);
+        // //XYH
+        // bool declareUserIntBranchList(std::vector<std::string> nameList, int defaultClearValue = 0);
 
-        // throws an exception if the branch name was not declared
-        int&   userInt   (std::string name) {return userInts_   . getVal(name);}
-        float& userFloat (std::string name) {return userFloats_ . getVal(name);}
+        // // throws an exception if the branch name was not declared
+        // int&   userInt   (std::string name) {return userInts_   . getVal(name);}
+        // float& userFloat (std::string name) {return userFloats_ . getVal(name);}
 
         //////////////////////////
         //// saved variables
@@ -70,15 +88,11 @@ class OutputTree {
         unsigned int           LumiSec;
         unsigned long long int Event;
         unsigned int           njet;
-        std::vector<float>     jet_pt;
-        std::vector<float>     jet_eta;
-        std::vector<float>     jet_phi;
-        std::vector<float>     jet_m;
-        std::vector<float>     jet_btag;
-        std::vector<float>     jet_qgl;
-        std::vector<int>       jet_hadronFlav;
-        std::vector<int>       jet_partonFlav;
-        std::vector<int>       jet_idx;
+
+        int    n_other_pv;
+        int    n_pu;
+        double n_true_int;
+        double rhofastjet_all;
 
         DECLARE_m_pt_eta_phi_p4(gen_X_fc);
         DECLARE_m_pt_eta_phi_p4(gen_X);
@@ -125,19 +139,39 @@ class OutputTree {
         DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
         DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
 
+        int HX_b1_genHflag;
+        int HX_b2_genHflag;
+        int HY1_b1_genHflag;
+        int HY1_b2_genHflag;
+        int HY2_b1_genHflag;
+        int HY2_b2_genHflag;
 
-        // DECLARE_m_pt_eta_phi_p4(gen_H1)
-        // DECLARE_m_pt_ptRegressed_eta_phi_p4(HH_btag_b1)
+        int nsel_from_H;
+
+        DECLARE_m_pt_eta_phi_p4(mu_1);
+        DECLARE_m_pt_eta_phi_p4(mu_2);
+        DECLARE_m_pt_eta_phi_p4(ele_1);
+        DECLARE_m_pt_eta_phi_p4(ele_2);
+
+        int n_mu_loose;
+        int n_ele_loose;
+
+        DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+        int bjet1_hadflav;
         
-    
+        DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+        int bjet2_hadflav;
+
+        double btagSF_WP_M;
+
     private:
-        void init_branches();
-        std::unique_ptr<TTree> tree_;
+        void init_branches(std::map<std::string, bool> branch_switches);
+        // std::unique_ptr<TTree> tree_;
         const bool savetlv_;
         
         // for user declared branches
-        UserValCollection<float> userFloats_;
-        UserValCollection<int>   userInts_;
+        // UserValCollection<float> userFloats_;
+        // UserValCollection<int>   userInts_;
 };
 
 #endif
