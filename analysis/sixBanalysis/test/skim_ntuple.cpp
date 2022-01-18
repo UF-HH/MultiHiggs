@@ -1,4 +1,7 @@
 // skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output prova.root --is-signal
+// skim_ntuple.exe --input input/Run2_UL/2018/TTJets.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_ttbar.root
+// skim_ntuple.exe --input input/Run2_UL/2018/SingleMuon_Run2.txt --cfg config/skim_ntuple_2018_ttbar.cfg  --output prova_singlemu_ttbarskim.root --is-data
+
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -373,9 +376,7 @@ int main(int argc, char** argv)
   if (is_data)
     jlf.loadJSON(config.readStringOpt("data::lumimask")); // just read the info for data, so if I just skim MC I'm not forced to parse a JSON
 
-        if (is_data && !jlf.isValid(*nat.run, *nat.luminosityBlock)){
-            continue; // not a valid lumi
-        } 
+  // -----------
 
   Timer loop_timer;
 
@@ -388,7 +389,6 @@ int main(int argc, char** argv)
   const std::vector<double> btag_WPs = config.readDoubleListOpt("configurations::bTagWPDef");
   const int nMinBtag = config.readIntOpt("configurations::nMinBtag");
   const int bTagWP   = config.readIntOpt("configurations::bTagWP");
-  const bool applyPreselections = config.readBoolOpt("configurations::applyPreselections");
 
   sbf.set_btag_WPs(config.readDoubleListOpt("configurations::bTagWPDef"));
 
@@ -699,54 +699,6 @@ int main(int argc, char** argv)
       sbf.pair_jets(nat, ei, selected_jets);
       loop_timer.click("Six b jet pairing");
 
-<<<<<<< HEAD
-      std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets, applyPreselections);
-      sbf.btag_bias_pt_sort(presel_jets);
-      int n_presel_jet = presel_jets.size();
-      int nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
-      sbf.match_signal_recojets(ei,presel_jets);
-      ot.userInt("nfound_presel") = nfound_presel;
-        
-      if (!is_data) {
-        std::vector<GenJet> all_genjets = sbf.get_all_genjets(nat);
-        sbf.match_genjets_to_reco(all_genjets,presel_jets);
-
-        if (skim_type == ksixb) {
-          sbf.match_signal_genjets(ei,all_genjets);
-        }
-            
-        ei.genjet_list = all_genjets;
-      }
-        
-      ei.jet_list = presel_jets;
-      ei.n_jet = n_presel_jet;
-        
-            
-      std::vector<int> njet_btagwp = {0,0,0};
-      for (Jet& jet : presel_jets)
-        {
-          float btag = jet.get_btag();
-          for (int i = 0; i < 3; i++)
-            if ( btag > btag_WPs[i] )
-              njet_btagwp[i] += 1;
-        }
-
-<<<<<<< HEAD
-      ot.userInt("nloose_btag") = njet_btagwp[0];
-      ot.userInt("nmedium_btag") = njet_btagwp[1];
-      ot.userInt("ntight_btag") = njet_btagwp[2];
-        
-      loop_timer.click("Preselection");
-
-      if (skim_type == kpass) {
-        loop_timer.click("No selection");
-      }
-
-      if (skim_type == ksixb){
-        if (presel_jets.size() < 6)
-          continue;
-        cutflow.add("npresel_jets>=6");
-=======
       if (is_signal){
         sbf.compute_seljets_genmatch_flags(nat, ei);
         loop_timer.click("Six b pairing flags");                
@@ -754,7 +706,6 @@ int main(int argc, char** argv)
 
       sbf.compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
->>>>>>> a216c4a74593b35d30438becc74584f1fad12d71
 
 
 
@@ -764,26 +715,8 @@ int main(int argc, char** argv)
       // if ( applyJetCuts && !sbf.pass_jet_cut(cutflow, pt_cuts, btagWP_cuts, presel_jets) )
       //   continue;
 
-<<<<<<< HEAD
-        ei.t6_jet_list = t6_jets;
-        ei.t6_higgs_list = t6_dijets;
-        ei.n_higgs = t6_dijets.size();
-=======
-        std::vector<int> jet_idx    = sbf.get_all_jet_genidx(ei, all_jets);
-        ei.jet_idx = jet_idx;
-        // if (sixb_jets.size() < 6)
-        //     continue;
-        // sbf.pair_jets(nat, ei, sixb_jets);
-
-        ot.userInt("nfound_all")    = nfound_all;
-        ot.userInt("nfound_presel") = nfound_presel;
-        ot.userInt("nfound_sixb")   = nfound_sixb;
-        ot.userInt("njet_presel")   = njet_presel;
->>>>>>> ae2ad916f162dd3fc5729fffb6628d530478ef2c
-=======
       // std::vector<Jet> t6_jets = sbf.get_6jet_top(presel_jets);
       // std::vector<DiJet> t6_dijets = sbf.get_tri_higgs_D_HHH(t6_jets);
->>>>>>> a216c4a74593b35d30438becc74584f1fad12d71
 
       /*
       EventShapeCalculator t6_esc(t6_jets);
