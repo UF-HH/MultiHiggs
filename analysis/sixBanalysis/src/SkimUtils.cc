@@ -91,16 +91,16 @@ using namespace std;
   }								\
 }
 
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(OBJ) \
-    if (ei.OBJ) { \
-    ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
-    ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
-    ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
-    ot.OBJ ## _deepJet      = get_property(ei.OBJ.get(),Jet_btagDeepFlavB); \
-    ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
-    ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
-    ot.OBJ ## _p4           = ei. OBJ -> P4();\
-    }
+// #define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(OBJ) \
+//     if (ei.OBJ) { \
+//     ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
+//     ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
+//     ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
+//     ot.OBJ ## _deepJet      = get_property(ei.OBJ.get(),Jet_btagDeepFlavB); \
+//     ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
+//     ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
+//     ot.OBJ ## _p4           = ei. OBJ -> P4();\
+//     }
 // --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - 
 
 int SkimUtils::appendFromFileList (TChain* chain, string filename)
@@ -295,47 +295,45 @@ void SkimUtils::init_gen_weights(OutputTree &ot, NormWeightTree &nwt)
     ot.declareUserFloatBranch(n, 1.0);
 }
 
-<<<<<<< HEAD
-void SkimUtils::copy_gen_weights(OutputTree &ot, NormWeightTree &nwt)
-{
-  // copy the values and the structures for systematics
-  auto& gen_weight   = nwt.get_gen_weight();
-  auto& pu_weight    = nwt.get_pu_weight();
-  auto& pdf_weight   = nwt.get_pdf_weight();
-  auto& scale_weight = nwt.get_scale_weight();
-  auto& ps_weight    = nwt.get_ps_weight();
+// void SkimUtils::copy_gen_weights(OutputTree &ot, NormWeightTree &nwt)
+// {
+//   // copy the values and the structures for systematics
+//   auto& gen_weight   = nwt.get_gen_weight();
+//   auto& pu_weight    = nwt.get_pu_weight();
+//   auto& pdf_weight   = nwt.get_pdf_weight();
+//   auto& scale_weight = nwt.get_scale_weight();
+//   auto& ps_weight    = nwt.get_ps_weight();
 
-  ot.userFloat(gen_weight.name) = gen_weight.w;
-  for (uint iw = 0; iw < gen_weight.syst_name.size(); ++iw){
-    auto n = gen_weight.syst_name.at(iw);
-    ot.userFloat(n) = gen_weight.syst_val.at(iw);
-  }
+//   ot.userFloat(gen_weight.name) = gen_weight.w;
+//   for (uint iw = 0; iw < gen_weight.syst_name.size(); ++iw){
+//     auto n = gen_weight.syst_name.at(iw);
+//     ot.userFloat(n) = gen_weight.syst_val.at(iw);
+//   }
 
-  ot.userFloat(pu_weight.name) = pu_weight.w;
-  for (uint iw = 0; iw < pu_weight.syst_name.size(); ++iw){
-    auto n = pu_weight.syst_name.at(iw);
-    ot.userFloat(n) = pu_weight.syst_val.at(iw);
-  }   
+//   ot.userFloat(pu_weight.name) = pu_weight.w;
+//   for (uint iw = 0; iw < pu_weight.syst_name.size(); ++iw){
+//     auto n = pu_weight.syst_name.at(iw);
+//     ot.userFloat(n) = pu_weight.syst_val.at(iw);
+//   }   
 
-  ot.userFloat(pdf_weight.name) = pdf_weight.w;
-  for (uint iw = 0; iw < pdf_weight.syst_name.size(); ++iw){
-    auto n = pdf_weight.syst_name.at(iw);
-    ot.userFloat(n) = pdf_weight.syst_val.at(iw);
-  }
+//   ot.userFloat(pdf_weight.name) = pdf_weight.w;
+//   for (uint iw = 0; iw < pdf_weight.syst_name.size(); ++iw){
+//     auto n = pdf_weight.syst_name.at(iw);
+//     ot.userFloat(n) = pdf_weight.syst_val.at(iw);
+//   }
 
-  ot.userFloat(scale_weight.name) = scale_weight.w;
-  for (uint iw = 0; iw < scale_weight.syst_name.size(); ++iw){
-    auto n = scale_weight.syst_name.at(iw);
-    ot.userFloat(n) = scale_weight.syst_val.at(iw);
-  }
+//   ot.userFloat(scale_weight.name) = scale_weight.w;
+//   for (uint iw = 0; iw < scale_weight.syst_name.size(); ++iw){
+//     auto n = scale_weight.syst_name.at(iw);
+//     ot.userFloat(n) = scale_weight.syst_val.at(iw);
+//   }
 
-  ot.userFloat(ps_weight.name) = ps_weight.w;
-  for (uint iw = 0; iw < ps_weight.syst_name.size(); ++iw){
-    auto n = ps_weight.syst_name.at(iw);
-    ot.userFloat(n) = ps_weight.syst_val.at(iw);
-  }
-}
-=======
+//   ot.userFloat(ps_weight.name) = ps_weight.w;
+//   for (uint iw = 0; iw < ps_weight.syst_name.size(); ++iw){
+//     auto n = ps_weight.syst_name.at(iw);
+//     ot.userFloat(n) = ps_weight.syst_val.at(iw);
+//   }
+// }
     // COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(H1_b1)
 //     if (ei.H1_b1) ot.H1_b1_deepCSV = get_property(ei.H1_b1.get(),Jet_btagDeepB); 
 //     if (ei.H1_b1) ot.H1_b1_bRegRes = get_property(ei.H1_b1.get(),Jet_bRegRes);
@@ -713,4 +711,3 @@ void SkimUtils::copy_gen_weights(OutputTree &ot, NormWeightTree &nwt)
 
 //     // fill the tree
 //     ot.fill();
->>>>>>> ae2ad916f162dd3fc5729fffb6628d530478ef2c
