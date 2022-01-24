@@ -8,7 +8,7 @@ ODIR="/store/user/srosenzw/analysis/"
 # CFG="config/skim_ntuple_2018_btag.cfg"
 CFG="config/skim_ntuple_2018.cfg"
 # TAG="NMSSM_nocuts"
-TAG="btag_sort"
+TAG="NMSSM_Luca"
 
 make exe -j || exit -1
 
