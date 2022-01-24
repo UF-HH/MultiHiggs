@@ -213,12 +213,12 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   COPY_OPTIONAL_m_pt_eta_phi_p4(HY1);
   COPY_OPTIONAL_m_pt_eta_phi_p4(HY2);
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HX_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HX_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b2);
 
   if (ei.HX_b1_genHflag)  ot.HX_b1_genHflag  = *ei.HX_b1_genHflag;
   if (ei.HX_b2_genHflag)  ot.HX_b2_genHflag  = *ei.HX_b2_genHflag;
