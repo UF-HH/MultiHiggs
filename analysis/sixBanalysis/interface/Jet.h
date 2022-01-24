@@ -38,7 +38,6 @@ public:
 
   int preselIdx = -1;
   void set_preselIdx(int idx) { preselIdx = idx; }
-
 	
   float get_E() const        { return this->P4().E(); }
   float get_m() const        { return this->P4().M(); }
