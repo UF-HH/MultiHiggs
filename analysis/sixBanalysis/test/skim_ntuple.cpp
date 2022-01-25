@@ -329,14 +329,6 @@ int main(int argc, char** argv)
                   {"gen_brs",     (!is_data)},
                 });
 
-  ot.declareUserIntBranch("nfound_all",    0);
-  ot.declareUserIntBranch("nfound_presel", 0);
-  ot.declareUserIntBranch("nfound_t6",   0);
-  ot.declareUserIntBranch("nfound_nn",   0);
-  
-  ot.declareUserIntBranch("nfound_t6_h",   0);
-  ot.declareUserIntBranch("nfound_nn_h",   0);
-
   if (save_trg_decision) {
     for (auto& tname : triggerVector)
       ot.declareUserIntBranch(tname,   0);
@@ -394,13 +386,6 @@ int main(int argc, char** argv)
 
   cout << "[INFO] ... events must contain >= " << nMinBtag << " jets passing WP (0:L, 1:M, 2:T) : " << bTagWP << endl;
   cout << "[INFO] ... the WPs are: (L/M/T) : " << btag_WPs.at(0) << "/" << btag_WPs.at(1) << "/" << btag_WPs.at(2) << endl;
-
-  ot.declareUserIntBranch("nloose_btag",  0);
-  ot.declareUserIntBranch("nmedium_btag", 0);
-  ot.declareUserIntBranch("ntight_btag",  0);
-
-  ot.declareUserFloatBranch("t6_jet_btagsum", 0.0);
-  ot.declareUserFloatBranch("nn_jet_btagsum", 0.0);
 
   BtagSF btsf;
   if (!is_data){
@@ -628,9 +613,9 @@ int main(int argc, char** argv)
     }
 
     // jet selections
-    std::vector<Jet> all_jets    = sbf.get_all_jets (nat); // dump all nanoAOD jets into a vector<Jet> 
-    int nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
-    ot.userInt("nfound_all")    = nfound_all;        
+    std::vector<Jet> all_jets = sbf.get_all_jets(nat); // dump all nanoAOD jets into a vector<Jet>
+    ei.nfound_all = sbf.n_gjmatched_in_jetcoll(nat, ei, all_jets);
+    ei.nfound_all_h = sbf.n_ghmatched_in_jetcoll(nat, ei, all_jets);
     loop_timer.click("All jets copy");
 
     if (!is_data){
@@ -640,9 +625,14 @@ int main(int argc, char** argv)
       loop_timer.click("JEC + JER");
     }
 
-    std::vector<Jet> presel_jets = sbf.preselect_jets   (nat, all_jets);  // filter jets according to basic preselections (min pT / max eta / PU ID / PF ID)
+    std::vector<Jet> presel_jets = sbf.preselect_jets(nat, all_jets); // filter jets according to basic preselections (min pT / max eta / PU ID / PF ID)
+    ei.nfound_presel = sbf.n_gjmatched_in_jetcoll(nat, ei, presel_jets);
+    ei.nfound_presel_h = sbf.n_ghmatched_in_jetcoll(nat, ei, presel_jets);
+    ei.n_jet = presel_jets.size();
+    ei.jet_list = presel_jets;
     loop_timer.click("Jet preselection");
     if (debug) dumpObjColl(presel_jets, "==== PRESELECTED JETS ===");
+    
 
 // BLOCK BELOW COMMENTED TO REORGANIZE CODE - TO FIX AND BRING BACK TO FUNCTIONALITY
 /*
@@ -663,23 +653,6 @@ int main(int argc, char** argv)
       ei.genjet_list = all_genjets;
     }
       
-    ei.jet_list = presel_jets;
-    ei.n_jet = n_presel_jet;
-      
-          
-    std::vector<int> njet_btagwp = {0,0,0};
-    for (Jet& jet : presel_jets)
-      {
-        float btag = jet.get_btag();
-        for (int i = 0; i < 3; i++)
-          if ( btag > btag_WPs[i] )
-            njet_btagwp[i] += 1;
-      }
-
-    ot.userInt("nloose_btag") = njet_btagwp[0];
-    ot.userInt("nmedium_btag") = njet_btagwp[1];
-    ot.userInt("ntight_btag") = njet_btagwp[2];
-      
     loop_timer.click("Preselection");
 
 */
@@ -690,8 +663,12 @@ int main(int argc, char** argv)
       cutflow.add("npresel_jets>=6");
 
       std::vector<Jet> selected_jets = sbf.select_sixb_jets(nat, ei, presel_jets);
+      ei.nfound_select = sbf.n_gjmatched_in_jetcoll(nat, ei, selected_jets);
+      ei.nfound_select_h = sbf.n_ghmatched_in_jetcoll(nat, ei, selected_jets);
+
       loop_timer.click("Six b jet selection");
-      if (debug) dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
+      if (debug)
+        dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
       if (selected_jets.size() < 6)
         continue;
       cutflow.add("nselect_jets>=6");
@@ -699,18 +676,14 @@ int main(int argc, char** argv)
       sbf.pair_jets(nat, ei, selected_jets);
       loop_timer.click("Six b jet pairing");
 
-      if (is_signal){
+      if (is_signal)
+      {
         sbf.compute_seljets_genmatch_flags(nat, ei);
-        loop_timer.click("Six b pairing flags");                
+        loop_timer.click("Six b pairing flags");
       }
 
       sbf.compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
-
-
-
-      ei.nn_jet_list = selected_jets; // ONLY FOR DEBUG
-
 
       // if ( applyJetCuts && !sbf.pass_jet_cut(cutflow, pt_cuts, btagWP_cuts, presel_jets) )
       //   continue;

@@ -37,7 +37,6 @@ struct EventInfo{
   boost::optional<int>    n_jet;
   boost::optional<int>    n_genjet;
   boost::optional<int>    n_higgs;
-  boost::optional<int>    n_nn_higgs;
 
   boost::optional<float>  b_6j_score;
   boost::optional<float>  b_3d_score;
@@ -96,16 +95,19 @@ struct EventInfo{
 
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
-  boost::optional< std::vector<Jet> > t6_jet_list;
-  boost::optional< std::vector<Jet> > nn_jet_list;
-  boost::optional< std::vector<DiJet> > t6_higgs_list;
-  boost::optional< std::vector<DiJet> > nn_higgs_list;
 
   // boost::optional<EventShapes> t6_event_shapes;
   // boost::optional<EventShapes> nn_event_shapes;
   boost::optional<EventShapes> event_shapes;
 
-  boost::optional<int> nsel_from_H;
+
+  boost::optional<int> nfound_all;
+  boost::optional<int> nfound_all_h;
+  boost::optional<int> nfound_presel;
+  boost::optional<int> nfound_presel_h;
+  boost::optional<int> nfound_select;
+  boost::optional<int> nfound_select_h;
+  boost::optional<int> nfound_paired_h;
 
   // for ttbar skims
   boost::optional<Jet> bjet1;

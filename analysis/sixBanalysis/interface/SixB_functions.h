@@ -106,11 +106,6 @@ public:
 
   // get the local idx in the supset for each jet in the subset
   std::vector<int> match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset);
-
-
-  float get_X(EventInfo& ei, const std::vector<Jet>& in_jets);
-
-
   // sort jets with btag bias pt ordering
   // void btag_bias_pt_sort(std::vector<Jet>& in_jets);
 
@@ -161,6 +156,9 @@ public:
 
   // counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
   int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+  
+  // counts how many of the valid gen higgs in the ei (matched to b quarks) are in the in_jets collection
+  int n_ghmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
   // add match flags to the selected jets (from which H are the selected jets?)
   int get_jet_genmatch_flag (NanoAODTree& nat, EventInfo& ei, const Jet& jet); // -1: other, 0: HX, 1: HY1, 2: HY2

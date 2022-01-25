@@ -314,14 +314,12 @@ void SixB_functions::compute_seljets_genmatch_flags(NanoAODTree& nat, EventInfo&
     ei.HY2_b2_genHflag = get_jet_genmatch_flag(nat, ei, *ei.HY2_b2);
 
     // flags per event
-    int nsel_from_H = 0;
-    if (ei.HX_b1_genHflag > -1)  nsel_from_H += 1;
-    if (ei.HX_b2_genHflag > -1)  nsel_from_H += 1;
-    if (ei.HY1_b1_genHflag > -1) nsel_from_H += 1;
-    if (ei.HY1_b2_genHflag > -1) nsel_from_H += 1;
-    if (ei.HY2_b1_genHflag > -1) nsel_from_H += 1;
-    if (ei.HY2_b2_genHflag > -1) nsel_from_H += 1;
-    ei.nsel_from_H = nsel_from_H; // number of selected jets that are from H
+    int nfound_paired_h = 0;
+
+    if (ei.HX_b1_genHflag > -1 && ei.HX_b1_genHflag == ei.HX_b2_genHflag)  nfound_paired_h += 1;
+    if (ei.HY1_b1_genHflag > -1 && ei.HY1_b1_genHflag == ei.HY1_b2_genHflag) nfound_paired_h += 1;
+    if (ei.HY2_b1_genHflag > -1 && ei.HY2_b1_genHflag == ei.HY2_b2_genHflag) nfound_paired_h += 1;
+    ei.nfound_paired_h = nfound_paired_h; // number of selected jets that are from H
 }
 
 int SixB_functions::find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj)
@@ -1112,14 +1110,6 @@ void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vecto
 
 }
 
-
-float SixB_functions::get_X(EventInfo& ei, const std::vector<Jet>& in_jets) 
-{
-  p4_t X_p4 = in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed();
-
-  return X_p4.M();
-}
-
 std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets)
 {
   if (jets.size() != 6)
@@ -1493,6 +1483,35 @@ int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
   int nfound = 0;
   for (int imj : matched_jets){
     if (std::find(reco_js.begin(), reco_js.end(), imj) != reco_js.end())
+      nfound += 1;
+  }
+
+  return nfound;
+}
+
+int SixB_functions::n_ghmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+  std::vector<int> matched_jets(6,-1);
+  if (ei.gen_HX_b1_recojet)  matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
+  if (ei.gen_HX_b2_recojet)  matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
+  if (ei.gen_HY1_b1_recojet) matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
+  if (ei.gen_HY1_b2_recojet) matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
+  if (ei.gen_HY2_b1_recojet) matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
+  if (ei.gen_HY2_b2_recojet) matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
+
+  std::vector<int> reco_js(in_jets.size());
+  for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
+    reco_js.at(ij) = in_jets.at(ij).getIdx();
+
+  int nfound = 0;
+  for (unsigned int ih = 0; ih < 3; ++ih)
+  {
+    bool paired = true;
+    for (unsigned int ij = 0; ij < 2; ++ij)
+    {
+      paired = paired & (std::find(reco_js.begin(), reco_js.end(), matched_jets[2 * ih + ij]) != reco_js.end());
+    }
+    if (paired)
       nfound += 1;
   }
 

@@ -5,106 +5,106 @@
 using namespace std;
 
 // helper: creates the pt/eta/phi/p4 branches of a variable OBJ
-#define BRANCH_m_pt_eta_phi_p4(OBJ)			\
-  tree_->Branch(#OBJ "_m",  &OBJ ## _m);		\
-  tree_->Branch(#OBJ "_pt",  &OBJ ## _pt);		\
-  tree_->Branch(#OBJ "_eta", &OBJ ## _eta);		\
-  tree_->Branch(#OBJ "_phi", &OBJ ## _phi);		\
-  if (savetlv_) tree_->Branch(#OBJ "_p4", &OBJ ## _p4);
+#define BRANCH_m_pt_eta_phi_p4(OBJ)       \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);     \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);   \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta); \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi); \
+  if (savetlv_)                           \
+    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
 
-#define CLEAR_m_pt_eta_phi_p4(OBJ)		\
-  OBJ ## _m    = -999.;				\
-  OBJ ## _pt   = -999.;				\
-  OBJ ## _eta  = -999.;				\
-  OBJ ## _phi  = -999.;				\
-  OBJ ## _p4 . SetCoordinates(0,0,0,0);
+#define CLEAR_m_pt_eta_phi_p4(OBJ) \
+  OBJ##_m = -999.;                 \
+  OBJ##_pt = -999.;                \
+  OBJ##_eta = -999.;               \
+  OBJ##_phi = -999.;               \
+  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
-#define BRANCH_m_pt_ptRegressed_eta_phi_p4(OBJ)			\
-  tree_->Branch(#OBJ "_m"          ,  &OBJ ## _m);		\
-  tree_->Branch(#OBJ "_pt"         ,  &OBJ ## _pt);		\
-  tree_->Branch(#OBJ "_ptRegressed",  &OBJ ## _ptRegressed);	\
-  tree_->Branch(#OBJ "_eta"        , &OBJ ## _eta);		\
-  tree_->Branch(#OBJ "_phi"        , &OBJ ## _phi);		\
-  if (savetlv_) tree_->Branch(#OBJ "_p4", &OBJ ## _p4);
+#define BRANCH_m_pt_ptRegressed_eta_phi_p4(OBJ)           \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                     \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                   \
+  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed); \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                 \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                 \
+  if (savetlv_)                                           \
+    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
 
-#define CLEAR_m_pt_ptRegressed_eta_phi_p4(OBJ)		\
-  OBJ ## _m             = -999.;			\
-  OBJ ## _pt            = -999.;			\
-  OBJ ## _ptRegressed   = -999.;			\
-  OBJ ## _eta           = -999.;			\
-  OBJ ## _phi           = -999.;			\
-  OBJ ## _p4            . SetCoordinates(0,0,0,0);
+#define CLEAR_m_pt_ptRegressed_eta_phi_p4(OBJ) \
+  OBJ##_m = -999.;                             \
+  OBJ##_pt = -999.;                            \
+  OBJ##_ptRegressed = -999.;                   \
+  OBJ##_eta = -999.;                           \
+  OBJ##_phi = -999.;                           \
+  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
-#define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)		\
-  tree_->Branch(#OBJ "_m"          ,  &OBJ ## _m);		\
-  tree_->Branch(#OBJ "_pt"         ,  &OBJ ## _pt);		\
-  tree_->Branch(#OBJ "_ptRegressed",  &OBJ ## _ptRegressed);	\
-  tree_->Branch(#OBJ "_eta"        , &OBJ ## _eta);		\
-  tree_->Branch(#OBJ "_phi"        , &OBJ ## _phi);		\
-  tree_->Branch(#OBJ "_DeepJet"    , &OBJ ## _DeepJet);		\
-  if (savetlv_) tree_->Branch(#OBJ "_p4", &OBJ ## _p4);
+#define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)   \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                     \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                   \
+  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed); \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                 \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                 \
+  tree_->Branch(#OBJ "_DeepJet", &OBJ##_DeepJet);         \
+  if (savetlv_)                                           \
+    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
 
-#define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)	\
-  OBJ ## _m             = -999.;			\
-  OBJ ## _pt            = -999.;			\
-  OBJ ## _ptRegressed   = -999.;			\
-  OBJ ## _eta           = -999.;			\
-  OBJ ## _phi           = -999.;			\
-  OBJ ## _DeepJet       = -999.;			\
-  OBJ ## _p4            . SetCoordinates(0,0,0,0);
+#define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
+  OBJ##_m = -999.;                                     \
+  OBJ##_pt = -999.;                                    \
+  OBJ##_ptRegressed = -999.;                           \
+  OBJ##_eta = -999.;                                   \
+  OBJ##_phi = -999.;                                   \
+  OBJ##_DeepJet = -999.;                               \
+  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
-#define BRANCH_jet_list(OBJ)					\
-  tree_->Branch(#OBJ "_E", &OBJ ## _E);				\
-  tree_->Branch(#OBJ "_m", &OBJ ## _m);				\
-  tree_->Branch(#OBJ "_pt", &OBJ ## _pt);			\
-  tree_->Branch(#OBJ "_eta", &OBJ ## _eta);			\
-  tree_->Branch(#OBJ "_phi", &OBJ ## _phi);			\
-  tree_->Branch(#OBJ "_signalId", &OBJ ## _signalId);		\
-  tree_->Branch(#OBJ "_higgsIdx", &OBJ ## _higgsIdx);		\
-  tree_->Branch(#OBJ "_genIdx", &OBJ ## _genIdx);		\
-  tree_->Branch(#OBJ "_btag", &OBJ ## _btag);			\
-  tree_->Branch(#OBJ "_qgl", &OBJ ## _qgl);			\
-  tree_->Branch(#OBJ "_id", &OBJ ## _id);			\
-  tree_->Branch(#OBJ "_puid", &OBJ ## _puid);			\
-  tree_->Branch(#OBJ "_preselIdx", &OBJ ## _preselIdx);
+#define BRANCH_jet_list(OBJ)                        \
+  tree_->Branch(#OBJ "_E", &OBJ##_E);               \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);               \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);             \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);           \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);           \
+  tree_->Branch(#OBJ "_signalId", &OBJ##_signalId); \
+  tree_->Branch(#OBJ "_higgsIdx", &OBJ##_higgsIdx); \
+  tree_->Branch(#OBJ "_genIdx", &OBJ##_genIdx);     \
+  tree_->Branch(#OBJ "_btag", &OBJ##_btag);         \
+  tree_->Branch(#OBJ "_qgl", &OBJ##_qgl);           \
+  tree_->Branch(#OBJ "_id", &OBJ##_id);             \
+  tree_->Branch(#OBJ "_puid", &OBJ##_puid);
 
-#define CLEAR_jet_list(OBJ)			\
-  OBJ ## _E.clear();				\
-  OBJ ## _m.clear();				\
-  OBJ ## _pt.clear();				\
-  OBJ ## _eta.clear();				\
-  OBJ ## _phi.clear();				\
-  OBJ ## _partonFlav.clear();			\
-  OBJ ## _hadronFlav.clear();			\
-  OBJ ## _signalId.clear();			\
-  OBJ ## _higgsIdx.clear();			\
-  OBJ ## _genIdx.clear();			\
-  OBJ ## _btag.clear();				\
-  OBJ ## _qgl.clear();				\
-  OBJ ## _id.clear();				\
-  OBJ ## _puid.clear();				\
-  OBJ ## _preselIdx.clear();
+#define CLEAR_jet_list(OBJ) \
+  OBJ##_E.clear();          \
+  OBJ##_m.clear();          \
+  OBJ##_pt.clear();         \
+  OBJ##_eta.clear();        \
+  OBJ##_phi.clear();        \
+  OBJ##_partonFlav.clear(); \
+  OBJ##_hadronFlav.clear(); \
+  OBJ##_signalId.clear();   \
+  OBJ##_higgsIdx.clear();   \
+  OBJ##_genIdx.clear();     \
+  OBJ##_btag.clear();       \
+  OBJ##_qgl.clear();        \
+  OBJ##_id.clear();         \
+  OBJ##_puid.clear();
 
-#define BRANCH_dijet_list(OBJ)				\
-  tree_->Branch(#OBJ "_pt", &OBJ ## _pt);		\
-  tree_->Branch(#OBJ "_eta", &OBJ ## _eta);		\
-  tree_->Branch(#OBJ "_phi", &OBJ ## _phi);		\
-  tree_->Branch(#OBJ "_m", &OBJ ## _m);			\
-  tree_->Branch(#OBJ "_E", &OBJ ## _E);			\
-  tree_->Branch(#OBJ "_dr", &OBJ ## _dr);		\
-  tree_->Branch(#OBJ "_signalId", &OBJ ## _signalId);	\
-  tree_->Branch(#OBJ "_2j_score", &OBJ ## _2j_score);           
+#define BRANCH_dijet_list(OBJ)                      \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);             \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);           \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);           \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);               \
+  tree_->Branch(#OBJ "_E", &OBJ##_E);               \
+  tree_->Branch(#OBJ "_dr", &OBJ##_dr);             \
+  tree_->Branch(#OBJ "_signalId", &OBJ##_signalId); \
+  tree_->Branch(#OBJ "_2j_score", &OBJ##_2j_score);
 
-#define CLEAR_dijet_list(OBJ)			\
-  OBJ ## _pt.clear();				\
-  OBJ ## _eta.clear();				\
-  OBJ ## _phi.clear();				\
-  OBJ ## _m.clear();				\
-  OBJ ## _E.clear();				\
-  OBJ ## _dr.clear();				\
-  OBJ ## _signalId.clear();			\
-  OBJ ## _2j_score.clear();           
-  
+#define CLEAR_dijet_list(OBJ) \
+  OBJ##_pt.clear();           \
+  OBJ##_eta.clear();          \
+  OBJ##_phi.clear();          \
+  OBJ##_m.clear();            \
+  OBJ##_E.clear();            \
+  OBJ##_dr.clear();           \
+  OBJ##_signalId.clear();     \
+  OBJ##_2j_score.clear();
 
 OutputTree::OutputTree(bool savetlv, std::map<std::string, bool> branch_switches, string name, string title) :
 BaseOutTree(name, title, "OutputTree"),
@@ -188,7 +188,13 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("HY2_b1_genHflag", &HY2_b1_genHflag);
       tree_->Branch("HY2_b2_genHflag", &HY2_b2_genHflag);
 
-      tree_->Branch("nsel_from_H", &nsel_from_H);
+      tree_->Branch("nfound_all", &nfound_all);
+      tree_->Branch("nfound_all_h", &nfound_all_h);
+      tree_->Branch("nfound_presel", &nfound_presel);
+      tree_->Branch("nfound_presel_h", &nfound_presel_h);
+      tree_->Branch("nfound_select", &nfound_select);
+      tree_->Branch("nfound_select_h", &nfound_select_h);
+      tree_->Branch("nfound_paired_h", &nfound_paired_h);
     }
 
   tree_->Branch("n_mu_loose",  &n_mu_loose);
@@ -214,24 +220,14 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     }
 
   tree_->Branch("n_total_jet",&n_total_jet);
-	
+  tree_->Branch("n_jet", &n_jet);
+
   if (is_enabled("jet_coll"))
     {
       std::cout << "[INFO] OutputTree : enabling jet collection branches" << std::endl;
-      tree_->Branch("n_jet",         &n_jet);
 
       BRANCH_jet_list(jet);
-      BRANCH_jet_list(t6_jet);
-      
       tree_->Branch("b_6j_score",    &b_6j_score);
-      BRANCH_jet_list(nn_jet);
-
-      tree_->Branch("n_higgs", &n_higgs);
-      
-      BRANCH_dijet_list(t6_higgs);
-      
-      tree_->Branch("b_3d_score",    &b_3d_score);
-      BRANCH_dijet_list(nn_higgs);
     }
 
   if (is_enabled("gen_brs"))
@@ -245,29 +241,22 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("n_genjet",    &n_genjet);
 
       if (is_enabled("jet_coll"))
-	{
-	  tree_->Branch("genjet_E",         &genjet_E);	    
-	  tree_->Branch("genjet_m",         &genjet_m);		
-	  tree_->Branch("genjet_pt",        &genjet_pt);		
-	  tree_->Branch("genjet_eta",       &genjet_eta);		
-	  tree_->Branch("genjet_phi",       &genjet_phi);		
-	  tree_->Branch("genjet_partonFlav",&genjet_partonFlav);
-	  tree_->Branch("genjet_hadronFlav",&genjet_hadronFlav);
-	  tree_->Branch("genjet_signalId",  &genjet_signalId);
-	  tree_->Branch("genjet_recoIdx",   &genjet_recoIdx);
-	}
+      {
+        tree_->Branch("genjet_E", &genjet_E);
+        tree_->Branch("genjet_m", &genjet_m);
+        tree_->Branch("genjet_pt", &genjet_pt);
+        tree_->Branch("genjet_eta", &genjet_eta);
+        tree_->Branch("genjet_phi", &genjet_phi);
+        tree_->Branch("genjet_partonFlav", &genjet_partonFlav);
+        tree_->Branch("genjet_hadronFlav", &genjet_hadronFlav);
+        tree_->Branch("genjet_signalId", &genjet_signalId);
+        tree_->Branch("genjet_recoIdx", &genjet_recoIdx);
+      }
     }
 
   if (is_enabled("shape_brs"))
     {
       std::cout << "[INFO] OutputTree : enabling event shape-only related branches" << std::endl;
-      // tree_->Branch("t6_sphericity",  &t6_sphericity);
-      // tree_->Branch("t6_sphericity_t",&t6_sphericity_t);
-      // tree_->Branch("t6_aplanarity",  &t6_aplanarity);
-      
-      // tree_->Branch("nn_sphericity",  &nn_sphericity);
-      // tree_->Branch("nn_sphericity_t",&nn_sphericity_t);
-      // tree_->Branch("nn_aplanarity",  &nn_aplanarity);
       tree_->Branch("sphericity",  &sphericity);
       tree_->Branch("sphericity_t",&sphericity_t);
       tree_->Branch("aplanarity",  &aplanarity);
@@ -307,11 +296,6 @@ void OutputTree::clear()
   genjet_recoIdx.clear();
 
   CLEAR_jet_list(jet);
-  CLEAR_jet_list(t6_jet);
-  CLEAR_jet_list(nn_jet);
-
-  CLEAR_dijet_list(t6_higgs);
-  CLEAR_dijet_list(nn_higgs);
 
   CLEAR_m_pt_eta_phi_p4(gen_X_fc);
   CLEAR_m_pt_eta_phi_p4(gen_X);
@@ -365,8 +349,14 @@ void OutputTree::clear()
   HY2_b1_genHflag = -999;
   HY2_b2_genHflag = -999;
 
-  nsel_from_H = -999;
-  
+  nfound_all = -999;
+  nfound_all_h = -999;
+  nfound_presel = -999;
+  nfound_presel_h = -999;
+  nfound_select = -999;
+  nfound_select_h = -999;
+  nfound_paired_h = -999;
+
   CLEAR_m_pt_eta_phi_p4(mu_1);
   CLEAR_m_pt_eta_phi_p4(mu_2);
   CLEAR_m_pt_eta_phi_p4(ele_1);
