@@ -190,7 +190,7 @@ int main(int argc, char** argv)
 
   CfgParser config;
   if (!config.init(opts["cfg"].as<string>())){
-    cerr << "** [ERROR] no config file was provuded" << endl;
+    cerr << "** [ERROR] no config file was provided" << endl;
     return 1;
   }
   cout << "[INFO] ... using config file " << opts["cfg"].as<string>() << endl;
@@ -228,7 +228,7 @@ int main(int argc, char** argv)
     return 1;        
   }
 
-  // Joining all the NANOAD input file in a TChain in order to be used like an unique three
+  // Joining all the NANOAOD input file in a TChain in order to be used like an unique three
   TChain ch("Events");
   int nfiles = su::appendFromFileList(&ch, opts["input"].as<string>());
     

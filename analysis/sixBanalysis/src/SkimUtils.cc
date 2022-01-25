@@ -11,20 +11,20 @@ using namespace std;
 
 // helper: copies the pt/eta/phi/p4 branches from a candidate OBJ to the output tree
 // NOTE: requires the matching of the names (and enforces it)
-#define COPY_m_pt_eta_phi_p4(OBJ)		\
-  ot.OBJ ## _m   = ei. OBJ -> P4().M();		\
-  ot.OBJ ## _pt  = ei. OBJ -> P4().Pt();	\
-  ot.OBJ ## _eta = ei. OBJ -> P4().Eta();	\
-  ot.OBJ ## _phi = ei. OBJ -> P4().Phi();	\
-  ot.OBJ ## _p4  = ei. OBJ -> P4();
+#define COPY_m_pt_eta_phi_p4(OBJ) \
+    ot.OBJ ## _m   = ei. OBJ -> P4().M(); \
+    ot.OBJ ## _pt  = ei. OBJ -> P4().Pt(); \
+    ot.OBJ ## _eta = ei. OBJ -> P4().Eta(); \
+    ot.OBJ ## _phi = ei. OBJ -> P4().Phi(); \
+    ot.OBJ ## _p4  = ei. OBJ -> P4();
 
-#define COPY_m_pt_ptRegressed_eta_phi_p4(OBJ)			\
-  ot.OBJ ## _m            = ei. OBJ -> P4().M();		\
-  ot.OBJ ## _pt           = ei. OBJ -> P4().Pt();		\
-  ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt();	\
-  ot.OBJ ## _eta          = ei. OBJ -> P4().Eta();		\
-  ot.OBJ ## _phi          = ei. OBJ -> P4().Phi();		\
-  ot.OBJ ## _p4           = ei. OBJ -> P4();
+#define COPY_m_pt_ptRegressed_eta_phi_p4(OBJ) \
+    ot.OBJ ## _m            = ei. OBJ -> P4().M(); \
+    ot.OBJ ## _pt           = ei. OBJ -> P4().Pt(); \
+    ot.OBJ ## _ptRegressed  = ei. OBJ -> P4Regressed().Pt(); \
+    ot.OBJ ## _eta          = ei. OBJ -> P4().Eta(); \
+    ot.OBJ ## _phi          = ei. OBJ -> P4().Phi(); \
+    ot.OBJ ## _p4           = ei. OBJ -> P4();
 
 //helperM same as above, but encloses the obj (a boost::optional is expected) in a if clause to check whether it is initialized
 #define COPY_OPTIONAL_m_pt_eta_phi_p4(OBJ)	\
@@ -213,12 +213,12 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   COPY_OPTIONAL_m_pt_eta_phi_p4(HY1);
   COPY_OPTIONAL_m_pt_eta_phi_p4(HY2);
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HX_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HX_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b2);
 
   if (ei.HX_b1_genHflag)  ot.HX_b1_genHflag  = *ei.HX_b1_genHflag;
   if (ei.HX_b2_genHflag)  ot.HX_b2_genHflag  = *ei.HX_b2_genHflag;

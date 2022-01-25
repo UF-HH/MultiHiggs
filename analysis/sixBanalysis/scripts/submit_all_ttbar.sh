@@ -1,7 +1,9 @@
 # ODIR="/store/user/ekoenig/6BAnalysis/NTuples/2018/"
+ODIR="/store/user/srosenzw/analysis/"
 
-# . scripts/arg_submit.sh -v qcd "$@"
-# TAG="${TAG}TTJets"
+. scripts/arg_submit.sh -v qcd "$@"
+TAG="TTJets"
+CFG="config/skim_ntuple_2018.cfg"
 
 # make exe -j || exit -1
 
