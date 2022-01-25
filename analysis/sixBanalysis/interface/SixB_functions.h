@@ -108,6 +108,9 @@ public:
   std::vector<int> match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset);
 
 
+  float get_X(EventInfo& ei, const std::vector<Jet>& in_jets);
+
+
   // sort jets with btag bias pt ordering
   // void btag_bias_pt_sort(std::vector<Jet>& in_jets);
 

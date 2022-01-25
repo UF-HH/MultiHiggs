@@ -388,19 +388,6 @@ std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
 
 std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets)
 {
-  // FIXME: make these selections configurable
-  // const double pt_min  = 20.;
-  // const double eta_max = 2.5;
-  // // const double btag_min = btag_WPs.at(0);
-  // const int    pf_id   = 1;
-  // const int    pu_id   = 1;
-
-  // const double pt_min  = std::any_cast<double>(params_["presel::pt_min"]);
-  // const double eta_max = std::any_cast<double>(params_["presel::eta_max"]);
-  // // const double btag_min = btag_WPs.at(0);
-  // const int    pf_id   = std::any_cast<int>(params_["presel::pf_id"]);
-  // const int    pu_id   = std::any_cast<int>(params_["presel::pu_id"]);
-
   const double pt_min  = pmap.get_param<double>("presel", "pt_min");
   const double eta_max = pmap.get_param<double>("presel", "eta_max");
   // const double btag_min = btag_WPs.at(0);
@@ -796,40 +783,53 @@ std::vector<int> SixB_functions::match_local_idx(std::vector<Jet>& subset,std::v
 //   return true;
 // }
 
-std::vector<DiJet> pair_best_higgs_method(std::vector<Jet>& in_jets)
-{
-  std::vector<DiJet> higgs_list;
+// int SixB_functions::njets_preselections (const std::vector<Jet>& in_jets)
+// {
+//     const double pt_min  = 30.;
+//     const double eta_max = 2.4;
+//     int count = 0;
+//     for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
+//         const Jet& jet = in_jets.at(ij);
+//         if (jet.P4().Pt()            <= pt_min)  continue;
+//         if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+//         count++;
+//     }
+//     return count;
+// }
+
+// std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
+// {
+//   std::vector<DiJet> higgs_list;
 	
-  for (unsigned int i = 0; i < in_jets.size(); i++)
-    {
-      if (higgs_list.size() == 3) break;
+//   for (unsigned int i = 0; i < in_jets.size(); i++)
+//     {
+//       if (higgs_list.size() == 3) break;
 		
-      Jet& j1 = in_jets[i];
-      if (j1.get_higgsIdx() != -1) continue;
+//       Jet& j1 = in_jets[i];
+//       if (j1.get_higgsIdx() != -1) continue;
 
-      std::vector<std::pair<int,DiJet>> dijet_pairs;
-      for (unsigned int k = i+1; k < in_jets.size(); k++)
-	{
-	  Jet& j2 = in_jets[k];
-	  if (j2.get_higgsIdx() != -1) continue;
+//       std::vector<std::pair<int,DiJet>> dijet_pairs;
+//       for (unsigned int k = i+1; k < in_jets.size(); k++)
+// 	{
+// 	  Jet& j2 = in_jets[k];
+// 	  if (j2.get_higgsIdx() != -1) continue;
 			
-	  DiJet dijet(j1,j2);
-	  dijet_pairs.push_back( std::make_pair(k,dijet) );
-	}
-      if (dijet_pairs.size() == 0) continue;
-      std::sort(dijet_pairs.begin(),dijet_pairs.end(),[](auto di1,auto di2){ return fabs(di1.second.M()-125)<fabs(di2.second.M()-125); });
+// 	  DiJet dijet(j1,j2);
+// 	  dijet_pairs.push_back( std::make_pair(k,dijet) );
+// 	}
+//       if (dijet_pairs.size() == 0) continue;
+//       std::sort(dijet_pairs.begin(),dijet_pairs.end(),[](auto di1,auto di2){ return fabs(di1.second.M()-125)<fabs(di2.second.M()-125); });
 		
-      int pair_idx = dijet_pairs[0].first;
-      DiJet& higgs_p4 = dijet_pairs[0].second;
-      Jet& j2 = in_jets[pair_idx];
+//       int pair_idx = dijet_pairs[0].first;
+//       DiJet& higgs_p4 = dijet_pairs[0].second;
+//       Jet& j2 = in_jets[pair_idx];
 				  
-      j1.set_higgsIdx( higgs_list.size() );
-      j2.set_higgsIdx( higgs_list.size() );
-      higgs_list.push_back(higgs_p4);
-    }
-  return higgs_list;
-}
-
+//       j1.set_higgsIdx( higgs_list.size() );
+//       j2.set_higgsIdx( higgs_list.size() );
+//       higgs_list.push_back(higgs_p4);
+//     }
+//   return higgs_list;
+// }
 
 // std::vector<DiJet> SixB_functions::get_tri_higgs_D_HHH(std::vector<Jet>& in_jets)
 // {
@@ -1110,6 +1110,14 @@ void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vecto
   ei.HY2_b1 = static_cast<Jet&>(HY2.getComponent1());
   ei.HY2_b2 = static_cast<Jet&>(HY2.getComponent2());
 
+}
+
+
+float SixB_functions::get_X(EventInfo& ei, const std::vector<Jet>& in_jets) 
+{
+  p4_t X_p4 = in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed() + in_jets[0].P4Regressed();
+
+  return X_p4.M();
 }
 
 std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets)

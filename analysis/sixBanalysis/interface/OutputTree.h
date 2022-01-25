@@ -195,12 +195,12 @@ public:
   DECLARE_m_pt_eta_phi_p4(HY1);
   DECLARE_m_pt_eta_phi_p4(HY2);
 
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HX_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HX_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HY1_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HY1_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(HY2_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b2);
 
   int HX_b1_genHflag;
   int HX_b2_genHflag;
