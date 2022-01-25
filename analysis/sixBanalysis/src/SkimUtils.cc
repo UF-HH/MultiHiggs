@@ -166,6 +166,8 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
 
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);
+  
+  // Start Gen 6B Objects
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_Y);
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_HX);
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_HY1);
@@ -191,12 +193,51 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+  // End Gen 6B Objects
+
+  // Start Gen 8B Objects
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_Y2);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2);
+
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1_b1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1_b2);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1_b1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1_b2);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2_b1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2_b2);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b2);
+  
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1_b1_genjet);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1_b2_genjet);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1_b1_genjet);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1_b2_genjet);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2_b1_genjet);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2_b2_genjet);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b1_genjet);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b2_genjet);
+
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b1_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b2_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b1_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b2_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b1_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b2_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b1_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b2_recojet);
+  // End Gen 8B Objects
+
   if (ei.gen_bs_N_reco_match)        ot.gen_bs_N_reco_match        = *ei.gen_bs_N_reco_match;
   if (ei.gen_bs_N_reco_match_in_acc) ot.gen_bs_N_reco_match_in_acc = *ei.gen_bs_N_reco_match_in_acc;
   if (ei.gen_bs_match_recojet_minv)        ot.gen_bs_match_recojet_minv        = *ei.gen_bs_match_recojet_minv;
   if (ei.gen_bs_match_in_acc_recojet_minv) ot.gen_bs_match_in_acc_recojet_minv = *ei.gen_bs_match_in_acc_recojet_minv;
 
   COPY_OPTIONAL_m_pt_eta_phi_p4(X);
+  // Start Reco 6B Objects
   COPY_OPTIONAL_m_pt_eta_phi_p4(Y);
   COPY_OPTIONAL_m_pt_eta_phi_p4(HX);
   COPY_OPTIONAL_m_pt_eta_phi_p4(HY1);
@@ -215,7 +256,34 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.HY1_b2_genHflag) ot.HY1_b2_genHflag = *ei.HY1_b2_genHflag;
   if (ei.HY2_b1_genHflag) ot.HY2_b1_genHflag = *ei.HY2_b1_genHflag;
   if (ei.HY2_b2_genHflag) ot.HY2_b2_genHflag = *ei.HY2_b2_genHflag;
+  // End Reco 6B Objects
 
+  // Start Reco 8B Objects
+  COPY_OPTIONAL_m_pt_eta_phi_p4(Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(Y2);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(H1Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(H2Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(H1Y2);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(H2Y2);
+
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b2);
+
+  if (ei.H1Y1_b1_genHflag)  ot.H1Y1_b1_genHflag  = *ei.H1Y1_b1_genHflag;
+  if (ei.H1Y1_b2_genHflag)  ot.H1Y1_b2_genHflag  = *ei.H1Y1_b2_genHflag;
+  if (ei.H2Y1_b1_genHflag)  ot.H2Y1_b1_genHflag  = *ei.H2Y1_b1_genHflag;
+  if (ei.H2Y1_b2_genHflag)  ot.H2Y1_b2_genHflag  = *ei.H2Y1_b2_genHflag;
+  if (ei.H1Y2_b1_genHflag)  ot.H1Y2_b1_genHflag  = *ei.H1Y2_b1_genHflag;
+  if (ei.H1Y2_b2_genHflag)  ot.H1Y2_b2_genHflag  = *ei.H1Y2_b2_genHflag;
+  if (ei.H2Y2_b1_genHflag)  ot.H2Y2_b1_genHflag  = *ei.H2Y2_b1_genHflag;
+  if (ei.H2Y2_b2_genHflag)  ot.H2Y2_b2_genHflag  = *ei.H2Y2_b2_genHflag;
+  // End Reco 8B Objects
 
   if (ei.nfound_all) ot.nfound_all = *ei.nfound_all;
   if (ei.nfound_all_h) ot.nfound_all_h = *ei.nfound_all_h;

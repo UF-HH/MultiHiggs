@@ -199,6 +199,7 @@ int main(int argc, char** argv)
     {
       ksixb,
       kttbar,
+      keightb,
       // kshapecr,
       khiggscr,
       // kpass,
@@ -210,6 +211,7 @@ int main(int argc, char** argv)
   const SkimTypes skim_type = (
                                skim_type_name == "sixb"    ? ksixb    :
                                skim_type_name == "ttbar"   ? kttbar   :
+                               skim_type_name == "eightb"  ? keightb  :
                               //  skim_type_name == "shapecr" ? kshapecr :
                                skim_type_name == "higgscr" ? khiggscr :
                               //  skim_type_name == "pass"    ? kpass     :
@@ -324,6 +326,7 @@ int main(int argc, char** argv)
                   {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
                   {"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes",  false)},
                   {"sixb_brs",    (skim_type == ksixb)},
+                  {"eight_brs",    (skim_type == keightb)},
                   {"ttbar_brs",   (skim_type == kttbar)},
                   {"sig_gen_brs", (is_signal)},
                   {"gen_brs",     (!is_data)},
@@ -472,11 +475,17 @@ int main(int argc, char** argv)
   // ----------- configure the sixB functions
   cout << "[INFO] ... configurations read from the config file" << endl;
 
-  if      (skim_type == ksixb){
+  if (skim_type == ksixb)
+  {
     sbf.initialize_params_from_cfg_sixbskim(config);
     sbf.initialize_functions_sixbskim(outputFile);
   }
-  else if (skim_type == kttbar){
+  if (skim_type == keightb)
+  {
+    sbf.initialize_params_from_cfg_eightbskim(config);
+  }
+  else if (skim_type == kttbar)
+  {
     sbf.initialize_params_from_cfg_ttbarskim(config);
   }
 
@@ -605,10 +614,20 @@ int main(int argc, char** argv)
     loop_timer.click("Global info");
 
     // signal-specific gen info
-    if (is_signal){
-      sbf.select_gen_particles   (nat, ei);      // find gen level X, Y, H, b
-      sbf.match_genbs_to_genjets (nat, ei);      // match the b quarks found above to the genjets
-      sbf.match_genbs_genjets_to_reco (nat, ei); // match the genjets found above to the reco jets 
+    if (is_signal)
+    {
+      if (skim_type == ksixb)
+      {
+        sbf.select_gen_particles(nat, ei);        // find gen level X, Y, H, b
+        sbf.match_genbs_to_genjets(nat, ei);      // match the b quarks found above to the genjets
+        sbf.match_genbs_genjets_to_reco(nat, ei); // match the genjets found above to the reco jets
+      }
+      if (skim_type == keightb)
+      {
+        sbf.select_gen_particles_8b(nat, ei); // find gen level X, Y, H, b
+        sbf.match_genbs_to_genjets_8b(nat, ei); // match the b quarks found above to the genjets
+        sbf.match_genbs_genjets_to_reco_8b(nat, ei); // match the genjets found above to the reco jets
+      }
       loop_timer.click("Signal gen level");
     }
 
@@ -751,6 +770,10 @@ int main(int argc, char** argv)
       // cutflow.add("jet6_btagsum<3.8");
           
       loop_timer.click("Higgs CR selection");
+    }
+
+    if (skim_type == keightb) {
+      loop_timer.click("Eight B Selection");
     }
 
     if (skim_type == kttbar){

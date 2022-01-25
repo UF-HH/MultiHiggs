@@ -145,6 +145,7 @@ public:
 
   DECLARE_m_pt_eta_phi_p4(gen_X_fc);
   DECLARE_m_pt_eta_phi_p4(gen_X);
+  // Start Gen 6B Objects
   DECLARE_m_pt_eta_phi_p4(gen_Y);
   DECLARE_m_pt_eta_phi_p4(gen_HX);
   DECLARE_m_pt_eta_phi_p4(gen_HY1);
@@ -170,6 +171,44 @@ public:
   DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
   DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
   DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+  // End Gen 6B Objects
+
+  
+  // Gen 8B Objects
+  DECLARE_m_pt_eta_phi_p4(gen_Y1);
+  DECLARE_m_pt_eta_phi_p4(gen_Y2);
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y1);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y1);
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y2);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y2);
+
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y1_b1);
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y1_b2);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y1_b1);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y1_b2);
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y2_b1);
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y2_b2);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b1);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b2);
+  
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y1_b1_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y1_b2_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y1_b1_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y1_b2_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y2_b1_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1Y2_b2_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b1_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b2_genjet);
+  
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b2_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b2_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b2_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b2_recojet);
+  // End Gen 8B Objects
   
   int gen_bs_N_reco_match;
   int gen_bs_N_reco_match_in_acc;
@@ -177,6 +216,7 @@ public:
   double gen_bs_match_in_acc_recojet_minv;
 
   DECLARE_m_pt_eta_phi_p4(X);
+  // Start Reco 6B Objects
   DECLARE_m_pt_eta_phi_p4(Y);
   DECLARE_m_pt_eta_phi_p4(HX);
   DECLARE_m_pt_eta_phi_p4(HY1);
@@ -195,6 +235,35 @@ public:
   int HY1_b2_genHflag;
   int HY2_b1_genHflag;
   int HY2_b2_genHflag;
+  // End Reco 6B Objects
+
+  // Start Reco 8B Objects
+  DECLARE_m_pt_eta_phi_p4(Y1);
+  DECLARE_m_pt_eta_phi_p4(Y2);
+  DECLARE_m_pt_eta_phi_p4(H1Y1);
+  DECLARE_m_pt_eta_phi_p4(H2Y1);
+  DECLARE_m_pt_eta_phi_p4(H1Y2);
+  DECLARE_m_pt_eta_phi_p4(H2Y2);
+
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b2);
+
+  int H1Y1_b1_genHflag;
+  int H1Y1_b2_genHflag;
+  int H2Y1_b1_genHflag;
+  int H2Y1_b2_genHflag;
+  int H1Y2_b1_genHflag;
+  int H1Y2_b2_genHflag;
+  int H2Y2_b1_genHflag;
+  int H2Y2_b2_genHflag;
+  // End Reco 8B Objects
+
 
   int nfound_all;
   int nfound_all_h;

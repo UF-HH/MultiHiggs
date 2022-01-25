@@ -30,6 +30,7 @@ public:
 
   // read all the info needed by the six functions from the config - to be done once before the event loop starts
   void initialize_params_from_cfg_sixbskim(CfgParser& cfgr);
+  void initialize_params_from_cfg_eightbskim(CfgParser& cfgr);
   void initialize_params_from_cfg_ttbarskim(CfgParser& cfgr);
   
   // using the internally stored parameters, initialize the function methods
@@ -46,14 +47,21 @@ public:
         
   // select the gen-level six b candidates (bs, bosons)
   void select_gen_particles(NanoAODTree& nat, EventInfo& ei);
+  
+  // select the gen-level eight b candidates (bs, bosons)
+  void select_gen_particles_8b(NanoAODTree& nat, EventInfo& ei);
 
   // match the selected gen b to gen jets
   // if ensure_unique = true, ensures that a gen jet is not matched to two different partons
   // otherwise it will match to the closest parton found
   void match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique = true);
+  
+  void match_genbs_to_genjets_8b(NanoAODTree& nat, EventInfo& ei, bool ensure_unique = true);
 
   // match the genjets associated to the 6 gen b quarks to reco jets
   void match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei);
+
+  void match_genbs_genjets_to_reco_8b(NanoAODTree& nat, EventInfo& ei);
 
   // void match_genjets_to_reco(std::vector<GenJet>& genjets,std::vector<Jet>& recojets); // EDITED FOR CODE REVIEW - FIXME
 
