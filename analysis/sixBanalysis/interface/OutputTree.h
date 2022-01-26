@@ -52,7 +52,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   float OBJ##_ptRegressed;                               \
   float OBJ##_eta;                                       \
   float OBJ##_phi;                                       \
-  float OBJ##_DeepJet;                                   \
+  float OBJ##_btag;                                   \
   p4_t OBJ##_p4;
 
 #define DECLARE_jet_list(OBJ)        \
@@ -200,14 +200,14 @@ public:
   DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b1_genjet);
   DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b2_genjet);
   
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b2_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b2_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b2_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b2_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b2_recojet);
   // End Gen 8B Objects
   
   int gen_bs_N_reco_match;

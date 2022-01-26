@@ -458,35 +458,6 @@ std::vector<Jet> SixB_functions::select_sixb_jets_6jet_DNN (NanoAODTree &nat, Ev
 }
 
 
-std::vector<Jet> SixB_functions::bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
-{
-  std::vector<Jet> jets = in_jets;
-  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
-
-  auto loose_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
-  auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
-  auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
-
-  auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
-
-  int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
-  int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
-  int loose_idx  = std::distance(jets.begin(),loose_it.base())-1;
-
-  std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
-  auto start = jets.begin();
-  for (int wp_idx : wp_idxs)
-  {
-    if (wp_idx != -1 && start != jets.end()) {
-	    auto end = jets.begin() + wp_idx + 1;
-	    std::sort(start,end,pt_sort);
-	    start = end;
-    }
-  }
-  return jets;
-}
-
-
 std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
     std::vector<Jet> jets = in_jets;
@@ -1306,54 +1277,66 @@ int SixB_functions::n_ghmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
   return nfound;
 }
 
-// EDITED FOR CODE REVIEW - FIXME
-// void SixB_functions::match_signal_genjets(EventInfo& ei, std::vector<GenJet>& in_jets)
-// {
-//   std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
-//   if (ei.gen_HX_b1_genjet)  matched_jets[0] = ei.gen_HX_b1_genjet->getIdx();
-//   if (ei.gen_HX_b2_genjet)  matched_jets[1] = ei.gen_HX_b2_genjet->getIdx();
-//   if (ei.gen_HY1_b1_genjet) matched_jets[2] = ei.gen_HY1_b1_genjet->getIdx();
-//   if (ei.gen_HY1_b2_genjet) matched_jets[3] = ei.gen_HY1_b2_genjet->getIdx();
-//   if (ei.gen_HY2_b1_genjet) matched_jets[4] = ei.gen_HY2_b1_genjet->getIdx();
-//   if (ei.gen_HY2_b2_genjet) matched_jets[5] = ei.gen_HY2_b2_genjet->getIdx();
+void SixB_functions::match_signal_genjets(NanoAODTree &nat, EventInfo& ei, std::vector<GenJet> &in_jets)
+{
+  std::vector<int> matched_jets(6, -1);
+  if (ei.gen_HX_b1_genjet)
+    matched_jets[0] = ei.gen_HX_b1_genjet->getIdx();
+  if (ei.gen_HX_b2_genjet)
+    matched_jets[1] = ei.gen_HX_b2_genjet->getIdx();
+  if (ei.gen_HY1_b1_genjet)
+    matched_jets[2] = ei.gen_HY1_b1_genjet->getIdx();
+  if (ei.gen_HY1_b2_genjet)
+    matched_jets[3] = ei.gen_HY1_b2_genjet->getIdx();
+  if (ei.gen_HY2_b1_genjet)
+    matched_jets[4] = ei.gen_HY2_b1_genjet->getIdx();
+  if (ei.gen_HY2_b2_genjet)
+    matched_jets[5] = ei.gen_HY2_b2_genjet->getIdx();
 
-//   for (GenJet& gj : in_jets)
-//     {
-//       int gj_idx = gj.getIdx();
-//       if (gj_idx == -1) continue;
-		
-//       for (int id = 0; id < 6; id++)
-// 	{
-// 	  if (matched_jets[id] == gj_idx)
-// 	    {
-// 	      gj.set_signalId(id);
-// 	    }
-// 	}
-//     }
-// }
+  for (GenJet &gj : in_jets)
+  {
+    int gj_idx = gj.getIdx();
+    if (gj_idx == -1)
+      continue;
 
-// EDITED FOR CODE REVIEW - FIXME
-// void SixB_functions::match_signal_recojets(EventInfo& ei,std::vector<Jet>& in_jets)
-// {
-//   std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
-//   if (ei.gen_HX_b1_recojet)  matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
-//   if (ei.gen_HX_b2_recojet)  matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
-//   if (ei.gen_HY1_b1_recojet) matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
-//   if (ei.gen_HY1_b2_recojet) matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
-//   if (ei.gen_HY2_b1_recojet) matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
-//   if (ei.gen_HY2_b2_recojet) matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
+    for (int id = 0; id < 6; id++)
+    {
+      if (matched_jets[id] == gj_idx)
+      {
+        gj.set_signalId(id);
+      }
+    }
+  }
+}
 
-//   for (Jet& j : in_jets)
-//     {
-//       int j_idx = j.getIdx();
-//       if (j_idx == -1) continue;
-		
-//       for (int id = 0; id < 6; id++)
-// 	{
-// 	  if (matched_jets[id] == j_idx)
-// 	    {
-// 	      j.set_signalId(id);
-// 	    }
-// 	}
-//     }
-// }
+void SixB_functions::match_signal_recojets(NanoAODTree &nat, EventInfo& ei, std::vector<Jet> &in_jets)
+{
+  std::vector<int> matched_jets(6, -1);
+  if (ei.gen_HX_b1_recojet)
+    matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
+  if (ei.gen_HX_b2_recojet)
+    matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
+  if (ei.gen_HY1_b1_recojet)
+    matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
+  if (ei.gen_HY1_b2_recojet)
+    matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
+  if (ei.gen_HY2_b1_recojet)
+    matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
+  if (ei.gen_HY2_b2_recojet)
+    matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
+
+  for (Jet &j : in_jets)
+  {
+    int j_idx = j.getIdx();
+    if (j_idx == -1)
+      continue;
+
+    for (int id = 0; id < 6; id++)
+    {
+      if (matched_jets[id] == j_idx)
+      {
+        j.set_signalId(id);
+      }
+    }
+  }
+}

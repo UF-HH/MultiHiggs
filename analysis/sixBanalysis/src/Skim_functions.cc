@@ -138,6 +138,43 @@ std::vector<Jet> Skim_functions::preselect_jets(NanoAODTree &nat, const std::vec
   return out_jets;
 }
 
+std::vector<Jet> Skim_functions::btag_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+{
+  std::vector<Jet> jets = in_jets;
+  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
+  return jets;
+}
+
+std::vector<Jet> Skim_functions::bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+{
+  std::vector<Jet> jets = in_jets;
+  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
+
+  auto loose_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
+  auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
+  auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
+
+  auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
+
+  int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
+  int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
+  int loose_idx  = std::distance(jets.begin(),loose_it.base())-1;
+
+  std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
+  auto start = jets.begin();
+  for (int wp_idx : wp_idxs)
+  {
+    if (wp_idx != -1 && start != jets.end()) {
+	    auto end = jets.begin() + wp_idx + 1;
+	    std::sort(start,end,pt_sort);
+	    start = end;
+    }
+  }
+  return jets;
+}
+
+
+
 void Skim_functions::compute_event_shapes(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
   /**
@@ -172,6 +209,31 @@ std::vector<int> Skim_functions::match_local_idx(std::vector<Jet>& subset,std::v
       local_idxs.push_back(local_idx);
     }
   return local_idxs;
+}
+
+
+void Skim_functions::match_genjets_to_reco(NanoAODTree &nat, EventInfo& ei, std::vector<GenJet>& genjets,std::vector<Jet>& recojets)
+{
+  for (unsigned int ireco = 0; ireco < recojets.size(); ireco++)
+  {
+    Jet &jet = recojets.at(ireco);
+    int gen_match = -1;
+    for (unsigned int igen = 0; igen < genjets.size(); igen++)
+    {
+      GenJet &genjet = genjets.at(igen);
+
+      if (genjet.getIdx() == get_property(jet, Jet_genJetIdx))
+      {
+        gen_match = igen;
+        break;
+      }
+    }
+    if (gen_match != -1)
+    {
+      recojets.at(ireco).set_genIdx(gen_match);
+      genjets.at(gen_match).set_recoIdx(ireco);
+    }
+  }
 }
 
 void Skim_functions::select_leptons(NanoAODTree &nat, EventInfo &ei)

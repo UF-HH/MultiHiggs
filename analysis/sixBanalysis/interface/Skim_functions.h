@@ -59,6 +59,11 @@ public:
   // create a vector with all preselected jets in the event (minimal pt/eta/id requirements)
   std::vector<Jet> preselect_jets(NanoAODTree &nat, const std::vector<Jet> &in_jets);
 
+  std::vector<Jet> btag_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
+  
+  // reorder the collection of the input jets according to the bias pt sort order (b tag groups + pt order inside each group) - used by select_sixb_jets_bias_pt_sort
+  std::vector<Jet> bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
+
   
   ////////////////////////////////////////////////////
   /// compute high-level properties
@@ -68,6 +73,8 @@ public:
   
   // get the local idx in the supset for each jet in the subset
   std::vector<int> match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset);
+
+  void match_genjets_to_reco(NanoAODTree &nat, EventInfo& ei,std::vector<GenJet>& in_gen,std::vector<Jet>& in_reco);
 
 
   ////////////////////////////////////////////////////
@@ -141,6 +148,24 @@ public:
    * @param ei EventInfo class to store values
    */
   virtual void match_genbs_genjets_to_reco(NanoAODTree &nat, EventInfo &ei) {};
+
+  /**
+   * @brief Match signal objects to reco in_jets collection and saving ID to signalId
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Reco Jet collection to match with
+   */
+  virtual void match_signal_recojets(NanoAODTree &nat, EventInfo &ei, std::vector<Jet> &in_jets) {};
+
+  /**
+   * @brief Match signal objects to gen in_jets collection and saving ID to signalId
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Gen Jet collection to match with
+   */
+  virtual void match_signal_genjets(NanoAODTree &nat, EventInfo &ei, std::vector<GenJet> &in_jets){};
 
   // select up to six jet candidates out of the input jets - configurable to run various selection algos
   /**

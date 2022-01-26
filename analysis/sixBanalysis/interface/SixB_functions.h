@@ -65,6 +65,24 @@ public:
    * @param ei EventInfo class to store values
    */
   void match_genbs_genjets_to_reco(NanoAODTree &nat, EventInfo &ei) override;
+  
+  /**
+   * @brief Match signal objects to reco in_jets collection and saving ID to signalId
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Reco Jet collection to match with
+   */
+  void match_signal_recojets(NanoAODTree &nat, EventInfo &ei, std::vector<Jet> &in_jets) override;
+
+  /**
+   * @brief Match signal objects to gen in_jets collection and saving ID to signalId
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Gen Jet collection to match with
+   */
+  void match_signal_genjets(NanoAODTree &nat, EventInfo &ei, std::vector<GenJet> &in_jets) override;
 
   // select up to six jet candidates out of the input jets - configurable to run various selection algos
   /**
@@ -188,8 +206,6 @@ public:
   std::vector<Jet> select_sixb_jets_maxbtag_highpT (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, int nleadbtag);
 
 
-  // reorder the collection of the input jets according to the bias pt sort order (b tag groups + pt order inside each group) - used by select_sixb_jets_bias_pt_sort
-  std::vector<Jet> bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
 
 private:
 	

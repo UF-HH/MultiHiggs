@@ -65,6 +65,24 @@ public:
    */
   void match_genbs_genjets_to_reco(NanoAODTree &nat, EventInfo &ei) override;
 
+  /**
+   * @brief Match signal objects to reco in_jets collection and saving ID to signalId
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Reco Jet collection to match with
+   */
+  void match_signal_recojets(NanoAODTree &nat, EventInfo &ei, std::vector<Jet> &in_jets) override;
+
+  /**
+   * @brief Match signal objects to gen in_jets collection and saving ID to signalId
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Gen Jet collection to match with
+   */
+  void match_signal_genjets(NanoAODTree &nat, EventInfo &ei, std::vector<GenJet> &in_jets) override;
+
   // select up to six jet candidates out of the input jets - configurable to run various selection algos
   /**
    * @brief Select jet candidates - configureable to run various selection algos defined in config
@@ -75,6 +93,8 @@ public:
    * @return std::vector<Jet> of selected jets
    */
   std::vector<Jet> select_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
+
+  std::vector<Jet> select_eightb_jets_maxbtag        (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets); // by b tag (highest first)
 
   ////////////////////////////////////////////////////
   /// Higgs pairing functions
@@ -88,6 +108,8 @@ public:
    * @param in_jets List of jets to pair 
    */
   void pair_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
+
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
 
   ////////////////////////////////////////////////////
   /// other jet utilities
@@ -121,6 +143,7 @@ public:
    * @param ei EventInfo class to store values
    * @param jet 
    * @return int ID of the gen higgs this jet is from
+   * -1: none, 0: H1Y1, 1: H2Y1, 2: H1Y2, 3 H2Y2
    */
   int get_jet_genmatch_flag(NanoAODTree &nat, EventInfo &ei, const Jet &jet) override; // -1: other, 0: HX, 1: HY1, 2: HY2
 

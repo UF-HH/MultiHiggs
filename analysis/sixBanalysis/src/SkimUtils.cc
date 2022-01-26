@@ -56,7 +56,7 @@ using namespace std;
     ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();                \
     ot.OBJ##_eta = ei.OBJ->P4().Eta();                                \
     ot.OBJ##_phi = ei.OBJ->P4().Phi();                                \
-    ot.OBJ##_DeepJet = get_property(ei.OBJ.get(), Jet_btagDeepFlavB); \
+    ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB); \
     ot.OBJ##_p4 = ei.OBJ->P4();                                       \
   }
 
@@ -221,14 +221,14 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b1_genjet);
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b2_genjet);
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b2_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b2_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b2_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b2_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b1_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b2_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b1_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b2_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b1_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b2_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b1_recojet);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b2_recojet);
   // End Gen 8B Objects
 
   if (ei.gen_bs_N_reco_match)        ot.gen_bs_N_reco_match        = *ei.gen_bs_N_reco_match;
