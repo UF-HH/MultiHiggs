@@ -4,5 +4,5 @@
 
 void Muon::buildP4()
 {
-    p4_.BUILDP4(Muon, nat_);
+  p4_.BUILDP4(Muon, nat_);
 }

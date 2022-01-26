@@ -123,10 +123,11 @@ else:
     base_work_dir = os.getcwd()
     tar_loc_path  = base_work_dir + '/tars/' + tarname
     to_include = [ # things to include in the tarball
-        'bin/',
-        'lib/',
-        'config/',
-        'data/',
+                  'bin/',
+                  'lib/',
+                  'config/',
+                  'data/',
+                  'models/',
     ]
     command = 'tar -zcf {0} '.format(tar_loc_path)
     for ti in to_include:

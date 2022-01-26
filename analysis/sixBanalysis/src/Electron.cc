@@ -4,5 +4,5 @@
 
 void Electron::buildP4()
 {
-    p4_.BUILDP4(Electron, nat_);
+  p4_.BUILDP4(Electron, nat_);
 }

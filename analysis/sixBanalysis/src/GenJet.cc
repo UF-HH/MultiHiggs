@@ -4,5 +4,5 @@
 
 void GenJet::buildP4()
 {
-    p4_.BUILDP4(GenJet, nat_);
+  p4_.BUILDP4(GenJet, nat_);
 }

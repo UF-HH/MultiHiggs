@@ -22,41 +22,41 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 
 class Candidate
 {
-    public:
-        Candidate(){nat_ = nullptr; idx_ = -1; isComposite_=false;} // creates an invalid Candidate
-        Candidate(int idx, NanoAODTree* nat){idx_ = idx; nat_ = nat; isComposite_=false; parentIdxVector_.emplace_back(idx);} // standard ctor to be used for NanoAODTree inspection
-        ~Candidate(){};
+public:
+  Candidate(){nat_ = nullptr; idx_ = -1; isComposite_=false;} // creates an invalid Candidate
+  Candidate(int idx, NanoAODTree* nat){idx_ = idx; nat_ = nat; isComposite_=false; parentIdxVector_.emplace_back(idx);} // standard ctor to be used for NanoAODTree inspection
+  ~Candidate(){};
         
-        p4_t P4() const      {return p4_;}
-        void setP4(p4_t p4) {p4_ = p4;}
-        bool getIsComposite() const {return isComposite_;}
+  p4_t P4() const      {return p4_;}
+  void setP4(p4_t p4) {p4_ = p4;}
+  bool getIsComposite() const {return isComposite_;}
         
-        int getIdx() const {
-            if(isComposite_) throw std::runtime_error("Composite particles do not have id");
-            return idx_;
-        }
+  int getIdx() const {
+    if(isComposite_) throw std::runtime_error("Composite particles do not have id");
+    return idx_;
+  }
 
-        std::vector<int> getIdxParents() const 
-        {
-            if(!isComposite_) throw std::runtime_error("Non composite particles do not have parent ids");
-            return parentIdxVector_;
-        }
+  std::vector<int> getIdxParents() const 
+  {
+    if(!isComposite_) throw std::runtime_error("Non composite particles do not have parent ids");
+    return parentIdxVector_;
+  }
 
-        NanoAODTree* getNanoAODTree() const {return nat_;}
+  NanoAODTree* getNanoAODTree() const {return nat_;}
         
-        bool isValid() const {return idx_ >= 0;}
-        virtual std::unique_ptr<Candidate> clone() const = 0;
-        int getCandidateTypeId() const {return typeId_;};
+  bool isValid() const {return idx_ >= 0;}
+  virtual std::unique_ptr<Candidate> clone() const = 0;
+  int getCandidateTypeId() const {return typeId_;};
 
-    protected:
-        virtual void buildP4() = 0;
-        int idx_;
-        std::vector<int> parentIdxVector_;
+protected:
+  virtual void buildP4() = 0;
+  int idx_;
+  std::vector<int> parentIdxVector_;
 
-        p4_t p4_;
-        NanoAODTree* nat_;
-        bool isComposite_;
-        int typeId_; //11 = Electron , 22 = Photon , 13 = Muon, 15 = Tau, 1 = Jet, 6 = FatJet, 2 = MET, -1 = GenParticle, -10 = CompositeCandidate
+  p4_t p4_;
+  NanoAODTree* nat_;
+  bool isComposite_;
+  int typeId_; //11 = Electron , 22 = Photon , 13 = Muon, 15 = Tau, 1 = Jet, 6 = FatJet, 2 = MET, -1 = GenParticle, -10 = CompositeCandidate
 
 
 };

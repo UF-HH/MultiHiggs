@@ -14,19 +14,19 @@
 
 class jsonLumiFilter
 {
-    typedef std::pair <unsigned int, unsigned int> lumirange;
+  typedef std::pair <unsigned int, unsigned int> lumirange;
 
-    public:
-        jsonLumiFilter(){verbose_ = false;};
-        jsonLumiFilter(std::string jsonfile) : jsonLumiFilter() {loadJSON(jsonfile);}
-        ~jsonLumiFilter(){};
-        void loadJSON(std::string jsonfile);
-        bool isValid(unsigned int run, unsigned int lumi);
-        void setVerbose(bool val) {verbose_ = val;}
-        void dumpJSON();
-    private:
-        std::unordered_map<unsigned int, std::vector<lumirange>> mask_;
-        bool verbose_;
+public:
+  jsonLumiFilter(){verbose_ = false;};
+  jsonLumiFilter(std::string jsonfile) : jsonLumiFilter() {loadJSON(jsonfile);}
+  ~jsonLumiFilter(){};
+  void loadJSON(std::string jsonfile);
+  bool isValid(unsigned int run, unsigned int lumi);
+  void setVerbose(bool val) {verbose_ = val;}
+  void dumpJSON();
+private:
+  std::unordered_map<unsigned int, std::vector<lumirange>> mask_;
+  bool verbose_;
 
 };
 

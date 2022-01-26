@@ -48,6 +48,8 @@ class Sample:
             self.evt_sample.build_dataframe(files)
             if self.sampletype == 'mc':
                 self.norm_sample.build_dataframe(files)
+                if self.verb >= 2: print('[INFO]', self.name, ' : NormSample does not (yet) implement weight caching for a construction from a python list of files, disabling caching')
+                self.norm_sample.use_cache = False
         elif filelist:
             self.evt_sample.build_dataframe_from_filelist(filelist)
             if self.sampletype == 'mc':
