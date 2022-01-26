@@ -37,13 +37,14 @@ struct EventInfo{
   boost::optional<int>    n_jet;
   boost::optional<int>    n_genjet;
   boost::optional<int>    n_higgs;
-  boost::optional<int>    n_nn_higgs;
 
   boost::optional<float>  b_6j_score;
   boost::optional<float>  b_3d_score;
 
   boost::optional<GenPart>  gen_X_fc; // first copy at LHE
   boost::optional<GenPart>  gen_X;
+
+  // Start Gen 6B Objects
   boost::optional<GenPart>  gen_Y;
   boost::optional<GenPart>  gen_HX;    // H from the X->YH process
   boost::optional<GenPart>  gen_HY1;   // H from the X->YH, Y->HH process
@@ -69,11 +70,52 @@ struct EventInfo{
   boost::optional<Jet> gen_HY1_b2_recojet;
   boost::optional<Jet> gen_HY2_b1_recojet;
   boost::optional<Jet> gen_HY2_b2_recojet;
+  // End Gen 6B Objects
+
   boost::optional<int> gen_bs_N_reco_match;
   boost::optional<int> gen_bs_N_reco_match_in_acc; // counts how many different jets are the ones above (== fully resolved event)
   boost::optional<double> gen_bs_match_recojet_minv; // inv mass of the matched jets
   boost::optional<double> gen_bs_match_in_acc_recojet_minv;
 
+  // Start Gen 8B Objects
+  boost::optional<GenPart>  gen_Y1;
+  boost::optional<GenPart>  gen_Y2;
+  boost::optional<GenPart>  gen_H1Y1;    // H from the X->YY, Y->HH process
+  boost::optional<GenPart>  gen_H2Y1;    // H from the X->YY, Y->HH process
+  boost::optional<GenPart>  gen_H1Y2;    // H from the X->YY, Y->HH process
+  boost::optional<GenPart>  gen_H2Y2;    // H from the X->YY, Y->HH process
+
+  boost::optional<GenPart>  gen_H1Y1_b1;
+  boost::optional<GenPart>  gen_H1Y1_b2;
+  boost::optional<GenPart>  gen_H2Y1_b1;
+  boost::optional<GenPart>  gen_H2Y1_b2;
+  boost::optional<GenPart>  gen_H1Y2_b1;
+  boost::optional<GenPart>  gen_H1Y2_b2;
+  boost::optional<GenPart>  gen_H2Y2_b1;
+  boost::optional<GenPart>  gen_H2Y2_b2;
+
+
+  boost::optional<GenJet>  gen_H1Y1_b1_genjet; // genjets matched to the 8 b
+  boost::optional<GenJet>  gen_H1Y1_b2_genjet;
+  boost::optional<GenJet>  gen_H2Y1_b1_genjet;
+  boost::optional<GenJet>  gen_H2Y1_b2_genjet;
+  boost::optional<GenJet>  gen_H1Y2_b1_genjet;
+  boost::optional<GenJet>  gen_H1Y2_b2_genjet;
+  boost::optional<GenJet>  gen_H2Y2_b1_genjet;
+  boost::optional<GenJet>  gen_H2Y2_b2_genjet;
+
+
+  boost::optional<Jet>  gen_H1Y1_b1_recojet; // recojets matched to the 8 b
+  boost::optional<Jet>  gen_H1Y1_b2_recojet;
+  boost::optional<Jet>  gen_H2Y1_b1_recojet;
+  boost::optional<Jet>  gen_H2Y1_b2_recojet;
+  boost::optional<Jet>  gen_H1Y2_b1_recojet;
+  boost::optional<Jet>  gen_H1Y2_b2_recojet;
+  boost::optional<Jet>  gen_H2Y2_b1_recojet;
+  boost::optional<Jet>  gen_H2Y2_b2_recojet;
+  // End Gen 8B Objects
+
+  // Start Reco 6B Objects
   boost::optional<CompositeCandidate> X;
   boost::optional<CompositeCandidate> Y;
   boost::optional<CompositeCandidate> HX;
@@ -93,19 +135,47 @@ struct EventInfo{
   boost::optional<int> HY1_b2_genHflag;
   boost::optional<int> HY2_b1_genHflag;
   boost::optional<int> HY2_b2_genHflag;
+  // End Reco 6B Objects
+
+  // Start Reco 8B Objects
+  boost::optional<CompositeCandidate> Y1;
+  boost::optional<CompositeCandidate> Y2;
+  boost::optional<CompositeCandidate> H1Y1;
+  boost::optional<CompositeCandidate> H2Y1;
+  boost::optional<CompositeCandidate> H1Y2;
+  boost::optional<CompositeCandidate> H2Y2;
+
+  boost::optional<Jet> H1Y1_b1;
+  boost::optional<Jet> H1Y1_b2;
+  boost::optional<Jet> H2Y1_b1;
+  boost::optional<Jet> H2Y1_b2;
+  boost::optional<Jet> H1Y2_b1;
+  boost::optional<Jet> H1Y2_b2;
+  boost::optional<Jet> H2Y2_b1;
+  boost::optional<Jet> H2Y2_b2;
+
+  boost::optional<int> H1Y1_b1_genHflag;
+  boost::optional<int> H1Y1_b2_genHflag;
+  boost::optional<int> H2Y1_b1_genHflag;
+  boost::optional<int> H2Y1_b2_genHflag;
+  boost::optional<int> H1Y2_b1_genHflag;
+  boost::optional<int> H1Y2_b2_genHflag;
+  boost::optional<int> H2Y2_b1_genHflag;
+  boost::optional<int> H2Y2_b2_genHflag;
+  // End Reco 8B Objects
 
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
-  boost::optional< std::vector<Jet> > t6_jet_list;
-  boost::optional< std::vector<Jet> > nn_jet_list;
-  boost::optional< std::vector<DiJet> > t6_higgs_list;
-  boost::optional< std::vector<DiJet> > nn_higgs_list;
 
-  // boost::optional<EventShapes> t6_event_shapes;
-  // boost::optional<EventShapes> nn_event_shapes;
   boost::optional<EventShapes> event_shapes;
 
-  boost::optional<int> nsel_from_H;
+  boost::optional<int> nfound_all;
+  boost::optional<int> nfound_all_h;
+  boost::optional<int> nfound_presel;
+  boost::optional<int> nfound_presel_h;
+  boost::optional<int> nfound_select;
+  boost::optional<int> nfound_select_h;
+  boost::optional<int> nfound_paired_h;
 
   // for ttbar skims
   boost::optional<Jet> bjet1;
