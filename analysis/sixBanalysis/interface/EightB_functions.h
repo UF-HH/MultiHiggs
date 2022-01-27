@@ -1,10 +1,9 @@
-#ifndef SIXB_FUNCTIONS_H
-#define SIXB_FUNCTIONS_H
+#ifndef EIGHTB_FUNCTIONS_H
+#define EIGHTB_FUNCTIONS_H
 
 #include "Skim_functions.h"
-#include "EvalNN.h"
 
-class SixB_functions : public Skim_functions{
+class EightB_functions : public Skim_functions{
     
 public:
 
@@ -12,7 +11,7 @@ public:
   /// Start methods to be overidden
 
   void Print() override{
-    cout << "[INFO] ... Using SixB_functions" << endl; 
+    cout << "[INFO] ... Using EightB_functions" << endl; 
   }
 
   ////////////////////////////////////////////////////
@@ -65,7 +64,7 @@ public:
    * @param ei EventInfo class to store values
    */
   void match_genbs_genjets_to_reco(NanoAODTree &nat, EventInfo &ei) override;
-  
+
   /**
    * @brief Match signal objects to reco in_jets collection and saving ID to signalId
    * This method should be overriden 
@@ -94,7 +93,9 @@ public:
    * @return std::vector<Jet> of selected jets
    */
   std::vector<Jet> select_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
-  
+
+  std::vector<Jet> select_eightb_jets_maxbtag        (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets); // by b tag (highest first)
+
   ////////////////////////////////////////////////////
   /// Higgs pairing functions
   ////////////////////////////////////////////////////
@@ -107,6 +108,8 @@ public:
    * @param in_jets List of jets to pair 
    */
   void pair_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
+
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
 
   ////////////////////////////////////////////////////
   /// other jet utilities
@@ -140,6 +143,7 @@ public:
    * @param ei EventInfo class to store values
    * @param jet 
    * @return int ID of the gen higgs this jet is from
+   * -1: none, 0: H1Y1, 1: H2Y1, 2: H1Y2, 3 H2Y2
    */
   int get_jet_genmatch_flag(NanoAODTree &nat, EventInfo &ei, const Jet &jet) override; // -1: other, 0: HX, 1: HY1, 2: HY2
 
@@ -151,95 +155,5 @@ public:
    */
   void compute_seljets_genmatch_flags(NanoAODTree &nat, EventInfo &ei) override;
 
-  ////////////////////////////////////////////////////
-  /// parameter initialization
-  ////////////////////////////////////////////////////
-
-  // just pair jets as in their initial order ABCDEF -> (AB)(CD)(ED) - for debug
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& jets);
-
-  // closest to a 3D diagonal a la HH->4b nonresonant  
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_D_HHH (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
-
-  // use the 2jet DNN
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_2jet_DNN (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
-
-  // build the pairs leading to the min mass difference across them
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_min_diag_distance (NanoAODTree& nat, EventInfo& ei, std::vector<Jet> jets);
-
-
-  ////////////////////////////////////////////////////
-  /// HYX reconstruction functions
-  ////////////////////////////////////////////////////
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> select_XYH_leadJetInX (
-    NanoAODTree& nat, EventInfo& ei, std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_Hs);
-
-  // sort jets with btag bias pt ordering
-  // void btag_bias_pt_sort(std::vector<Jet>& in_jets);
-
-  // sort jets with pt regressed ordering
-  // void pt_sort(std::vector<Jet>& in_jets);
-
-  // pass event if jet collection passes input pt and btag cuts
-  // bool pass_jet_cut(Cutflow& cutflow, const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets);
-
-  // create vector of all higgs resonances 
-  // std::vector<DiJet> get_tri_higgs_D_HHH(std::vector<Jet>& in_jets);
-
-  // std::vector<Jet> get_6jet_top(std::vector<Jet>& in_jets);
-  // std::vector<Jet> get_6jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier);
-
-  
-  // std::vector<DiJet> get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_2j_classifier);
-  std::vector<DiJet> get_3dijet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_3d_classifier);
-  // std::vector<DiJet> get_tri_higgs_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier);
-
-  // passes event if all dijets mass is greater than 30 from higgs mass
-  bool pass_higgs_cr(const std::vector<DiJet>& in_dijets);
-
-  //////////// functions for the jet selection
-  // std::vector<Jet> select_sixb_jets_btag_order     (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by b tag (highest first)
-  std::vector<Jet> select_sixb_jets_bias_pt_sort   (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by the b tag groups + pt within
-  std::vector<Jet> select_sixb_jets_pt_sort        (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by pt (highest first)
-  std::vector<Jet> select_sixb_jets_6jet_DNN       (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // use the 6 jet classifier
-  std::vector<Jet> select_sixb_jets_maxbtag        (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets); // by b tag (highest first)
-  std::vector<Jet> select_sixb_jets_maxbtag_highpT (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, int nleadbtag);
-
-
-
-private:
-	
-  // NN evaluators for DNN
-  std::unique_ptr<EvalNN> n_2j_classifier_;
-  std::unique_ptr<EvalNN> n_6j_classifier_;
-
-  // All the different dijet pairs for 6 jets
-  const std::vector<std::vector<int>> dijet_pairings = {
-    {0, 1},{0, 2},{0, 3},{0, 4},{0, 5},
-    {1, 2},{1, 3},{1, 4},{1, 5},
-    {2, 3},{2, 4},{2, 5},
-    {3, 4},{3, 5},
-    {4, 5}
-  };
-	
-  // All the different 3 higgs pairs for 3 dijets of 6 jets
-  const std::vector<std::vector<int>> triH_pairings = {
-    {0,  9, 14},
-    {0, 10, 13},
-    {0, 11, 12},
-    {1,  6, 14},
-    {1,  7, 13},
-    {1,  8, 12},
-    {2,  5, 14},
-    {2,  7, 11},
-    {2,  8, 10},
-    {3,  5, 13},
-    {3,  6, 11},
-    {3,  8,  9},
-    {4,  5, 12},
-    {4,  6, 10},
-    {4,  7,  9}
-  };
 };
-
-#endif //SIXB_FUNCTIONS_H
+#endif //EIGHTB_FUNCTIONS_H

@@ -43,7 +43,7 @@ using namespace std;
   tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed); \
   tree_->Branch(#OBJ "_eta", &OBJ##_eta);                 \
   tree_->Branch(#OBJ "_phi", &OBJ##_phi);                 \
-  tree_->Branch(#OBJ "_DeepJet", &OBJ##_DeepJet);         \
+  tree_->Branch(#OBJ "_btag", &OBJ##_btag);         \
   if (savetlv_)                                           \
     tree_->Branch(#OBJ "_p4", &OBJ##_p4);
 
@@ -53,7 +53,7 @@ using namespace std;
   OBJ##_ptRegressed = -999.;                           \
   OBJ##_eta = -999.;                                   \
   OBJ##_phi = -999.;                                   \
-  OBJ##_DeepJet = -999.;                               \
+  OBJ##_btag = -999.;                               \
   OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
 #define BRANCH_jet_list(OBJ)                        \
@@ -230,14 +230,14 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       BRANCH_m_pt_eta_phi_p4(gen_H2Y2_b1_genjet);
       BRANCH_m_pt_eta_phi_p4(gen_H2Y2_b2_genjet);
 
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b1_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b2_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b1_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b2_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b1_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b2_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b1_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b2_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b1_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b2_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b1_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b2_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b1_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b2_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b1_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b2_recojet);
 
       tree_->Branch("H1Y1_b1_genHflag", &H1Y1_b1_genHflag);
       tree_->Branch("H1Y1_b2_genHflag", &H1Y1_b2_genHflag);
@@ -438,14 +438,14 @@ void OutputTree::clear()
   CLEAR_m_pt_eta_phi_p4(gen_H2Y2_b1_genjet);
   CLEAR_m_pt_eta_phi_p4(gen_H2Y2_b2_genjet);
   
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b1_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H1Y1_b2_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b1_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H2Y1_b2_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b1_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H1Y2_b2_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b1_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H2Y2_b2_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b1_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b2_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b1_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b2_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b1_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b2_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b1_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b2_recojet);
   // End Gen 8B Objects 
 
   gen_bs_N_reco_match        = -999;

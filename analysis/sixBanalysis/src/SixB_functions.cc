@@ -5,7 +5,7 @@
 
 #include "BuildClassifierInput.h"
 
-#include "DebugUtils.h"
+// #include "DebugUtils.h"
 
 #include <iostream>
 #include <tuple>
@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void SixB_functions::initialize_params_from_cfg_sixbskim(CfgParser& config)
+void SixB_functions::initialize_params_from_cfg(CfgParser& config)
 {
   // preselections
   pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
@@ -56,25 +56,7 @@ void SixB_functions::initialize_params_from_cfg_sixbskim(CfgParser& config)
   }
 }
 
-void SixB_functions::initialize_params_from_cfg_eightbskim(CfgParser& config)
-{
-  // preselections
-  pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
-  pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
-  pmap.insert_param<int>   ("presel", "pf_id",   config.readIntOpt("presel::pf_id"));
-  pmap.insert_param<int>   ("presel", "pu_id",   config.readIntOpt("presel::pu_id"));
-}
-
-void SixB_functions::initialize_params_from_cfg_ttbarskim(CfgParser& config)
-{
-  // preselections
-  pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
-  pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
-  pmap.insert_param<int>   ("presel", "pf_id",   config.readIntOpt("presel::pf_id"));
-  pmap.insert_param<int>   ("presel", "pu_id",   config.readIntOpt("presel::pu_id"));
-}
-
-void SixB_functions::initialize_functions_sixbskim(TFile& outputFile)
+void SixB_functions::initialize_functions(TFile& outputFile)
 {
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "6jet_DNN") {
     cout << "[INFO] ... Loading 6 Jet Classifier: " << pmap.get_param<string>("6jet_DNN", "model_path") << endl;
@@ -88,25 +70,6 @@ void SixB_functions::initialize_functions_sixbskim(TFile& outputFile)
     n_2j_classifier_->write(outputFile);
   }
 
-}
-
-void SixB_functions::copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc)
-{
-  ei.Run     = *(nat.run);
-  ei.LumiSec = *(nat.luminosityBlock);
-  ei.Event   = *(nat.event);
-
-  ei.n_other_pv                    = *(nat.nOtherPV);
-  ei.rhofastjet_all                = *(nat.fixedGridRhoFastjetAll);
-  ei.n_total_jet                   = *(nat.nJet);
-
-  // mc-only
-  if (is_mc){
-    ei.n_pu       = *(nat.Pileup_nPU);
-    ei.n_true_int = *(nat.Pileup_nTrueInt);
-    ei.n_genjet   = *(nat.nGenJet);
-    ei.lhe_ht     = *(nat.LHE_HT);
-  }
 }
 
 void SixB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
@@ -173,113 +136,6 @@ void SixB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
 
   return;
 }
-
-void SixB_functions::select_gen_particles_8b(NanoAODTree& nat, EventInfo& ei)
-{
-  for (uint igp = 0; igp < *(nat.nGenPart); ++igp)
-  {
-    GenPart gp(igp, &nat);
-    int apdgid = abs(get_property(gp, GenPart_pdgId));
-
-    // X
-    if (apdgid == 45)
-    {
-      if (gp.isFirstCopy())
-        ei.gen_X_fc = gp;
-      else if (gp.isLastCopy())
-        ei.gen_X = gp;
-    }
-
-    // Y
-    if (apdgid == 35 && gp.isLastCopy())
-    {
-      assign_to_uninit(gp, {&ei.gen_Y1, &ei.gen_Y2});
-    }
-
-    // H
-    if (apdgid == 25 && gp.isLastCopy())
-    {
-      int moth_idx = get_property(gp, GenPart_genPartIdxMother);
-      if (moth_idx >= 0)
-      {
-        GenPart mother(moth_idx, &nat);
-        int amothpdgid = abs(get_property(mother, GenPart_pdgId));
-
-        if (amothpdgid == 35)
-        {
-          if (ei.gen_Y1 && moth_idx == ei.gen_Y1->getIdx())
-            assign_to_uninit(gp, {&ei.gen_H1Y1, &ei.gen_H2Y1});
-          if (ei.gen_Y2 && moth_idx == ei.gen_Y2->getIdx())
-            assign_to_uninit(gp, {&ei.gen_H1Y2, &ei.gen_H2Y2});
-        }
-      }
-    }
-
-    // b
-    if (apdgid == 5 && gp.isFirstCopy())
-    {
-      int moth_idx = get_property(gp, GenPart_genPartIdxMother);
-      if (moth_idx >= 0)
-      {
-        GenPart mother(moth_idx, &nat);
-        int amothpdgid = abs(get_property(mother, GenPart_pdgId));
-        // in the LHE the mother always comes before the daughters, so it is guaranteed to have been found already
-        if (amothpdgid == 25)
-        {
-          if (ei.gen_H1Y1 && moth_idx == ei.gen_H1Y1->getIdx())
-            assign_to_uninit(gp, {&ei.gen_H1Y1_b1, &ei.gen_H1Y1_b2});
-            
-          if (ei.gen_H2Y1 && moth_idx == ei.gen_H2Y1->getIdx())
-            assign_to_uninit(gp, {&ei.gen_H2Y1_b1, &ei.gen_H2Y1_b2});
-
-          if (ei.gen_H1Y2 && moth_idx == ei.gen_H1Y2->getIdx())
-            assign_to_uninit(gp, {&ei.gen_H1Y2_b1, &ei.gen_H1Y2_b2});
-            
-          if (ei.gen_H2Y2 && moth_idx == ei.gen_H2Y2->getIdx())
-            assign_to_uninit(gp, {&ei.gen_H2Y2_b1, &ei.gen_H2Y2_b2});
-        }
-      }
-    }
-  }
-
-    // reorder objects according to pt
-  if (ei.gen_Y1->P4().Pt() < ei.gen_Y2->P4().Pt()) 
-  {
-    std::swap(ei.gen_H1Y1, ei.gen_H1Y2);
-    std::swap(ei.gen_H2Y1, ei.gen_H2Y2);
-
-    std::swap(ei.gen_H1Y1_b1, ei.gen_H1Y2_b1);
-    std::swap(ei.gen_H1Y1_b2, ei.gen_H1Y2_b2);
-    std::swap(ei.gen_H2Y1_b1, ei.gen_H2Y2_b1);
-    std::swap(ei.gen_H2Y1_b2, ei.gen_H2Y2_b2);
-  }
-
-  if (ei.gen_H1Y1->P4().Pt() < ei.gen_H2Y1->P4().Pt())
-  {
-    std::swap(ei.gen_H1Y1, ei.gen_H2Y1);
-    std::swap(ei.gen_H1Y1_b1, ei.gen_H2Y1_b1);
-    std::swap(ei.gen_H1Y1_b2, ei.gen_H2Y1_b2);
-  }
-
-  if (ei.gen_H1Y2->P4().Pt() < ei.gen_H2Y2->P4().Pt())
-  {
-    std::swap(ei.gen_H1Y2, ei.gen_H2Y2);
-    std::swap(ei.gen_H1Y2_b1, ei.gen_H2Y2_b1);
-    std::swap(ei.gen_H1Y2_b2, ei.gen_H2Y2_b2);
-  }
-
-  if (ei.gen_H1Y1_b1->P4().Pt() < ei.gen_H1Y1_b2->P4().Pt())
-    std::swap(ei.gen_H1Y1_b1, ei.gen_H1Y1_b2);
-  if (ei.gen_H2Y1_b1->P4().Pt() < ei.gen_H2Y1_b2->P4().Pt())
-    std::swap(ei.gen_H2Y1_b1, ei.gen_H2Y1_b2);
-  if (ei.gen_H1Y2_b1->P4().Pt() < ei.gen_H1Y2_b2->P4().Pt())
-    std::swap(ei.gen_H1Y2_b1, ei.gen_H1Y2_b2);
-  if (ei.gen_H2Y2_b1->P4().Pt() < ei.gen_H2Y2_b2->P4().Pt())
-    std::swap(ei.gen_H2Y2_b1, ei.gen_H2Y2_b2);
-
-  return;
-}
-
 // match the selected gen b to gen jets
 void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique)
 {
@@ -329,74 +185,6 @@ void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, boo
   if (genjet_idxs.at(3) >= 0) ei.gen_HY1_b2_genjet = GenJet(genjet_idxs.at(3), &nat);
   if (genjet_idxs.at(4) >= 0) ei.gen_HY2_b1_genjet = GenJet(genjet_idxs.at(4), &nat);
   if (genjet_idxs.at(5) >= 0) ei.gen_HY2_b2_genjet = GenJet(genjet_idxs.at(5), &nat);
-
-  return;
-}
-
-// match the selected gen b to gen jets
-void SixB_functions::match_genbs_to_genjets_8b(NanoAODTree& nat, EventInfo& ei, bool ensure_unique)
-{
-  const double dR_match = 0.4;
-
-  std::vector<GenPart *> bs_to_match = {
-      ei.gen_H1Y1_b1.get_ptr(),
-      ei.gen_H1Y1_b2.get_ptr(),
-      ei.gen_H2Y1_b1.get_ptr(),
-      ei.gen_H2Y1_b2.get_ptr(),
-      ei.gen_H1Y2_b1.get_ptr(),
-      ei.gen_H1Y2_b2.get_ptr(),
-      ei.gen_H2Y2_b1.get_ptr(),
-      ei.gen_H2Y2_b2.get_ptr()};
-
-  std::vector<int> genjet_idxs;
-
-  std::vector<GenJet> genjets;
-  for (unsigned int igj = 0; igj < *(nat.nGenJet); ++igj)
-  {
-    GenJet gj(igj, &nat);
-    genjets.push_back(gj);
-  }
-
-  for (GenPart *b : bs_to_match)
-  {
-    std::vector<std::tuple<double, int, int>> matched_gj; // dR, idx in nanoAOD, idx in local coll
-    for (unsigned int igj = 0; igj < genjets.size(); ++igj)
-    {
-      GenJet &gj = genjets.at(igj);
-      double dR = ROOT::Math::VectorUtil::DeltaR(b->P4(), gj.P4());
-      if (dR < dR_match)
-        matched_gj.push_back(std::make_tuple(dR, gj.getIdx(), igj)); // save the idx in the nanoAOD collection to rebuild this after
-    }
-
-    if (matched_gj.size() > 0)
-    {
-      std::sort(matched_gj.begin(), matched_gj.end());
-      auto best_match = matched_gj.at(0);
-      genjet_idxs.push_back(std::get<1>(best_match));
-      if (ensure_unique) // genjet already used, remove it from the input list
-        genjets.erase(genjets.begin() + std::get<2>(best_match));
-    }
-    else
-      genjet_idxs.push_back(-1);
-  }
-
-  // matched done, store in ei - use the map built above in bs_to_match to know the correspondence position <-> meaning
-  if (genjet_idxs.at(0) >= 0)
-    ei.gen_H1Y1_b1_genjet = GenJet(genjet_idxs.at(0), &nat);
-  if (genjet_idxs.at(1) >= 0)
-    ei.gen_H1Y1_b2_genjet = GenJet(genjet_idxs.at(1), &nat);
-  if (genjet_idxs.at(2) >= 0)
-    ei.gen_H2Y1_b1_genjet = GenJet(genjet_idxs.at(2), &nat);
-  if (genjet_idxs.at(3) >= 0)
-    ei.gen_H2Y1_b2_genjet = GenJet(genjet_idxs.at(3), &nat);
-  if (genjet_idxs.at(4) >= 0)
-    ei.gen_H1Y2_b1_genjet = GenJet(genjet_idxs.at(0), &nat);
-  if (genjet_idxs.at(5) >= 0)
-    ei.gen_H1Y2_b2_genjet = GenJet(genjet_idxs.at(1), &nat);
-  if (genjet_idxs.at(6) >= 0)
-    ei.gen_H2Y2_b1_genjet = GenJet(genjet_idxs.at(2), &nat);
-  if (genjet_idxs.at(7) >= 0)
-    ei.gen_H2Y2_b2_genjet = GenJet(genjet_idxs.at(3), &nat);
 
   return;
 }
@@ -473,91 +261,6 @@ void SixB_functions::match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei
   ei.gen_bs_match_in_acc_recojet_minv = p4_sum_matched_acc.M();
 }
 
-void SixB_functions::match_genbs_genjets_to_reco_8b(NanoAODTree& nat, EventInfo& ei)
-{
-  int ij_gen_H1Y1_b1_genjet  = (ei.gen_H1Y1_b1_genjet  ? find_jet_from_genjet(nat, *ei.gen_H1Y1_b1_genjet)  : -1); 
-  int ij_gen_H1Y1_b2_genjet  = (ei.gen_H1Y1_b2_genjet  ? find_jet_from_genjet(nat, *ei.gen_H1Y1_b2_genjet)  : -1); 
-  int ij_gen_H2Y1_b1_genjet  = (ei.gen_H2Y1_b1_genjet  ? find_jet_from_genjet(nat, *ei.gen_H2Y1_b1_genjet)  : -1); 
-  int ij_gen_H2Y1_b2_genjet  = (ei.gen_H2Y1_b2_genjet  ? find_jet_from_genjet(nat, *ei.gen_H2Y1_b2_genjet)  : -1); 
-  int ij_gen_H1Y2_b1_genjet  = (ei.gen_H1Y2_b1_genjet  ? find_jet_from_genjet(nat, *ei.gen_H1Y2_b1_genjet)  : -1); 
-  int ij_gen_H1Y2_b2_genjet  = (ei.gen_H1Y2_b2_genjet  ? find_jet_from_genjet(nat, *ei.gen_H1Y2_b2_genjet)  : -1); 
-  int ij_gen_H2Y2_b1_genjet  = (ei.gen_H2Y2_b1_genjet  ? find_jet_from_genjet(nat, *ei.gen_H2Y2_b1_genjet)  : -1); 
-  int ij_gen_H2Y2_b2_genjet  = (ei.gen_H2Y2_b2_genjet  ? find_jet_from_genjet(nat, *ei.gen_H2Y2_b2_genjet)  : -1); 
-
-  if (ij_gen_H1Y1_b1_genjet >= 0)  ei.gen_H1Y1_b1_recojet  = Jet(ij_gen_H1Y1_b1_genjet,  &nat);
-  if (ij_gen_H1Y1_b2_genjet >= 0)  ei.gen_H1Y1_b2_recojet  = Jet(ij_gen_H1Y1_b2_genjet,  &nat);
-  if (ij_gen_H2Y1_b1_genjet >= 0)  ei.gen_H2Y1_b1_recojet  = Jet(ij_gen_H2Y1_b1_genjet,  &nat);
-  if (ij_gen_H2Y1_b2_genjet >= 0)  ei.gen_H2Y1_b2_recojet  = Jet(ij_gen_H2Y1_b2_genjet,  &nat);
-  
-  if (ij_gen_H1Y2_b1_genjet >= 0)  ei.gen_H1Y2_b1_recojet  = Jet(ij_gen_H1Y2_b1_genjet,  &nat);
-  if (ij_gen_H1Y2_b2_genjet >= 0)  ei.gen_H1Y2_b2_recojet  = Jet(ij_gen_H1Y2_b2_genjet,  &nat);
-  if (ij_gen_H2Y2_b1_genjet >= 0)  ei.gen_H2Y2_b1_recojet  = Jet(ij_gen_H2Y2_b1_genjet,  &nat);
-  if (ij_gen_H2Y2_b2_genjet >= 0)  ei.gen_H2Y2_b2_recojet  = Jet(ij_gen_H2Y2_b2_genjet,  &nat);
-
-  // select unique occurences in vector
-  // note : PAT tools already ensure that match is unique
-  // https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/PatAlgos/python/mcMatchLayer0/jetMatch_cfi.py
-  // so the check below is redundant
-
-  // std::vector<int> imatchs;
-  // if (ij_gen_H1Y1_b1_genjet >= 0)  imatchs.push_back(ij_gen_H1Y1_b1_genjet);
-  // if (ij_gen_H1Y1_b2_genjet >= 0)  imatchs.push_back(ij_gen_H1Y1_b2_genjet);
-  // if (ij_gen_HY1_b1_genjet >= 0) imatchs.push_back(ij_gen_HY1_b1_genjet);
-  // if (ij_gen_HY1_b2_genjet >= 0) imatchs.push_back(ij_gen_HY1_b2_genjet);
-  // if (ij_gen_HY2_b1_genjet >= 0) imatchs.push_back(ij_gen_HY2_b1_genjet);
-  // if (ij_gen_HY2_b2_genjet >= 0) imatchs.push_back(ij_gen_HY2_b2_genjet);
-
-  // sort(imatchs.begin(), imatchs.end());
-  // imatchs.erase(unique (imatchs.begin(), imatchs.end()), imatchs.end());
-  // ei.gen_bs_N_reco_match = imatchs.size(); // number of different reco jets that are matched to gen jets
-
-  int nmatched = 0;
-  if (ij_gen_H1Y1_b1_genjet >= 0)  nmatched += 1;
-  if (ij_gen_H1Y1_b2_genjet >= 0)  nmatched += 1;
-  if (ij_gen_H2Y1_b1_genjet >= 0)  nmatched += 1;
-  if (ij_gen_H2Y1_b2_genjet >= 0)  nmatched += 1;
-  if (ij_gen_H1Y2_b1_genjet >= 0)  nmatched += 1;
-  if (ij_gen_H1Y2_b2_genjet >= 0)  nmatched += 1;
-  if (ij_gen_H2Y2_b1_genjet >= 0)  nmatched += 1;
-  if (ij_gen_H2Y2_b2_genjet >= 0)  nmatched += 1;
-  ei.gen_bs_N_reco_match = nmatched;
-
-  // same as above, but apply acceptance cuts on the matched jets
-  int nmatched_acc = 0;
-  if (ei.gen_H1Y1_b1_recojet  && ei.gen_H1Y1_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H1Y1_b1_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  if (ei.gen_H1Y1_b2_recojet  && ei.gen_H1Y1_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H1Y1_b2_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  if (ei.gen_H2Y1_b1_recojet  && ei.gen_H2Y1_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y1_b1_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  if (ei.gen_H2Y1_b2_recojet  && ei.gen_H2Y1_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y1_b2_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  if (ei.gen_H1Y2_b1_recojet  && ei.gen_H1Y2_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H1Y2_b1_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  if (ei.gen_H1Y2_b2_recojet  && ei.gen_H1Y2_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H1Y2_b2_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  if (ei.gen_H2Y2_b1_recojet  && ei.gen_H2Y2_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y2_b1_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  if (ei.gen_H2Y2_b2_recojet  && ei.gen_H2Y2_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y2_b2_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  ei.gen_bs_N_reco_match_in_acc = nmatched_acc;
-
-  // now compute p4 sums to make the invariant mass of X - FIXME: can add more inv masses for the various cases
-  p4_t p4_sum_matched (0,0,0,0);
-  if (ei.gen_H1Y1_b1_recojet) p4_sum_matched  += ei.gen_H1Y1_b1_recojet->P4();
-  if (ei.gen_H1Y1_b2_recojet) p4_sum_matched  += ei.gen_H1Y1_b2_recojet->P4();
-  if (ei.gen_H2Y1_b1_recojet) p4_sum_matched  += ei.gen_H2Y1_b1_recojet->P4();
-  if (ei.gen_H2Y1_b2_recojet) p4_sum_matched  += ei.gen_H2Y1_b2_recojet->P4();
-  if (ei.gen_H1Y2_b1_recojet) p4_sum_matched  += ei.gen_H1Y2_b1_recojet->P4();
-  if (ei.gen_H1Y2_b2_recojet) p4_sum_matched  += ei.gen_H1Y2_b2_recojet->P4();
-  if (ei.gen_H2Y2_b1_recojet) p4_sum_matched  += ei.gen_H2Y2_b1_recojet->P4();
-  if (ei.gen_H2Y2_b2_recojet) p4_sum_matched  += ei.gen_H2Y2_b2_recojet->P4();
-  ei.gen_bs_match_recojet_minv = p4_sum_matched.M();
-
-  p4_t p4_sum_matched_acc (0,0,0,0);
-  if (ei.gen_H1Y1_b1_recojet  && ei.gen_H1Y1_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H1Y1_b1_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H1Y1_b1_recojet->P4();
-  if (ei.gen_H1Y1_b2_recojet  && ei.gen_H1Y1_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H1Y1_b2_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H1Y1_b2_recojet->P4();
-  if (ei.gen_H2Y1_b1_recojet  && ei.gen_H2Y1_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y1_b1_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H2Y1_b1_recojet->P4();
-  if (ei.gen_H2Y1_b2_recojet  && ei.gen_H2Y1_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y1_b2_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H2Y1_b2_recojet->P4();
-  if (ei.gen_H1Y2_b1_recojet  && ei.gen_H1Y2_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H1Y2_b1_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H1Y2_b1_recojet->P4();
-  if (ei.gen_H1Y2_b2_recojet  && ei.gen_H1Y2_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H1Y2_b2_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H1Y2_b2_recojet->P4();
-  if (ei.gen_H2Y2_b1_recojet  && ei.gen_H2Y2_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y2_b1_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H2Y2_b1_recojet->P4();
-  if (ei.gen_H2Y2_b2_recojet  && ei.gen_H2Y2_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y2_b2_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H2Y2_b2_recojet->P4();
-  ei.gen_bs_match_in_acc_recojet_minv = p4_sum_matched_acc.M();
-}
-
 int SixB_functions::get_jet_genmatch_flag (NanoAODTree& nat, EventInfo& ei, const Jet& jet)
 {
     int ijet = jet.getIdx();
@@ -589,100 +292,8 @@ void SixB_functions::compute_seljets_genmatch_flags(NanoAODTree& nat, EventInfo&
     ei.nfound_paired_h = nfound_paired_h; // number of selected jets that are from H
 }
 
-int SixB_functions::find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj)
-{
-  const int gjidx = gj.getIdx();
-  for (unsigned int ij = 0; ij < *(nat.nJet); ++ij){
-    Jet jet (ij, &nat);
-    int igj = get_property(jet, Jet_genJetIdx);
-    if (igj == gjidx)
-      return ij;
-  }
-  return -1;
-}
 
-// EDITED FOR CODE REVIEW - FIXME
-// void SixB_functions::match_genjets_to_reco(std::vector<GenJet>& genjets,std::vector<Jet>& recojets)
-// {
-  
-//   for (unsigned int ireco = 0; ireco < recojets.size(); ireco++)
-//     {
-//       Jet& jet = recojets.at(ireco);
-//       int gen_match = -1;
-//       for (unsigned int igen = 0; igen < genjets.size(); igen++)
-// 	{
-// 	  GenJet& genjet = genjets.at(igen);
-			
-// 	  if (genjet.getIdx() == get_property(jet,Jet_genJetIdx))
-// 	    {
-// 	      gen_match = igen;
-// 	      break;
-// 	    }
-      
-// 	}
-//       if (gen_match != -1) {
-// 	recojets.at(ireco).set_genIdx(gen_match);
-// 	genjets.at(gen_match).set_recoIdx(ireco);
-//       }
-//     }
-// }
-
-std::vector<GenJet> SixB_functions::get_all_genjets(NanoAODTree& nat)
-{
-  std::vector<GenJet> jets;
-  jets.reserve(*(nat.nGenJet));
-    
-  for (unsigned int ij = 0; ij < *(nat.nGenJet); ++ij){
-    GenJet jet (ij, &nat);
-    jets.emplace_back(jet);
-  }
-  return jets;
-}
-
-std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
-{
-  std::vector<Jet> jets;
-  jets.reserve(*(nat.nJet));
-    
-  for (unsigned int ij = 0; ij < *(nat.nJet); ++ij){
-    Jet jet (ij, &nat);
-    jets.emplace_back(jet);
-  }
-  return jets;
-}
-
-std::vector<Jet> SixB_functions::preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets)
-{
-  const double pt_min  = pmap.get_param<double>("presel", "pt_min");
-  const double eta_max = pmap.get_param<double>("presel", "eta_max");
-  // const double btag_min = btag_WPs.at(0);
-  const int    pf_id   = pmap.get_param<int>("presel", "pf_id");
-  const int    pu_id   = pmap.get_param<int>("presel", "pu_id");
-
-
-  std::vector<Jet> out_jets;
-  out_jets.reserve(in_jets.size());
-
-  for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
-  {
-    const Jet& jet = in_jets.at(ij);
-    if (jet.P4().Pt() <= pt_min)            continue;
-    if (std::abs(jet.P4().Eta()) >= eta_max) continue;
-    // if (jet.get_btag() <= btag_min) continue;
-    if (!checkBit(jet.get_id(), pf_id))     continue;
-    if (jet.P4().Pt() < 50 && !checkBit(jet.get_puid(),  pu_id)) continue; // PU ID only applies to jet with pT < 50 GeV
-
-    out_jets.emplace_back(jet);
-  }
-
-  return out_jets;
-}
-
-////////////////////////////////////////////////////////////////////
-////////////////////// sixB jet selections//////////////////////////
-////////////////////////////////////////////////////////////////////
-
-std::vector<Jet> SixB_functions::select_sixb_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+std::vector<Jet> SixB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
   std::string sel_type = pmap.get_param<std::string>("configurations", "sixbJetChoice");
 
@@ -710,25 +321,6 @@ std::vector<Jet> SixB_functions::select_sixb_jets(NanoAODTree& nat, EventInfo& e
   else
     throw std::runtime_error(std::string("SixB_functions::select_sixb_jets : sixbJetChoice ") + sel_type + std::string("not understood"));
 }
-
-
-// std::vector<Jet> SixB_functions::select_sixb_jets_btag_order(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
-// {
-//   std::vector<Jet> jets = in_jets;
-//   stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
-//     return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
-//     ); // sort jet by deepjet score (highest to lowest)
-
-//   int n_out = std::min<int>(jets.size(), 6);
-//   jets.resize(n_out);
-
-//   // for (auto& jet : jets)
-//   //     std::cout << jet.P4().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
-//   // std::cout << std::endl << std::endl;
-
-//   return jets;
-// }
-
 
 std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
@@ -762,7 +354,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
   int n_out = std::min<int>(jets.size(), 6);
   jets.resize(n_out); // take top 6
 
-  if (debug_) dumpObjColl(jets, "==== JETS SELECTED IN bias_pt_sort BEFORE CUTS ===");
+  // if (debug_) dumpObjColl(jets, "==== JETS SELECTED IN bias_pt_sort BEFORE CUTS ===");
 
   // apply a set of dedicated cuts
   // NOTE: these cuts are applied in the *order* in which jets are passed
@@ -795,10 +387,10 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
         double pt   = pt_cuts[icut];
         int btag_wp = btagWP_cuts[icut];
         if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] ){
-	        if (debug_){
-            cout << "==> the jet nr " << icut << " fails cuts, jet dumped below" << endl;
-            cout << getObjDescr(ijet) << endl;
-          }
+	        // if (debug_){
+          //   cout << "==> the jet nr " << icut << " fails cuts, jet dumped below" << endl;
+          //   cout << getObjDescr(ijet) << endl;
+          // }
           pass_cuts = false;
           break;
         }
@@ -866,35 +458,6 @@ std::vector<Jet> SixB_functions::select_sixb_jets_6jet_DNN (NanoAODTree &nat, Ev
 }
 
 
-std::vector<Jet> SixB_functions::bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
-{
-  std::vector<Jet> jets = in_jets;
-  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
-
-  auto loose_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
-  auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
-  auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
-
-  auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
-
-  int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
-  int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
-  int loose_idx  = std::distance(jets.begin(),loose_it.base())-1;
-
-  std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
-  auto start = jets.begin();
-  for (int wp_idx : wp_idxs)
-  {
-    if (wp_idx != -1 && start != jets.end()) {
-	    auto end = jets.begin() + wp_idx + 1;
-	    std::sort(start,end,pt_sort);
-	    start = end;
-    }
-  }
-  return jets;
-}
-
-
 std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
     std::vector<Jet> jets = in_jets;
@@ -944,55 +507,6 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
     return out_jets;
 }
 
-
-std::vector<Jet> SixB_functions::select_ttbar_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets)
-{
-  std::vector<Jet> jets = in_jets;
-  stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
-    return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
-    ); // sort jet by deepjet score (highest to lowest)
-
-  if (jets.size() < 2)
-    return jets;
-  ei.bjet1 = jets.at(0);
-  ei.bjet2 = jets.at(1);
-  if (ei.bjet1->P4().Pt() < ei.bjet2->P4().Pt()) // sort by pt
-    std::swap(ei.bjet1, ei.bjet2);
-
-  return jets;
-
-  // int n_out = std::min<int>(jets.size(), 6);
-  // jets.resize(n_out);
-
-  // for (auto& jet : jets)
-  //     std::cout << jet.P4().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
-  // std::cout << std::endl << std::endl;
-
-  // return jets;
-
-}
-
-
-std::vector<int> SixB_functions::match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset)
-{
-  std::vector<int> local_idxs;
-	
-  for (unsigned int i = 0; i < subset.size(); i++)
-    {
-      const Jet& obj = subset.at(i);
-      int local_idx = -1;
-      for (unsigned int j = 0; j < supset.size(); j++)
-	{
-	  const Jet& com = supset.at(j);
-	  if ( obj.getIdx() == com.getIdx() ) {
-	    local_idx = j;
-	    break;
-	  }
-	}
-      local_idxs.push_back(local_idx);
-    }
-  return local_idxs;
-}
 
 // void SixB_functions::btag_bias_pt_sort(std::vector<Jet>& in_jets)
 // {
@@ -1711,28 +1225,6 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   return ret_tuple;
 }
 
-
-
-
-void SixB_functions::compute_event_shapes(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
-{
-  EventShapeCalculator esc(in_jets);
-  EventShapes event_shapes = esc.get_sphericity_shapes();
-  ei.event_shapes = event_shapes;
-}
-
-
-int SixB_functions::n_gjmatched_in_dijetcoll(const std::vector<DiJet>& in_dijets)
-{
-
-  int nfound = 0;
-  for (const DiJet& d : in_dijets)
-    if (d.get_signalId() != -1)
-      nfound += 1;
-
-  return nfound;
-}
-
 int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
   std::vector<int> matched_jets;
@@ -1785,158 +1277,66 @@ int SixB_functions::n_ghmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
   return nfound;
 }
 
-// EDITED FOR CODE REVIEW - FIXME
-// void SixB_functions::match_signal_genjets(EventInfo& ei, std::vector<GenJet>& in_jets)
-// {
-//   std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
-//   if (ei.gen_HX_b1_genjet)  matched_jets[0] = ei.gen_HX_b1_genjet->getIdx();
-//   if (ei.gen_HX_b2_genjet)  matched_jets[1] = ei.gen_HX_b2_genjet->getIdx();
-//   if (ei.gen_HY1_b1_genjet) matched_jets[2] = ei.gen_HY1_b1_genjet->getIdx();
-//   if (ei.gen_HY1_b2_genjet) matched_jets[3] = ei.gen_HY1_b2_genjet->getIdx();
-//   if (ei.gen_HY2_b1_genjet) matched_jets[4] = ei.gen_HY2_b1_genjet->getIdx();
-//   if (ei.gen_HY2_b2_genjet) matched_jets[5] = ei.gen_HY2_b2_genjet->getIdx();
-
-//   for (GenJet& gj : in_jets)
-//     {
-//       int gj_idx = gj.getIdx();
-//       if (gj_idx == -1) continue;
-		
-//       for (int id = 0; id < 6; id++)
-// 	{
-// 	  if (matched_jets[id] == gj_idx)
-// 	    {
-// 	      gj.set_signalId(id);
-// 	    }
-// 	}
-//     }
-// }
-
-// EDITED FOR CODE REVIEW - FIXME
-// void SixB_functions::match_signal_recojets(EventInfo& ei,std::vector<Jet>& in_jets)
-// {
-//   std::vector<int> matched_jets = {-1,-1,-1,-1,-1,-1};
-//   if (ei.gen_HX_b1_recojet)  matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
-//   if (ei.gen_HX_b2_recojet)  matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
-//   if (ei.gen_HY1_b1_recojet) matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
-//   if (ei.gen_HY1_b2_recojet) matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
-//   if (ei.gen_HY2_b1_recojet) matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
-//   if (ei.gen_HY2_b2_recojet) matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
-
-//   for (Jet& j : in_jets)
-//     {
-//       int j_idx = j.getIdx();
-//       if (j_idx == -1) continue;
-		
-//       for (int id = 0; id < 6; id++)
-// 	{
-// 	  if (matched_jets[id] == j_idx)
-// 	    {
-// 	      j.set_signalId(id);
-// 	    }
-// 	}
-//     }
-// }
-
-void SixB_functions::select_leptons(NanoAODTree &nat, EventInfo &ei)
+void SixB_functions::match_signal_genjets(NanoAODTree &nat, EventInfo& ei, std::vector<GenJet> &in_jets)
 {
-  std::vector<Electron> electrons;
-  std::vector<Muon> muons;
+  std::vector<int> matched_jets(6, -1);
+  if (ei.gen_HX_b1_genjet)
+    matched_jets[0] = ei.gen_HX_b1_genjet->getIdx();
+  if (ei.gen_HX_b2_genjet)
+    matched_jets[1] = ei.gen_HX_b2_genjet->getIdx();
+  if (ei.gen_HY1_b1_genjet)
+    matched_jets[2] = ei.gen_HY1_b1_genjet->getIdx();
+  if (ei.gen_HY1_b2_genjet)
+    matched_jets[3] = ei.gen_HY1_b2_genjet->getIdx();
+  if (ei.gen_HY2_b1_genjet)
+    matched_jets[4] = ei.gen_HY2_b1_genjet->getIdx();
+  if (ei.gen_HY2_b2_genjet)
+    matched_jets[5] = ei.gen_HY2_b2_genjet->getIdx();
 
-  for (unsigned int ie = 0; ie < *(nat.nElectron); ++ie){
-    Electron ele (ie, &nat);
-    electrons.emplace_back(ele);
+  for (GenJet &gj : in_jets)
+  {
+    int gj_idx = gj.getIdx();
+    if (gj_idx == -1)
+      continue;
+
+    for (int id = 0; id < 6; id++)
+    {
+      if (matched_jets[id] == gj_idx)
+      {
+        gj.set_signalId(id);
+      }
+    }
   }
+}
 
-  for (unsigned int imu = 0; imu < *(nat.nMuon); ++imu){
-    Muon mu(imu, &nat);
-    muons.emplace_back(mu);
+void SixB_functions::match_signal_recojets(NanoAODTree &nat, EventInfo& ei, std::vector<Jet> &in_jets)
+{
+  std::vector<int> matched_jets(6, -1);
+  if (ei.gen_HX_b1_recojet)
+    matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
+  if (ei.gen_HX_b2_recojet)
+    matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
+  if (ei.gen_HY1_b1_recojet)
+    matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
+  if (ei.gen_HY1_b2_recojet)
+    matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
+  if (ei.gen_HY2_b1_recojet)
+    matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
+  if (ei.gen_HY2_b2_recojet)
+    matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
+
+  for (Jet &j : in_jets)
+  {
+    int j_idx = j.getIdx();
+    if (j_idx == -1)
+      continue;
+
+    for (int id = 0; id < 6; id++)
+    {
+      if (matched_jets[id] == j_idx)
+      {
+        j.set_signalId(id);
+      }
+    }
   }
-
-  // apply preselections
-  std::vector<Electron> loose_electrons;
-  std::vector<Muon> loose_muons;
-
-  // std::vector<Electron> tight_electrons;
-  // std::vector<Muon> tight_muons;
-
-  for (auto& el : electrons){
-
-    float dxy    = get_property(el, Electron_dxy);
-    float dz     = get_property(el, Electron_dz);
-    float eta    = get_property(el, Electron_eta);
-    float pt     = get_property(el, Electron_pt);
-    bool ID_WPL  = get_property(el, Electron_mvaFall17V2Iso_WPL); 
-    // bool ID_WP90 = get_property(el, Electron_mvaFall17V2Iso_WP90);
-    // bool ID_WP80 = get_property(el, Electron_mvaFall17V2Iso_WP80);
-    float iso    = get_property(el, Electron_pfRelIso03_all);
-
-    // note: hardcoded selections can be made configurable from cfg if needed
-    const float e_pt_min  = 15;
-    const float e_eta_max = 2.5;
-    const float e_iso_max = 0.15;
-        
-    const float e_dxy_max_barr = 0.05;
-    const float e_dxy_max_endc = 0.10;
-    const float e_dz_max_barr  = 0.10;
-    const float e_dz_max_endc  = 0.20;
-
-    bool is_barrel = abs(eta) < 1.479;
-    bool pass_dxy  = (is_barrel ? dxy < e_dxy_max_barr : dxy < e_dxy_max_endc);
-    bool pass_dz   = (is_barrel ? dz  < e_dz_max_barr  : dz  < e_dz_max_endc);
-
-    // loose electrons for veto
-    if (pt > e_pt_min        &&
-	abs(eta) < e_eta_max &&
-	iso < e_iso_max      &&
-	pass_dxy             &&
-	pass_dz              &&
-	ID_WPL)
-      loose_electrons.emplace_back(el);
-  }
-
-  for (auto& mu : muons){
-
-    float dxy    = get_property(mu, Muon_dxy);
-    float dz     = get_property(mu, Muon_dz);
-    float eta    = get_property(mu, Muon_eta);
-    float pt     = get_property(mu, Muon_pt);
-    bool ID_WPL  = get_property(mu, Muon_looseId);
-    // bool ID_WPM = get_property(mu, Muon_mediumId);
-    // bool ID_WPT = get_property(mu, Muon_tightId);
-    float iso    = get_property(mu, Muon_pfRelIso04_all);
-
-    // note: hardcoded selections can be made configurable from cfg if needed
-    const float mu_pt_min  = 10;
-    const float mu_eta_max = 2.4;
-    const float mu_iso_max = 0.15;
-        
-    const float mu_dxy_max_barr = 0.05;
-    const float mu_dxy_max_endc = 0.10;
-    const float mu_dz_max_barr  = 0.10;
-    const float mu_dz_max_endc  = 0.20;
-
-    bool is_barrel = abs(eta) < 1.2;
-    bool pass_dxy  = (is_barrel ? dxy < mu_dxy_max_barr : dxy < mu_dxy_max_endc);
-    bool pass_dz   = (is_barrel ? dz  < mu_dz_max_barr  : dz  < mu_dz_max_endc);
-
-    // loose muons for veto
-    if (pt > mu_pt_min        &&
-	abs(eta) < mu_eta_max &&
-	iso < mu_iso_max      &&
-	pass_dxy              &&
-	pass_dz               &&
-	ID_WPL)
-      loose_muons.emplace_back(mu);
-  }
-
-  // copy needed info to the EventInfo
-  if (loose_muons.size() > 0) ei.mu_1 = loose_muons.at(0);
-  if (loose_muons.size() > 1) ei.mu_2 = loose_muons.at(1);
-  if (loose_electrons.size() > 0) ei.ele_1 = loose_electrons.at(0);
-  if (loose_electrons.size() > 1) ei.ele_2 = loose_electrons.at(1);
-
-  ei.n_mu_loose  = loose_muons.size();
-  ei.n_ele_loose = loose_electrons.size();
-  // ei.n_mu_tight  = tight_muons.size();
-  // ei.n_ele_tight = tight_electrons.size();
 }
