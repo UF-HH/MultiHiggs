@@ -329,7 +329,7 @@ int main(int argc, char** argv)
                   {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
                   {"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes",  false)},
                   {"sixb_brs",    (skim_type == ksixb)},
-                  {"eight_brs",    (skim_type == keightb)},
+                  {"eightb_brs",    (skim_type == keightb)},
                   {"ttbar_brs",   (skim_type == kttbar)},
                   {"sig_gen_brs", (is_signal)},
                   {"gen_brs",     (!is_data)},
