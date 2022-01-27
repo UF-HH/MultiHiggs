@@ -10,7 +10,7 @@ lumi_info = {'lumi' : 59.740, 'lumi_units' : 'fbinv'}
 ###################### SAMPLES #######################
 ## all samples to be processed should be in a "samples" list
 
-nmssm = sam.Sample(name='nmssm', sampletype='mc', files=['root://cmseos.fnal.gov//store/user/srosenzw/analysis/NMSSM/NMSSM_XYH_YToHH_6b_MX_700_MY_400/ntuple.root'],
+nmssm = sam.Sample(name='nmssm', sampletype='mc', files=['~/nobackup/workarea/higgs/sixb_analysis/CMSSW_10_2_18/src/sixb/out.root'],
     sampledesc= {**lumi_info, 'xs' : 0.3, 'xs_units' : 'pb'}
 )
 # data_obs = sam.Sample(name='data_obs', sampletype='data', filelist='../skim_filelists/ttbar_2018_10Jan2022/SingleMuon_Run2.txt')
@@ -27,43 +27,50 @@ samples = [nmssm]
 ###################### ROOT FUNCTIONS #######################
 ## all variables to declare to the gInterpreter should be listed in a "declarations" variable
 
-minv = """
-double minv(double pt1, double eta1, double phi1, double m1, double pt2, double eta2, double phi2, double m2, double pt3, double eta3, double phi3, double m3) {
-    ROOT::Math::PtEtaPhiMVector v1 (pt1, eta1, phi1, m1);
-    ROOT::Math::PtEtaPhiMVector v2 (pt2, eta2, phi2, m2);
-    ROOT::Math::PtEtaPhiMVector v3 (pt3, eta3, phi3, m3);
-    double m = (v1+v2+v3).M();
-    return m;
-}
-"""
-btagavg = """
-double btagavg(double btag1, double btag2, double btag3, double btag4, double btag5, double btag6) {
-    double btagsum = (btag1 + btag2 + btag3 + btag4 + btag5 + btag6)/6;
-    return btagsum;
-}
-"""
-mdiff = """
-double mdiff(double m) {
-    double deltam = std::abs(m - 125);
-    return deltam;
-}
-"""
+# minv = """
+# double minv(double pt1, double eta1, double phi1, double m1, double pt2, double eta2, double phi2, double m2, double pt3, double eta3, double phi3, double m3) {
+#     ROOT::Math::PtEtaPhiMVector v1 (pt1, eta1, phi1, m1);
+#     ROOT::Math::PtEtaPhiMVector v2 (pt2, eta2, phi2, m2);
+#     ROOT::Math::PtEtaPhiMVector v3 (pt3, eta3, phi3, m3);
+#     double m = (v1+v2+v3).M();
+#     return m;
+# }
+# """
+# btagavg = """
+# double btagavg(double btag1, double btag2, double btag3, double btag4, double btag5, double btag6) {
+#     double btagsum = (btag1 + btag2 + btag3 + btag4 + btag5 + btag6)/6;
+#     return btagsum;
+# }
+# """
+# mdiff = """
+# double mdiff(double m) {
+#     double deltam = std::abs(m - 125);
+#     return deltam;
+# }
+# """
 
-declarations = [minv, btagavg, mdiff]
+# declarations = [minv, btagavg, mdiff]
+declarations = []
 
 ###################### NEW COLUMNS #######################
 ## all columns to declare in the samples should be listed in a "new_columns" dictionary (name -> expression)
 
 new_columns = collections.OrderedDict()
-new_columns['mx'] = 'minv(HX_pt, HX_eta, HX_phi, HX_m, HY1_pt, HY1_eta, HY1_phi, HY1_m, HY2_pt, HY2_eta, HY2_phi, HY2_m)'
+# new_columns['mx'] = 'minv(HX_pt, HX_eta, HX_phi, HX_m, HY1_pt, HY1_eta, HY1_phi, HY1_m, HY2_pt, HY2_eta, HY2_phi, HY2_m)'
+# new_columns['btagsum'] = 'btagavg(HX_b1_DeepJet, HX_b2_DeepJet, HY1_b1_DeepJet, HY1_b2_DeepJet, HY2_b1_DeepJet, HY2_b2_DeepJet)'
+# new_columns['mXdiff'] = 'mdiff(HX_m)'
+# new_columns['mY1diff'] = 'mdiff(HY1_m)'
+# new_columns['mY2diff'] = 'mdiff(HY2_m)'
 
 ###################### SELECTIONS #######################
 
 selections_defs = {
-    'CRls' : 'mdiff > 60 && btagsum < 0.65',
-    'CRhs' : 'mdiff > 60 && btagsum >= 0.65',
-    'VRls' : 'mdiff <= 60 && mdiff > 25 && btagsum < 0.65',
-    'VRhs' : 'mdiff <= 60 && mdiff > 25 && btagsum >= 0.65'
+    'CRls' : 'CR_ls',
+    'CRhs' : 'CR_hs',
+    'VRls' : 'VR_ls',
+    'VRhs' : 'VR_hs',
+    'SRls' : 'SR_ls',
+    'SRhs' : 'SR_hs'
     # 'baseline' : 'n_mu_loose == 1 && n_ele_loose == 1 && bjet1_pt > 20 && bjet2_pt > 20',
     # 'tight'    : 'n_mu_loose == 1 && n_ele_loose == 1 && bjet1_pt > 30 && bjet2_pt > 30 && mu_1_pt > 30 && ele_1_pt > 20',
     # 'tight2b'  : 'n_mu_loose == 1 && n_ele_loose == 1 && bjet1_pt > 30 && bjet2_pt > 30 && mu_1_pt > 30 && ele_1_pt > 20 && bjet1_DeepJet > 0.2783 && bjet2_DeepJet > 0.2783',
@@ -121,7 +128,7 @@ norm_weights = ['genWeight']
 
 histos_descs = [
     {
-        'var'        : 'mx',
+        'var'        : 'X_m',
         'weightlist' : ['genWeight'],
         'bins'       : (100, 0, 2000),
     }, 
