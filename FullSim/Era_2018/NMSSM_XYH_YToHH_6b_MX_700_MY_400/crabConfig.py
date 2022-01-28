@@ -1,8 +1,8 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-config.General.requestName     = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k'
-config.General.workArea        = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k'
+config.General.requestName     = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_100k'
+config.General.workArea        = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_100k'
 config.General.transferOutputs = True
 config.General.transferLogs    = False
 
