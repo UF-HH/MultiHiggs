@@ -1,0 +1,187 @@
+Updating process to run DeepBoostedJet on datasets before 103X
+Updating process to run DeepDoubleX on datasets before 104X
+Will recalculate the following discriminators on AK8 jets: pfDeepBoostedJetTags:probTbcq, pfDeepBoostedJetTags:probTbqq, pfDeepBoostedJetTags:probTbc, pfDeepBoostedJetTags:probTbq, pfDeepBoostedJetTags:probWcq, pfDeepBoostedJetTags:probWqq, pfDeepBoostedJetTags:probZbb, pfDeepBoostedJetTags:probZcc, pfDeepBoostedJetTags:probZqq, pfDeepBoostedJetTags:probHbb, pfDeepBoostedJetTags:probHcc, pfDeepBoostedJetTags:probHqqqq, pfDeepBoostedJetTags:probQCDbb, pfDeepBoostedJetTags:probQCDcc, pfDeepBoostedJetTags:probQCDb, pfDeepBoostedJetTags:probQCDc, pfDeepBoostedJetTags:probQCDothers, pfDeepBoostedDiscriminatorsJetTags:TvsQCD, pfDeepBoostedDiscriminatorsJetTags:WvsQCD, pfDeepBoostedDiscriminatorsJetTags:ZvsQCD, pfDeepBoostedDiscriminatorsJetTags:ZbbvsQCD, pfDeepBoostedDiscriminatorsJetTags:HbbvsQCD, pfDeepBoostedDiscriminatorsJetTags:H4qvsQCD, pfMassDecorrelatedDeepBoostedJetTags:probTbcq, pfMassDecorrelatedDeepBoostedJetTags:probTbqq, pfMassDecorrelatedDeepBoostedJetTags:probTbc, pfMassDecorrelatedDeepBoostedJetTags:probTbq, pfMassDecorrelatedDeepBoostedJetTags:probWcq, pfMassDecorrelatedDeepBoostedJetTags:probWqq, pfMassDecorrelatedDeepBoostedJetTags:probZbb, pfMassDecorrelatedDeepBoostedJetTags:probZcc, pfMassDecorrelatedDeepBoostedJetTags:probZqq, pfMassDecorrelatedDeepBoostedJetTags:probHbb, pfMassDecorrelatedDeepBoostedJetTags:probHcc, pfMassDecorrelatedDeepBoostedJetTags:probHqqqq, pfMassDecorrelatedDeepBoostedJetTags:probQCDbb, pfMassDecorrelatedDeepBoostedJetTags:probQCDcc, pfMassDecorrelatedDeepBoostedJetTags:probQCDb, pfMassDecorrelatedDeepBoostedJetTags:probQCDc, pfMassDecorrelatedDeepBoostedJetTags:probQCDothers, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:TvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:WvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZHbbvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZbbvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:HbbvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:H4qvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZHccvsQCD, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:bbvsLight, pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ccvsLight, pfDeepDoubleBvLJetTags:probHbb, pfDeepDoubleCvLJetTags:probHcc, pfDeepDoubleCvBJetTags:probHcc, pfMassIndependentDeepDoubleBvLJetTags:probHbb, pfMassIndependentDeepDoubleCvLJetTags:probHcc, pfMassIndependentDeepDoubleCvBJetTags:probHcc
+DEBUG 2021-03-11 17:04:51.507 UTC: 	 CRAB Client version: v3.201110
+DEBUG 2021-03-11 17:04:51.507 UTC: 	 Running on: Linux lxplus784.cern.ch 3.10.0-1160.15.2.el7.x86_64 #1 SMP Wed Feb 3 15:06:38 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux - CentOS Linux 7 (Core)
+DEBUG 2021-03-11 17:04:51.507 UTC: 	 Executing command: 'submit'
+DEBUG 2021-03-11 17:04:51.507 UTC: 	 Found CRAB cache file /afs/cern.ch/user/s/srosenzw/.crab3
+INFO 2021-03-11 17:04:51.509 UTC: 	 Will use CRAB configuration file crabConfig.py
+DEBUG 2021-03-11 17:04:51.509 UTC: 	 Loading CRAB configuration file.
+DEBUG 2021-03-11 17:04:51.510 UTC: 	 Will use CRAB PrivateMC plugin (i.e. will run a MC generation job type).
+DEBUG 2021-03-11 17:04:51.536 UTC: 	 Checking credentials
+DEBUG 2021-03-11 17:04:51.536 UTC: 	 Proxy file /tmp/x509up_u126129 not found
+DEBUG 2021-03-11 17:04:52.342 UTC: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u126129 voms-proxy-info -fqan
+ output : 
+ error: Proxy not found: /tmp/x509up_u126129 (No such file or directory)
+
+ retcode : 1
+DEBUG 2021-03-11 17:04:52.342 UTC: 	 Creating new proxy for 172:00 hours with VO group '' and VO role 'NULL'.
+DEBUG 2021-03-11 17:04:57.762 UTC: 	 Executing : 
+ command : voms-proxy-init -voms cms:/cms -valid 172:00 -rfc
+ output : None
+ error: None
+ retcode : 0
+DEBUG 2021-03-11 17:04:58.368 UTC: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u126129 -timeleft
+ output : 619198
+
+ error: 
+ retcode : 0
+DEBUG 2021-03-11 17:04:59.076 UTC: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u126129 -actimeleft
+ output : 619198
+
+ error: 
+ retcode : 0
+DEBUG 2021-03-11 17:04:59.682 UTC: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u126129 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2021-03-11 17:04:59.682 UTC: 	 Proxy created.
+DEBUG 2021-03-11 17:04:59.735 UTC: 	 Registering user credentials for server /DC=ch/DC=cern/OU=computers/CN=vocms0105.cern.ch|/DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch
+DEBUG 2021-03-11 17:05:00.351 UTC: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u126129 -identity
+ output : /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig
+
+ error: 
+ retcode : 0
+DEBUG 2021-03-11 17:05:00.362 UTC: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2021-03-11 17:05:00.362 UTC: 	 using 60ee80196627500d7a5aa5d9c723db8790c95cf4 as credential login name
+DEBUG 2021-03-11 17:05:00.870 UTC: 	 Executing : 
+ command : myproxy-info -l 60ee80196627500d7a5aa5d9c723db8790c95cf4 -s myproxy.cern.ch
+ output : username: 60ee80196627500d7a5aa5d9c723db8790c95cf4
+owner: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig
+  renewal policy: /DC=ch/DC=cern/OU=computers/CN=vocms0105.cern.ch|/DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch
+  trusted retrieval policy: /DC=ch/DC=cern/OU=computers/CN=vocms0105.cern.ch|/DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch
+  timeleft: 675:21:33  (28.1 days)
+
+ error: 
+ retcode : 0
+DEBUG 2021-03-11 17:05:00.870 UTC: 	 Myproxy is valid: 2431293
+DEBUG 2021-03-11 17:05:00.871 UTC: 	 Retrieving username ...
+DEBUG 2021-03-11 17:05:00.871 UTC: 	 Retrieving username from CRIC...
+DEBUG 2021-03-11 17:05:01.617 UTC: 	 username is srosenzw
+DEBUG 2021-03-11 17:05:01.629 UTC: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2021-03-11 17:05:01.629 UTC: 	 using srosenzw_CRAB as credential login name
+DEBUG 2021-03-11 17:05:02.038 UTC: 	 Executing : 
+ command : myproxy-info -l srosenzw_CRAB -s myproxy.cern.ch
+ output : 
+ error: ERROR from myproxy-server:
+no credentials found for user srosenzw_CRAB, owner "/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig" 
+
+ retcode : 1
+DEBUG 2021-03-11 17:05:02.038 UTC: 	 Myproxy is valid: -1
+DEBUG 2021-03-11 17:05:02.444 UTC: 	 Executing : 
+ command : openssl x509 -noout -in ~/.globus/usercert.pem -dates
+ output : notBefore=Aug 26 14:14:29 2020 GMT
+notAfter=Sep 30 14:14:29 2021 GMT
+
+ error: 
+ retcode : 0
+DEBUG 2021-03-11 17:05:02.457 UTC: 	 Delegating a myproxy for 720:00 hours
+DEBUG 2021-03-11 17:05:02.457 UTC: 	 using srosenzw_CRAB as credential login name
+DEBUG 2021-03-11 17:05:05.868 UTC: 	 Executing : 
+ command : export GT_PROXY_MODE=rfc ; myproxy-init -d -n -s myproxy.cern.ch -x -R '/DC=ch/DC=cern/OU=computers/CN=vocms0105.cern.ch|/DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch' -x -Z '/DC=ch/DC=cern/OU=computers/CN=vocms0105.cern.ch|/DC=ch/DC=cern/OU=computers/CN=crab-(preprod|prod|dev)-tw(02|01).cern.ch|/DC=ch/DC=cern/OU=computers/CN=(ddi|ddidk|mytw).cern.ch|/DC=ch/DC=cern/OU=computers/CN=stefanov(m|m2).cern.ch' -l 'srosenzw_CRAB' -t 168:00 -c 720:00
+ output : Your identity: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig
+Creating proxy ......................................... Done
+Proxy Verify OK
+Your proxy is valid until: Sat Apr 10 19:05:05 2021
+
+ error: ERROR from myproxy-server:
+Credentials are already stored for user srosenzw_CRAB
+and they are not owned by
+"/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig",
+so you may not overwrite them.
+Please choose a different username or credential name or
+contact your myproxy-server administrator.
+
+ retcode : 1
+DEBUG 2021-03-11 17:05:05.868 UTC: 	 using srosenzw_CRAB as credential login name
+DEBUG 2021-03-11 17:05:06.173 UTC: 	 Executing : 
+ command : myproxy-info -l srosenzw_CRAB -s myproxy.cern.ch
+ output : 
+ error: ERROR from myproxy-server:
+no credentials found for user srosenzw_CRAB, owner "/DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=srosenzw/CN=821753/CN=Suzanne Rosenzweig" 
+
+ retcode : 1
+DEBUG 2021-03-11 17:05:06.173 UTC: 	 Result of myproxy credential check:
+  Credential exists on myproxy: username: 60ee80196627500d7a5aa5d9c723db8790c95cf4  - validity: 28 days, 3:21:33
+  Error trying to create credential:
+ Problems delegating My-proxy. It seems your proxy has not been delegated to myproxy. Please check the logfile for the exact error (it might simply you typed a wrong password)
+DEBUG 2021-03-11 17:05:06.173 UTC: 	 Command use: submit
+DEBUG 2021-03-11 17:05:06.173 UTC: 	 Options use: ['crabConfig.py']
+DEBUG 2021-03-11 17:05:06.230 UTC: 	 CRABClient version: v3.201110
+DEBUG 2021-03-11 17:05:06.230 UTC: 	 Instance is prod
+DEBUG 2021-03-11 17:05:06.230 UTC: 	 Server base url is cmsweb-k8s-prod.cern.ch
+DEBUG 2021-03-11 17:05:06.230 UTC: 	 Command url /crabserver/prod/workflow
+DEBUG 2021-03-11 17:05:06.230 UTC: 	 Started submission
+DEBUG 2021-03-11 17:05:06.230 UTC: 	 Working on /afs/cern.ch/user/s/srosenzw/sixb/CMSSW_10_2_22/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k
+DEBUG 2021-03-11 17:05:06.387 UTC: 	 Loading required information from the environment
+DEBUG 2021-03-11 17:05:06.387 UTC: 	 Found CMSSW_10_2_22 for slc7_amd64_gcc700 with base /afs/cern.ch/user/s/srosenzw/CMSSW_10_2_22
+DEBUG 2021-03-11 17:05:06.387 UTC: 	 UNIQUE NAME: tarUUID f38fab81-5717-4c17-9024-9255d692e9a6 
+DEBUG 2021-03-11 17:05:06.387 UTC: 	 self.config: from WMCore.Configuration import Configuration
+config = Configuration()
+config.section_('General')
+config.General.transferLogs = False
+config.General.transferOutputs = True
+config.General.workArea = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k'
+config.General.requestName = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k'
+config.section_('JobType')
+config.JobType.numCores = 2
+config.JobType.maxMemoryMB = 3500
+config.JobType.scriptExe = 'scriptExe.sh'
+config.JobType.pluginName = 'PrivateMC'
+config.JobType.psetName = 'nanoAOD_step_fake.py'
+config.JobType.inputFiles = ['scriptExe.sh', 'genSim_step.py', 'digiRaw_step.py', 'recoAOD_step.py', 'miniAOD_step.py', 'nanoAOD_step.py', 'pileup.py', 'NMSSM_XYH_YToHH_6b_MX_700_MY_400_slc6_amd64_gcc630_CMSSW_9_3_16_tarball.tar.xz']
+config.section_('Data')
+config.Data.outputDatasetTag = 'srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k'
+config.Data.publication = False
+config.Data.unitsPerJob = 500
+config.Data.splitting = 'EventBased'
+config.Data.outLFNDirBase = '/store/user/srosenzw/XYH_test_privateMC/'
+config.Data.totalUnits = 100000
+config.section_('Site')
+config.Site.storageSite = 'T3_US_FNALLPC'
+config.section_('User')
+config.section_('Debug')
+
+DEBUG 2021-03-11 17:05:06.387 UTC: 	 self.config.JobType.psetName: nanoAOD_step_fake.py
+INFO 2021-03-11 17:05:06.387 UTC: 	 Importing CMSSW configuration nanoAOD_step_fake.py
+INFO 2021-03-11 17:05:11.862 UTC: 	 Finished importing CMSSW configuration nanoAOD_step_fake.py
+INFO 2021-03-11 17:05:11.862 UTC: 	 You are requesting more than 1 core per job. Please make sure that your multi-threaded code is thread-safe and CPU-efficient, and request the correct amount of memory since the default 'maxMemoryMB' value is meant for single core jobs.
+DEBUG 2021-03-11 17:05:11.863 UTC: 	 Writing CMSSW configuration to /afs/cern.ch/user/s/srosenzw/sixb/CMSSW_10_2_22/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k/inputs/PSet.py
+DEBUG 2021-03-11 17:05:13.095 UTC: 	 The following EDM output files will be collected: ['nanoAOD_step.root']
+DEBUG 2021-03-11 17:05:13.095 UTC: 	 The following TFile output files will be collected: []
+DEBUG 2021-03-11 17:05:13.095 UTC: 	 The following user output files (not listed as PoolOuputModule or TFileService in the CMSSW PSet) will be collected: 
+DEBUG 2021-03-11 17:05:13.095 UTC: 	 Loading required information from the environment
+DEBUG 2021-03-11 17:05:13.095 UTC: 	 Found CMSSW_10_2_22 for slc7_amd64_gcc700 with base /afs/cern.ch/user/s/srosenzw/CMSSW_10_2_22
+DEBUG 2021-03-11 17:05:13.095 UTC: 	 Making tarball in /afs/cern.ch/user/s/srosenzw/sixb/CMSSW_10_2_22/src/sixB/FullSim/Era_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k/crab_srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl6_nano_100k/inputs/f38fab81-5717-4c17-9024-9255d692e9a6default.tgz
+DEBUG 2021-03-11 17:05:13.096 UTC: 	 Checking directory /afs/cern.ch/user/s/srosenzw/CMSSW_10_2_22/lib
+DEBUG 2021-03-11 17:05:13.096 UTC: 	 Checking directory /afs/cern.ch/user/s/srosenzw/CMSSW_10_2_22/biglib
+DEBUG 2021-03-11 17:05:13.096 UTC: 	 Checking directory /afs/cern.ch/user/s/srosenzw/CMSSW_10_2_22/module
+DEBUG 2021-03-11 17:05:13.097 UTC: 	 Adding file scriptExe.sh to tarball
+DEBUG 2021-03-11 17:05:13.112 UTC: 	 Adding file genSim_step.py to tarball
+DEBUG 2021-03-11 17:05:13.130 UTC: 	 Adding file digiRaw_step.py to tarball
+DEBUG 2021-03-11 17:05:13.132 UTC: 	 Adding file recoAOD_step.py to tarball
+DEBUG 2021-03-11 17:05:13.134 UTC: 	 Adding file miniAOD_step.py to tarball
+DEBUG 2021-03-11 17:05:13.136 UTC: 	 Adding file nanoAOD_step.py to tarball
+DEBUG 2021-03-11 17:05:13.138 UTC: 	 Adding file pileup.py to tarball
+ERROR 2021-03-11 17:05:27.299 UTC: 	 The input file 'NMSSM_XYH_YToHH_6b_MX_700_MY_400_slc6_amd64_gcc630_CMSSW_9_3_16_tarball.tar.xz' taken from parameter config.JobType.inputFiles cannot be found.
+ERROR 2021-03-11 17:05:27.299 UTC: 	 Caught ClientException exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.201110.01/bin/crab", line 165, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.201110.01/bin/crab", line 152, in __call__
+    self.cmd()
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.201110.01/lib/CRABClient/Commands/submit.py", line 105, in __call__
+    dummy_inputfiles, jobconfig = plugjobtype.run(filecacheurl)
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.201110.01/lib/CRABClient/JobType/PrivateMC.py", line 25, in run
+    tarFilename, configArguments = super(PrivateMC, self).run(*args, **kwargs)
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.201110.01/lib/CRABClient/JobType/Analysis.py", line 150, in run
+    tb.addFiles(userFiles=inputFiles, cfgOutputName=cfgOutputName)
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.201110.01/lib/CRABClient/JobType/UserTarball.py", line 90, in addFiles
+    raise InputFileNotFoundException("The input file '%s' taken from parameter config.JobType.inputFiles cannot be found." % globName)
+InputFileNotFoundException: The input file 'NMSSM_XYH_YToHH_6b_MX_700_MY_400_slc6_amd64_gcc630_CMSSW_9_3_16_tarball.tar.xz' taken from parameter config.JobType.inputFiles cannot be found.
