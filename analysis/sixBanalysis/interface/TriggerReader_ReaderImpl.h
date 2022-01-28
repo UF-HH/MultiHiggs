@@ -20,23 +20,23 @@
 #include <map>
 
 class TriggerReader_ReaderImpl{
-    public:
-        TriggerReader_ReaderImpl(TTreeReader* reader);
-        ~TriggerReader_ReaderImpl(){};
-        void addTrigger(std::string trgName);
-        void setTriggers(std::vector<std::string> trgNames);
-        std::vector<std::unique_ptr<NanoReaderValue<bool>>>& getRefToReadersPtrVector(){return readers_;}
-        bool getTrgOr();
-        bool getTrgResult(std::string trgName);
-        std::vector<std::string> getTrgPassed();
+public:
+  TriggerReader_ReaderImpl(TTreeReader* reader);
+  ~TriggerReader_ReaderImpl(){};
+  void addTrigger(std::string trgName);
+  void setTriggers(std::vector<std::string> trgNames);
+  std::vector<std::unique_ptr<NanoReaderValue<bool>>>& getRefToReadersPtrVector(){return readers_;}
+  bool getTrgOr();
+  bool getTrgResult(std::string trgName);
+  std::vector<std::string> getTrgPassed();
 
-    private:
-        NanoReaderValue<bool>& getRefToReader(int idx) {return *(readers_.at(idx));}
-        bool getTrgResult(int idx) {return *getRefToReader(idx);}
+private:
+  NanoReaderValue<bool>& getRefToReader(int idx) {return *(readers_.at(idx));}
+  bool getTrgResult(int idx) {return *getRefToReader(idx);}
 
-        std::vector<std::unique_ptr<NanoReaderValue<bool>>> readers_;
-        std::map<std::string, int> name_to_idx_;
-        TTreeReader* main_reader_;
+  std::vector<std::unique_ptr<NanoReaderValue<bool>>> readers_;
+  std::map<std::string, int> name_to_idx_;
+  TTreeReader* main_reader_;
 };
 
 #endif

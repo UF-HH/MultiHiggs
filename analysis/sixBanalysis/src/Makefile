@@ -36,9 +36,9 @@ ROOTGLIBS     = $(shell root-config --glibs)
 
 ARCHL = -m64
 CXX  =  g++
-CXXFLAGS  = $(ROOTCFLAGS) -Wall -O -fPIC -I$(HDR)
+CXXFLAGS  = $(ROOTCFLAGS) -Wall -O -fPIC -I$(HDR) $(TFINC)
 CPP  =  g++
-CPPFLAGS  = $(ROOTCFLAGS) -Wall  $(ARCHL) -I$(HDR)
+CPPFLAGS  = $(ROOTCFLAGS) -Wall  $(ARCHL) -I$(HDR) $(TFINC)
 
 F    = gfortran
 FFLAGS = -c
@@ -49,7 +49,8 @@ SONAME	 =  libsixBanalysis.so
 SONAME2  =  sixBanalysis
 SOFLAGS  =  -Wl,-soname,$(SONAME)
 
-CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger
+TFLIBS = -lPhysicsToolsTensorFlow -ltensorflow_cc -ltensorflow_framework
+CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger $(TFLIBS)
 # CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lPhysicsToolsKinFitter -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger
 GLIBS   =  $(ROOTGLIBS) -lm -ldl -rdynamic -lboost_program_options -lGenVector -lFoam -lMinuit -lTMVA -lMLP -lXMLIO -lGpad  -lTreePlayer -lRooFit -lRooFitCore -lRooStats  $(CMSLIBS)
 

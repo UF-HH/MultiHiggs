@@ -21,40 +21,40 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 
 class CompositeCandidate : public Candidate
 {
-    public:
-        CompositeCandidate() : Candidate(),cand1_(), cand2_() {typeId_=-1; p4_.SetCoordinates(0,0,0,0); isComposite_=true;}
-        CompositeCandidate(const Candidate& c1, const Candidate& c2) : Candidate() {typeId_=-1; setComponents(c1,c2); isComposite_=true;}
+public:
+  CompositeCandidate() : Candidate(),cand1_(), cand2_() {typeId_=-1; p4_.SetCoordinates(0,0,0,0); isComposite_=true;}
+  CompositeCandidate(const Candidate& c1, const Candidate& c2) : Candidate() {typeId_=-1; setComponents(c1,c2); isComposite_=true;}
 
-        ~CompositeCandidate(){};
-        CompositeCandidate(const CompositeCandidate& rhs); // copy ctor
-        CompositeCandidate& operator = (const CompositeCandidate& rhs);        // assignment
+  ~CompositeCandidate(){};
+  CompositeCandidate(const CompositeCandidate& rhs); // copy ctor
+  CompositeCandidate& operator = (const CompositeCandidate& rhs);        // assignment
         
-        void setComponents(const Candidate& c1, const Candidate& c2);
+  void setComponents(const Candidate& c1, const Candidate& c2);
 
-        Candidate& getComponent1 () const {
-            return (*cand1_);
-        }
-        Candidate& getComponent2 () const {
-            return (*cand2_);
-        }
+  Candidate& getComponent1 () const {
+    return (*cand1_);
+  }
+  Candidate& getComponent2 () const {
+    return (*cand2_);
+  }
 
-        bool sharesComponentWith (const CompositeCandidate& cc) const;
-        bool isValid() {return (cand1_ && cand2_);}
-        std::unique_ptr<Candidate> clone() const override{
-            std::unique_ptr<CompositeCandidate> CompositeCandidateClone(new CompositeCandidate(this->getComponent1 (), this->getComponent2 ()));
-            CompositeCandidateClone->setP4(this->P4()); //In case the P4 had been re-evaluated
-            return CompositeCandidateClone;
-        }
-        void rebuildP4UsingRegressedPt(bool usePtRegressedCandidate1, bool usePtRegressedCandidate2);
+  bool sharesComponentWith (const CompositeCandidate& cc) const;
+  bool isValid() {return (cand1_ && cand2_);}
+  std::unique_ptr<Candidate> clone() const override{
+    std::unique_ptr<CompositeCandidate> CompositeCandidateClone(new CompositeCandidate(this->getComponent1 (), this->getComponent2 ()));
+    CompositeCandidateClone->setP4(this->P4()); //In case the P4 had been re-evaluated
+    return CompositeCandidateClone;
+  }
+  void rebuildP4UsingRegressedPt(bool usePtRegressedCandidate1, bool usePtRegressedCandidate2);
 
-        void swapComponents() {
-            std::swap(cand1_, cand2_);
-        }
+  void swapComponents() {
+    std::swap(cand1_, cand2_);
+  }
 
-    protected:
-        void buildP4() override {p4_ = cand1_->P4() + cand2_->P4();}; 
-        std::unique_ptr<Candidate> cand1_;
-        std::unique_ptr<Candidate> cand2_;
+protected:
+  void buildP4() override {p4_ = cand1_->P4() + cand2_->P4();}; 
+  std::unique_ptr<Candidate> cand1_;
+  std::unique_ptr<Candidate> cand2_;
 };
 
 #endif
