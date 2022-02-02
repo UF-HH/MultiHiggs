@@ -696,7 +696,7 @@ if [ -z "$PRODHOME" ]; then
 fi 
 
 # Folder structure is different on CMSConnect
-helpers_dir=${PRODHOME%genproductions*}/genproductions/Utilities
+helpers_dir=${PRODHOME%genproductions*}MadGraph/gridpacks/genproductions/Utilities
 helpers_file=${helpers_dir}/gridpack_helpers.sh
 if [ ! -f "$helpers_file" ]; then
   if ! [ -x "$(command -v git)" ]; then

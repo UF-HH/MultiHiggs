@@ -2,7 +2,7 @@
 ODIR="/store/user/srosenzw/analysis/"
 
 . scripts/arg_submit.sh -v qcd "$@"
-TAG="JetHT_Data_UL"
+TAG="JetHT_Data_UL_Luca"
 CFG="config/skim_ntuple_2018.cfg"
 
 make exe -j || exit -1

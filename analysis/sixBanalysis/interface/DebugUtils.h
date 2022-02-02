@@ -1,3 +1,6 @@
+#ifndef DEBUGUTILS_H
+#define DEBUGUTILS_H
+
 #include <string>
 #include <vector>
 #include <sstream>
@@ -6,7 +9,7 @@
 #include "Jet.h"
 
 template <typename T>
-std::string getObjDescr (const T& in, std::string pre = "", int wfield = 10) {
+std::string getObjDescr (const T& in, std::string pre="", int wfield=10) {
   std::ostringstream ss;
   ss << pre;
   ss << " .. pT = " << std::setw(wfield) << in.P4().Pt();
@@ -32,9 +35,11 @@ std::string getObjDescr (const Jet& in, std::string pre, int wfield) {
 
 
 template <typename T>
-void dumpObjColl (const std::vector<T>& in, std::string header = "", int wfield = 10) {
+void dumpObjColl (const std::vector<T>& in, std::string header="", int wfield=10) {
   std::cout << header << std::endl;
   std::cout << "..... collection size : " << in.size() << std::endl;
   for (const T& x : in)
     std::cout << getObjDescr(x, "--- ", wfield) << std::endl;
 }
+
+#endif

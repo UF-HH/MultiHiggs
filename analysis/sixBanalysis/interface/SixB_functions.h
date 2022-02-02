@@ -1,97 +1,159 @@
 #ifndef SIXB_FUNCTIONS_H
 #define SIXB_FUNCTIONS_H
 
-#include "NanoAODTree.h"
-#include "EventInfo.h"
-#include "Cutflow.h"
-
-#include "Jet.h"
-#include "GenJet.h"
-#include "GenPart.h"
-#include "CompositeCandidate.h"
-#include "DiJet.h"
-
-#include "CfgParser.h"
-
+#include "Skim_functions.h"
 #include "EvalNN.h"
 
-#include "ParamsMap.h"
-
-#include <any>
-#include <unordered_map>
-#include <string>
-
-class SixB_functions{
+class SixB_functions : public Skim_functions{
     
 public:
+
+  ////////////////////////////////////////////////////
+  /// Start methods to be overidden
+
+  void Print() override{
+    cout << "[INFO] ... Using SixB_functions" << endl; 
+  }
+
   ////////////////////////////////////////////////////
   /// parameter initialization
   ////////////////////////////////////////////////////
 
-  // read all the info needed by the six functions from the config - to be done once before the event loop starts
-  void initialize_params_from_cfg_sixbskim(CfgParser& cfgr);
-  void initialize_params_from_cfg_eightbskim(CfgParser& cfgr);
-  void initialize_params_from_cfg_ttbarskim(CfgParser& cfgr);
-  
-  // using the internally stored parameters, initialize the function methods
-  void initialize_functions_sixbskim(TFile& outputFile);
+  /**
+   * @brief Initialize param values for skim as defined in config file 
+   * This method can be overriden to define skim specific values
+   * Default defines preselection cuts
+   * @param cfgr .cfg config file
+   */
+  void initialize_params_from_cfg(CfgParser &cfgr) override;
 
-  void set_debug(bool debug) {debug_ = debug;}
+  /**
+   * @brief Initialize functions for skim as defined in config file
+   * This method should be overriden 
+   * @param outputFile .root output file
+   */
+  void initialize_functions(TFile &outputFile) override;
+
 
   ////////////////////////////////////////////////////
   /// gen objects functions
   ////////////////////////////////////////////////////
 
-  // copy general event-level into to ei
-  void copy_event_info(NanoAODTree& nat, EventInfo& ei, bool is_mc);
-        
-  // select the gen-level six b candidates (bs, bosons)
-  void select_gen_particles(NanoAODTree& nat, EventInfo& ei);
-  
-  // select the gen-level eight b candidates (bs, bosons)
-  void select_gen_particles_8b(NanoAODTree& nat, EventInfo& ei);
 
-  // match the selected gen b to gen jets
-  // if ensure_unique = true, ensures that a gen jet is not matched to two different partons
+  /**
+   * @brief Select important gen particles and save them to ei
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   */
+  void select_gen_particles(NanoAODTree &nat, EventInfo &ei) override;
+
+  /**
+   * @brief Match selected gen bs to gen jets
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param ensure_unique if true, ensures that a gen jet is not matched to two different partons
   // otherwise it will match to the closest parton found
-  void match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique = true);
+   */
+  void match_genbs_to_genjets(NanoAODTree &nat, EventInfo &ei, bool ensure_unique = true) override;
+
+  /**
+   * @brief Match genjets associacted to a gen b quark to a reco jet
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   */
+  void match_genbs_genjets_to_reco(NanoAODTree &nat, EventInfo &ei) override;
   
-  void match_genbs_to_genjets_8b(NanoAODTree& nat, EventInfo& ei, bool ensure_unique = true);
+  /**
+   * @brief Match signal objects to reco in_jets collection and saving ID to signalId
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Reco Jet collection to match with
+   */
+  void match_signal_recojets(NanoAODTree &nat, EventInfo &ei, std::vector<Jet> &in_jets) override;
 
-  // match the genjets associated to the 6 gen b quarks to reco jets
-  void match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei);
-
-  void match_genbs_genjets_to_reco_8b(NanoAODTree& nat, EventInfo& ei);
-
-  // void match_genjets_to_reco(std::vector<GenJet>& genjets,std::vector<Jet>& recojets); // EDITED FOR CODE REVIEW - FIXME
-
-  ////////////////////////////////////////////////////
-  /// jet selection functions
-  ////////////////////////////////////////////////////
-
-  // create a vector with all jets in the event
-  std::vector<GenJet> get_all_genjets(NanoAODTree& nat);
-	
-  // create a vector with all jets in the event
-  std::vector<Jet> get_all_jets(NanoAODTree& nat);
-
-  // create a vector with all preselected jets in the event (minimal pt/eta/id requirements)
-  std::vector<Jet> preselect_jets(NanoAODTree& nat, const std::vector<Jet>& in_jets);
+  /**
+   * @brief Match signal objects to gen in_jets collection and saving ID to signalId
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Gen Jet collection to match with
+   */
+  void match_signal_genjets(NanoAODTree &nat, EventInfo &ei, std::vector<GenJet> &in_jets) override;
 
   // select up to six jet candidates out of the input jets - configurable to run various selection algos
-  std::vector<Jet> select_sixb_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
-
-  // two most b tagged jets for ttbar events
-  std::vector<Jet> select_ttbar_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
-
-
+  /**
+   * @brief Select jet candidates - configureable to run various selection algos defined in config
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets List of jets to select from
+   * @return std::vector<Jet> of selected jets
+   */
+  std::vector<Jet> select_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
+  
   ////////////////////////////////////////////////////
   /// Higgs pairing functions
   ////////////////////////////////////////////////////
 
-  // pair the jets and assign them into the 6b candidates - will be stored in the EventInfo. The algorithm is configured as a string in the parameters
-  // specific functions for pairing must return 3 CompositeCandidate, and they are re-ordered in the pair_jets function
-  void pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+  /**
+   * @brief Pair jet candidates - configurable to run various pairing algos
+   * This method should be overriden
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets List of jets to pair 
+   */
+  void pair_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
+
+  ////////////////////////////////////////////////////
+  /// other jet utilities
+  ////////////////////////////////////////////////////
+
+  /**
+   * @brief Count how many valid genjets in the ei are in the in_jets collection
+   * This method should be overriden
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets List of jets to to compare
+   * @return int Number of valid genjets in in_jets
+   */
+  int n_gjmatched_in_jetcoll(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
+
+  /**
+   * @brief Count how many valid gen higgs in the ei are in the in_jets collection
+   * This method should be overriden
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets List of jets to to compare
+   * @return int Number of valid gen higgs in in_jets
+   */
+  int n_ghmatched_in_jetcoll(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
+
+  // add match flags to the selected jets (from which H are the selected jets?)
+  /**
+   * @brief Returns ID of the gen higgs this jet is from
+   * This method should be overriden
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param jet 
+   * @return int ID of the gen higgs this jet is from
+   */
+  int get_jet_genmatch_flag(NanoAODTree &nat, EventInfo &ei, const Jet &jet) override; // -1: other, 0: HX, 1: HY1, 2: HY2
+
+  /**
+   * @brief Get the ID of the gen higgs each selected jet in ei, stores in ei
+   * 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   */
+  void compute_seljets_genmatch_flags(NanoAODTree &nat, EventInfo &ei) override;
+
+  ////////////////////////////////////////////////////
+  /// parameter initialization
+  ////////////////////////////////////////////////////
 
   // just pair jets as in their initial order ABCDEF -> (AB)(CD)(ED) - for debug
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& jets);
@@ -112,8 +174,6 @@ public:
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> select_XYH_leadJetInX (
     NanoAODTree& nat, EventInfo& ei, std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_Hs);
 
-  // get the local idx in the supset for each jet in the subset
-  std::vector<int> match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset);
   // sort jets with btag bias pt ordering
   // void btag_bias_pt_sort(std::vector<Jet>& in_jets);
 
@@ -146,67 +206,8 @@ public:
   std::vector<Jet> select_sixb_jets_maxbtag_highpT (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, int nleadbtag);
 
 
-  // reorder the collection of the input jets according to the bias pt sort order (b tag groups + pt order inside each group) - used by select_sixb_jets_bias_pt_sort
-  std::vector<Jet> bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
-
-  ////////////////////////////////////////////////////
-  /// compute high-level properties
-  ////////////////////////////////////////////////////
-
-  void compute_event_shapes(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
-
-  ////////////////////////////////////////////////////
-  /// other jet utilities
-  ////////////////////////////////////////////////////
-
-  // counts how many valid gen higgs are in the in_dijets collection
-  int n_gjmatched_in_dijetcoll(const std::vector<DiJet>& in_dijets);
-
-  // counts how many of the valid genjets in the ei (matched to b quarks) are in the in_jets collection
-  int n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
-  
-  // counts how many of the valid gen higgs in the ei (matched to b quarks) are in the in_jets collection
-  int n_ghmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
-
-  // add match flags to the selected jets (from which H are the selected jets?)
-  int get_jet_genmatch_flag (NanoAODTree& nat, EventInfo& ei, const Jet& jet); // -1: other, 0: HX, 1: HY1, 2: HY2
-  void compute_seljets_genmatch_flags(NanoAODTree& nat, EventInfo& ei);
-
-  // match signal to genjets
-  // void match_signal_genjets(EventInfo& ei, std::vector<GenJet>& in_jets); // EDITED FOR CODE REVIEW - FIXME
-
-  // match signal to recojets
-  // void match_signal_recojets(EventInfo& ei, std::vector<Jet>& in_jets); // EDITED FOR CODE REVIEW - FIXME
-
-  ////////////////////////////////////////////////////
-  /// non-jet functions
-  ////////////////////////////////////////////////////
-
-  void select_leptons(NanoAODTree& nat, EventInfo& ei);
-
-  void set_btag_WPs(std::vector<double> btag_wps) { btag_WPs = btag_wps; }
-
-  ////////////////////////////////////////////////////
-  /// parameter handling
-  ////////////////////////////////////////////////////
-
-  ParamsMap pmap;
-
-  // template <typename T>
-  // void insert_param (std::string name, T value);
-
-  // template <typename T>
-  // T get_param (std::string name);
-
-  // bool has_param (std::string name) {
-  //   return (params_.find(name) != params_.end());
-  // }
 
 private:
-
-  std::vector<double> btag_WPs;
-
-  bool debug_ = false;
 	
   // NN evaluators for DNN
   std::unique_ptr<EvalNN> n_2j_classifier_;
@@ -239,50 +240,6 @@ private:
     {4,  6, 10},
     {4,  7,  9}
   };
-	
-  // loops on targets, and assigns value to the first element of target that is found to be uninitialized
-  // returns false if none could be assigned, else return true
-  // if throw = true, throws an error if none could be assigned
-  template <typename T>
-  bool assign_to_uninit(T value, std::initializer_list<boost::optional<T>*> targets, bool do_throw = true);
-
-  template <typename T>
-  bool checkBit(T value, int bitpos) {T unit = 1; return value & (unit << bitpos);}
-
-  // finds the index of the jet that was matched in nanoAOD to the input genjet
-  int find_jet_from_genjet (NanoAODTree& nat, const GenJet& gj);
 };
-
-
-template <typename T>
-bool SixB_functions::assign_to_uninit(T value, std::initializer_list<boost::optional<T>*> targets, bool do_throw)
-{
-  for (boost::optional<T>* tar : targets) {
-    if (!(*tar)) {
-      *tar = value;
-      return true;
-    }
-  }
-  if (do_throw)
-    throw std::runtime_error("could not assign to uninit");
-  return false;
-}
-
-// template <typename T>
-// void SixB_functions::insert_param (std::string name, T value)
-// {
-//   if (has_param(name)){
-//     std::string msg = std::string("SixB_functions : parameter ") + name + std::string(" already exists");
-//     throw std::runtime_error(msg);
-//   }
-//   params_[name] = value;
-// }
-
-// template <typename T>
-// T SixB_functions::get_param (std::string name)
-// {
-//   T ret = std::any_cast<T>(params_[name]);
-//   return ret;
-// }
 
 #endif //SIXB_FUNCTIONS_H
