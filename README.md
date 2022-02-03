@@ -107,4 +107,4 @@ For instructions on how to perform skims, see [analysis/sixBanalysis](https://gi
 
 ## HiggsCombine
 
-See [this page](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#for-end-users-that-dont-need-to-commit-or-do-any-development) for instructions on how to install and run Combine
+See [this page](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#for-end-users-that-dont-need-to-commit-or-do-any-development) for instructions on how to install and run Combine ([HiggsAnalysis-CombinedLimit GitHub](https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit))
