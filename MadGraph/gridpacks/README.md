@@ -9,7 +9,8 @@ Instructions for use
 4) ``python generate_grid.py`` to generate inputs for a given mX, mY pair (you can edit the python file list)
 5) run the gridpack generation scripts for every input (see instructions here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/QuickGuideMadGraph5aMCatNLO )
 
-NOTE: for ultralegacy gridpacks, checkout branch ``UL2019`` after point 1) and check the instructions here:
-https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018
+NOTE: The current master branch (as of 08/2021) is the recommended default for UL production
+[1] [Info for MC production for Ultra Legacy Campaigns 2016, 2017, 2018](https://cms-pdmv.gitbook.io/project/mccontact/info-for-mc-production-for-ultra-legacy-campaigns-2016-2017-2018)
+[2] https://github.com/cms-sw/genproductions/
 
 
