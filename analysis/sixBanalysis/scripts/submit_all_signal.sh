@@ -41,7 +41,7 @@ echo "... saving to : ", $ODIR
 # done
 
 # files=$(ls input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt )
-# files=$(ls input/PrivateMC_2021/NMSSM_XYH_YToHH_6b_MX_700_MY_400_10M.txt )
+# files=$(ls input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400_10M.txt )
 # for input in ${files[@]}; do
     # python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
 # done
@@ -50,8 +50,13 @@ echo "... saving to : ", $ODIR
 # for input in ${files[@]}; do
 #     python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
 # done
-#input/PrivateMC_2021/NMSSM_XYH_YToHH_6b_MX_700_MY_400_10M.txt
 
-# for input in ${files[@]}; do
-    # python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-# done
+files=$(ls input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_1000_MY_700.txt )
+for input in ${files[@]}; do
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
+done
+
+files=$(ls input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_1000_MY_300.txt )
+for input in ${files[@]}; do
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
+done
