@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 import os
 import re
 import subprocess
-# import sys
+import sys
 
 print(".. parsing argument line")
 parser = ArgumentParser(description='Command line parser of model options and tags')
@@ -45,7 +45,10 @@ with open(outputName, "w") as f:
                 output = subprocess.run(["eos", "root://cmseos.fnal.gov", "ls", fullPath], capture_output=True)
                 listOfFiles = output.stdout.decode("utf-8").split("\n")
                 for fileName in listOfFiles:
+                    # print(fileName)
                     if fileName != '':
-                        f.write("root://cmseos.fnal.gov/" + fullPath + '/' + fileName + '\n')
+                        # print("root://cmseos.fnal.gov/" + fullPath + '/' + fileName + '\n')
+                        # print("root://cmseos.fnal.gov/" + fullPath + '\n')
+                        f.write("root://cmseos.fnal.gov/" + fullPath + '\n')
     else:
         print("Directory not found... Failed to write.")
