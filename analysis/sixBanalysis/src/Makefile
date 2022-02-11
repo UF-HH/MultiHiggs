@@ -81,7 +81,6 @@ all: $(LIB)$(SONAME)
 
 exe: $(BINS) 
 
-
 test:
 	@echo "..............................."
 	@echo "HDRS          = $(HDRS)"
@@ -133,3 +132,6 @@ $(BIN)%$(BinSuf): $(PRG)%$(PrgSuf) $(HDRS) $(LIB)$(SONAME)
 
 clean:
 	rm -f $(OBJ)*$(ObjSuf)  $(OBJ)mydict* $(BIN)*$(BinSuf) $(LIB)*$(LibSuf) 
+
+torch: $(BIN)/test_torch_gnn.exe 
+	./$(BIN)/test_torch_gnn.exe
