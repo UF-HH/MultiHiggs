@@ -56,12 +56,12 @@ namespace TorchUtils
 
     struct GCNConv
     {
-        int n_in;
+        int n_in_node;
+        int n_in_edge;
         int n_out;
         Linear *linear;
-        ReLu relu;
 
-        GCNConv(int n, int m);
+        GCNConv(int n_in_node, int n_in_edge, int n_out);
         void apply(Eigen::MatrixXf &x, std::vector<std::vector<int>> &edge_index, Eigen::MatrixXf &edge_attr);
         Eigen::MatrixXf message(Eigen::MatrixXf &x, std::vector<std::vector<int>> &edge_index, Eigen::MatrixXf &edge_attr);
         void aggregate(Eigen::MatrixXf &x, std::vector<std::vector<int>> &edge_index, Eigen::MatrixXf &edge_attr, Eigen::MatrixXf &msg);

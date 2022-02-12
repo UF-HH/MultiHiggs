@@ -65,10 +65,13 @@ void TorchUtils::Layer::set_weights(vector<vector<float>> weights)
 void TorchUtils::Layer::set_bias(vector<vector<float>> bias)
 {
     int m = bias.size();
-    int n_out = this->bias.rows();
-    if (m != n_out)
+    int n = bias[0].size();
+
+    int n_out = this->bias.cols();
+    int n_in = this->bias.rows();
+    if (n != n_in || m != n_out)
     {
-        printf("Expected bias(%i), but got bias(%i)\n", n_out, m);
+        printf("Expected bias(%i,%i), but got bias(%i,%i)\n", n_out, n_in, m, n);
     }
 
     this->bias = to_eigen(bias);
@@ -116,45 +119,53 @@ void TorchUtils::Linear::apply(MatrixXf &x)
     x = x * weights.transpose() + MatrixXf::Ones(x.rows(), 1) * bias;
 }
 
-TorchUtils::GCNConv::GCNConv(int n, int m)
+TorchUtils::GCNConv::GCNConv(int n_in_node, int n_in_edge, int n_out)
 {
-    linear = new Linear(n, m);
+    this->n_in_node = n_in_node;
+    this->n_in_edge = n_in_edge;
+    this->n_out = n_out;
+    linear = new Linear(2*n_in_node+n_in_edge,n_out);
 }
 
 void TorchUtils::GCNConv::apply(Eigen::MatrixXf &x, vector<vector<int>> &edge_index, Eigen::MatrixXf &edge_attr)
 {
-    linear->apply(x);
     return propagate(x, edge_index, edge_attr);
 }
 
 Eigen::MatrixXf TorchUtils::GCNConv::message(Eigen::MatrixXf &x, vector<vector<int>> &edge_index, Eigen::MatrixXf &edge_attr)
 {
-    int n_features = x.cols();
+    vector<int> src = edge_index[0];
+    vector<int> dest = edge_index[1];
+    MatrixXf x_i = x(dest, Eigen::placeholders::all);
+    MatrixXf x_j = x(src, Eigen::placeholders::all);
 
-    vector<int> rows = edge_index[0];
-    MatrixXf x_j = x(rows,Eigen::placeholders::all);
+    // Concatenate src node, dest node, and edge features
+    // output will have have (n_edges,2*n_node_features+n_edge_features)
+    int n_edges = edge_attr.rows();
+    int n_node_features = x_i.cols();
+    int n_edge_features = edge_attr.cols();
+    MatrixXf msg(n_edges, 2 * n_node_features + n_edge_features);
+    msg << x_i, x_j - x_i, edge_attr;
 
-    /**
-     * @brief Message Implementation 1
-     * Add edge attr to all features
-     */
-    MatrixXf msg = x_j + edge_attr * MatrixXf::Ones(1, n_features);
-    relu.apply(msg);
+    // Apply linear layer to msg as defined by constructor
+    linear->apply(msg);
+
     return msg;
 }
 
 void scatter_add(Eigen::MatrixXf &x, vector<vector<int>> &edge_index, Eigen::MatrixXf &msg)
 {
-    vector<int> cols = edge_index[1];
+    vector<int> dest = edge_index[1];
 
-    int n_edges = cols.size();
-    int n_node_features = x.cols();
-    MatrixXf out = MatrixXf::Zero(x.rows(), x.cols());
+    int n_edges = dest.size();
+    int n_nodes = x.rows();
+    int n_out = msg.cols();
+    MatrixXf out = MatrixXf::Zero(n_nodes,n_out);
     for (int i = 0; i < n_edges; i++)
     {
-        for (int j = 0; j < n_node_features; j++)
+        for (int j = 0; j < n_out; j++)
         {
-            out(cols[i], j) += msg(i, j);
+            out(dest[i], j) += msg(i, j);
         }
     }
     x = out;
