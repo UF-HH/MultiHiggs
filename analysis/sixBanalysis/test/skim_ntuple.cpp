@@ -661,33 +661,33 @@ int main(int argc, char** argv)
     }
 
     ei.jet_list = presel_jets;
+
+    if (skim_type == keightb)
+    {
+
+      if (presel_jets.size() < 8)
+        continue;
+      cutflow.add("npresel_jets>=8");
+
+      std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
+      ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
+      ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
+      loop_timer.click("Eight B Selection");
       
-    if (skim_type == keightb) {
-      
-      if (presel_jets.size() >= 8)
+      if (selected_jets.size() < 8)
+        continue;
+      cutflow.add("nselect_jets>=8");
+      skf->pair_jets(nat, ei, selected_jets);
+      loop_timer.click("Eight b jet pairing");
+
+      if (is_signal)
       {
-        cutflow.add("npresel_jets>=8");
-
-        std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
-        ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
-        ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
-        loop_timer.click("Eight B Selection");
-        if (selected_jets.size() >= 8)
-        {
-          cutflow.add("nselect_jets>=8");
-          skf->pair_jets(nat,ei,selected_jets);
-          loop_timer.click("Eight b jet pairing");
-        }
-
-        if (is_signal)
-        {
-          skf->compute_seljets_genmatch_flags(nat, ei);
-          loop_timer.click("Eight b pairing flags");
-        }
-
-        skf->compute_event_shapes(nat, ei, selected_jets);
-        loop_timer.click("Event shapes calculation");
+        skf->compute_seljets_genmatch_flags(nat, ei);
+        loop_timer.click("Eight b pairing flags");
       }
+
+      skf->compute_event_shapes(nat, ei, selected_jets);
+      loop_timer.click("Event shapes calculation");
     }
 
     if (skim_type == ksixb){
