@@ -3,13 +3,14 @@
 def writeln(f, line):
     f.write(line + '\n')
 
-def make_jdl(filename, executable, njobs):
+def make_jdl(filename, executable, njobs, memory=None):
     """ build a jdl condor file that submits njobs running executable. Job must expect job idx as first parameter """
     fout = open(filename, 'w')
     writeln (fout, 'universe = vanilla')
     writeln (fout, 'Executable = %s' % executable)
     writeln (fout, 'should_transfer_files = YES')
     writeln (fout, 'when_to_transfer_output = ON_EXIT')
+    if memory: writeln (fout, 'request_memory = %i' % memory)
     writeln (fout, 'Output = job_$(Cluster)_$(Process).stdout')
     writeln (fout, 'Error = job_$(Cluster)_$(Process).stderr')
     writeln (fout, 'Log = job_$(Cluster)_$(Process).log')
