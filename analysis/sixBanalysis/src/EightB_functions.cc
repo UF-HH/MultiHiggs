@@ -380,16 +380,16 @@ std::vector<Jet> EightB_functions::select_eightb_jets_maxbtag(NanoAODTree& nat, 
 void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
     //TODO implement D_HHHH method
-    
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_Hs;
   std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
 
-  
+  if (debug_) loop_timer->click("Pairing Jets");
   if (pairAlgo == "passthrough")
     reco_Hs = pair_4H_passthrough(nat, ei, in_jets);
   if (pairAlgo == "min_mass_spread")
     reco_Hs = pair_4H_min_mass_spread(nat, ei, in_jets);
 
+  if (debug_) loop_timer->click("Pairing Higgs");
   std::tuple<CompositeCandidate, CompositeCandidate> reco_YYs;
   std::string YYAlgo = pmap.get_param<std::string>("configurations", "YYChoice");
   if (YYAlgo == "passthrough")
@@ -397,7 +397,7 @@ void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vec
   if (YYAlgo == "min_mass_spread")
     reco_YYs = pair_YY_min_mass_spread(nat, ei, reco_Hs);
 
-  
+  if (debug_) loop_timer->click("Reordering Resonances");
 
   CompositeCandidate &H1Y1 = static_cast<CompositeCandidate &>(std::get<0>(reco_YYs).getComponent1());
   CompositeCandidate &H2Y1 = static_cast<CompositeCandidate &>(std::get<0>(reco_YYs).getComponent2());
@@ -475,13 +475,16 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, Composite
   if (jets.size() != 8)
     throw std::runtime_error("The jet pairing -passthrough- function requires 8 jets");
 
+  if (debug_) loop_timer->click("Dijet Min Mass Spread Pairing");
   std::vector<CompositeCandidate> dijets(dijet_pairings.size());
+  std::vector<float> dijet_m(dijet_pairings.size());
   for (unsigned int i = 0; i < dijet_pairings.size(); i++)
   {
     int j0 = dijet_pairings[i][0];
     int j1 = dijet_pairings[i][1];
     dijets[i] = CompositeCandidate(jets.at(j0), jets.at(j1));
     dijets[i].rebuildP4UsingRegressedPt(true, true);
+    dijet_m[i] = dijets[i].P4().M();
   }
 
   std::vector<int> min_quadH_pair(4);
@@ -489,9 +492,9 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, Composite
   for (unsigned int i = 0; i < quadH_pairings.size(); i++)
   {
     std::vector<int> quadH_pair = quadH_pairings[i];
-    std::sort(quadH_pair.begin(), quadH_pair.end(), [dijets](int &h1, int &h2)
-              { return dijets[h1].P4().M() > dijets[h2].P4().M(); });
-    float mass_spread = fabs(dijets[quadH_pair[0]].P4().M() - dijets[quadH_pair[3]].P4().M());
+    std::sort(quadH_pair.begin(), quadH_pair.end(), [dijet_m](int &h1, int &h2)
+              { return dijet_m[h1] > dijet_m[h2]; });
+    float mass_spread = fabs(dijet_m[quadH_pair[0]] - dijet_m[quadH_pair[3]]);
     if (mass_spread < min_mass_spread)
     {
       min_quadH_pair = quadH_pair;
@@ -503,7 +506,6 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, Composite
   CompositeCandidate H2Y1 = dijets[min_quadH_pair[1]];
   CompositeCandidate H1Y2 = dijets[min_quadH_pair[2]];
   CompositeCandidate H2Y2 = dijets[min_quadH_pair[3]];
-
 
   return std::make_tuple(H1Y1, H2Y1, H1Y2, H2Y2);
 }
@@ -518,13 +520,16 @@ std::tuple<CompositeCandidate, CompositeCandidate> EightB_functions::pair_YY_pas
 
 std::tuple<CompositeCandidate, CompositeCandidate> EightB_functions::pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> &reco_Hs)
 {
+  if (debug_) loop_timer->click("Dihiggs Min Mass Spread Pairing");
   std::vector<CompositeCandidate> higgs = {std::get<0>(reco_Hs), std::get<1>(reco_Hs), std::get<2>(reco_Hs), std::get<3>(reco_Hs)};
   std::vector<CompositeCandidate> dihiggs(dihiggs_pairings.size());
+  std::vector<float> dihiggs_m(dihiggs_pairings.size());
   for (unsigned int i = 0; i < dihiggs_pairings.size(); i++)
   {
     int h0 = dihiggs_pairings[i][0];
     int h1 = dihiggs_pairings[i][1];
     dihiggs[i] = CompositeCandidate(higgs[h0],higgs[h1]);
+    dihiggs_m[i] = dihiggs[i].P4().M();
   }
 
   std::vector<int> min_diY_pair(2);
@@ -532,9 +537,9 @@ std::tuple<CompositeCandidate, CompositeCandidate> EightB_functions::pair_YY_min
   for (unsigned int i = 0; i < diY_pairings.size(); i++)
   {
     std::vector<int> diY_pair = diY_pairings[i];
-    std::sort(diY_pair.begin(), diY_pair.end(), [dihiggs](int &y1, int &y2)
-              { return dihiggs[y1].P4().M() > dihiggs[y2].P4().M(); });
-    float mass_spread = fabs(dihiggs[diY_pair[0]].P4().M() - dihiggs[diY_pair[1]].P4().M());
+    std::sort(diY_pair.begin(), diY_pair.end(), [dihiggs_m](int &y1, int &y2)
+              { return dihiggs_m[y1] > dihiggs_m[y2]; });
+    float mass_spread = fabs(dihiggs_m[diY_pair[0]] - dihiggs_m[diY_pair[1]]);
     if (mass_spread < min_mass_spread)
     {
       min_diY_pair = diY_pair;
