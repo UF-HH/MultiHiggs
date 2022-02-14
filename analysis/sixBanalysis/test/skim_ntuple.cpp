@@ -397,8 +397,8 @@ int main(int argc, char** argv)
     skf = new Skim_functions();
     break;
   }
-
   skf->Print();
+  skf->set_timer(&loop_timer);
   // -----------
     
   const std::vector<double> btag_WPs = config.readDoubleListOpt("configurations::bTagWPDef");
