@@ -3,7 +3,8 @@
 cmsenv # just in case
 
 SCRIPTSDIR=`pwd`
-MG5DIR=${CMSSW_BASE}/src/sixB/MadGraph/MG5_aMC_v2_6_5
+MG5DIR=/afs/cern.ch/user/s/srosenzw/workarea/sixb/CMSSW_10_2_22/src/sixB/MadGraph/MG5_aMC_v2_6_5
+#MG5DIR=${CMSSW_BASE}/src/sixB/MadGraph/MG5_aMC_v2_6_5
 
 echo "Scripts directory : ${SCRIPTSDIR}"
 echo "MG5 directory     : ${MG5DIR}"
