@@ -109,7 +109,11 @@ public:
    */
   void pair_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
 
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_4H_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_4H_min_mass_spread (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
+
+  std::tuple<CompositeCandidate, CompositeCandidate> pair_YY_passthrough(NanoAODTree &nat, EventInfo &ei, const std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> &reco_Hs);
+  std::tuple<CompositeCandidate, CompositeCandidate> pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> &reco_Hs);
 
   ////////////////////////////////////////////////////
   /// other jet utilities
@@ -155,5 +159,17 @@ public:
    */
   void compute_seljets_genmatch_flags(NanoAODTree &nat, EventInfo &ei) override;
 
+private:
+  std::vector<std::vector<int>> dijet_pairings = {
+      {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {2, 3}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {3, 4}, {3, 5}, {3, 6}, {3, 7}, {4, 5}, {4, 6}, {4, 7}, {5, 6}, {5, 7}, {6, 7}};
+
+  std::vector<std::vector<int>> quadH_pairings = {
+      {0, 13, 22, 27}, {0, 13, 23, 26}, {0, 13, 24, 25}, {0, 14, 19, 27}, {0, 14, 20, 26}, {0, 14, 21, 25}, {0, 15, 18, 27}, {0, 15, 20, 24}, {0, 15, 21, 23}, {0, 16, 18, 26}, {0, 16, 19, 24}, {0, 16, 21, 22}, {0, 17, 18, 25}, {0, 17, 19, 23}, {0, 17, 20, 22}, {1, 8, 22, 27}, {1, 8, 23, 26}, {1, 8, 24, 25}, {1, 9, 19, 27}, {1, 9, 20, 26}, {1, 9, 21, 25}, {1, 10, 18, 27}, {1, 10, 20, 24}, {1, 10, 21, 23}, {1, 11, 18, 26}, {1, 11, 19, 24}, {1, 11, 21, 22}, {1, 12, 18, 25}, {1, 12, 19, 23}, {1, 12, 20, 22}, {2, 7, 22, 27}, {2, 7, 23, 26}, {2, 7, 24, 25}, {2, 9, 15, 27}, {2, 9, 16, 26}, {2, 9, 17, 25}, {2, 10, 14, 27}, {2, 10, 16, 24}, {2, 10, 17, 23}, {2, 11, 14, 26}, {2, 11, 15, 24}, {2, 11, 17, 22}, {2, 12, 14, 25}, {2, 12, 15, 23}, {2, 12, 16, 22}, {3, 7, 19, 27}, {3, 7, 20, 26}, {3, 7, 21, 25}, {3, 8, 15, 27}, {3, 8, 16, 26}, {3, 8, 17, 25}, {3, 10, 13, 27}, {3, 10, 16, 21}, {3, 10, 17, 20}, {3, 11, 13, 26}, {3, 11, 15, 21}, {3, 11, 17, 19}, {3, 12, 13, 25}, {3, 12, 15, 20}, {3, 12, 16, 19}, {4, 7, 18, 27}, {4, 7, 20, 24}, {4, 7, 21, 23}, {4, 8, 14, 27}, {4, 8, 16, 24}, {4, 8, 17, 23}, {4, 9, 13, 27}, {4, 9, 16, 21}, {4, 9, 17, 20}, {4, 11, 13, 24}, {4, 11, 14, 21}, {4, 11, 17, 18}, {4, 12, 13, 23}, {4, 12, 14, 20}, {4, 12, 16, 18}, {5, 7, 18, 26}, {5, 7, 19, 24}, {5, 7, 21, 22}, {5, 8, 14, 26}, {5, 8, 15, 24}, {5, 8, 17, 22}, {5, 9, 13, 26}, {5, 9, 15, 21}, {5, 9, 17, 19}, {5, 10, 13, 24}, {5, 10, 14, 21}, {5, 10, 17, 18}, {5, 12, 13, 22}, {5, 12, 14, 19}, {5, 12, 15, 18}, {6, 7, 18, 25}, {6, 7, 19, 23}, {6, 7, 20, 22}, {6, 8, 14, 25}, {6, 8, 15, 23}, {6, 8, 16, 22}, {6, 9, 13, 25}, {6, 9, 15, 20}, {6, 9, 16, 19}, {6, 10, 13, 23}, {6, 10, 14, 20}, {6, 10, 16, 18}, {6, 11, 13, 22}, {6, 11, 14, 19}, {6, 11, 15, 18}};
+
+  std::vector<std::vector<int>> dihiggs_pairings = {
+      {0, 1}, {0, 2}, {0, 3}, {1, 2}, {1, 3}, {2, 3}};
+
+  std::vector<std::vector<int>> diY_pairings = {
+      {0, 5}, {1, 4}, {2, 3}};
 };
 #endif //EIGHTB_FUNCTIONS_H

@@ -10,6 +10,7 @@
 #include "GenPart.h"
 #include "CompositeCandidate.h"
 #include "DiJet.h"
+#include "Timer.h"
 
 #include "CfgParser.h"
 
@@ -36,6 +37,7 @@ public:
   /// Common Methods
   
   void set_debug(bool debug) { debug_ = debug; }
+  void set_timer(Timer* timer) { loop_timer = timer; }
   
   /**
    * @brief Copy general event info to ei
@@ -238,6 +240,7 @@ protected:
   std::vector<double> btag_WPs;
 
   bool debug_ = false;
+  Timer* loop_timer;
 
   // loops on targets, and assigns value to the first element of target that is found to be uninitialized
   // returns false if none could be assigned, else return true
