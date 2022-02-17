@@ -19,6 +19,7 @@ using namespace std;
 void SixB_functions::initialize_params_from_cfg(CfgParser& config)
 {
   // preselections
+  pmap.insert_param<bool>("presel", "apply", config.readBoolOpt("presel::apply"));
   pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
   pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
   pmap.insert_param<int>   ("presel", "pf_id",   config.readIntOpt("presel::pf_id"));
