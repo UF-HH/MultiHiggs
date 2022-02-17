@@ -20,6 +20,7 @@ using namespace std;
 
 #define COPY_m_pt_ptRegressed_eta_phi_p4(OBJ)        \
   ot.OBJ##_m = ei.OBJ->P4().M();                     \
+  ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();   \
   ot.OBJ##_pt = ei.OBJ->P4().Pt();                   \
   ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt(); \
   ot.OBJ##_eta = ei.OBJ->P4().Eta();                 \
@@ -41,6 +42,7 @@ using namespace std;
   if (ei.OBJ)                                          \
   {                                                    \
     ot.OBJ##_m = ei.OBJ->P4().M();                     \
+    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();   \
     ot.OBJ##_pt = ei.OBJ->P4().Pt();                   \
     ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt(); \
     ot.OBJ##_eta = ei.OBJ->P4().Eta();                 \
@@ -48,36 +50,39 @@ using namespace std;
     ot.OBJ##_p4 = ei.OBJ->P4();                        \
   }
 
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)        \
-  if (ei.OBJ)                                                         \
-  {                                                                   \
-    ot.OBJ##_m = ei.OBJ->P4().M();                                    \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();                                  \
-    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();                \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();                                \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();                                \
+#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)     \
+  if (ei.OBJ)                                                      \
+  {                                                                \
+    ot.OBJ##_m = ei.OBJ->P4().M();                                 \
+    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();               \
+    ot.OBJ##_pt = ei.OBJ->P4().Pt();                               \
+    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();             \
+    ot.OBJ##_eta = ei.OBJ->P4().Eta();                             \
+    ot.OBJ##_phi = ei.OBJ->P4().Phi();                             \
     ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB); \
-    ot.OBJ##_p4 = ei.OBJ->P4();                                       \
+    ot.OBJ##_p4 = ei.OBJ->P4();                                    \
   }
 
-#define COPY_OPTIONAL_jet_list(OBJ)                      \
-  if (ei.OBJ##_list)                                     \
-  {                                                      \
-    for (Jet & jet : ei.OBJ##_list.get())                \
-    {                                                    \
-      ot.OBJ##_E.push_back(jet.get_E());                 \
-      ot.OBJ##_m.push_back(jet.get_m());                 \
-      ot.OBJ##_pt.push_back(jet.get_pt());               \
-      ot.OBJ##_eta.push_back(jet.get_eta());             \
-      ot.OBJ##_phi.push_back(jet.get_phi());             \
-      ot.OBJ##_signalId.push_back(jet.get_signalId());   \
-      ot.OBJ##_higgsIdx.push_back(jet.get_higgsIdx());   \
-      ot.OBJ##_genIdx.push_back(jet.get_genIdx());       \
-      ot.OBJ##_btag.push_back(jet.get_btag());           \
-      ot.OBJ##_qgl.push_back(jet.get_qgl());             \
-      ot.OBJ##_id.push_back(jet.get_id());               \
-      ot.OBJ##_puid.push_back(jet.get_puid());           \
-    }                                                    \
+#define COPY_OPTIONAL_jet_list(OBJ)                          \
+  if (ei.OBJ##_list)                                         \
+  {                                                          \
+    for (Jet & jet : ei.OBJ##_list.get())                    \
+    {                                                        \
+      ot.OBJ##_E.push_back(jet.get_E());                     \
+      ot.OBJ##_m.push_back(jet.get_m());                     \
+      ot.OBJ##_mRegressed.push_back(jet.get_mRegressed());   \
+      ot.OBJ##_pt.push_back(jet.get_pt());                   \
+      ot.OBJ##_ptRegressed.push_back(jet.get_ptRegressed()); \
+      ot.OBJ##_eta.push_back(jet.get_eta());                 \
+      ot.OBJ##_phi.push_back(jet.get_phi());                 \
+      ot.OBJ##_signalId.push_back(jet.get_signalId());       \
+      ot.OBJ##_higgsIdx.push_back(jet.get_higgsIdx());       \
+      ot.OBJ##_genIdx.push_back(jet.get_genIdx());           \
+      ot.OBJ##_btag.push_back(jet.get_btag());               \
+      ot.OBJ##_qgl.push_back(jet.get_qgl());                 \
+      ot.OBJ##_id.push_back(jet.get_id());                   \
+      ot.OBJ##_puid.push_back(jet.get_puid());               \
+    }                                                        \
   }
 
 #define COPY_OPTIONAL_dijet_list(OBJ)                    \

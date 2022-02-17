@@ -38,22 +38,25 @@ public:
 
   int preselIdx = -1;
   void set_preselIdx(int idx) { preselIdx = idx; }
-	
-  float get_E() const        { return this->P4().E(); }
-  float get_m() const        { return this->P4().M(); }
-  float get_pt() const       { return this->P4Regressed().Pt(); }
-  float get_eta() const      { return this->P4().Eta(); }
-  float get_phi() const      { return this->P4().Phi(); }
-  int get_partonFlav() const { return get_property ((*this), Jet_partonFlavour); }
-  int get_hadronFlav() const { return get_property ((*this), Jet_hadronFlavour); }
-  int get_signalId() const   { return signalId; }
-  int get_higgsIdx() const    { return higgsIdx; }
-  int get_genIdx() const     { return genIdx; }
-  float get_btag() const     { return get_property ((*this), Jet_btagDeepFlavB); }
-  float get_qgl() const      { return get_property ((*this), Jet_qgl); }
-  int get_id() const         { return get_property ((*this),Jet_jetId); }
-  int get_puid() const       { return get_property ((*this), Jet_puId); }
-  int get_preselIdx() const  { return preselIdx; }
+
+  float get_E() const { return this->P4().E(); }
+  float get_m() const { return this->P4().M(); }
+  float get_mRegressed() const { return this->P4Regressed().M(); }
+  float get_pt() const { return this->P4().Pt(); }
+  float get_ptRegressed() const { return this->P4Regressed().Pt(); }
+  float get_eta() const { return this->P4().Eta(); }
+  float get_phi() const { return this->P4().Phi(); }
+  int get_partonFlav() const { return get_property((*this), Jet_partonFlavour); }
+  int get_hadronFlav() const { return get_property((*this), Jet_hadronFlavour); }
+  int get_signalId() const { return signalId; }
+  int get_higgsIdx() const { return higgsIdx; }
+  int get_genIdx() const { return genIdx; }
+  float get_btag() const { return get_property((*this), Jet_btagDeepFlavB); }
+  float get_qgl() const { return get_property((*this), Jet_qgl); }
+  int get_id() const { return get_property((*this), Jet_jetId); }
+  int get_puid() const { return get_property((*this), Jet_puId); }
+  int get_preselIdx() const { return preselIdx; }
+
 private:
   void buildP4() override; 
 

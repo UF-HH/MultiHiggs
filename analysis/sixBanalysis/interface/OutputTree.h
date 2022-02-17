@@ -39,6 +39,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 // helper: declares the m/pt/eta/phi/p4 of a variable OBJ
 #define DECLARE_m_pt_ptRegressed_eta_phi_p4(OBJ) \
   float OBJ##_m;                                 \
+  float OBJ##_mRegressed;                        \
   float OBJ##_pt;                                \
   float OBJ##_ptRegressed;                       \
   float OBJ##_eta;                               \
@@ -48,27 +49,30 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 // helper: declares the m/pt/eta/phi/p4/DeepJet of a variable OBJ
 #define DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
   float OBJ##_m;                                         \
+  float OBJ##_mRegressed;                                \
   float OBJ##_pt;                                        \
   float OBJ##_ptRegressed;                               \
   float OBJ##_eta;                                       \
   float OBJ##_phi;                                       \
-  float OBJ##_btag;                                   \
+  float OBJ##_btag;                                      \
   p4_t OBJ##_p4;
 
-#define DECLARE_jet_list(OBJ)        \
-  std::vector<float> OBJ##_E;        \
-  std::vector<float> OBJ##_m;        \
-  std::vector<float> OBJ##_pt;       \
-  std::vector<float> OBJ##_eta;      \
-  std::vector<float> OBJ##_phi;      \
-  std::vector<int> OBJ##_partonFlav; \
-  std::vector<int> OBJ##_hadronFlav; \
-  std::vector<int> OBJ##_signalId;   \
-  std::vector<int> OBJ##_higgsIdx;   \
-  std::vector<int> OBJ##_genIdx;     \
-  std::vector<float> OBJ##_btag;     \
-  std::vector<float> OBJ##_qgl;      \
-  std::vector<int> OBJ##_id;         \
+#define DECLARE_jet_list(OBJ)           \
+  std::vector<float> OBJ##_E;           \
+  std::vector<float> OBJ##_m;           \
+  std::vector<float> OBJ##_mRegressed;  \
+  std::vector<float> OBJ##_pt;          \
+  std::vector<float> OBJ##_ptRegressed; \
+  std::vector<float> OBJ##_eta;         \
+  std::vector<float> OBJ##_phi;         \
+  std::vector<int> OBJ##_partonFlav;    \
+  std::vector<int> OBJ##_hadronFlav;    \
+  std::vector<int> OBJ##_signalId;      \
+  std::vector<int> OBJ##_higgsIdx;      \
+  std::vector<int> OBJ##_genIdx;        \
+  std::vector<float> OBJ##_btag;        \
+  std::vector<float> OBJ##_qgl;         \
+  std::vector<int> OBJ##_id;            \
   std::vector<int> OBJ##_puid;
 
 #define DECLARE_dijet_list(OBJ)    \
