@@ -12,8 +12,8 @@ output="output-tree.root"
 # input="input/PrivateMC_2021/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt --is-signal --no-genw-tree"
 input="input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/NMSSM_XYY_YToHH_8b_MX_1000_MY_450.txt --is-signal"
 
-cfg="config/skim_ntuple_2018.cfg"
-# cfg="config/skim_ntuple_2018_8b.cfg"
+# cfg="config/skim_ntuple_2018.cfg"
+cfg="config/skim_ntuple_2018_8b.cfg"
 # cfg="config/skim_ntuple_2018_qcd.cfg"
 # cfg="config/skim_ntuple_2018_cr.cfg"
     
