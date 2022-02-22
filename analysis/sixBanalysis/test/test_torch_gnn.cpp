@@ -6,7 +6,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Core>
 
-#include "TorchUtils.h"
+#include "cpp_geometric.h"
 
 using namespace std;
 using namespace Eigen;

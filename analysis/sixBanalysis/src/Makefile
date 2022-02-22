@@ -49,6 +49,7 @@ SONAME	 =  libsixBanalysis.so
 SONAME2  =  sixBanalysis
 SOFLAGS  =  -Wl,-soname,$(SONAME)
 
+CPPGEO = -L$(CMSSW_BASE)/src/cpp_geometric/c++/lib/ -lcppgeometric -I$(CMSSW_BASE)/src/cpp_geometric/c++/interface/
 TFLIBS = -lPhysicsToolsTensorFlow -ltensorflow_cc -ltensorflow_framework
 CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger $(TFLIBS)
 # CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lPhysicsToolsKinFitter -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger
@@ -127,7 +128,7 @@ $(LIB)$(SONAME): $(OBJS)
 
 
 $(BIN)%$(BinSuf): $(PRG)%$(PrgSuf) $(HDRS) $(LIB)$(SONAME)
-	$(CPP) $<  -l$(SONAME2) $(CPPFLAGS) $(GLIBS) -L$(LIB) $(BOOSTLIBFLAG) -o $@
+	$(CPP) $<  -l$(SONAME2) $(CPPFLAGS) $(GLIBS) -L$(LIB) $(BOOSTLIBFLAG) $(CPPGEO) -o $@
 
 
 clean:
