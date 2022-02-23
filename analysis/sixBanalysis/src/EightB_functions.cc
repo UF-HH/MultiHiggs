@@ -37,11 +37,20 @@ void EightB_functions::initialize_params_from_cfg(CfgParser& config)
 
   // H done with regressed pT
   pmap.insert_param<bool>("configurations", "useRegressedPtForHp4", config.readBoolOpt("configurations::useRegressedPtForHp4"));
+
+  
+  if (pmap.get_param<string> ("configurations", "eightbJetChoice") == "gnn") {
+      pmap.insert_param<string> ("GNN", "model_path", config.readStringOpt("GNN::model_path"));
+  }
 }
 
 void EightB_functions::initialize_functions(TFile& outputFile)
 {
- 
+  if (pmap.get_param<string>("configurations", "eightbJetChoice") == "gnn")
+  {
+    cout << "[INFO] ... Loading GNN: " << pmap.get_param<string>("GNN", "model_path") << endl;
+    gnn_classifier_ = std::unique_ptr<TorchUtils::GeoModel> (new TorchUtils::GeoModel(pmap.get_param<string>("GNN", "model_path")));
+  }
 }
 
 void EightB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
@@ -357,6 +366,9 @@ std::vector<Jet> EightB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, 
   if (sel_type == "maxbtag")
     return select_eightb_jets_maxbtag(nat, ei, in_jets);
     
+  if (sel_type == "gnn")
+    return in_jets;
+
   else
     throw std::runtime_error(std::string("EightB_functions::select_jets : eightbJetChoice ") + sel_type + std::string("not understood"));
 }
@@ -380,7 +392,7 @@ std::vector<Jet> EightB_functions::select_eightb_jets_maxbtag(NanoAODTree& nat, 
 void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
     //TODO implement D_HHHH method
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_Hs;
+  H4_tuple reco_Hs;
   std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
 
   if (debug_) loop_timer->click("Pairing Jets");
@@ -388,9 +400,11 @@ void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vec
     reco_Hs = pair_4H_passthrough(nat, ei, in_jets);
   if (pairAlgo == "min_mass_spread")
     reco_Hs = pair_4H_min_mass_spread(nat, ei, in_jets);
+  if (pairAlgo == "gnn")
+reco_Hs = pair_4H_gnn(nat, ei, in_jets);
 
   if (debug_) loop_timer->click("Pairing Higgs");
-  std::tuple<CompositeCandidate, CompositeCandidate> reco_YYs;
+  YY_tuple reco_YYs;
   std::string YYAlgo = pmap.get_param<std::string>("configurations", "YYChoice");
   if (YYAlgo == "passthrough")
     reco_YYs = pair_YY_passthrough(nat, ei, reco_Hs);
@@ -457,7 +471,7 @@ void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vec
   ei.H2Y2_b2  = static_cast<Jet&>(H2Y2.getComponent2());
 }
 
-std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> EightB_functions::pair_4H_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets)
+H4_tuple EightB_functions::pair_4H_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets)
 {
   if (jets.size() != 8)
     throw std::runtime_error("The jet pairing -passthrough- function requires 8 jets");
@@ -470,7 +484,7 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, Composite
   return std::make_tuple(H1Y1, H2Y1, H1Y2,H2Y2);
 }
 
-std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> EightB_functions::pair_4H_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &jets)
+H4_tuple EightB_functions::pair_4H_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &jets)
 {
   if (jets.size() != 8)
     throw std::runtime_error("The jet pairing -passthrough- function requires 8 jets");
@@ -510,7 +524,86 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, Composite
   return std::make_tuple(H1Y1, H2Y1, H1Y2, H2Y2);
 }
 
-std::tuple<CompositeCandidate, CompositeCandidate> EightB_functions::pair_YY_passthrough(NanoAODTree &nat, EventInfo &ei, const std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> &reco_Hs)
+H4_tuple EightB_functions::pair_4H_gnn (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+  vector<Jet> jets = in_jets;
+
+  // Build upper triangular edge list since graph is fully connected
+  vector<int> edge_i, edge_j;
+  vector<vector<float>> node_x;
+  vector<vector<float>> edge_attr;
+  for (unsigned int i = 0; i < jets.size(); i++)
+  {
+    Jet &j1 = jets[i];
+    vector<float> node_features(5);
+    node_features[0] = j1.get_m();
+    node_features[1] = j1.get_pt(); 
+    node_features[2] = j1.get_eta();
+    node_features[3] = j1.get_phi();
+    node_features[4] = j1.get_btag();
+    node_x.push_back(node_features);
+
+    for (unsigned int j = i + 1; j < jets.size(); j++)
+    {
+      const Jet &j2 = jets[j];
+      vector<float> edge_features(1);
+      edge_features[0] = ROOT::Math::VectorUtil::DeltaR(j1.P4(), j2.P4());
+
+      edge_i.push_back(i);
+      edge_j.push_back(j);
+      edge_attr.push_back(edge_features);
+    }
+  }
+  vector<vector<int>> edge_index = {edge_i, edge_j};
+  if (debug_)
+    loop_timer->click("Prepared GNN Features");
+
+  tuple<vector<float>, vector<float>> pred = gnn_classifier_->evaluate(node_x, edge_index, edge_attr);
+
+  if (debug_)
+    loop_timer->click("Evaluated GNN");
+
+  vector<float> jet_pred = std::get<0>(pred);
+  vector<float> pair_pred = std::get<1>(pred);
+
+  vector<int> edges(pair_pred.size());
+  for (unsigned int i = 0; i < edges.size(); i++)
+    edges[i] = i;
+  std::sort(edges.begin(), edges.end(), [pair_pred](int e1, int e2)
+            { return pair_pred[e1] > pair_pred[e2]; });
+
+  vector<Jet> selected_jets;
+  vector<int> selected_idx;
+  for (int edge : edges)
+  {
+    int x_i = edge_index[0][edge];
+    int x_j = edge_index[1][edge];
+
+    Jet &j1 = jets[x_i];
+    Jet &j2 = jets[x_j];
+    // Make sure we haven't used these jets yet
+    if (std::find(selected_idx.begin(), selected_idx.end(), x_i) != selected_idx.end() ||
+        std::find(selected_idx.begin(), selected_idx.end(), x_j) != selected_idx.end())
+      continue;
+
+    selected_idx.push_back(x_i);
+    selected_idx.push_back(x_j);
+
+    selected_jets.push_back(j1);
+    selected_jets.push_back(j2);
+  }
+  if (debug_)
+    loop_timer->click("Selected GNN Pair");
+
+  CompositeCandidate H1Y1(selected_jets.at(0), selected_jets.at(1));
+  CompositeCandidate H2Y1 (selected_jets.at(2), selected_jets.at(3));
+  CompositeCandidate H1Y2 (selected_jets.at(4), selected_jets.at(5));
+  CompositeCandidate H2Y2 (selected_jets.at(6), selected_jets.at(7));
+
+  return std::make_tuple(H1Y1, H2Y1, H1Y2,H2Y2);
+}
+
+YY_tuple EightB_functions::pair_YY_passthrough(NanoAODTree &nat, EventInfo &ei, const H4_tuple &reco_Hs)
 {
   CompositeCandidate Y1(std::get<0>(reco_Hs), std::get<1>(reco_Hs));
   CompositeCandidate Y2(std::get<2>(reco_Hs), std::get<3>(reco_Hs));
@@ -518,7 +611,7 @@ std::tuple<CompositeCandidate, CompositeCandidate> EightB_functions::pair_YY_pas
   return std::make_tuple(Y1, Y2);
 }
 
-std::tuple<CompositeCandidate, CompositeCandidate> EightB_functions::pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> &reco_Hs)
+YY_tuple EightB_functions::pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const H4_tuple &reco_Hs)
 {
   if (debug_) loop_timer->click("Dihiggs Min Mass Spread Pairing");
   std::vector<CompositeCandidate> higgs = {std::get<0>(reco_Hs), std::get<1>(reco_Hs), std::get<2>(reco_Hs), std::get<3>(reco_Hs)};

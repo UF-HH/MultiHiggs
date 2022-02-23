@@ -3,6 +3,11 @@
 
 #include "Skim_functions.h"
 
+#include "cpp_geometric.h"
+
+typedef std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> H4_tuple;
+typedef std::tuple<CompositeCandidate, CompositeCandidate> YY_tuple;
+
 class EightB_functions : public Skim_functions{
     
 public:
@@ -109,11 +114,12 @@ public:
    */
   void pair_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
 
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_4H_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_4H_min_mass_spread (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
+  H4_tuple pair_4H_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
+  H4_tuple pair_4H_min_mass_spread (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
+  H4_tuple pair_4H_gnn(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
 
-  std::tuple<CompositeCandidate, CompositeCandidate> pair_YY_passthrough(NanoAODTree &nat, EventInfo &ei, const std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> &reco_Hs);
-  std::tuple<CompositeCandidate, CompositeCandidate> pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> &reco_Hs);
+  YY_tuple pair_YY_passthrough(NanoAODTree &nat, EventInfo &ei, const H4_tuple &reco_Hs);
+  YY_tuple pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const H4_tuple &reco_Hs);
 
   ////////////////////////////////////////////////////
   /// other jet utilities
@@ -160,6 +166,8 @@ public:
   void compute_seljets_genmatch_flags(NanoAODTree &nat, EventInfo &ei) override;
 
 private:
+  std::unique_ptr<TorchUtils::GeoModel> gnn_classifier_;
+
   std::vector<std::vector<int>> dijet_pairings = {
       {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {2, 3}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {3, 4}, {3, 5}, {3, 6}, {3, 7}, {4, 5}, {4, 6}, {4, 7}, {5, 6}, {5, 7}, {6, 7}};
 

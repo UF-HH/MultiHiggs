@@ -399,6 +399,7 @@ int main(int argc, char** argv)
   }
   skf->Print();
   skf->set_timer(&loop_timer);
+  skf->set_debug(true);
   // -----------
     
   const std::vector<double> btag_WPs = config.readDoubleListOpt("configurations::bTagWPDef");

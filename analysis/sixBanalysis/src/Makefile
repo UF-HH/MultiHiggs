@@ -33,12 +33,13 @@ DICTHDRS  =  $(patsubst $(LINKDEF),,$(HDRS)) $(LINKDEF)
 
 ROOTCFLAGS    = $(shell root-config --cflags)
 ROOTGLIBS     = $(shell root-config --glibs)
+GEOINC = -I$(CMSSW_BASE)/src/cpp_geometric/c++/interface/
 
 ARCHL = -m64
 CXX  =  g++
-CXXFLAGS  = $(ROOTCFLAGS) -Wall -O -fPIC -I$(HDR) $(TFINC)
+CXXFLAGS  = $(ROOTCFLAGS) -Wall -O -fPIC -I$(HDR) $(TFINC) $(GEOINC)
 CPP  =  g++
-CPPFLAGS  = $(ROOTCFLAGS) -Wall  $(ARCHL) -I$(HDR) $(TFINC)
+CPPFLAGS  = $(ROOTCFLAGS) -Wall  $(ARCHL) -I$(HDR) $(TFINC) $(GEOINC)
 
 F    = gfortran
 FFLAGS = -c
@@ -49,7 +50,7 @@ SONAME	 =  libsixBanalysis.so
 SONAME2  =  sixBanalysis
 SOFLAGS  =  -Wl,-soname,$(SONAME)
 
-CPPGEO = -L$(CMSSW_BASE)/src/cpp_geometric/c++/lib/ -lcppgeometric -I$(CMSSW_BASE)/src/cpp_geometric/c++/interface/
+CPPGEO = -L$(CMSSW_BASE)/src/cpp_geometric/c++/lib/ -lcppgeometric 
 TFLIBS = -lPhysicsToolsTensorFlow -ltensorflow_cc -ltensorflow_framework
 CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger $(TFLIBS)
 # CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lPhysicsToolsKinFitter -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger
