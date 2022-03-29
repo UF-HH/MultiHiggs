@@ -1,8 +1,7 @@
-# ODIR="/store/user/ekoenig/6BAnalysis/NTuples/2018/"
-ODIR="/store/user/srosenzw/analysis/"
+ODIR="/store/user/srosenzw/sixb/sixb_ntuples/Summer2018UL/"
 
 . scripts/arg_submit.sh -v qcd "$@"
-TAG="JetHT_Data_UL_Luca"
+TAG="dHHH_pairs"
 CFG="config/skim_ntuple_2018.cfg"
 
 make exe -j || exit -1
