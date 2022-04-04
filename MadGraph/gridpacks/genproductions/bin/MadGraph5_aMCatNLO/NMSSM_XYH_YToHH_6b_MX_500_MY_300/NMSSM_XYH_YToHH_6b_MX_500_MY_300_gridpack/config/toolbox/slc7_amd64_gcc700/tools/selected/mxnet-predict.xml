@@ -1,0 +1,9 @@
+<tool name="mxnet-predict" version="1.5.0-pafccj2">
+  <lib name="mxnet"/>
+  <client>
+    <environment name="MXNET_PREDICT_BASE" default="/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/mxnet-predict/1.5.0-pafccj2"/>
+    <environment name="INCLUDE" default="$MXNET_PREDICT_BASE/include"/>
+    <environment name="LIBDIR" default="$MXNET_PREDICT_BASE/lib64"/>
+  </client>
+  <use name="openblas"/>
+</tool>

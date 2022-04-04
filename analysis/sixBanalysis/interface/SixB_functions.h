@@ -158,8 +158,12 @@ public:
   // just pair jets as in their initial order ABCDEF -> (AB)(CD)(ED) - for debug
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& jets);
 
+  // closest to a 3D diagonal a la HH->4b resonant  
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_mH (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+
   // closest to a 3D diagonal a la HH->4b nonresonant  
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_D_HHH (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_D_HHH (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, const int fitCorrection);
 
   // use the 2jet DNN
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_2jet_DNN (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);

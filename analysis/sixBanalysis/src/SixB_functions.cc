@@ -828,8 +828,14 @@ void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vecto
   std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
   if (pairAlgo == "passthrough")
     reco_Hs = pair_passthrough(nat, ei, in_jets);
+  else if (pairAlgo == "m_H")
+    reco_Hs = pair_mH(nat, ei, in_jets);
   else if (pairAlgo == "D_HHH")
     reco_Hs = pair_D_HHH(nat, ei, in_jets);
+  else if (pairAlgo == "D_HHH_corr") {
+    int fitCorrection = std::stoi(pmap.get_param<std::string>("configurations", "fitCorrection"));
+    reco_Hs = pair_D_HHH(nat, ei, in_jets, fitCorrection);
+  }
   else if (pairAlgo == "2jet_DNN")
     reco_Hs = pair_2jet_DNN(nat, ei, in_jets);
   else if (pairAlgo == "min_diag_distance")
@@ -903,6 +909,51 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   return std::make_tuple(HX, HY1, HY2);
 }
 
+std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_mH (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+  int mH = 125; // GeV
+  // NOTE: p4 is constructed using unregressed pT
+  // to update if it needs to use the regressed pT by calling CompositeCandiadte.rebuildP4UsingRegressedPt
+
+  // obtain all possible dijet pairs
+  std::vector<CompositeCandidate> dijets;
+  for (const std::vector<int> ijets : dijet_pairings)
+  { 
+    int ij1 = ijets[0]; int ij2 = ijets[1];
+    CompositeCandidate dijet(in_jets[ij1],in_jets[ij2]);
+    dijets.push_back( dijet );
+  }
+
+  // calculate distance from desired value for all dijet pairs
+  std::vector< std::pair<float,int> > triH_d_hhh;
+  for (unsigned int i = 0; i < triH_pairings.size(); i++)
+    {
+      std::vector<CompositeCandidate> tri_dijet_sys;
+      for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
+
+      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4().Pt()>dj2.P4().Pt(); });
+      
+      // calculate distance of each pair from mH=125 GeV
+      // the goal is to minimize d_hhh = |m1 - mH| + |m2 - mH| + |m3 - mH|
+      float d_hhh = abs(tri_dijet_sys[0].P4().M()-mH) + abs(tri_dijet_sys[1].P4().M()-mH) + abs(tri_dijet_sys[2].P4().M()-mH);
+      triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
+    }
+
+
+  // Choose the closest triH value to the mH values
+  std::sort(triH_d_hhh.begin(),triH_d_hhh.end(),[](std::pair<float,int> h1,std::pair<float,int> h2){ return h1.first<h2.first; });
+
+  int itriH = triH_d_hhh[0].second;
+  std::vector<int> idijets = triH_pairings[itriH];
+
+
+  // Order dijets by highest Pt
+  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4().Pt() > dijets[id2].P4().Pt(); });
+
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> higgs_cands = std::make_tuple(dijets[idijets[0]], dijets[idijets[1]], dijets[idijets[2]]);
+  return higgs_cands;
+}
+
 std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_D_HHH (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
   // Optimial 3D Line to select most signal like higgs
@@ -966,6 +1017,66 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   //   }
     
   // return higgs_list;  
+}
+
+std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_D_HHH (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets, const int fitCorrection)
+{
+  // Optimial 3D Line to select most signal like higgs
+  const float phi = 0.77;
+  const float theta = 0.98;
+  const ROOT::Math::Polar3DVectorF r_vec(1,theta,phi);
+
+  // NOTE: p4 is constructed using unregressed pT
+  // to update if it needs to use the regressed pT by calling CompositeCandiadte.rebuildP4UsingRegressedPt
+
+  std::vector<CompositeCandidate> dijets;
+  for (const std::vector<int> ijets : dijet_pairings)
+  { 
+    int ij1 = ijets[0]; int ij2 = ijets[1];
+    CompositeCandidate dijet(in_jets[ij1],in_jets[ij2]);
+    dijets.push_back( dijet );
+  }
+
+
+  std::vector< std::pair<float,int> > triH_d_hhh;
+  for (unsigned int i = 0; i < triH_pairings.size(); i++)
+    {
+      std::vector<CompositeCandidate> tri_dijet_sys;
+      for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
+
+      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4().Pt()>dj2.P4().Pt(); });
+        
+      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4().M(),tri_dijet_sys[1].P4().M(),tri_dijet_sys[2].P4().M());
+      float d_hhh = m_vec.Cross(r_vec).R();
+      triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
+    }
+
+  // Choose the closest triH vector to the r_vec line
+  std::sort(triH_d_hhh.begin(),triH_d_hhh.end(),[](std::pair<float,int> h1,std::pair<float,int> h2){ return h1.first<h2.first; });
+
+  float min_d_hhh = triH_d_hhh[0].first;
+  float next_min_d_hhh = triH_d_hhh[1].first;
+  float Delta_d_hhh = next_min_d_hhh - min_d_hhh;
+
+  int itriH;
+  // if minimum d_hhh is significantly smaller than the next to minimum d_hhh, select the min
+  // otherwise, maximize the pT in the 6-jet CM frame
+  if (Delta_d_hhh > 30) {
+    itriH = triH_d_hhh[0].second;
+  }
+  else {
+    // check which pairings maximize the pT in the 6-jet CM frame
+    // FIX ME
+    itriH = triH_d_hhh[0].second; // not correct, just a placeholder
+  }
+
+  std::vector<int> idijets = triH_pairings[itriH];
+
+  // Order dijets by highest Pt
+  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4().Pt() > dijets[id2].P4().Pt(); });
+
+  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> higgs_cands = std::make_tuple(dijets[idijets[0]], dijets[idijets[1]], dijets[idijets[2]]);
+  return higgs_cands;
 }
 
 std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_min_diag_distance (NanoAODTree &nat, EventInfo& ei, std::vector<Jet> jets)

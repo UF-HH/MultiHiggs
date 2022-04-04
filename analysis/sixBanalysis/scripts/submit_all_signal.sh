@@ -1,13 +1,44 @@
+set -e
+
 ODIR="/store/user/srosenzw/sixb/sixb_ntuples/Summer2018UL/"
-
-. scripts/arg_submit.sh -v sr "$@"
-
-# CFG="config/skim_ntuple_2018_nocuts.cfg"
-# TAG="NMSSM_nocuts"
-
 CFG="config/skim_ntuple_2018.cfg"
-# TAG="dHHH_pairs/NMSSM"
-TAG="dHHH_pairs_maxbtag/NMSSM"
+TAG="dHHH_pairs/NMSSM"
+EXTRA=""
+
+ARGS=$(getopt -a --options j:nbo:c:t:d --long "jer:,no-cuts,btag-ordered,odir:,cfg:,tag:dry-run" -- "$@")
+eval set -- "$ARGS"
+
+while true; do
+  case "$1" in
+      -j|--jer)
+         EXTRA+="--jes-shift-syst $2 "
+         shift 2;;
+      -n|--no-cuts)
+         TAG="dHHH_pairs/NMSSM_nocuts"
+         CFG="config/skim_ntuple_2018_nocuts.cfg"
+         shift;;
+      -b|--btag-ordered) # order by b tag
+         TAG="dHHH_pairs_maxbtag/NMSSM"
+         shift;;
+      -o|--odir) # specify output directory
+         ODIR="$2"
+         shift 2;;
+      -c|--cfg) # specify config file
+         CFG="$2"
+         shift 2;;
+      -t|--tag) # specify tag
+         TAG="$2"
+         shift 2;;
+      -d|--dry-run)
+         EXTRA+="--dryrun"
+         shift;;
+      --)
+      break;;
+      *)
+      printf "Unknown option %s\n" "$1"
+      exit 1;;
+  esac
+done
 
 make exe -j || exit -1
 
@@ -16,11 +47,10 @@ echo "... saving to : ", $ODIR
 
 relDir='input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/'
 files=$(ls ${relDir})
-# files=$(ls input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_450_MY_300.txt )
 for input in ${files[@]}; do
     if [[ "$input" == "misc" ]]; then
         continue
     fi
     input="${relDir}${input}"
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal "$EXTRA" --forceOverwrite
 done

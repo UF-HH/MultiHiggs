@@ -23,6 +23,7 @@ args = parser.parse_args()
 
 print('... importing python config file', args.cfg)
 
+# A factory function for creating a ModuleSpec instance based on the path to a file. Missing information will be filled in on the spec by making use of loader APIs and by the implication that the module will be file-based.
 spec = importlib.util.spec_from_file_location("cfg", args.cfg)
 cfg  = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cfg)

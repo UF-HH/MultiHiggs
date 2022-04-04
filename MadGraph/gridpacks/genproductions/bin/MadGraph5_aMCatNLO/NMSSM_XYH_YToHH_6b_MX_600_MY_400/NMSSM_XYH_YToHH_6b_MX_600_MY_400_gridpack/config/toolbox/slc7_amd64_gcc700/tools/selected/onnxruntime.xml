@@ -1,0 +1,9 @@
+<tool name="onnxruntime" version="1.3.0">
+  <lib name="onnxruntime"/>
+  <client>
+    <environment name="ONNXRUNTIME_BASE" default="/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/onnxruntime/1.3.0"/>
+    <environment name="INCLUDE" default="$ONNXRUNTIME_BASE/include"/>
+    <environment name="LIBDIR" default="$ONNXRUNTIME_BASE/lib"/>
+  </client>
+  <runtime name="MLAS_DYNAMIC_CPU_ARCH" value="0"/>
+</tool>

@@ -1,0 +1,40 @@
+#************************************************************
+#*                     MadGraph5_aMC@NLO                    *
+#*                                                          *
+#*                *                       *                 *
+#*                  *        * *        *                   *
+#*                    * * * * 5 * * * *                     *
+#*                  *        * *        *                   *
+#*                *                       *                 *
+#*                                                          *
+#*                                                          *
+#*         VERSION 2.6.5                 2018-02-03         *
+#*                                                          *
+#*    The MadGraph5_aMC@NLO Development Team - Find us at   *
+#*    https://server06.fynu.ucl.ac.be/projects/madgraph     *
+#*                                                          *
+#************************************************************
+#*                                                          *
+#*               Command File for MadGraph5_aMC@NLO         *
+#*                                                          *
+#*     run as ./bin/mg5_aMC  filename                       *
+#*                                                          *
+#************************************************************
+set default_unset_couplings 99
+set loop_color_flows False
+set max_npoint_for_channel 0
+set group_subprocesses Auto
+set ignore_six_quark_processes False
+set loop_optimized_output True
+set gauge unitary
+set complex_mass_scheme False
+import model NMSSMHET_UFO --modelname
+define p = g u c d s u~ c~ d~ s~
+define j = g u c d s u~ c~ d~ s~
+define l+ = e+ mu+
+define l- = e- mu-
+define vl = ve vm vt
+define vl~ = ve~ vm~ vt~
+generate g g > h03, (h03 > h01 h02, (h02 > h01 h01, h01 > b b~), (h01 \
+> b b~) )
+output NMSSM_XYH_YToHH_6b_MX_700_MY_400 -nojpeg
