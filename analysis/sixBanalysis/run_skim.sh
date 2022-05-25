@@ -11,7 +11,7 @@ output="output.root"
 # input="input/Run2_UL/2018/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8.txt"
 input="input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt --is-signal"
 
-cfg="config/skim_ntuple_2018.cfg"
+cfg="config/skim_ntuple_2018_presel.cfg"
 # cfg="config/skim_ntuple_2018_8b.cfg"
 # cfg="config/skim_ntuple_2018_qcd.cfg"
 # cfg="config/skim_ntuple_2018_cr.cfg"
