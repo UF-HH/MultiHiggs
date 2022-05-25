@@ -1,17 +1,20 @@
-set -e
+# set -e
 
 ODIR="/store/user/srosenzw/sixb/sixb_ntuples/Summer2018UL/"
 CFG="config/skim_ntuple_2018.cfg"
 TAG="dHHH_pairs/NMSSM"
 EXTRA=""
 
-ARGS=$(getopt -a --options j:nbo:c:t:d --long "jer:,no-cuts,btag-ordered,odir:,cfg:,tag:dry-run" -- "$@")
+ARGS=$(getopt -a --options nbo:c:t:d --long "jes:,jer:,no-cuts,btag-ordered,odir:,cfg:,tag:dry-run" -- "$@")
 eval set -- "$ARGS"
 
 while true; do
   case "$1" in
-      -j|--jer)
+      --jes)
          EXTRA+="--jes-shift-syst $2 "
+         shift 2;;
+      --jer)
+         EXTRA+="--jer-shift-syst $2 "
          shift 2;;
       -n|--no-cuts)
          TAG="dHHH_pairs/NMSSM_nocuts"
@@ -45,12 +48,12 @@ make exe -j || exit -1
 echo "... tag       : ", $TAG
 echo "... saving to : ", $ODIR
 
-relDir='input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/'
+relDir='input/PrivateMC_2018/NMSSM_XYY_YToHH_6b/'
 files=$(ls ${relDir})
 for input in ${files[@]}; do
     if [[ "$input" == "misc" ]]; then
         continue
     fi
     input="${relDir}${input}"
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal "$EXTRA" --forceOverwrite
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal "$EXTRA"
 done

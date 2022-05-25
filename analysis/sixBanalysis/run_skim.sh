@@ -15,7 +15,7 @@ cfg="config/skim_ntuple_2018.cfg"
 # cfg="config/skim_ntuple_2018_8b.cfg"
 # cfg="config/skim_ntuple_2018_qcd.cfg"
 # cfg="config/skim_ntuple_2018_cr.cfg"
-    
+     
 make exe -j && \
     bin/skim_ntuple.exe \
 	--input $input \

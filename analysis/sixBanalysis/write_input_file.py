@@ -48,10 +48,7 @@ with open(outputName, "w") as f:
                 output = subprocess.check_output(["eos", "root://cmseos.fnal.gov", "ls", fullPath])
                 listOfFiles = output.decode("utf-8").split("\n")
                 for fileName in listOfFiles:
-                    # print(fileName)
                     if fileName != '':
-                        # print("root://cmseos.fnal.gov/" + fullPath + '/' + fileName + '\n')
-                        # print("root://cmseos.fnal.gov/" + fullPath + '\n')
                         f.write("root://cmseos.fnal.gov/" + fullPath + '\n')
     else:
         print("Directory not found... Failed to write.")
