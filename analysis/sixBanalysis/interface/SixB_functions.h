@@ -210,7 +210,6 @@ public:
   std::vector<Jet> select_sixb_jets_maxbtag_highpT (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, int nleadbtag);
 
 
-
 private:
 	
   // NN evaluators for DNN
