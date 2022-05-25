@@ -47,7 +47,7 @@ Sample event production can be done through the manual production of LHE events 
 
 Sample event production can also be done by generating a gridpack (consisting of several mass points) and using [genproductions](https://github.com/cms-sw/genproductions). See [MadGraph/gridpacks/README.md](https://github.com/UF-HH/sixB/tree/master/MadGraph/gridpacks) for instructions to generate the cards and [Quick tutorial on how to produce a gridpack](https://twiki.cern.ch/twiki/bin/viewauth/CMS/QuickGuideMadGraph5aMCatNLO#Quick_tutorial_on_how_to_produce)
 
-After running `python generate_grid.py`, navigate to the directory `sixB/MadGraph/gridpacks/genproductions/bin/MadGraph5_aMCatNLO/` and modify and run `sh generate_6b_gridpacks.sh`.
+After running `python generate_grid.py`, navigate to the directory `sixB/MadGraph/gridpacks/genproductions/bin/MadGraph5_aMCatNLO/` and modify and run `sh generate_6b_gridpacks.sh`. This will generate the tarballs, which you can copy to `FullSim/Summer20UL18/Template/`, in which you can modify `genSim_step.py` and `crabConfig.py` and submit each Full Sim sample to CRAB via the command `crab submit crabConfig.py`.
 
 ## Running Instructions
 
