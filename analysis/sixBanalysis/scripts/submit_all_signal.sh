@@ -1,11 +1,12 @@
 # set -e
+# if submitting -b and -t, make sure -b is before -t !!!!
 
-ODIR="/store/user/srosenzw/sixb/sixb_ntuples/Summer2018UL/"
+ODIR="/store/user/srosenzw/sixb/ntuples/Summer2018UL/"
 CFG="config/skim_ntuple_2018.cfg"
-TAG="dHHH_pairs/NMSSM"
+TAG="bias/NMSSM"
 EXTRA=""
 
-ARGS=$(getopt -a --options nbo:c:t:d --long "jes:,jer:,no-cuts,btag-ordered,odir:,cfg:,tag:dry-run" -- "$@")
+ARGS=$(getopt -a --options npbo:c:t:d --long "jes:,jer:,no-cuts,presel,btag-ordered,odir:,cfg:,tag:dry-run" -- "$@")
 eval set -- "$ARGS"
 
 while true; do
@@ -17,11 +18,16 @@ while true; do
          EXTRA+="--jer-shift-syst $2 "
          shift 2;;
       -n|--no-cuts)
-         TAG="dHHH_pairs/NMSSM_nocuts"
+         TAG="NMSSM_nocuts"
          CFG="config/skim_ntuple_2018_nocuts.cfg"
          shift;;
+      -p|--presel)
+         TAG="NMSSM_presel"
+         CFG="config/skim_ntuple_2018_presel.cfg"
+         shift;;
       -b|--btag-ordered) # order by b tag
-         TAG="dHHH_pairs_maxbtag/NMSSM"
+         TAG="btag/NMSSM"
+         CFG="config/skim_ntuple_2018_maxbtag.cfg"
          shift;;
       -o|--odir) # specify output directory
          ODIR="$2"
@@ -46,14 +52,15 @@ done
 make exe -j || exit -1
 
 echo "... tag       : ", $TAG
+echo "... cfg       : ", $CFG
 echo "... saving to : ", $ODIR
 
-relDir='input/PrivateMC_2018/NMSSM_XYY_YToHH_6b/'
+relDir='input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/'
 files=$(ls ${relDir})
 for input in ${files[@]}; do
     if [[ "$input" == "misc" ]]; then
         continue
     fi
     input="${relDir}${input}"
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal "$EXTRA"
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal --forceOverwrite "$EXTRA"
 done
