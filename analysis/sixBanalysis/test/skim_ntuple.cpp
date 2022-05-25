@@ -205,7 +205,8 @@ int main(int argc, char** argv)
       keightb,
       // kshapecr,
       khiggscr,
-      // kpass,
+      kpass,
+      kpresel,
       knull
     };
 
@@ -217,7 +218,8 @@ int main(int argc, char** argv)
                                skim_type_name == "eightb"  ? keightb  :
                               //  skim_type_name == "shapecr" ? kshapecr :
                                skim_type_name == "higgscr" ? khiggscr :
-                              //  skim_type_name == "pass"    ? kpass     :
+                               skim_type_name == "pass"    ? kpass     :
+                               skim_type_name == "presel"    ? kpresel     :
                                knull
                                );
   if (skim_type == knull)
@@ -392,6 +394,9 @@ int main(int argc, char** argv)
     break;
   case kttbar:
     skf = new TTBar_functions();
+    break;
+  case kpresel:
+    skf = new SixB_functions();
     break;
   default:
     skf = new Skim_functions();
@@ -766,6 +771,23 @@ int main(int argc, char** argv)
       */
       
       // loop_timer.click("Six b selection");
+    }
+
+    if (skim_type == kpass){
+      std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
+      ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
+      ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
+    }
+
+    if (skim_type == kpresel){
+      std::vector<Jet> presel_jets = skf->preselect_jets(nat, all_jets);
+      if (presel_jets.size() < 6)
+        continue;
+      cutflow.add("npresel_jets>=6");
+
+      std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
+      ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
+      ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
     }
 
     if (skim_type == khiggscr){
