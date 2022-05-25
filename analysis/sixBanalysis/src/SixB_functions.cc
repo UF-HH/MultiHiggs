@@ -324,50 +324,12 @@ std::vector<Jet> SixB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, co
 
 std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
-  // std::vector<Jet> jets = in_jets;
-
-  // std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
-
-  // auto loose_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
-  // auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
-  // auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
-
-  // auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
-
-  // int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
-  // int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
-  // int loose_idx  = std::distance(jets.begin(),loose_it.base())-1;
-
-  // std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
-  // auto start = jets.begin();
-  // for (int wp_idx : wp_idxs)
-  // {
-  //   if (wp_idx != -1 && start != jets.end()) {
-	//     auto end = jets.begin() + wp_idx + 1;
-	//     std::sort(start,end,pt_sort);
-	//     start = end;
-  //   }
-  // }
-  
   std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
 
   int n_out = std::min<int>(jets.size(), 6);
   jets.resize(n_out); // take top 6
 
   // if (debug_) dumpObjColl(jets, "==== JETS SELECTED IN bias_pt_sort BEFORE CUTS ===");
-
-  // apply a set of dedicated cuts
-  // NOTE: these cuts are applied in the *order* in which jets are passed
-  // this means that these
-  // pt_cuts     = 60, 40, 40, 20
-  // btagWP_cuts =  2,  2,  1,  1
-  // will be satisfied by a set of jets like the one below
-  // pT :: 100 50 45 25
-  // WP ::  2  2  2  1
-  // but not by the jets below:
-  // pT :: 100 50 25 45
-  // WP ::  2  2  2  1
-  // so these cuts do NOT mean "at least 2 tight jets with pt 60/40 + at least two medium jets with pT 40/20"
 
   bool apply_cuts = pmap.get_param<bool>("bias_pt_sort", "applyJetCuts");
 
@@ -459,20 +421,16 @@ std::vector<Jet> SixB_functions::select_sixb_jets_6jet_DNN (NanoAODTree &nat, Ev
 
 
 std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
-{
-    std::vector<Jet> jets = in_jets;
-    stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
-            return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
-    ); // sort jet by deepjet score (highest to lowest)
+{   
+  std::vector<Jet> jets = in_jets;
+  stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
+          return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
+  ); // sort jet by deepjet score (highest to lowest)
 
-    int n_out = std::min<int>(jets.size(), 6);
-    jets.resize(n_out);
+  int n_out = std::min<int>(jets.size(), 6);
+  jets.resize(n_out);
 
-    // for (auto& jet : jets)
-    //     std::cout << jet.P4().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
-    // std::cout << std::endl << std::endl;
-
-    return jets;
+  return jets;
 }
 
 std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, int nleadbtag)
@@ -564,13 +522,18 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
 
 // int SixB_functions::njets_preselections (const std::vector<Jet>& in_jets)
 // {
-//     const double pt_min  = 30.;
-//     const double eta_max = 2.4;
+//     double pt_min = pmap.get_param<bool>("presel", "pt_min");
+//     double eta_max = pmap.get_param<bool>("presel", "eta_max");
+//     double pfid = pmap.get_param<bool>("presel", "pf_id");
+//     double puid = pmap.get_param<bool>("presel", "pu_id");
+
 //     int count = 0;
 //     for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
 //         const Jet& jet = in_jets.at(ij);
 //         if (jet.P4().Pt()            <= pt_min)  continue;
 //         if (std::abs(jet.P4().Eta()) >= eta_max) continue;
+//         if (jet.get_id() < 2) continue;
+//         if (jet.P4().Pt() < 50 && jet.get_puid() < 6) continue;
 //         count++;
 //     }
 //     return count;
