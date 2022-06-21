@@ -49,7 +49,7 @@ void EightB_functions::initialize_functions(TFile& outputFile)
   if (pmap.get_param<string>("configurations", "eightbJetChoice") == "gnn")
   {
     cout << "[INFO] ... Loading GNN: " << pmap.get_param<string>("GNN", "model_path") << endl;
-    gnn_classifier_ = std::unique_ptr<TorchUtils::GeoModel> (new TorchUtils::GeoModel(pmap.get_param<string>("GNN", "model_path")));
+    // gnn_classifier_ = std::unique_ptr<TorchUtils::GeoModel> (new TorchUtils::GeoModel(pmap.get_param<string>("GNN", "model_path")));
   }
 }
 
@@ -561,7 +561,9 @@ H4_tuple EightB_functions::pair_4H_gnn (NanoAODTree &nat, EventInfo& ei, const s
   if (debug_)
     loop_timer->click("Prepared GNN Features");
 
-  tuple<vector<float>, vector<float>> pred = gnn_classifier_->evaluate(node_x, edge_index, edge_attr);
+  // TODO: implement using ONNX 
+  // tuple<vector<float>, vector<float>> pred = gnn_classifier_->evaluate(node_x, edge_index, edge_attr);
+  tuple<vector<float>, vector<float>> pred;
 
   if (debug_)
     loop_timer->click("Evaluated GNN");

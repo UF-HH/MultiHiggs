@@ -34,15 +34,15 @@ DICTHDRS  =  $(patsubst $(LINKDEF),,$(HDRS)) $(LINKDEF)
 ROOTCFLAGS    = $(shell root-config --cflags)
 ROOTGLIBS     = $(shell root-config --glibs)
 
-CPPGEO = $(CMSSW_BASE)/src/cpp_geometric/c++
-GEOINC = $(CPPGEO)/interface/
-GEOOBJS  =  $(wildcard $(CPPGEO)/obj/*)
+# CPPGEO = $(CMSSW_BASE)/src/cpp_geometric/c++
+# GEOINC = $(CPPGEO)/interface/
+# GEOOBJS  =  $(wildcard $(CPPGEO)/obj/*)
 
 ARCHL = -m64
 CXX  =  g++
-CXXFLAGS  = -g $(ROOTCFLAGS) -Wall -O -fPIC -I$(HDR) $(TFINC) -I$(GEOINC)
+CXXFLAGS  = -g $(ROOTCFLAGS) -Wall -O -fPIC -I$(HDR) $(TFINC) 
 CPP  =  g++
-CPPFLAGS  = -g $(ROOTCFLAGS) -Wall  $(ARCHL) -I$(HDR) $(TFINC) -I$(GEOINC)
+CPPFLAGS  = -g $(ROOTCFLAGS) -Wall  $(ARCHL) -I$(HDR) $(TFINC) 
 
 F    = gfortran
 FFLAGS = -c
@@ -110,8 +110,6 @@ test:
 	@echo "BOOSTLIBFLAG  = $(BOOSTLIBFLAG)"
 	@echo "....."
 	@echo "GLIBS         = $(GLIBS)"
-	@echo "....."
-	@echo "GEOOBJS         = $(GEOOBJS)"
 	@echo "..............................."
 
 
@@ -128,7 +126,7 @@ $(OBJ)%$(ObjSuf): %$(SrcSuf) $(HDRS)
 #         @echo "Linking $(SONAME):"
 
 $(LIB)$(SONAME): $(OBJS)
-	$(LD) $(LDFLAGS) $(OBJS) $(GEOOBJS) $(SOFLAGS) $(ROOTGLIBS) -o $(LIB)$(SONAME)
+	$(LD) $(LDFLAGS) $(OBJS) $(SOFLAGS) $(ROOTGLIBS) -o $(LIB)$(SONAME)
         @echo "Linking $(SONAME):"
 
 
