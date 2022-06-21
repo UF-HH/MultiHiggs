@@ -53,7 +53,7 @@ SONAME	 =  libsixBanalysis.so
 SONAME2  =  sixBanalysis
 SOFLAGS  =  -Wl,-soname,$(SONAME)
 
-TFLIBS = -lPhysicsToolsTensorFlow -ltensorflow_cc -ltensorflow_framework
+TFLIBS = -lPhysicsToolsTensorFlow -ltensorflow_cc -ltensorflow_framework -lPhysicsToolsONNXRuntime -lonnxruntime
 CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger $(TFLIBS)
 # CMSLIBS =  -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -lPhysicsToolsKinFitter -lJetMETCorrectionsModules -lCondFormatsJetMETObjects -lFWCoreMessageLogger
 GLIBS   =  $(ROOTGLIBS) -lm -ldl -rdynamic -lboost_program_options -lGenVector -lFoam -lMinuit -lTMVA -lMLP -lXMLIO -lGpad  -lTreePlayer -lRooFit -lRooFitCore -lRooStats  $(CMSLIBS)

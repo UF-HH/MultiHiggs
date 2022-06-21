@@ -35,7 +35,7 @@ if [ "$pathunset" = true ] ; then
     export CPATH=${CPATH}:${CMSSW_BASE}/src/
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${THISDIR}/lib:${CPP_BOOST_PATH}/lib:${CMSSW_BASE}/src/cpp_geometric/c++/lib/
     
-    for ext in tensorflow protobuf eigen; do
+    for ext in tensorflow protobuf eigen onnxruntime; do
 	export TFINC="${TFINC} -I$(scram tool tag ${ext} include)"
     LPATH=$(scram tool tag ${ext} libdir)
     if [ -d "$LPATH" ]; then
