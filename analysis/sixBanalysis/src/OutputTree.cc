@@ -20,6 +20,25 @@ using namespace std;
   OBJ##_phi = -999.;               \
   OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
+  
+// helper: creates the pt/eta/phi/p4 branches of a variable OBJ
+#define BRANCH_m_pt_eta_phi_score_p4(OBJ)     \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);         \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);       \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);     \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);     \
+  tree_->Branch(#OBJ "_score", &OBJ##_score); \
+  if (savetlv_)                               \
+    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
+
+#define CLEAR_m_pt_eta_phi_score_p4(OBJ) \
+  OBJ##_m = -999.;                       \
+  OBJ##_pt = -999.;                      \
+  OBJ##_eta = -999.;                     \
+  OBJ##_phi = -999.;                     \
+  OBJ##_score = -999.;                   \
+  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
+
 #define BRANCH_m_pt_ptRegressed_eta_phi_p4(OBJ)           \
   tree_->Branch(#OBJ "_m", &OBJ##_m);                     \
   tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);   \
@@ -58,6 +77,29 @@ using namespace std;
   OBJ##_eta = -999.;                                   \
   OBJ##_phi = -999.;                                   \
   OBJ##_btag = -999.;                                  \
+  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
+
+#define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                         \
+  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);       \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                       \
+  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed);     \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                     \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                     \
+  tree_->Branch(#OBJ "_btag", &OBJ##_btag);                   \
+  tree_->Branch(#OBJ "_score", &OBJ##_score);                 \
+  if (savetlv_)                                               \
+    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
+
+#define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
+  OBJ##_m = -999.;                                           \
+  OBJ##_mRegressed = -999.;                                  \
+  OBJ##_pt = -999.;                                          \
+  OBJ##_ptRegressed = -999.;                                 \
+  OBJ##_eta = -999.;                                         \
+  OBJ##_phi = -999.;                                         \
+  OBJ##_btag = -999.;                                        \
+  OBJ##_score = -999.;                                       \
   OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
 #define BRANCH_jet_list(OBJ)                              \
@@ -273,19 +315,19 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     BRANCH_m_pt_eta_phi_p4(X);
     BRANCH_m_pt_eta_phi_p4(Y1);
     BRANCH_m_pt_eta_phi_p4(Y2);
-    BRANCH_m_pt_eta_phi_p4(H1Y1);
-    BRANCH_m_pt_eta_phi_p4(H2Y1);
-    BRANCH_m_pt_eta_phi_p4(H1Y2);
-    BRANCH_m_pt_eta_phi_p4(H2Y2);
+    BRANCH_m_pt_eta_phi_score_p4(H1Y1);
+    BRANCH_m_pt_eta_phi_score_p4(H2Y1);
+    BRANCH_m_pt_eta_phi_score_p4(H1Y2);
+    BRANCH_m_pt_eta_phi_score_p4(H2Y2);
 
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b2);
 
   }
 
@@ -321,6 +363,21 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       BRANCH_jet_list(jet);
       tree_->Branch("b_6j_score",    &b_6j_score);
     }
+
+  if (is_enabled("dijet_coll"))
+  {
+    std::cout << "[INFO] OutputTree : enabling dijet collection branches" << std::endl;
+
+    tree_->Branch("n_dijet", &n_dijet);
+    tree_->Branch("dijet_m", &dijet_m);
+    tree_->Branch("dijet_pt", &dijet_pt);
+    tree_->Branch("dijet_eta", &dijet_eta);
+    tree_->Branch("dijet_phi", &dijet_phi);
+    tree_->Branch("dijet_dr", &dijet_dr);
+    tree_->Branch("dijet_signalId", &dijet_signalId);
+    tree_->Branch("dijet_j1Idx", &dijet_j1Idx);
+    tree_->Branch("dijet_j2Idx", &dijet_j2Idx);
+  }
 
   if (is_enabled("gen_brs"))
     {
@@ -388,6 +445,16 @@ void OutputTree::clear()
   genjet_recoIdx.clear();
 
   CLEAR_jet_list(jet);
+
+  n_dijet = 0;
+  dijet_m.clear();
+  dijet_pt.clear();
+  dijet_eta.clear();
+  dijet_phi.clear();
+  dijet_dr.clear();
+  dijet_signalId.clear();
+  dijet_j1Idx.clear();
+  dijet_j2Idx.clear();
 
   CLEAR_m_pt_eta_phi_p4(gen_X_fc);
   CLEAR_m_pt_eta_phi_p4(gen_X);

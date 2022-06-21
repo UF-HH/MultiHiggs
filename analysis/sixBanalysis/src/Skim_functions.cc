@@ -177,7 +177,30 @@ std::vector<Jet> Skim_functions::bias_pt_sort_jets (NanoAODTree &nat, EventInfo&
   return jets;
 }
 
+std::vector<DiJet> Skim_functions::make_dijets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets)
+{
+  /**
+   * @brief Make all dijets in list of jets
+   * 
+   */
 
+  std::vector<DiJet> dijets;
+  for (unsigned int i = 0; i < in_jets.size(); i++)
+  {
+    const Jet j1 = in_jets[i];
+    for (unsigned int j = i+1; j < in_jets.size(); j++)
+    {
+      const Jet j2 = in_jets[j];
+      DiJet dijet(j1, j2);
+      dijet.rebuildP4UsingRegressedPt(true, true);
+      dijet.set_jIdx(i, j);
+
+      dijets.push_back(dijet);
+    }
+  }
+
+  return dijets;
+}
 
 void Skim_functions::compute_event_shapes(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {

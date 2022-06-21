@@ -17,7 +17,8 @@ public:
     Jet *clonedJet = new Jet(this->getIdx(), this->getNanoAODTree());
     clonedJet->setP4Regressed(this->P4Regressed());
     clonedJet->setP4(this->P4());
-    return std::unique_ptr<Jet> (clonedJet);
+    clonedJet->params = this->params;
+    return std::unique_ptr<Jet>(clonedJet);
   }
   float getBregCorr();
   float getBregRes();

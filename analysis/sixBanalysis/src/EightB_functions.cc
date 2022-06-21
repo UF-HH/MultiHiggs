@@ -5,7 +5,7 @@
 
 #include "BuildClassifierInput.h"
 
-// #include "DebugUtils.h"
+#include "DebugUtils.h"
 
 #include <iostream>
 #include <tuple>
@@ -401,7 +401,7 @@ void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vec
   if (pairAlgo == "min_mass_spread")
     reco_Hs = pair_4H_min_mass_spread(nat, ei, in_jets);
   if (pairAlgo == "gnn")
-reco_Hs = pair_4H_gnn(nat, ei, in_jets);
+    reco_Hs = pair_4H_gnn(nat, ei, in_jets);
 
   if (debug_) loop_timer->click("Pairing Higgs");
   YY_tuple reco_YYs;
@@ -417,7 +417,7 @@ reco_Hs = pair_4H_gnn(nat, ei, in_jets);
   CompositeCandidate &H2Y1 = static_cast<CompositeCandidate &>(std::get<0>(reco_YYs).getComponent2());
   CompositeCandidate &H1Y2 = static_cast<CompositeCandidate &>(std::get<1>(reco_YYs).getComponent1());
   CompositeCandidate &H2Y2 = static_cast<CompositeCandidate &>(std::get<1>(reco_YYs).getComponent2());
-
+  
   // rebuild p4 with regressed pT if required
   if (pmap.get_param<bool>("configurations", "useRegressedPtForHp4")){
     H1Y1.rebuildP4UsingRegressedPt(true, true);
@@ -460,7 +460,7 @@ reco_Hs = pair_4H_gnn(nat, ei, in_jets);
   ei.H2Y1 = H2Y1;
   ei.H1Y2 = H1Y2;
   ei.H2Y2 = H2Y2;
-  
+
   ei.H1Y1_b1  = static_cast<Jet&>(H1Y1.getComponent1());
   ei.H1Y1_b2  = static_cast<Jet&>(H1Y1.getComponent2());
   ei.H2Y1_b1  = static_cast<Jet&>(H2Y1.getComponent1());
@@ -543,11 +543,14 @@ H4_tuple EightB_functions::pair_4H_gnn (NanoAODTree &nat, EventInfo& ei, const s
     node_features[4] = j1.get_btag();
     node_x.push_back(node_features);
 
-    for (unsigned int j = i + 1; j < jets.size(); j++)
+    for (unsigned int j = 0; j < jets.size(); j++)
     {
       const Jet &j2 = jets[j];
-      vector<float> edge_features(1);
-      edge_features[0] = ROOT::Math::VectorUtil::DeltaR(j1.P4(), j2.P4());
+      vector<float> edge_features(4);
+      edge_features[0] = j1.get_pt() - j2.get_pt();
+      edge_features[1] = ROOT::Math::VectorUtil::DeltaR(j1.P4(), j2.P4());
+      edge_features[2] = j2.get_eta() - j1.get_eta();
+      edge_features[3] = ROOT::Math::VectorUtil::DeltaPhi(j1.P4(), j2.P4());
 
       edge_i.push_back(i);
       edge_j.push_back(j);
@@ -574,10 +577,15 @@ H4_tuple EightB_functions::pair_4H_gnn (NanoAODTree &nat, EventInfo& ei, const s
 
   vector<Jet> selected_jets;
   vector<int> selected_idx;
+
+  vector<float> higgs_score;
   for (int edge : edges)
   {
     int x_i = edge_index[0][edge];
     int x_j = edge_index[1][edge];
+
+    if (!(x_i < x_j))
+      continue;
 
     Jet &j1 = jets[x_i];
     Jet &j2 = jets[x_j];
@@ -585,6 +593,10 @@ H4_tuple EightB_functions::pair_4H_gnn (NanoAODTree &nat, EventInfo& ei, const s
     if (std::find(selected_idx.begin(), selected_idx.end(), x_i) != selected_idx.end() ||
         std::find(selected_idx.begin(), selected_idx.end(), x_j) != selected_idx.end())
       continue;
+
+    higgs_score.push_back(pair_pred[edge]);
+    j1.set_param("score", jet_pred[x_i]);
+    j2.set_param("score", jet_pred[x_j]);
 
     selected_idx.push_back(x_i);
     selected_idx.push_back(x_j);
@@ -595,10 +607,15 @@ H4_tuple EightB_functions::pair_4H_gnn (NanoAODTree &nat, EventInfo& ei, const s
   if (debug_)
     loop_timer->click("Selected GNN Pair");
 
-  CompositeCandidate H1Y1(selected_jets.at(0), selected_jets.at(1));
+  CompositeCandidate H1Y1 (selected_jets.at(0), selected_jets.at(1));
   CompositeCandidate H2Y1 (selected_jets.at(2), selected_jets.at(3));
   CompositeCandidate H1Y2 (selected_jets.at(4), selected_jets.at(5));
   CompositeCandidate H2Y2 (selected_jets.at(6), selected_jets.at(7));
+
+  H1Y1.set_param("score", higgs_score.at(0));
+  H2Y1.set_param("score", higgs_score.at(1));
+  H1Y2.set_param("score", higgs_score.at(2));
+  H2Y2.set_param("score", higgs_score.at(3));
 
   return std::make_tuple(H1Y1, H2Y1, H1Y2,H2Y2);
 }
@@ -615,14 +632,15 @@ YY_tuple EightB_functions::pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &
 {
   if (debug_) loop_timer->click("Dihiggs Min Mass Spread Pairing");
   std::vector<CompositeCandidate> higgs = {std::get<0>(reco_Hs), std::get<1>(reco_Hs), std::get<2>(reco_Hs), std::get<3>(reco_Hs)};
-  std::vector<CompositeCandidate> dihiggs(dihiggs_pairings.size());
-  std::vector<float> dihiggs_m(dihiggs_pairings.size());
+
+  std::vector<CompositeCandidate> dihiggs;
+  std::vector<float> dihiggs_m;
   for (unsigned int i = 0; i < dihiggs_pairings.size(); i++)
   {
     int h0 = dihiggs_pairings[i][0];
     int h1 = dihiggs_pairings[i][1];
-    dihiggs[i] = CompositeCandidate(higgs[h0],higgs[h1]);
-    dihiggs_m[i] = dihiggs[i].P4().M();
+    dihiggs.push_back(CompositeCandidate(higgs.at(h0),higgs.at(h1)));
+    dihiggs_m.push_back(dihiggs[i].P4().M());
   }
 
   std::vector<int> min_diY_pair(2);
@@ -640,8 +658,8 @@ YY_tuple EightB_functions::pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &
     }
   }
 
-  CompositeCandidate Y1 = dihiggs[min_diY_pair[0]];
-  CompositeCandidate Y2 = dihiggs[min_diY_pair[1]];
+  CompositeCandidate Y1 = dihiggs.at(min_diY_pair[0]);
+  CompositeCandidate Y2 = dihiggs.at(min_diY_pair[1]);
   return std::make_tuple(Y1, Y2);
 }
 

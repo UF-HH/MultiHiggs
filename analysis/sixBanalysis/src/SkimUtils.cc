@@ -38,6 +38,17 @@ using namespace std;
     ot.OBJ##_p4 = ei.OBJ->P4();            \
   }
 
+#define COPY_OPTIONAL_m_pt_eta_phi_score_p4(OBJ) \
+  if (ei.OBJ)                                    \
+  {                                              \
+    ot.OBJ##_m = ei.OBJ->P4().M();               \
+    ot.OBJ##_pt = ei.OBJ->P4().Pt();             \
+    ot.OBJ##_eta = ei.OBJ->P4().Eta();           \
+    ot.OBJ##_phi = ei.OBJ->P4().Phi();           \
+    ot.OBJ##_score = ei.OBJ->get_param("score", 0); \
+    ot.OBJ##_p4 = ei.OBJ->P4();                  \
+  }
+
 #define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(OBJ) \
   if (ei.OBJ)                                          \
   {                                                    \
@@ -61,6 +72,20 @@ using namespace std;
     ot.OBJ##_phi = ei.OBJ->P4().Phi();                             \
     ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB); \
     ot.OBJ##_p4 = ei.OBJ->P4();                                    \
+  }
+
+#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
+  if (ei.OBJ)                                                        \
+  {                                                                  \
+    ot.OBJ##_m = ei.OBJ->P4().M();                                   \
+    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();                 \
+    ot.OBJ##_pt = ei.OBJ->P4().Pt();                                 \
+    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();               \
+    ot.OBJ##_eta = ei.OBJ->P4().Eta();                               \
+    ot.OBJ##_phi = ei.OBJ->P4().Phi();                               \
+    ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB);   \
+    ot.OBJ##_score = ei.OBJ->get_param("score", 0);                     \
+    ot.OBJ##_p4 = ei.OBJ->P4();                                      \
   }
 
 #define COPY_OPTIONAL_jet_list(OBJ)                          \
@@ -168,6 +193,22 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     ot.aplanarity   = ei.event_shapes.get().aplanarity;
   }
 
+  if (ei.dijet_list) {
+
+    ot.n_dijet = ei.dijet_list.get().size();
+    for (DiJet &dijet : ei.dijet_list.get())
+    {
+      ot.dijet_m.push_back(dijet.M());                   
+      ot.dijet_pt.push_back(dijet.Pt());                 
+      ot.dijet_eta.push_back(dijet.Eta());               
+      ot.dijet_phi.push_back(dijet.Phi());               
+      ot.dijet_dr.push_back(dijet.dR());
+      ot.dijet_signalId.push_back(dijet.get_signalId());
+      ot.dijet_j1Idx.push_back(dijet.get_j1Idx());
+      ot.dijet_j2Idx.push_back(dijet.get_j2Idx());
+    }
+  }
+
 
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);
@@ -266,19 +307,19 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   // Start Reco 8B Objects
   COPY_OPTIONAL_m_pt_eta_phi_p4(Y1);
   COPY_OPTIONAL_m_pt_eta_phi_p4(Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H1Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H2Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H1Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H2Y2);
+  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H1Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H2Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H1Y2);
+  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H2Y2);
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b2);
 
   if (ei.H1Y1_b1_genHflag)  ot.H1Y1_b1_genHflag  = *ei.H1Y1_b1_genHflag;
   if (ei.H1Y1_b2_genHflag)  ot.H1Y1_b2_genHflag  = *ei.H1Y1_b2_genHflag;

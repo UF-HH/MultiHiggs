@@ -328,6 +328,7 @@ int main(int argc, char** argv)
                   {"leptons_p4",  readCfgOptWithDefault<bool>(config, "configurations::saveLeptons", false)},
                   {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
                   {"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes",  false)},
+                  {"dijets_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveDiJets", false)},
                   {"sixb_brs",    (skim_type == ksixb)},
                   {"eightb_brs",    (skim_type == keightb)},
                   {"ttbar_brs",   (skim_type == kttbar)},
@@ -399,7 +400,7 @@ int main(int argc, char** argv)
   }
   skf->Print();
   skf->set_timer(&loop_timer);
-  skf->set_debug(true);
+  // skf->set_debug(true);
   // -----------
     
   const std::vector<double> btag_WPs = config.readDoubleListOpt("configurations::bTagWPDef");
@@ -669,6 +670,9 @@ int main(int argc, char** argv)
       if (presel_jets.size() < 8)
         continue;
       cutflow.add("npresel_jets>=8");
+
+      std::vector<DiJet> dijets = skf->make_dijets(nat, ei, presel_jets);
+      ei.dijet_list = dijets;
 
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
       ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
