@@ -1,0 +1,140 @@
+{
+  "output_names": {
+    "is_higgs": "dijet_y",
+    "is_higgs_mask": "dijet_mask"
+  },
+  "input_names": [
+    "jet_features",
+    "dijet_index",
+    "dijet_features"
+  ],
+  "jet_features": {
+    "var_names": [
+      "jet_ptRegressed",
+      "jet_mRegressed",
+      "jet_eta",
+      "jet_phi",
+      "jet_btag"
+    ],
+    "var_infos": {
+      "jet_ptRegressed": {
+        "median": 106.49119379258669,
+        "norm_factor": 0.011093439550358231,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "jet_mRegressed": {
+        "median": 13.855390869556084,
+        "norm_factor": 0.07546417054219454,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "jet_eta": {
+        "median": 0,
+        "norm_factor": 0.1060922914790035,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "jet_phi": {
+        "median": 0,
+        "norm_factor": 0.3183102155222888,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "jet_btag": {
+        "median": 0.5560504488014454,
+        "norm_factor": 2.3603781279497356,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      }
+    },
+    "var_length": 20
+  },
+  "dijet_index": {
+    "var_names": [
+      "dijet_j1Idx",
+      "dijet_j2Idx"
+    ],
+    "var_infos": {
+      "dijet_j1Idx": {
+        "median": 0,
+        "norm_factor": 1,
+        "replace_inf_value": 0,
+        "lower_bound": -1e+32,
+        "upper_bound": 1e+32,
+        "pad": 0
+      },
+      "dijet_j2Idx": {
+        "median": 0,
+        "norm_factor": 1,
+        "replace_inf_value": 0,
+        "lower_bound": -1e+32,
+        "upper_bound": 1e+32,
+        "pad": 0
+      }
+    },
+    "var_length": 190
+  },
+  "dijet_features": {
+    "var_names": [
+      "dijet_pt",
+      "dijet_m",
+      "dijet_eta",
+      "dijet_phi",
+      "dijet_dr"
+    ],
+    "var_infos": {
+      "dijet_pt": {
+        "median": 149.8609226372421,
+        "norm_factor": 0.009102197117762117,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "dijet_m": {
+        "median": 186.06887703117806,
+        "norm_factor": 0.007105258302755634,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "dijet_eta": {
+        "median": 0,
+        "norm_factor": 0.1060922914790035,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "dijet_phi": {
+        "median": 0,
+        "norm_factor": 0.3183102155222888,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "dijet_dr": {
+        "median": 2.140659578875161,
+        "norm_factor": 1.1508677128601401,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      }
+    },
+    "var_length": 190
+  }
+}
