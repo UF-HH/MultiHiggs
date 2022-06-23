@@ -136,3 +136,46 @@ std::vector<float> buildClassifierInput::build_2jet_classifier_input(const std::
   for (int i : indices) input_jets.push_back( in_jets[i] );
   return build_2jet_classifier_input(input_jets);
 }
+
+std::map<std::string, std::vector<float>> buildClassifierInput::build_gnn_classifier_input(
+    const std::vector<Jet>& in_jets, const std::vector<DiJet>& in_dijets) 
+{
+  std::map<std::string, std::vector<float>> params;
+
+  std::vector<std::string> features = {"jet_ptRegressed",
+                                       "jet_mRegressed",
+                                       "jet_eta",
+                                       "jet_phi",
+                                       "jet_btag",
+                                       "dijet_j1Idx",
+                                       "dijet_j2Idx",
+                                       "dijet_pt",
+                                       "dijet_m",
+                                       "dijet_eta",
+                                       "dijet_phi",
+                                       "dijet_dr"};
+  for (std::string feature : features)
+    params[feature] = std::vector<float>();
+
+  for (const Jet& j : in_jets)
+  {
+    params["jet_ptRegressed"].push_back(j.get_ptRegressed());
+    params["jet_mRegressed"].push_back(j.get_mRegressed());
+    params["jet_eta"].push_back(j.get_eta());
+    params["jet_phi"].push_back(j.get_phi());
+    params["jet_btag"].push_back(j.get_btag());
+  }
+
+  for (const DiJet& d : in_dijets)
+  {
+    params["dijet_j1Idx"].push_back(d.get_j1Idx());
+    params["dijet_j2Idx"].push_back(d.get_j2Idx());
+    params["dijet_pt"].push_back(d.Pt());
+    params["dijet_m"].push_back(d.M());
+    params["dijet_eta"].push_back(d.Eta());
+    params["dijet_phi"].push_back(d.Phi());
+    params["dijet_dr"].push_back(d.dR());
+  }
+
+  return params;
+}

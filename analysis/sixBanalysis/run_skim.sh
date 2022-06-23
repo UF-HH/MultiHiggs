@@ -5,13 +5,13 @@
 
 # output="NMSSM_XYH_YToHH_6b_MX_700_MY_400_accstudies_500k_Jul2021-v2.root"
 # output="output-tree.root"
-output="NMSSM_XYY_YToHH_8b_MX_1200_MY_500.root"
+output="NMSSM_XYY_YToHH_8b_MX_1000_MY_450.root"
 
 
 # input="input/Run2_UL/2018/JetHT_Run2018C.txt --is-data "
 # input="input/Run2_UL/2018/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8.txt"
 # input="input/PrivateMC_2021/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt --is-signal --no-genw-tree"
-input="input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/training_5M/NMSSM_XYY_YToHH_8b_MX_1000_MY_450.txt --is-signal"
+input="input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/NMSSM_XYY_YToHH_8b_MX_1000_MY_450.txt --is-signal"
 
 # cfg="config/skim_ntuple_2018.cfg"
 cfg="config/skim_ntuple_2018_8b.cfg"

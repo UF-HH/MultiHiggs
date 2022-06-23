@@ -374,6 +374,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     tree_->Branch("dijet_eta", &dijet_eta);
     tree_->Branch("dijet_phi", &dijet_phi);
     tree_->Branch("dijet_dr", &dijet_dr);
+    tree_->Branch("dijet_score", &dijet_score);
     tree_->Branch("dijet_signalId", &dijet_signalId);
     tree_->Branch("dijet_j1Idx", &dijet_j1Idx);
     tree_->Branch("dijet_j2Idx", &dijet_j2Idx);
@@ -452,6 +453,7 @@ void OutputTree::clear()
   dijet_eta.clear();
   dijet_phi.clear();
   dijet_dr.clear();
+  dijet_score.clear();
   dijet_signalId.clear();
   dijet_j1Idx.clear();
   dijet_j2Idx.clear();

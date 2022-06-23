@@ -203,6 +203,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
       ot.dijet_eta.push_back(dijet.Eta());               
       ot.dijet_phi.push_back(dijet.Phi());               
       ot.dijet_dr.push_back(dijet.dR());
+      ot.dijet_score.push_back(dijet.get_param("score", 0));
       ot.dijet_signalId.push_back(dijet.get_signalId());
       ot.dijet_j1Idx.push_back(dijet.get_j1Idx());
       ot.dijet_j2Idx.push_back(dijet.get_j2Idx());

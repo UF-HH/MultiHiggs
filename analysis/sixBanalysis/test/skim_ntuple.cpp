@@ -558,11 +558,11 @@ int main(int argc, char** argv)
     loop_timer.start_lap();
 
     if (!nat.Next()) break;
-    if (iEv % 10000 == 0 || debug) {
-      cout << "... processing event " << iEv << endl;
-      // auto bsize  = ot.getTree()->GetBranch("Run")->GetBasketSize();
-      // cout << "... tree basket size (branch Run) : " << bsize  << endl;
-    }
+    // if (iEv % 10000 == 0 || debug) {
+    //   cout << "... processing event " << iEv << endl;
+    //   // auto bsize  = ot.getTree()->GetBranch("Run")->GetBasketSize();
+    //   // cout << "... tree basket size (branch Run) : " << bsize  << endl;
+    // }
 
     // use the tree content to initialise weight tree in the first event
     if (iEv == 0 && !is_data && save_genw_tree){
@@ -671,8 +671,8 @@ int main(int argc, char** argv)
         continue;
       cutflow.add("npresel_jets>=8");
 
-      std::vector<DiJet> dijets = skf->make_dijets(nat, ei, presel_jets);
-      ei.dijet_list = dijets;
+      // std::vector<DiJet> dijets = skf->make_dijets(nat, ei, presel_jets);
+      // ei.dijet_list = dijets;
 
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
       ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);

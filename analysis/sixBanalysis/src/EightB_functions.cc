@@ -50,6 +50,8 @@ void EightB_functions::initialize_functions(TFile& outputFile)
   {
     cout << "[INFO] ... Loading GNN: " << pmap.get_param<string>("GNN", "model_path") << endl;
     // gnn_classifier_ = std::unique_ptr<TorchUtils::GeoModel> (new TorchUtils::GeoModel(pmap.get_param<string>("GNN", "model_path")));
+    onnx_classifier_ =
+        std::unique_ptr<EvalONNX>(new EvalONNX("particle_net", pmap.get_param<string>("GNN", "model_path")));
   }
 }
 
@@ -527,82 +529,56 @@ H4_tuple EightB_functions::pair_4H_min_mass_spread(NanoAODTree &nat, EventInfo &
 H4_tuple EightB_functions::pair_4H_gnn (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
   vector<Jet> jets = in_jets;
+  vector<DiJet> dijets = make_dijets(nat, ei, in_jets);
 
-  // Build upper triangular edge list since graph is fully connected
-  vector<int> edge_i, edge_j;
-  vector<vector<float>> node_x;
-  vector<vector<float>> edge_attr;
-  for (unsigned int i = 0; i < jets.size(); i++)
-  {
-    Jet &j1 = jets[i];
-    vector<float> node_features(5);
-    node_features[0] = j1.get_m();
-    node_features[1] = j1.get_pt(); 
-    node_features[2] = j1.get_eta();
-    node_features[3] = j1.get_phi();
-    node_features[4] = j1.get_btag();
-    node_x.push_back(node_features);
+  map<string, vector<float>> features = buildClassifierInput::build_gnn_classifier_input(jets, dijets);
 
-    for (unsigned int j = 0; j < jets.size(); j++)
-    {
-      const Jet &j2 = jets[j];
-      vector<float> edge_features(4);
-      edge_features[0] = j1.get_pt() - j2.get_pt();
-      edge_features[1] = ROOT::Math::VectorUtil::DeltaR(j1.P4(), j2.P4());
-      edge_features[2] = j2.get_eta() - j1.get_eta();
-      edge_features[3] = ROOT::Math::VectorUtil::DeltaPhi(j1.P4(), j2.P4());
-
-      edge_i.push_back(i);
-      edge_j.push_back(j);
-      edge_attr.push_back(edge_features);
-    }
-  }
-  vector<vector<int>> edge_index = {edge_i, edge_j};
   if (debug_)
     loop_timer->click("Prepared GNN Features");
 
   // TODO: implement using ONNX 
   // tuple<vector<float>, vector<float>> pred = gnn_classifier_->evaluate(node_x, edge_index, edge_attr);
-  tuple<vector<float>, vector<float>> pred;
+  vector<float> pair_pred = onnx_classifier_->evaluate(features);
+  pair_pred.resize(dijets.size());
+
 
   if (debug_)
     loop_timer->click("Evaluated GNN");
 
-  vector<float> jet_pred = std::get<0>(pred);
-  vector<float> pair_pred = std::get<1>(pred);
 
-  vector<int> edges(pair_pred.size());
-  for (unsigned int i = 0; i < edges.size(); i++)
-    edges[i] = i;
-  std::sort(edges.begin(), edges.end(), [pair_pred](int e1, int e2)
-            { return pair_pred[e1] > pair_pred[e2]; });
+  for (unsigned int i = 0; i < dijets.size(); i++)
+  {
+    dijets[i].set_param("score", pair_pred[i]);
+  }
+
+  ei.dijet_list = dijets;
+
+  std::sort(dijets.begin(), dijets.end(), [](DiJet& d1, DiJet& d2)
+            { return d1.get_param("score", 0) > d2.get_param("score", 0); });
 
   vector<Jet> selected_jets;
-  vector<int> selected_idx;
-
+  vector<int> selected_idxs;
   vector<float> higgs_score;
-  for (int edge : edges)
+  for (DiJet &d : dijets)
   {
-    int x_i = edge_index[0][edge];
-    int x_j = edge_index[1][edge];
+    int x_i = d.get_j1Idx();
+    int x_j = d.get_j2Idx();
 
     if (!(x_i < x_j))
       continue;
 
     Jet &j1 = jets[x_i];
     Jet &j2 = jets[x_j];
+
     // Make sure we haven't used these jets yet
-    if (std::find(selected_idx.begin(), selected_idx.end(), x_i) != selected_idx.end() ||
-        std::find(selected_idx.begin(), selected_idx.end(), x_j) != selected_idx.end())
+    if (std::find(selected_idxs.begin(), selected_idxs.end(), x_i) != selected_idxs.end() ||
+        std::find(selected_idxs.begin(), selected_idxs.end(), x_j) != selected_idxs.end())
       continue;
+      
+    selected_idxs.push_back(x_i);
+    selected_idxs.push_back(x_j);
 
-    higgs_score.push_back(pair_pred[edge]);
-    j1.set_param("score", jet_pred[x_i]);
-    j2.set_param("score", jet_pred[x_j]);
-
-    selected_idx.push_back(x_i);
-    selected_idx.push_back(x_j);
-
+    higgs_score.push_back(d.get_param("score", 0));
     selected_jets.push_back(j1);
     selected_jets.push_back(j2);
   }

@@ -5,6 +5,8 @@
 
 // #include "cpp_geometric.h"
 
+#include "EvalONNX.h"
+
 typedef std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> H4_tuple;
 typedef std::tuple<CompositeCandidate, CompositeCandidate> YY_tuple;
 
@@ -167,6 +169,7 @@ public:
 
 private:
   // std::unique_ptr<TorchUtils::GeoModel> gnn_classifier_;
+  std::unique_ptr<EvalONNX> onnx_classifier_;
 
   std::vector<std::vector<int>> dijet_pairings = {
       {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {2, 3}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {3, 4}, {3, 5}, {3, 6}, {3, 7}, {4, 5}, {4, 6}, {4, 7}, {5, 6}, {5, 7}, {6, 7}};

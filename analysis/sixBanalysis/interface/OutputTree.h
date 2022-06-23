@@ -171,6 +171,7 @@ public:
   std::vector<float> dijet_eta;
   std::vector<float> dijet_phi;
   std::vector<float> dijet_dr;
+  std::vector<float> dijet_score;
   std::vector<int> dijet_signalId;
   std::vector<int> dijet_j1Idx;
   std::vector<int> dijet_j2Idx;
