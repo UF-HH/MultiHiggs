@@ -8,8 +8,10 @@
 #include <iostream>
 #include <tuple>
 #include <algorithm>
+#include <map>
 
 #include "Jet.h"
+#include "DiJet.h"
 
 namespace buildClassifierInput{
 
@@ -26,6 +28,10 @@ namespace buildClassifierInput{
     std::vector<float> build_2jet_classifier_input(std::vector<Jet> in_jets);
 
     std::vector<float> build_2jet_classifier_input(const std::vector<Jet>& in_jets,const std::vector<int>& indices);
-}
+
+    std::map<std::string, std::vector<float>> build_gnn_classifier_input(const std::vector<Jet>& in_jets,
+                                                                         const std::vector<DiJet>& in_dijets);
+
+}  // namespace buildClassifierInput
 
 #endif

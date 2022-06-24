@@ -42,4 +42,13 @@ void dumpObjColl (const std::vector<T>& in, std::string header="", int wfield=10
     std::cout << getObjDescr(x, "--- ", wfield) << std::endl;
 }
 
+template <typename T>
+void dumpVector(const std::vector<T>& in, std::string header="", int wfield=10) {
+  std::cout << header << std::endl;
+  std::cout << "..... collection size : " << in.size() << std::endl;
+  for (const T&x : in)
+    std::cout << x << " ";
+  std::cout << std::endl;
+}
+
 #endif

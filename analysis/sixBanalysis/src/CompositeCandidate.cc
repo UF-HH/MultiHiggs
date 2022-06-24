@@ -52,6 +52,7 @@ CompositeCandidate::CompositeCandidate(const CompositeCandidate& rhs)
   this -> parentIdxVector_ = rhs.parentIdxVector_;
   this -> cand1_ = rhs.cand1_->clone();
   this -> cand2_ = rhs.cand2_->clone();
+  this->params = rhs.params;
 }
 
 CompositeCandidate& CompositeCandidate::operator = (const CompositeCandidate& rhs)
@@ -61,5 +62,6 @@ CompositeCandidate& CompositeCandidate::operator = (const CompositeCandidate& rh
   this -> parentIdxVector_ = rhs.parentIdxVector_;
   this -> cand1_ = rhs.cand1_->clone();
   this -> cand2_ = rhs.cand2_->clone();
+  this->params = rhs.params;
   return (*this);
 }

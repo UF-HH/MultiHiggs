@@ -193,6 +193,16 @@ public:
    */
   virtual void pair_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) {};
 
+  /**
+   * @brief Calculate all di-jet pairings for input list of jets
+   * 
+   * @param nat  NanoAODTree being processed
+   * @param ei  EventInfo class to store values
+   * @param in_jets  List of jets to pair
+   * @return std::vector<DiJet> of dijets 
+   */
+  std::vector<DiJet> make_dijets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
+
   ////////////////////////////////////////////////////
   /// other jet utilities
   ////////////////////////////////////////////////////

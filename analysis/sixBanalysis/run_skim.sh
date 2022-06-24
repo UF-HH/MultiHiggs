@@ -4,7 +4,8 @@
 # source scripts/setup.sh
 
 # output="NMSSM_XYH_YToHH_6b_MX_700_MY_400_accstudies_500k_Jul2021-v2.root"
-output="output-tree.root"
+# output="output-tree.root"
+output="NMSSM_XYY_YToHH_8b_MX_1000_MY_450.root"
 
 
 # input="input/Run2_UL/2018/JetHT_Run2018C.txt --is-data "
