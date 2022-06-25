@@ -14,7 +14,7 @@ output="NMSSM_XYY_YToHH_8b_MX_1000_MY_450.root"
 input="input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/NMSSM_XYY_YToHH_8b_MX_1000_MY_450.txt --is-signal"
 
 # cfg="config/skim_ntuple_2018.cfg"
-cfg="config/skim_ntuple_2018_8b.cfg"
+cfg="config/8b_config/skim_ntuple_2018_t8btag.cfg"
 # cfg="config/skim_ntuple_2018_qcd.cfg"
 # cfg="config/skim_ntuple_2018_cr.cfg"
     

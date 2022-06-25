@@ -558,11 +558,11 @@ int main(int argc, char** argv)
     loop_timer.start_lap();
 
     if (!nat.Next()) break;
-    // if (iEv % 10000 == 0 || debug) {
-    //   cout << "... processing event " << iEv << endl;
-    //   // auto bsize  = ot.getTree()->GetBranch("Run")->GetBasketSize();
-    //   // cout << "... tree basket size (branch Run) : " << bsize  << endl;
-    // }
+    if (iEv % 10000 == 0 || debug) {
+      cout << "... processing event " << iEv << endl;
+      // auto bsize  = ot.getTree()->GetBranch("Run")->GetBasketSize();
+      // cout << "... tree basket size (branch Run) : " << bsize  << endl;
+    }
 
     // use the tree content to initialise weight tree in the first event
     if (iEv == 0 && !is_data && save_genw_tree){
