@@ -3,7 +3,7 @@ ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/"
 
 . scripts/arg_submit.sh -v qcd "$@"
 TAG="JetHT_Data"
-CFG="config/skim_ntuple_2018_8b.cfg"
+CFG="config/8b_config/skim_ntuple_2018_t8btag.cfg"
 
 make exe -j || exit -1
 
