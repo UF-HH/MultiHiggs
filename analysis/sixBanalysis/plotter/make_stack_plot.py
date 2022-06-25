@@ -15,7 +15,7 @@ parser.add_argument('--file', dest='file', required=True)
 parser.add_argument('--nt',   dest='nametag', help='nametag', default=None)
 args = parser.parse_args()
 
-bkgs = ['ttbar']
+bkgs = ['ttbar','qcd']
 data = ['data_obs']
 
 colors = [ROOT.kBlue-7, ROOT.kGreen+1, ROOT.kRed+1, ROOT.kCyan]
@@ -58,3 +58,6 @@ data_histo.Draw('pe same')
 
 oname = 'plot_{}_{}.pdf'.format(args.sel, args.var) if not args.nametag else 'plot_{}_{}_{}.pdf'.format(args.sel, args.var, args.nametag)
 c1.Print(oname, 'pdf')
+
+oname = oname.replace('.pdf','.png')
+c1.Print(oname, 'png')
