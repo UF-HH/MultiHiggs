@@ -14,7 +14,7 @@ version = 't8btag_minmass/'
 path = '/eos/uscms/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/'+version
 
 nmssm = sam.Sample(name='nmssm', sampletype='mc', files=[path+'/NMSSM_XYY_YToHH_8b/NMSSM_XYY_YToHH_8b_MX_1000_MY_450_accstudies.root'],
-    sampledesc= {**lumi_info, 'xs' : 0.3, 'xs_units' : 'pb'}
+    sampledesc= {**lumi_info, 'xs' : 10, 'xs_units' : 'fb'}
 )
 # data_obs = sam.Sample(name='data_obs', sampletype='data', filelist='../skim_filelists/ttbar_2018_10Jan2022/SingleMuon_Run2.txt')
 
@@ -125,7 +125,9 @@ selections_defs = {
     # 'baseline' : 'n_mu_loose == 1 && n_ele_loose == 1 && bjet1_pt > 20 && bjet2_pt > 20',
     # 'tight'    : 'n_mu_loose == 1 && n_ele_loose == 1 && bjet1_pt > 30 && bjet2_pt > 30 && mu_1_pt > 30 && ele_1_pt > 20',
     # 'tight2b'  : 'n_mu_loose == 1 && n_ele_loose == 1 && bjet1_pt > 30 && bjet2_pt > 30 && mu_1_pt > 30 && ele_1_pt > 20 && bjet1_DeepJet > 0.2783 && bjet2_DeepJet > 0.2783',
-    'baseline' : 'n_medium_btag > 3'
+    'baseline' : 'n_medium_btag > 3',
+    'tight5b'  : 'n_medium_btag > 4',
+    'loose3b'  : 'n_medium_btag > 2'
 }
 
 ###################### WEIGHTS DEFINITION #######################
@@ -182,8 +184,26 @@ histos_descs = [
     {
         'var'        : 'X_m',
         'weightlist' : ['genWeight'],
-        'bins'       : (100, 0, 2000),
+        'bins'       : (100, 500, 2000),
     }, 
+    {
+        'var'        : 'X_m',
+        'weightlist' : ['genWeight'],
+        'bins'       : (1  , 800, 1200),
+        'nametag'    : 'single_bin'
+    },
+    {
+        'var'        : 'X_m',
+        'weightlist' : ['genWeight'],
+        'bins'       : (50  , 500, 2000),
+        'nametag'    : '50_bins'
+    },
+    {
+        'var'        : 'X_m',
+        'weightlist' : ['genWeight'],
+        'bins'       : (25  , 500, 2000),
+        'nametag'    : '25_bins'
+    }
 ]
 
 ### declare the histograms - make one histogram for every selection declared

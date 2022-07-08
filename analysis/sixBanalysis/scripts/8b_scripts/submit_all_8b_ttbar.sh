@@ -1,9 +1,9 @@
-ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/t8btag_minmass/"
+ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/jet_net/"
 # ODIR="/store/user/srosenzw/analysis/"
 
 . scripts/arg_submit.sh -v qcd "$@"
 TAG="TTJets"
-CFG="config/8b_config/skim_ntuple_2018_t8btag.cfg"
+CFG="config/8b_config/skim_ntuple_2018_gnn_jet.cfg"
 
 make exe -j || exit -1
 

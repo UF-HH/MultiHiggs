@@ -10,7 +10,7 @@ lumi_info = {'lumi' : 59.740, 'lumi_units' : 'fbinv'}
 ###################### SAMPLES #######################
 ## all samples to be processed should be in a "samples" list
 
-version = 'particle_net/'
+version = 'jet_net/'
 path = '/eos/uscms/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/'+version
 
 nmssm = sam.Sample(name='nmssm', sampletype='mc', files=[path+'/NMSSM_XYY_YToHH_8b/NMSSM_XYY_YToHH_8b_MX_1000_MY_450_accstudies.root'],

@@ -13,10 +13,8 @@ output="NMSSM_XYY_YToHH_8b_MX_1000_MY_450.root"
 # input="input/PrivateMC_2021/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt --is-signal --no-genw-tree"
 input="input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/NMSSM_XYY_YToHH_8b_MX_1000_MY_450.txt --is-signal"
 
-# cfg="config/skim_ntuple_2018.cfg"
-cfg="config/8b_config/skim_ntuple_2018_t8btag.cfg"
-# cfg="config/skim_ntuple_2018_qcd.cfg"
-# cfg="config/skim_ntuple_2018_cr.cfg"
+# cfg="config/8b_config/skim_ntuple_2018_t8btag.cfg"
+cfg="config/8b_config/skim_ntuple_2018_gnn_jet.cfg"
     
 make exe -j && \
     bin/skim_ntuple.exe \

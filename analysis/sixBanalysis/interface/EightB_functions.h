@@ -103,6 +103,8 @@ public:
 
   std::vector<Jet> select_eightb_jets_maxbtag        (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets); // by b tag (highest first)
 
+  std::vector<Jet> select_eightb_jets_gnn(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
+
   ////////////////////////////////////////////////////
   /// Higgs pairing functions
   ////////////////////////////////////////////////////

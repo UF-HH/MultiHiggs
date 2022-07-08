@@ -364,7 +364,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("b_6j_score",    &b_6j_score);
     }
 
-  if (is_enabled("dijet_coll"))
+  if (is_enabled("dijets_coll"))
   {
     std::cout << "[INFO] OutputTree : enabling dijet collection branches" << std::endl;
 

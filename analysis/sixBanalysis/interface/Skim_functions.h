@@ -62,6 +62,8 @@ public:
   std::vector<Jet> preselect_jets(NanoAODTree &nat, const std::vector<Jet> &in_jets);
 
   std::vector<Jet> btag_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
+
+  std::vector<Jet> pt_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
   
   // reorder the collection of the input jets according to the bias pt sort order (b tag groups + pt order inside each group) - used by select_sixb_jets_bias_pt_sort
   std::vector<Jet> bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);

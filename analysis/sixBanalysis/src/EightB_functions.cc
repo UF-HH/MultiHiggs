@@ -39,14 +39,26 @@ void EightB_functions::initialize_params_from_cfg(CfgParser& config)
   pmap.insert_param<bool>("configurations", "useRegressedPtForHp4", config.readBoolOpt("configurations::useRegressedPtForHp4"));
 
   
-  if (pmap.get_param<string> ("configurations", "eightbJetChoice") == "gnn") {
+  if (pmap.get_param<string> ("configurations", "eightbJetChoice") == "gnn_dijet") {
+      pmap.insert_param<string> ("GNN", "model_path", config.readStringOpt("GNN::model_path"));
+  }
+  
+  if (pmap.get_param<string> ("configurations", "eightbJetChoice") == "gnn_jet") {
       pmap.insert_param<string> ("GNN", "model_path", config.readStringOpt("GNN::model_path"));
   }
 }
 
 void EightB_functions::initialize_functions(TFile& outputFile)
 {
-  if (pmap.get_param<string>("configurations", "eightbJetChoice") == "gnn")
+  if (pmap.get_param<string>("configurations", "eightbJetChoice") == "gnn_dijet")
+  {
+    cout << "[INFO] ... Loading GNN: " << pmap.get_param<string>("GNN", "model_path") << endl;
+    // gnn_classifier_ = std::unique_ptr<TorchUtils::GeoModel> (new TorchUtils::GeoModel(pmap.get_param<string>("GNN", "model_path")));
+    onnx_classifier_ =
+        std::unique_ptr<EvalONNX>(new EvalONNX("particle_net", pmap.get_param<string>("GNN", "model_path")));
+  }
+  
+  if (pmap.get_param<string>("configurations", "eightbJetChoice") == "gnn_jet")
   {
     cout << "[INFO] ... Loading GNN: " << pmap.get_param<string>("GNN", "model_path") << endl;
     // gnn_classifier_ = std::unique_ptr<TorchUtils::GeoModel> (new TorchUtils::GeoModel(pmap.get_param<string>("GNN", "model_path")));
@@ -347,14 +359,41 @@ void EightB_functions::compute_seljets_genmatch_flags(NanoAODTree& nat, EventInf
     ei.H2Y2_b1_genHflag  = get_jet_genmatch_flag(nat, ei, *ei.H2Y2_b1);
     ei.H2Y2_b2_genHflag  = get_jet_genmatch_flag(nat, ei, *ei.H2Y2_b2);
 
+    vector<int> flags = {ei.H1Y1_b1_genHflag.get(),
+                         ei.H1Y1_b2_genHflag.get(),
+                         ei.H2Y1_b1_genHflag.get(),
+                         ei.H2Y1_b2_genHflag.get(),
+                         ei.H1Y2_b1_genHflag.get(),
+                         ei.H1Y2_b2_genHflag.get(),
+                         ei.H2Y2_b1_genHflag.get(),
+                         ei.H2Y2_b2_genHflag.get()};
+
     // flags per event
+    int nfound_select = 0;
+    int nfound_select_h = 0;
     int nfound_paired_h = 0;
 
-    if (ei.H1Y1_b1_genHflag > -1 && ei.H1Y1_b1_genHflag == ei.H1Y1_b2_genHflag)  nfound_paired_h += 1;
-    if (ei.H2Y1_b1_genHflag > -1 && ei.H2Y1_b1_genHflag == ei.H2Y1_b2_genHflag)  nfound_paired_h += 1;
-    if (ei.H1Y2_b1_genHflag > -1 && ei.H1Y2_b1_genHflag == ei.H1Y2_b2_genHflag)  nfound_paired_h += 1;
-    if (ei.H2Y2_b1_genHflag > -1 && ei.H2Y2_b1_genHflag == ei.H2Y2_b2_genHflag)  nfound_paired_h += 1;
-    ei.nfound_paired_h = nfound_paired_h; // number of selected jets that are from H
+    for (int i = 0; i < 8; i++) {
+      if (flags[i] > -1) {
+        nfound_select++;
+        for (int j = i + 1; j < 8; j++) {
+          if (flags[i] == flags[j]) {
+            nfound_select_h++;
+            nfound_paired_h += (j - i == 1);
+          }
+        }
+      }
+    }
+
+    //   if (ei.H1Y1_b1_genHflag > -1 && ei.H1Y1_b1_genHflag == ei.H1Y1_b2_genHflag)
+    //     nfound_paired_h += 1;
+    // if (ei.H2Y1_b1_genHflag > -1 && ei.H2Y1_b1_genHflag == ei.H2Y1_b2_genHflag)  nfound_paired_h += 1;
+    // if (ei.H1Y2_b1_genHflag > -1 && ei.H1Y2_b1_genHflag == ei.H1Y2_b2_genHflag)  nfound_paired_h += 1;
+    // if (ei.H2Y2_b1_genHflag > -1 && ei.H2Y2_b1_genHflag == ei.H2Y2_b2_genHflag)  nfound_paired_h += 1;
+
+    ei.nfound_select = nfound_select;
+    ei.nfound_select_h = nfound_select_h;
+    ei.nfound_paired_h = nfound_paired_h;  // number of selected jets that are from H
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -368,8 +407,17 @@ std::vector<Jet> EightB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, 
   if (sel_type == "maxbtag")
     return select_eightb_jets_maxbtag(nat, ei, in_jets);
     
-  if (sel_type == "gnn")
+  if (sel_type == "gnn_dijet")
     return in_jets;
+
+  if (sel_type == "gnn_jet")
+    return select_eightb_jets_gnn(nat, ei, in_jets);
+
+  if (sel_type == "none")
+  {
+    vector<Jet> jets = in_jets;
+    return jets;
+  }
 
   else
     throw std::runtime_error(std::string("EightB_functions::select_jets : eightbJetChoice ") + sel_type + std::string("not understood"));
@@ -390,6 +438,32 @@ std::vector<Jet> EightB_functions::select_eightb_jets_maxbtag(NanoAODTree& nat, 
     return jets;
 }
 
+std::vector<Jet> EightB_functions::select_eightb_jets_gnn(NanoAODTree& nat,
+                                                          EventInfo& ei,
+                                                          const std::vector<Jet>& in_jets) {
+  vector<Jet> jets = pt_sort_jets(nat, ei, in_jets);
+  vector<DiJet> dijets = make_dijets(nat, ei, jets);
+
+  map<string, vector<float>> features = buildClassifierInput::build_gnn_classifier_input(jets, dijets);
+
+  vector<float> jet_pred = onnx_classifier_->evaluate(features);
+  jet_pred.resize(jets.size());
+
+  for (unsigned int i = 0 ; i < jets.size(); i++)
+  {
+    jets[i].set_param("score", jet_pred[i]);
+  }
+
+  ei.jet_list = jets;
+
+  std::sort(jets.begin(), jets.end(), [](Jet& j1, Jet& j2) {
+    return j1.get_param("score", 0) > j2.get_param("score", 0); });
+    
+  int n_out = std::min<int>(jets.size(), 8);
+  jets.resize(n_out);
+
+  return jets;
+}
 
 void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
@@ -402,7 +476,7 @@ void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vec
     reco_Hs = pair_4H_passthrough(nat, ei, in_jets);
   if (pairAlgo == "min_mass_spread")
     reco_Hs = pair_4H_min_mass_spread(nat, ei, in_jets);
-  if (pairAlgo == "gnn")
+  if (pairAlgo == "gnn_dijet")
     reco_Hs = pair_4H_gnn(nat, ei, in_jets);
 
   if (debug_) loop_timer->click("Pairing Higgs");

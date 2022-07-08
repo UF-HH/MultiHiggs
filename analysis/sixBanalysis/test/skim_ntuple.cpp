@@ -319,21 +319,20 @@ int main(int argc, char** argv)
   string outputFileName = opts["output"].as<string>();
   cout << "[INFO] ... saving output to file : " << outputFileName << endl;
   TFile outputFile(outputFileName.c_str(), "recreate");
-  OutputTree ot(
-                opts["save-p4"].as<bool>(),
+  OutputTree ot(opts["save-p4"].as<bool>(),
                 map<string, bool>{
-                  // {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
-                  // {"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
-                  // {"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
-                  {"leptons_p4",  readCfgOptWithDefault<bool>(config, "configurations::saveLeptons", false)},
-                  {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
-                  {"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes",  false)},
-                  {"dijets_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveDiJets", false)},
-                  {"sixb_brs",    (skim_type == ksixb)},
-                  {"eightb_brs",    (skim_type == keightb)},
-                  {"ttbar_brs",   (skim_type == kttbar)},
-                  {"sig_gen_brs", (is_signal)},
-                  {"gen_brs",     (!is_data)},
+                    // {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
+                    // {"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
+                    // {"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
+                    {"leptons_p4",  readCfgOptWithDefault<bool>(config, "configurations::saveLeptons", false)},
+                    {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
+                    {"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes", false)},
+                    {"dijets_coll", readCfgOptWithDefault<bool>(config, "configurations::saveDiJets", false)},
+                    {"sixb_brs", (skim_type == ksixb)},
+                    {"eightb_brs", (skim_type == keightb)},
+                    {"ttbar_brs", (skim_type == kttbar)},
+                    {"sig_gen_brs", (is_signal)},
+                    {"gen_brs", (!is_data)},
                 });
 
   if (save_trg_decision) {
@@ -675,8 +674,6 @@ int main(int argc, char** argv)
       // ei.dijet_list = dijets;
 
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
-      ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
-      ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
       loop_timer.click("Eight B Selection");
       
       if (selected_jets.size() < 8)
