@@ -1,9 +1,9 @@
-ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/jet_net/"
+ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/ranked_quadh/"
 # ODIR="/store/user/srosenzw/analysis/"
 
 . scripts/arg_submit.sh -v qcd "$@"
 TAG="QCD"
-CFG="config/8b_config/skim_ntuple_2018_gnn_jet.cfg"
+CFG="config/8b_config/skim_ntuple_2018_ranked_quadh.cfg"
 
 make exe -j || exit -1
 

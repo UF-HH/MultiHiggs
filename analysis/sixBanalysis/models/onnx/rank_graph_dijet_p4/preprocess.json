@@ -1,0 +1,52 @@
+{
+  "output_names": {
+    "is_bjet": "jet_y",
+    "is_bjet_mask": "jet_mask"
+  },
+  "input_names": [
+    "jet_features"
+  ],
+  "jet_features": {
+    "var_names": [
+      "jet_ptRegressed",
+      "jet_mRegressed",
+      "jet_eta",
+      "jet_phi"
+    ],
+    "var_infos": {
+      "jet_ptRegressed": {
+        "median": 106.49119379258669,
+        "norm_factor": 0.011093439550358231,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "jet_mRegressed": {
+        "median": 13.855390869556084,
+        "norm_factor": 0.07546417054219454,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "jet_eta": {
+        "median": 0,
+        "norm_factor": 0.1060922914790035,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      },
+      "jet_phi": {
+        "median": 0,
+        "norm_factor": 0.3183102155222888,
+        "replace_inf_value": 0,
+        "lower_bound": -5,
+        "upper_bound": 5,
+        "pad": 0
+      }
+    },
+    "var_length": 8
+  }
+}
