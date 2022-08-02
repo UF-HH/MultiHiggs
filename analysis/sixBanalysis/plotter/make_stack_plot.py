@@ -1,4 +1,4 @@
-import ROOT
+import ROOT, os
 ROOT.gROOT.SetBatch(True)
 
 def histo_name(var, sel, sample, nametag=None):
@@ -16,6 +16,7 @@ parser.add_argument('--nt',   dest='nametag', help='nametag', default=None)
 args = parser.parse_args()
 
 bkgs = ['ttbar','qcd']
+# bkgs = ['bkg_model']
 sigs = ['nmssm']
 data = ['data_obs']
 
@@ -74,8 +75,11 @@ data_histo.Draw('pe same')
 
 c1.BuildLegend()
 
+otdir = 'plots/'+args.file.replace('.root','')+'/'
+if not os.path.isdir(otdir): os.mkdir(otdir)
+
 oname = 'plot_{}_{}.pdf'.format(args.sel, args.var) if not args.nametag else 'plot_{}_{}_{}.pdf'.format(args.sel, args.var, args.nametag)
-c1.Print('plots/'+oname, 'pdf')
+c1.Print(otdir+oname, 'pdf')
 
 oname = oname.replace('.pdf','.png')
-c1.Print('plots/'+oname, 'png')
+c1.Print(otdir+oname, 'png')
