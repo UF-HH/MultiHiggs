@@ -19,6 +19,13 @@ using namespace std;
 
 void EightB_functions::initialize_params_from_cfg(CfgParser& config)
 {
+  // blinded
+  if (config.hasOpt("configurations::blinded"))
+  {
+    pmap.insert_param<int>("blind", "n_medium_btag", config.readIntOpt("blind::n_medium_btag"));
+    pmap.insert_param<double>("blind", "quadh_score", config.readDoubleOpt("blind::quadh_score"));
+  }
+
   // preselections
   pmap.insert_param<bool>("presel","apply", config.readBoolOpt("presel::apply"));
   pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
@@ -29,6 +36,9 @@ void EightB_functions::initialize_params_from_cfg(CfgParser& config)
   // eightb jet choice
   pmap.insert_param<string>("configurations", "eightbJetChoice", config.readStringOpt("configurations::eightbJetChoice"));
   
+  // Pair 4H first or 2Y first
+  pmap.insert_param<bool>("configurations", "pair4Hfirst", config.readBoolOpt("configurations::pair4Hfirst"));
+
   // HHHH pairing
   pmap.insert_param<string>("configurations", "jetPairsChoice", config.readStringOpt("configurations::jetPairsChoice"));
 
@@ -39,8 +49,9 @@ void EightB_functions::initialize_params_from_cfg(CfgParser& config)
   pmap.insert_param<bool>("configurations", "useRegressedPtForHp4", config.readBoolOpt("configurations::useRegressedPtForHp4"));
 
   
-  if (pmap.get_param<string> ("configurations", "eightbJetChoice") == "gnn_dijet") {
+  if (pmap.get_param<string> ("configurations", "jetPairsChoice") == "gnn_dijet") {
       pmap.insert_param<string> ("GNN", "model_path", config.readStringOpt("GNN::model_path"));
+      pmap.insert_param<string> ("GNN", "output", config.readStringOpt("GNN::output"));
   }
   
   if (pmap.get_param<string> ("configurations", "eightbJetChoice") == "gnn_jet") {
@@ -50,14 +61,13 @@ void EightB_functions::initialize_params_from_cfg(CfgParser& config)
 
 void EightB_functions::initialize_functions(TFile& outputFile)
 {
-  if (pmap.get_param<string>("configurations", "eightbJetChoice") == "gnn_dijet")
-  {
+  if (pmap.get_param<string>("configurations", "jetPairsChoice") == "gnn_dijet") {
     cout << "[INFO] ... Loading GNN: " << pmap.get_param<string>("GNN", "model_path") << endl;
     // gnn_classifier_ = std::unique_ptr<TorchUtils::GeoModel> (new TorchUtils::GeoModel(pmap.get_param<string>("GNN", "model_path")));
     onnx_classifier_ =
         std::unique_ptr<EvalONNX>(new EvalONNX("particle_net", pmap.get_param<string>("GNN", "model_path")));
   }
-  
+
   if (pmap.get_param<string>("configurations", "eightbJetChoice") == "gnn_jet")
   {
     cout << "[INFO] ... Loading GNN: " << pmap.get_param<string>("GNN", "model_path") << endl;
@@ -65,6 +75,16 @@ void EightB_functions::initialize_functions(TFile& outputFile)
     onnx_classifier_ =
         std::unique_ptr<EvalONNX>(new EvalONNX("particle_net", pmap.get_param<string>("GNN", "model_path")));
   }
+}
+
+bool EightB_functions::is_blinded(NanoAODTree& nat, EventInfo& ei, bool is_data) 
+{
+  bool blind = true;
+  if (ei.n_medium_btag)
+    blind = blind & ei.n_medium_btag.get() >= pmap.get_param<int>("blind","n_medium_btag");
+  if (ei.quadh_score)
+    blind = blind & ei.quadh_score.get() >= pmap.get_param<double>("blind","quadh_score");
+  return blind;
 }
 
 void EightB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
@@ -336,14 +356,32 @@ void EightB_functions::match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& 
 int EightB_functions::get_jet_genmatch_flag (NanoAODTree& nat, EventInfo& ei, const Jet& jet)
 {
     int ijet = jet.getIdx();
-    if ( (ei.gen_H1Y1_b1_recojet && ijet == ei.gen_H1Y1_b1_recojet->getIdx())   || (ei.gen_H1Y1_b2_recojet && ijet == ei.gen_H1Y1_b2_recojet->getIdx()) )
-        return 0; 
-    if ( (ei.gen_H2Y1_b1_recojet && ijet == ei.gen_H2Y1_b1_recojet->getIdx())   || (ei.gen_H2Y1_b2_recojet && ijet == ei.gen_H2Y1_b2_recojet->getIdx()) )
-        return 1; 
-    if ( (ei.gen_H1Y2_b1_recojet && ijet == ei.gen_H1Y2_b1_recojet->getIdx())   || (ei.gen_H1Y2_b2_recojet && ijet == ei.gen_H1Y2_b2_recojet->getIdx()) )
-        return 2; 
-    if ( (ei.gen_H2Y2_b1_recojet && ijet == ei.gen_H2Y2_b1_recojet->getIdx())   || (ei.gen_H2Y2_b2_recojet && ijet == ei.gen_H2Y2_b2_recojet->getIdx()) )
-        return 3; 
+    // if ( (ei.gen_H1Y1_b1_recojet && ijet == ei.gen_H1Y1_b1_recojet->getIdx())   || (ei.gen_H1Y1_b2_recojet && ijet == ei.gen_H1Y1_b2_recojet->getIdx()) )
+    //     return 0; 
+    // if ( (ei.gen_H2Y1_b1_recojet && ijet == ei.gen_H2Y1_b1_recojet->getIdx())   || (ei.gen_H2Y1_b2_recojet && ijet == ei.gen_H2Y1_b2_recojet->getIdx()) )
+    //     return 1; 
+    // if ( (ei.gen_H1Y2_b1_recojet && ijet == ei.gen_H1Y2_b1_recojet->getIdx())   || (ei.gen_H1Y2_b2_recojet && ijet == ei.gen_H1Y2_b2_recojet->getIdx()) )
+    //     return 2; 
+    // if ( (ei.gen_H2Y2_b1_recojet && ijet == ei.gen_H2Y2_b1_recojet->getIdx())   || (ei.gen_H2Y2_b2_recojet && ijet == ei.gen_H2Y2_b2_recojet->getIdx()) )
+    //     return 3; 
+
+    if ((ei.gen_H1Y1_b1_recojet && ijet == ei.gen_H1Y1_b1_recojet->getIdx()))
+      return 0;
+    if ((ei.gen_H1Y1_b2_recojet && ijet == ei.gen_H1Y1_b2_recojet->getIdx()))
+      return 1;
+    if ((ei.gen_H2Y1_b1_recojet && ijet == ei.gen_H2Y1_b1_recojet->getIdx()))
+      return 2;
+    if ((ei.gen_H2Y1_b2_recojet && ijet == ei.gen_H2Y1_b2_recojet->getIdx()))
+      return 3;
+    if ((ei.gen_H1Y2_b1_recojet && ijet == ei.gen_H1Y2_b1_recojet->getIdx()))
+      return 4;
+    if ((ei.gen_H1Y2_b2_recojet && ijet == ei.gen_H1Y2_b2_recojet->getIdx()))
+      return 5;
+    if ((ei.gen_H2Y2_b1_recojet && ijet == ei.gen_H2Y2_b1_recojet->getIdx()))
+      return 6;
+    if ((ei.gen_H2Y2_b2_recojet && ijet == ei.gen_H2Y2_b2_recojet->getIdx()))
+      return 7;
+
     return -1;
 }
 
@@ -373,13 +411,25 @@ void EightB_functions::compute_seljets_genmatch_flags(NanoAODTree& nat, EventInf
     int nfound_select_h = 0;
     int nfound_paired_h = 0;
 
+    int nfound_select_y = 0;
+    int nfound_paired_y = 0;
+
     for (int i = 0; i < 8; i++) {
       if (flags[i] > -1) {
         nfound_select++;
         for (int j = i + 1; j < 8; j++) {
-          if (flags[i] == flags[j]) {
+          if ( (flags[i]+2)/2 == (flags[j]+2)/2 ) {
             nfound_select_h++;
-            nfound_paired_h += (j - i == 1);
+
+            if (i == 0 || i == 2 || i == 4 || i == 6)
+              nfound_paired_h += (j - i < 2);
+          }
+          
+          if ( (flags[i]+4)/4 == (flags[j]+4)/4 ) {
+            nfound_select_y++;
+
+            if (i == 0 || i == 4)
+              nfound_paired_y += (j - i < 4);
           }
         }
       }
@@ -394,6 +444,40 @@ void EightB_functions::compute_seljets_genmatch_flags(NanoAODTree& nat, EventInf
     ei.nfound_select = nfound_select;
     ei.nfound_select_h = nfound_select_h;
     ei.nfound_paired_h = nfound_paired_h;  // number of selected jets that are from H
+    ei.nfound_select_y = nfound_select_y/6;
+    ei.nfound_paired_y = nfound_paired_y/3;
+}
+
+void EightB_functions::compute_seljets_btagmulti(NanoAODTree& nat, EventInfo& ei)
+{
+    // btag per jet
+
+    vector<float> btags = {ei.H1Y1_b1.get().get_btag(),
+                         ei.H1Y1_b2.get().get_btag(),
+                         ei.H2Y1_b1.get().get_btag(),
+                         ei.H2Y1_b2.get().get_btag(),
+                         ei.H1Y2_b1.get().get_btag(),
+                         ei.H1Y2_b2.get().get_btag(),
+                         ei.H2Y2_b1.get().get_btag(),
+                         ei.H2Y2_b2.get().get_btag()};
+
+    vector<int> btagmulti = {0, 0, 0};
+    float btagsum = 0.0;
+
+    for (float btag : btags) {
+      btagsum += btag;
+      for (unsigned int i = 0; i < btag_WPs.size(); i++) {
+        if (btag > btag_WPs[i]) {
+          btagmulti[i]++;
+        }
+      }
+    }
+    btagsum /= (float)btags.size();
+
+    ei.btagavg = btagsum;
+    ei.n_loose_btag = btagmulti[0];
+    ei.n_medium_btag = btagmulti[1];
+    ei.n_tight_btag = btagmulti[2];
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -406,9 +490,6 @@ std::vector<Jet> EightB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, 
   
   if (sel_type == "maxbtag")
     return select_eightb_jets_maxbtag(nat, ei, in_jets);
-    
-  if (sel_type == "gnn_dijet")
-    return in_jets;
 
   if (sel_type == "gnn_jet")
     return select_eightb_jets_gnn(nat, ei, in_jets);
@@ -468,38 +549,48 @@ std::vector<Jet> EightB_functions::select_eightb_jets_gnn(NanoAODTree& nat,
 void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
     //TODO implement D_HHHH method
-  H4_tuple reco_Hs;
-  std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
+  // H4_tuple reco_Hs;
+  // std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
 
-  if (debug_) loop_timer->click("Pairing Jets");
-  if (pairAlgo == "passthrough")
-    reco_Hs = pair_4H_passthrough(nat, ei, in_jets);
-  if (pairAlgo == "min_mass_spread")
-    reco_Hs = pair_4H_min_mass_spread(nat, ei, in_jets);
-  if (pairAlgo == "gnn_dijet")
-    reco_Hs = pair_4H_gnn(nat, ei, in_jets);
+  // if (debug_) loop_timer->click("Pairing Jets");
+  // if (pairAlgo == "passthrough")
+  //   reco_Hs = pair_4H_passthrough(nat, ei, in_jets);
+  // if (pairAlgo == "min_mass_spread")
+  //   reco_Hs = pair_4H_min_mass_spread(nat, ei, in_jets);
+  // if (pairAlgo == "gnn_dijet")
+  //   reco_Hs = pair_4H_gnn(nat, ei, in_jets);
 
-  if (debug_) loop_timer->click("Pairing Higgs");
-  YY_tuple reco_YYs;
-  std::string YYAlgo = pmap.get_param<std::string>("configurations", "YYChoice");
-  if (YYAlgo == "passthrough")
-    reco_YYs = pair_YY_passthrough(nat, ei, reco_Hs);
-  if (YYAlgo == "min_mass_spread")
-    reco_YYs = pair_YY_min_mass_spread(nat, ei, reco_Hs);
+  // if (debug_) loop_timer->click("Pairing Higgs");
+  // YY_tuple reco_YYs;
+  // std::string YYAlgo = pmap.get_param<std::string>("configurations", "YYChoice");
+  // if (YYAlgo == "passthrough")
+  //   reco_YYs = pair_YY_passthrough(nat, ei, reco_Hs);
+  // if (YYAlgo == "min_mass_spread")
+  //   reco_YYs = pair_YY_min_mass_spread(nat, ei, reco_Hs);
 
-  if (debug_) loop_timer->click("Reordering Resonances");
+    bool pair4Hfirst = pmap.get_param<bool>("configurations", "pair4Hfirst");
 
-  CompositeCandidate &H1Y1 = static_cast<CompositeCandidate &>(std::get<0>(reco_YYs).getComponent1());
-  CompositeCandidate &H2Y1 = static_cast<CompositeCandidate &>(std::get<0>(reco_YYs).getComponent2());
-  CompositeCandidate &H1Y2 = static_cast<CompositeCandidate &>(std::get<1>(reco_YYs).getComponent1());
-  CompositeCandidate &H2Y2 = static_cast<CompositeCandidate &>(std::get<1>(reco_YYs).getComponent2());
-  
-  // rebuild p4 with regressed pT if required
-  if (pmap.get_param<bool>("configurations", "useRegressedPtForHp4")){
-    H1Y1.rebuildP4UsingRegressedPt(true, true);
-    H2Y1.rebuildP4UsingRegressedPt(true, true);
-    H1Y2.rebuildP4UsingRegressedPt(true, true);
-    H2Y2.rebuildP4UsingRegressedPt(true, true);
+    YY_tuple reco_YYs;
+
+    if (pair4Hfirst)
+        reco_YYs = pair_4H_2Y(nat, ei, in_jets);
+    else
+        reco_YYs = pair_2Y_4H(nat, ei, in_jets);
+
+    if (debug_)
+      loop_timer->click("Reordering Resonances");
+
+    CompositeCandidate& H1Y1 = static_cast<CompositeCandidate&>(std::get<0>(reco_YYs).getComponent1());
+    CompositeCandidate& H2Y1 = static_cast<CompositeCandidate&>(std::get<0>(reco_YYs).getComponent2());
+    CompositeCandidate& H1Y2 = static_cast<CompositeCandidate&>(std::get<1>(reco_YYs).getComponent1());
+    CompositeCandidate& H2Y2 = static_cast<CompositeCandidate&>(std::get<1>(reco_YYs).getComponent2());
+
+    // rebuild p4 with regressed pT if required
+    if (pmap.get_param<bool>("configurations", "useRegressedPtForHp4")) {
+      H1Y1.rebuildP4UsingRegressedPt(true, true);
+      H2Y1.rebuildP4UsingRegressedPt(true, true);
+      H1Y2.rebuildP4UsingRegressedPt(true, true);
+      H2Y2.rebuildP4UsingRegressedPt(true, true);
   }
 
   if (H1Y1.getComponent1().P4().Pt() < H1Y1.getComponent2().P4().Pt())
@@ -545,6 +636,61 @@ void EightB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vec
   ei.H1Y2_b2  = static_cast<Jet&>(H1Y2.getComponent2());
   ei.H2Y2_b1  = static_cast<Jet&>(H2Y2.getComponent1());
   ei.H2Y2_b2  = static_cast<Jet&>(H2Y2.getComponent2());
+
+  if (debug_) 
+  {
+    vector<Jet> selected_jets = {
+        ei.H1Y1_b1.get(),
+        ei.H1Y1_b2.get(),
+        ei.H2Y1_b1.get(),
+        ei.H2Y1_b2.get(),
+        ei.H1Y2_b1.get(),
+        ei.H1Y2_b2.get(),
+        ei.H2Y2_b1.get(),
+        ei.H2Y2_b2.get(),
+    };
+    dumpObjColl(selected_jets, "==== SELECTED JETS ====");
+
+    vector<CompositeCandidate> selected_higgs = {
+        ei.H1Y1.get(),
+        ei.H2Y1.get(),
+        ei.H1Y2.get(),
+        ei.H2Y2.get(),
+    };
+    dumpObjColl(selected_higgs, "==== PAIRED HIGGS ====");
+
+    vector<CompositeCandidate> selected_y = {
+      ei.Y1.get(),
+      ei.Y2.get(),
+    };
+    dumpObjColl(selected_y, "==== PAIRED Y ====");
+  }
+}
+
+
+YY_tuple EightB_functions::pair_4H_2Y(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets)
+{
+  if (debug_) loop_timer->click("Pairing Jets");
+
+  H4_tuple reco_Hs;
+  std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
+  if (pairAlgo == "passthrough")
+    reco_Hs = pair_4H_passthrough(nat, ei, in_jets);
+  if (pairAlgo == "min_mass_spread")
+    reco_Hs = pair_4H_min_mass_spread(nat, ei, in_jets);
+  if (pairAlgo == "gnn_dijet")
+    reco_Hs = pair_4H_gnn(nat, ei, in_jets);
+
+  if (debug_) loop_timer->click("Pairing Higgs");
+
+  YY_tuple reco_YYs;
+  std::string YYAlgo = pmap.get_param<std::string>("configurations", "YYChoice");
+  if (YYAlgo == "passthrough")
+    reco_YYs = pair_YY_passthrough(nat, ei, reco_Hs);
+  if (YYAlgo == "min_mass_spread")
+    reco_YYs = pair_YY_min_mass_spread(nat, ei, reco_Hs);
+
+  return reco_YYs;
 }
 
 H4_tuple EightB_functions::pair_4H_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets)
@@ -566,45 +712,92 @@ H4_tuple EightB_functions::pair_4H_min_mass_spread(NanoAODTree &nat, EventInfo &
     throw std::runtime_error("The jet pairing -passthrough- function requires 8 jets");
 
   if (debug_) loop_timer->click("Dijet Min Mass Spread Pairing");
-  std::vector<CompositeCandidate> dijets(dijet_pairings.size());
-  std::vector<float> dijet_m(dijet_pairings.size());
-  for (unsigned int i = 0; i < dijet_pairings.size(); i++)
+
+  // 8 jets grouped into 4 groups of 2
+  if (quadH_jet_groups.size() == 0)
   {
-    int j0 = dijet_pairings[i][0];
-    int j1 = dijet_pairings[i][1];
-    dijets[i] = CompositeCandidate(jets.at(j0), jets.at(j1));
-    dijets[i].rebuildP4UsingRegressedPt(true, true);
-    dijet_m[i] = dijets[i].P4().M();
+    vector<int> groups = {2, 2, 2, 2};
+    quadH_jet_groups = combinations(8, groups);
   }
 
-  std::vector<int> min_quadH_pair(4);
-  float min_mass_spread = std::numeric_limits<float>::max();
-  for (unsigned int i = 0; i < quadH_pairings.size(); i++)
-  {
-    std::vector<int> quadH_pair = quadH_pairings[i];
-    std::sort(quadH_pair.begin(), quadH_pair.end(), [dijet_m](int &h1, int &h2)
-              { return dijet_m[h1] > dijet_m[h2]; });
-    float mass_spread = fabs(dijet_m[quadH_pair[0]] - dijet_m[quadH_pair[3]]);
-    if (mass_spread < min_mass_spread)
-    {
-      min_quadH_pair = quadH_pair;
-      min_mass_spread = mass_spread;
+  map<int, CompositeCandidate> dijetMap;
+  std::hash<std::string> str_hash;
+  auto pair_hash = [str_hash](vector<int> pair) { return str_hash(to_string(pair[0]) + to_string(pair[1])); };
+
+  vector<float> m_asyms;
+  for (vector<vector<int>> group : quadH_jet_groups) {
+    vector<float> group_m;
+    for (vector<int> pair : group) {
+      int hash = pair_hash(pair);
+      if ( dijetMap.count(hash) == 0 )
+      {
+        dijetMap[hash] = CompositeCandidate(jets.at(pair[0]), jets.at(pair[1]));
+        dijetMap[hash].rebuildP4UsingRegressedPt(true, true);
+      }
+      group_m.push_back(dijetMap[hash].P4().M());
     }
+    std::sort(group_m.begin(), group_m.end(), [](float m1, float m2) { return m1 < m2; });
+    float m_asym = (group_m[3] - group_m[0]) / (group_m[3] + group_m[0]);
+    // float m_asym = (group_m[3] - group_m[0]);
+    m_asyms.push_back(m_asym);
   }
+  int argmin = std::distance(m_asyms.begin(), std::min_element(m_asyms.begin(), m_asyms.end()));
+  vector<vector<int>> best_group = quadH_jet_groups[argmin];
 
-  CompositeCandidate H1Y1 = dijets[min_quadH_pair[0]];
-  CompositeCandidate H2Y1 = dijets[min_quadH_pair[1]];
-  CompositeCandidate H1Y2 = dijets[min_quadH_pair[2]];
-  CompositeCandidate H2Y2 = dijets[min_quadH_pair[3]];
+  CompositeCandidate H1Y1 = dijetMap[pair_hash(best_group[0])];
+  CompositeCandidate H2Y1 = dijetMap[pair_hash(best_group[1])];
+  CompositeCandidate H1Y2 = dijetMap[pair_hash(best_group[2])];
+  CompositeCandidate H2Y2 = dijetMap[pair_hash(best_group[3])];
+
+  // vector<vector<int>> dijet_pairings = combinations(8, 2);
+  // std::vector<CompositeCandidate> dijets(dijet_pairings.size());
+  // std::vector<float> dijet_m(dijet_pairings.size());
+  // for (unsigned int i = 0; i < dijet_pairings.size(); i++)
+  // {
+  //   int j0 = dijet_pairings[i][0];
+  //   int j1 = dijet_pairings[i][1];
+  //   dijets[i] = CompositeCandidate(jets.at(j0), jets.at(j1));
+  //   dijets[i].rebuildP4UsingRegressedPt(true, true);
+  //   dijet_m[i] = dijets[i].P4().M();
+  // }
+
+  // std::vector<int> min_quadH_pair(4);
+  // float min_mass_spread = std::numeric_limits<float>::max();
+  // for (unsigned int i = 0; i < quadH_pairings.size(); i++)
+  // {
+  //   std::vector<int> quadH_pair = quadH_pairings[i];
+  //   std::sort(quadH_pair.begin(), quadH_pair.end(), [dijet_m](int &h1, int &h2)
+  //             { return dijet_m[h1] > dijet_m[h2]; });
+  //   float mass_spread = fabs(dijet_m[quadH_pair[0]] - dijet_m[quadH_pair[3]]);
+  //   if (mass_spread < min_mass_spread)
+  //   {
+  //     min_quadH_pair = quadH_pair;
+  //     min_mass_spread = mass_spread;
+  //   }
+  // }
+
+  // CompositeCandidate H1Y1 = dijets[min_quadH_pair[0]];
+  // CompositeCandidate H2Y1 = dijets[min_quadH_pair[1]];
+  // CompositeCandidate H1Y2 = dijets[min_quadH_pair[2]];
+  // CompositeCandidate H2Y2 = dijets[min_quadH_pair[3]];
 
   return std::make_tuple(H1Y1, H2Y1, H1Y2, H2Y2);
 }
 
+
 H4_tuple EightB_functions::pair_4H_gnn (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+  // std::string gnn_output = pmap.get_param<std::string>("GNN", "output");
+  string gnn_output = "quadh";
+  if (gnn_output == "quadh")
+    return pair_4H_gnn_quadh(nat, ei, in_jets);
+  return pair_4H_gnn_dijet(nat, ei, in_jets);
+}
+
+H4_tuple EightB_functions::pair_4H_gnn_dijet (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
   vector<Jet> jets = in_jets;
   vector<DiJet> dijets = make_dijets(nat, ei, in_jets);
-
   map<string, vector<float>> features = buildClassifierInput::build_gnn_classifier_input(jets, dijets);
 
   if (debug_)
@@ -672,6 +865,54 @@ H4_tuple EightB_functions::pair_4H_gnn (NanoAODTree &nat, EventInfo& ei, const s
   return std::make_tuple(H1Y1, H2Y1, H1Y2,H2Y2);
 }
 
+H4_tuple EightB_functions::pair_4H_gnn_quadh (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+{
+  // 8 jets grouped into 4 groups of 2
+  if (quadH_jet_groups.size() == 0)
+  {
+    vector<int> groups = {2, 2, 2, 2};
+    quadH_jet_groups = combinations(8, groups);
+  }
+
+  vector<Jet> jets = in_jets;
+  vector<DiJet> dijets = make_dijets(nat, ei, in_jets);
+  map<string, vector<float>> features = buildClassifierInput::build_gnn_classifier_input(jets, dijets);
+
+  if (debug_)
+    loop_timer->click("Prepared GNN Features");
+
+  // TODO: implement using ONNX 
+  // tuple<vector<float>, vector<float>> pred = gnn_classifier_->evaluate(node_x, edge_index, edge_attr);
+  bool is_binary = false;
+  vector<float> pred = onnx_classifier_->evaluate(features, is_binary);
+
+  if (debug_)
+    loop_timer->click("Evaluated GNN");
+
+  
+  int argmax = std::distance(pred.begin(), std::max_element(pred.begin(), pred.end()));
+  vector<vector<int>> best_group = quadH_jet_groups[argmax];
+
+  vector<Jet> selected_jets;
+  for (vector<int> pair : best_group) {
+    for (int i : pair) {
+      selected_jets.push_back(jets[i]);
+    }
+  }
+
+  if (debug_)
+    loop_timer->click("Selected GNN Pair");
+
+  CompositeCandidate H1Y1 (selected_jets.at(0), selected_jets.at(1));
+  CompositeCandidate H2Y1 (selected_jets.at(2), selected_jets.at(3));
+  CompositeCandidate H1Y2 (selected_jets.at(4), selected_jets.at(5));
+  CompositeCandidate H2Y2 (selected_jets.at(6), selected_jets.at(7));
+
+  ei.quadh_score = pred[argmax];
+
+  return std::make_tuple(H1Y1, H2Y1, H1Y2,H2Y2);
+}
+
 YY_tuple EightB_functions::pair_YY_passthrough(NanoAODTree &nat, EventInfo &ei, const H4_tuple &reco_Hs)
 {
   CompositeCandidate Y1(std::get<0>(reco_Hs), std::get<1>(reco_Hs));
@@ -685,33 +926,182 @@ YY_tuple EightB_functions::pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &
   if (debug_) loop_timer->click("Dihiggs Min Mass Spread Pairing");
   std::vector<CompositeCandidate> higgs = {std::get<0>(reco_Hs), std::get<1>(reco_Hs), std::get<2>(reco_Hs), std::get<3>(reco_Hs)};
 
-  std::vector<CompositeCandidate> dihiggs;
-  std::vector<float> dihiggs_m;
-  for (unsigned int i = 0; i < dihiggs_pairings.size(); i++)
+  
+  // 4 higgs grouped into 2 groups of 2
+  if (diY_higgs_groups.size() == 0)
   {
-    int h0 = dihiggs_pairings[i][0];
-    int h1 = dihiggs_pairings[i][1];
-    dihiggs.push_back(CompositeCandidate(higgs.at(h0),higgs.at(h1)));
-    dihiggs_m.push_back(dihiggs[i].P4().M());
+    vector<int> groups = {2, 2};
+    diY_higgs_groups = combinations(4, groups);
   }
 
-  std::vector<int> min_diY_pair(2);
-  float min_mass_spread = std::numeric_limits<float>::max();
-  for (unsigned int i = 0; i < diY_pairings.size(); i++)
-  {
-    std::vector<int> diY_pair = diY_pairings[i];
-    std::sort(diY_pair.begin(), diY_pair.end(), [dihiggs_m](int &y1, int &y2)
-              { return dihiggs_m[y1] > dihiggs_m[y2]; });
-    float mass_spread = fabs(dihiggs_m[diY_pair[0]] - dihiggs_m[diY_pair[1]]);
-    if (mass_spread < min_mass_spread)
-    {
-      min_diY_pair = diY_pair;
-      min_mass_spread = mass_spread;
+  map<int, CompositeCandidate> dihiggsMap;
+  std::hash<std::string> str_hash;
+  auto pair_hash = [str_hash](vector<int> pair) { return str_hash(to_string(pair[0]) + to_string(pair[1])); };
+
+  vector<float> m_asyms;
+  for (vector<vector<int>> group : diY_higgs_groups) {
+    vector<float> group_m;
+    for (vector<int> pair : group) {
+      int hash = pair_hash(pair);
+      if ( dihiggsMap.count(hash) == 0 )
+      {
+        dihiggsMap[hash] = CompositeCandidate(higgs.at(pair[0]), higgs.at(pair[1]));
+      }
+      group_m.push_back(dihiggsMap[hash].P4().M());
     }
+    std::sort(group_m.begin(), group_m.end(), [](float m1, float m2) { return m1 < m2; });
+    float m_asym = (group_m[1] - group_m[0]) / (group_m[1] + group_m[0]);
+    // float m_asym = (group_m[3] - group_m[0]);
+    m_asyms.push_back(m_asym);
+  }
+  int argmin = std::distance(m_asyms.begin(), std::min_element(m_asyms.begin(), m_asyms.end()));
+  vector<vector<int>> best_group = diY_higgs_groups[argmin];
+
+  CompositeCandidate Y1 = dihiggsMap[pair_hash(best_group[0])];
+  CompositeCandidate Y2 = dihiggsMap[pair_hash(best_group[1])];
+  return std::make_tuple(Y1, Y2);
+}
+
+
+YY_tuple EightB_functions::pair_2Y_4H(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets)
+{
+  YY_tuple reco_YYs;
+  std::string YYAlgo = pmap.get_param<std::string>("configurations", "YYChoice");
+  // if (YYAlgo == "passthrough")
+  //   reco_YYs = pair_YY_passthrough(nat, ei, in_jets);
+  if (YYAlgo == "min_mass_spread")
+    reco_YYs = pair_YY_min_mass_spread(nat, ei, in_jets);
+
+  H4_tuple reco_Hs;
+  std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
+  if (pairAlgo == "passthrough")
+  {
+    
+  }
+  if (pairAlgo == "min_mass_spread")
+    reco_YYs = pair_4H_min_mass_spread(nat, ei, reco_YYs);
+
+  if (debug_) loop_timer->click("Pairing Higgs");
+
+  return reco_YYs;
+}
+
+YY_tuple EightB_functions::pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet>& jets)
+{
+  if (jets.size() != 8)
+    throw std::runtime_error("The jet pairing -passthrough- function requires 8 jets");
+
+  if (debug_) loop_timer->click("4-Jet Min Mass Spread Pairing");
+  
+  // 8 jets grouped into 2 groups of 4
+  if (diY_jet_groups.size() == 0)
+  {
+    vector<int> groups = {4, 4};
+    diY_jet_groups = combinations(8, groups);
   }
 
-  CompositeCandidate Y1 = dihiggs.at(min_diY_pair[0]);
-  CompositeCandidate Y2 = dihiggs.at(min_diY_pair[1]);
+  map<int, CompositeCandidate> dihiggsMap;
+
+  std::hash<std::string> str_hash;
+  auto pair_hash = [str_hash](vector<int> pair) {
+    return str_hash(to_string(pair[0]) + to_string(pair[1]) + to_string(pair[2]) + to_string(pair[3]));
+  };
+
+  vector<float> m_asyms;
+  for (vector<vector<int>> group : diY_jet_groups) {
+    vector<float> group_m;
+    for (vector<int> pair : group) {
+      int hash = pair_hash(pair);
+      if ( dihiggsMap.count(hash) == 0 )
+      {
+        CompositeCandidate h1 = CompositeCandidate(jets.at(pair[0]), jets.at(pair[1]));
+        CompositeCandidate h2 = CompositeCandidate(jets.at(pair[2]), jets.at(pair[3]));
+        h1.rebuildP4UsingRegressedPt(true, true);
+        h2.rebuildP4UsingRegressedPt(true, true);
+        dihiggsMap[hash] = CompositeCandidate(h1, h2);
+      }
+      group_m.push_back(dihiggsMap[hash].P4().M());
+    }
+    std::sort(group_m.begin(), group_m.end(), [](float m1, float m2) { return m1 < m2; });
+    float m_asym = (group_m[1] - group_m[0]) / (group_m[1] + group_m[0]);
+    // float m_asym = (group_m[3] - group_m[0]);
+    m_asyms.push_back(m_asym);
+  }
+  int argmin = std::distance(m_asyms.begin(), std::min_element(m_asyms.begin(), m_asyms.end()));
+  vector<vector<int>> best_group = diY_jet_groups[argmin];
+
+  CompositeCandidate Y1 = dihiggsMap[pair_hash(best_group[0])];
+  CompositeCandidate Y2 = dihiggsMap[pair_hash(best_group[1])];
+
+  return std::make_tuple(Y1, Y2);
+}
+
+YY_tuple EightB_functions::pair_4H_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const YY_tuple &reco_YYs)
+{
+  if (debug_) loop_timer->click("Dijet Min Mass Spread Pairing");
+
+  // 4 higgs grouped into 2 groups of 2
+  if (diH_y_groups.size() == 0)
+  {
+    vector<int> groups = {2, 2};
+    diH_y_groups = combinations(4, groups);
+  }
+
+
+  CompositeCandidate& H1Y1_ = static_cast<CompositeCandidate&>(std::get<0>(reco_YYs).getComponent1());
+  CompositeCandidate& H2Y1_ = static_cast<CompositeCandidate&>(std::get<0>(reco_YYs).getComponent2());
+  CompositeCandidate& H1Y2_ = static_cast<CompositeCandidate&>(std::get<1>(reco_YYs).getComponent1());
+  CompositeCandidate& H2Y2_ = static_cast<CompositeCandidate&>(std::get<1>(reco_YYs).getComponent2());
+
+  vector<vector<Jet>> jets = {{
+                                  static_cast<Jet&>(H1Y1_.getComponent1()),
+                                  static_cast<Jet&>(H1Y1_.getComponent2()),
+                                  static_cast<Jet&>(H2Y1_.getComponent1()),
+                                  static_cast<Jet&>(H2Y1_.getComponent2()),
+                              },
+                              {
+                                  static_cast<Jet&>(H1Y2_.getComponent1()),
+                                  static_cast<Jet&>(H1Y2_.getComponent2()),
+                                  static_cast<Jet&>(H2Y2_.getComponent1()),
+                                  static_cast<Jet&>(H2Y2_.getComponent2()),
+                              }};
+
+  map<int, CompositeCandidate> dijetMap;
+  std::hash<std::string> str_hash;
+
+  vector<vector<int>> best_group;
+  auto pair_hash = [str_hash](int y, vector<int> pair) { return str_hash(to_string(y)+to_string(pair[0]) + to_string(pair[1])); };
+
+  for (int y = 0; y < 2; y++) {
+    vector<float> m_asyms;
+    for (vector<vector<int>> group : diH_y_groups) {
+      vector<float> group_m;
+      for (vector<int> &pair : group) {
+        int hash = pair_hash(y, pair);
+        if (dijetMap.count(hash) == 0) {
+          dijetMap[hash] = CompositeCandidate(jets[y].at(pair[0]), jets[y].at(pair[1]));
+          dijetMap[hash].rebuildP4UsingRegressedPt(true, true);
+        }
+        group_m.push_back(dijetMap[hash].P4().M());
+      }
+      std::sort(group_m.begin(), group_m.end(), [](float m1, float m2) { return m1 < m2; });
+      float m_asym = (group_m[1] - group_m[0]) / (group_m[1] + group_m[0]);
+      // float m_asym = (group_m[3] - group_m[0]);
+      m_asyms.push_back(m_asym);
+    }
+    int argmin = std::distance(m_asyms.begin(), std::min_element(m_asyms.begin(), m_asyms.end()));
+    vector<vector<int>> best_group_ = diH_y_groups[argmin];
+    best_group.insert(best_group.end(), best_group_.begin(), best_group_.end());
+  }
+
+  CompositeCandidate H1Y1 = dijetMap[pair_hash(0, best_group[0])];
+  CompositeCandidate H2Y1 = dijetMap[pair_hash(0, best_group[1])];
+  CompositeCandidate H1Y2 = dijetMap[pair_hash(1, best_group[2])];
+  CompositeCandidate H2Y2 = dijetMap[pair_hash(1, best_group[3])];
+
+  CompositeCandidate Y1(H1Y1, H2Y1);
+  CompositeCandidate Y2(H1Y2, H2Y2);
+
   return std::make_tuple(Y1, Y2);
 }
 

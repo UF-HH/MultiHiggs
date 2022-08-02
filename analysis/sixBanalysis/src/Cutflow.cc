@@ -27,6 +27,14 @@ void Cutflow::add(TString entry,float value)
   _cutflow[entry] += value;
 }
 
+void Cutflow::add(TString entry, NormWeightTree& nwt) 
+{ 
+  float genWeight = nwt.get_gen_weight().w;
+  if (genWeight == 0)
+    genWeight = 1;
+  add(entry, genWeight);
+}
+
 void Cutflow::write(TFile& output)
 {
   output.cd();

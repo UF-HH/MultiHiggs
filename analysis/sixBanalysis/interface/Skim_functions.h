@@ -47,7 +47,9 @@ public:
    * @param is_mc Flag to store MC specific values
    */
   void copy_event_info(NanoAODTree &nat, EventInfo &ei, bool is_mc);
-  
+
+  virtual bool is_blinded(NanoAODTree &nat, EventInfo &ei, bool is_data) { return false;  };
+
   ////////////////////////////////////////////////////
   /// jet selection functions
   ////////////////////////////////////////////////////
@@ -247,6 +249,8 @@ public:
    * @param ei EventInfo class to store values
    */
   virtual void compute_seljets_genmatch_flags(NanoAODTree &nat, EventInfo &ei) {};
+
+  virtual void compute_seljets_btagmulti(NanoAODTree &nat, EventInfo &ei){};
 
 protected:
   std::vector<double> btag_WPs;

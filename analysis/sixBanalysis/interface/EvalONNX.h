@@ -44,7 +44,7 @@ public:
            std::string graphPath,
            std::string modelName = "model.onnx",
            std::string jsonName = "preprocess.json");
-  std::vector<float> evaluate(std::map<std::string, std::vector<float>> inputs);
+  std::vector<float> evaluate(std::map<std::string, std::vector<float>> inputs, bool binary=true);
   void print();
 
 private:

@@ -299,8 +299,14 @@ public:
   int H1Y2_b2_genHflag;
   int H2Y2_b1_genHflag;
   int H2Y2_b2_genHflag;
-  // End Reco 8B Objects
 
+  float quadh_score;
+
+  int n_loose_btag;
+  int n_medium_btag;
+  int n_tight_btag;
+  float btagavg;
+  // End Reco 8B Objects
 
   int nfound_all;
   int nfound_all_h;
@@ -309,6 +315,8 @@ public:
   int nfound_select;
   int nfound_select_h;
   int nfound_paired_h;
+  int nfound_select_y;
+  int nfound_paired_y;
 
   DECLARE_m_pt_eta_phi_p4(mu_1);
   DECLARE_m_pt_eta_phi_p4(mu_2);
