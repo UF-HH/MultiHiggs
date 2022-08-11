@@ -1,9 +1,9 @@
-ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/"
+ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/ranked_quadh_lowm/"
 # ODIR="/store/user/srosenzw/analysis/"
 
 . scripts/arg_submit.sh -v qcd "$@"
 TAG="QCD"
-CFG="config/skim_ntuple_2018_8b.cfg"
+CFG="config/8b_config/skim_ntuple_2018_ranked_quadh.cfg"
 
 make exe -j || exit -1
 
@@ -13,5 +13,5 @@ echo "... saving to : ", $ODIR
 qcd_files=$(ls input/Run2_Autumn18/QCD*BGenFilter* input/Run2_UL/2018/QCD*bEnriched*)
 
 for input in ${qcd_files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --memory 2500 --no-genw-tree
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --memory 2500
 done

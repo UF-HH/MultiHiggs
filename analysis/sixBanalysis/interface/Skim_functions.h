@@ -47,7 +47,9 @@ public:
    * @param is_mc Flag to store MC specific values
    */
   void copy_event_info(NanoAODTree &nat, EventInfo &ei, bool is_mc);
-  
+
+  virtual bool is_blinded(NanoAODTree &nat, EventInfo &ei, bool is_data) { return false;  };
+
   ////////////////////////////////////////////////////
   /// jet selection functions
   ////////////////////////////////////////////////////
@@ -62,6 +64,8 @@ public:
   std::vector<Jet> preselect_jets(NanoAODTree &nat, const std::vector<Jet> &in_jets);
 
   std::vector<Jet> btag_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
+
+  std::vector<Jet> pt_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
   
   // reorder the collection of the input jets according to the bias pt sort order (b tag groups + pt order inside each group) - used by select_sixb_jets_bias_pt_sort
   std::vector<Jet> bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
@@ -245,6 +249,8 @@ public:
    * @param ei EventInfo class to store values
    */
   virtual void compute_seljets_genmatch_flags(NanoAODTree &nat, EventInfo &ei) {};
+
+  virtual void compute_seljets_btagmulti(NanoAODTree &nat, EventInfo &ei){};
 
 protected:
   std::vector<double> btag_WPs;

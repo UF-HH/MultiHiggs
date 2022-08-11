@@ -31,7 +31,7 @@ std::vector<std::vector<T>> unflatten(std::vector<T> const &vec, int outer, int 
   return unflattened;
 }
 
-vector<float> EvalONNX::evaluate(map<string, vector<float>> inputs) {
+vector<float> EvalONNX::evaluate(map<string, vector<float>> inputs, bool binary) {
   vector<vector<float>> data;
   for (string input_name : input_names) {
     vector<float> data_ = inputMap[input_name]->preprocess(inputs);
@@ -39,8 +39,10 @@ vector<float> EvalONNX::evaluate(map<string, vector<float>> inputs) {
   }
 
   vector<float> flat_output = ort->run(input_names, data, input_shapes)[0];
-  vector<float> output = unflatten(flat_output, -1, 2)[1];
-  return output;
+
+  if (binary)
+    return unflatten(flat_output, -1, 2)[1];
+  return flat_output;
 }
 
 EvalONNX::EvalONNX(string name, string graphPath, string modelName, string jsonName) {

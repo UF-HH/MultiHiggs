@@ -310,6 +310,8 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("nfound_select", &nfound_select);
       tree_->Branch("nfound_select_h", &nfound_select_h);
       tree_->Branch("nfound_paired_h", &nfound_paired_h);
+      tree_->Branch("nfound_select_y", &nfound_select_y);
+      tree_->Branch("nfound_paired_y", &nfound_paired_y);
     }
 
     BRANCH_m_pt_eta_phi_p4(X);
@@ -329,6 +331,12 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b1);
     BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b2);
 
+    tree_->Branch("n_loose_btag", &n_loose_btag);
+    tree_->Branch("n_medium_btag", &n_medium_btag);
+    tree_->Branch("n_tight_btag", &n_tight_btag);
+    tree_->Branch("btagavg", &btagavg);
+
+    tree_->Branch("quadh_score", &quadh_score);
   }
 
   tree_->Branch("n_mu_loose",  &n_mu_loose);
@@ -364,7 +372,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("b_6j_score",    &b_6j_score);
     }
 
-  if (is_enabled("dijet_coll"))
+  if (is_enabled("dijets_coll"))
   {
     std::cout << "[INFO] OutputTree : enabling dijet collection branches" << std::endl;
 
@@ -434,6 +442,7 @@ void OutputTree::clear()
 
   b_6j_score = 0;
   b_3d_score = 0;
+  quadh_score = 0;
 
   genjet_E.clear();	    
   genjet_m.clear();		
@@ -523,7 +532,7 @@ void OutputTree::clear()
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b2_recojet);
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b1_recojet);
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b2_recojet);
-  // End Gen 8B Objects 
+  // End Gen 8B Objects
 
   gen_bs_N_reco_match        = -999;
   gen_bs_N_reco_match_in_acc = -999;
@@ -579,6 +588,11 @@ void OutputTree::clear()
   HY1_b2_genHflag = -999;
   HY2_b1_genHflag = -999;
   HY2_b2_genHflag = -999;
+
+  n_loose_btag = -1;
+  n_medium_btag = -1;
+  n_tight_btag = -1;
+  btagavg = -1.;
   // End Reco 8B Objects
 
   CLEAR_m_pt_eta_phi_p4(mu_1);

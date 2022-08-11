@@ -13,11 +13,15 @@
 #include "TH1F.h"
 #include "TString.h"
 
+#include "NormWeightTree.h"
+
 class Cutflow {
 public:
   Cutflow(TString name="h_cutflow",TString title="Selection Cutflow");
   void add(TString entry,float value=1);
+  void add(TString entry, NormWeightTree &nwt);
   void write(TFile& output);
+
 private:
   TString _name;
   TString _title;

@@ -149,6 +149,13 @@ std::vector<Jet> Skim_functions::btag_sort_jets(NanoAODTree &nat, EventInfo& ei,
   return jets;
 }
 
+std::vector<Jet> Skim_functions::pt_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+{
+  std::vector<Jet> jets = in_jets;
+  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
+  return jets;
+}
+
 std::vector<Jet> Skim_functions::bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
   std::vector<Jet> jets = in_jets;

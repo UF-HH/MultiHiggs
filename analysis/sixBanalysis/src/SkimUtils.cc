@@ -330,6 +330,13 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.H1Y2_b2_genHflag)  ot.H1Y2_b2_genHflag  = *ei.H1Y2_b2_genHflag;
   if (ei.H2Y2_b1_genHflag)  ot.H2Y2_b1_genHflag  = *ei.H2Y2_b1_genHflag;
   if (ei.H2Y2_b2_genHflag)  ot.H2Y2_b2_genHflag  = *ei.H2Y2_b2_genHflag;
+
+  if (ei.n_loose_btag) ot.n_loose_btag = *ei.n_loose_btag;
+  if (ei.n_medium_btag) ot.n_medium_btag = *ei.n_medium_btag;
+  if (ei.n_tight_btag) ot.n_tight_btag = *ei.n_tight_btag;
+  if (ei.btagavg) ot.btagavg = *ei.btagavg;
+
+  if (ei.quadh_score) ot.quadh_score = *ei.quadh_score;
   // End Reco 8B Objects
 
   if (ei.nfound_all) ot.nfound_all = *ei.nfound_all;
@@ -339,6 +346,8 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.nfound_select) ot.nfound_select = *ei.nfound_select;
   if (ei.nfound_select_h) ot.nfound_select_h = *ei.nfound_select_h;
   if (ei.nfound_paired_h) ot.nfound_paired_h = *ei.nfound_paired_h;
+  if (ei.nfound_select_y) ot.nfound_select_y = *ei.nfound_select_y;
+  if (ei.nfound_paired_y) ot.nfound_paired_y = *ei.nfound_paired_y;
 
   COPY_OPTIONAL_m_pt_eta_phi_p4(mu_1);
   COPY_OPTIONAL_m_pt_eta_phi_p4(mu_2);

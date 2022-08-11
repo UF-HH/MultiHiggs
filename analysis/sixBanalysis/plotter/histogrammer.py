@@ -11,6 +11,7 @@ import ROOT
 import modules.Sample as sam
 import importlib
 import argparse
+import subprocess
 
 ROOT.EnableImplicitMT()
 ROOT.EnableThreadSafety()
@@ -46,10 +47,18 @@ for s in cfg.samples:
 for s in cfg.samples:
     s.do_histos(histos_descs=cfg.histos, norm_weights=cfg.norm_weights)
 
-fOut = ROOT.TFile.Open(args.output, 'recreate')
+# fOut = ROOT.TFile.Open(args.output, 'recreate')
 
-for s in cfg.samples:
+# for s in cfg.samples:
+    # s.write_histos(fOut)
+
+fOuts = []
+for i,s in enumerate(cfg.samples):
+    out = "/tmp/%i_%i.root" % (i, hash(args.output))
+    fOut = ROOT.TFile.Open(out, 'recreate')
     s.write_histos(fOut)
+    fOuts.append(fOut)
+
 
 for s in cfg.samples:
     s.print_end_summary()
@@ -57,3 +66,14 @@ for s in cfg.samples:
 for s in cfg.samples:
     if s.sampletype == 'mc':
         s.norm_sample.write_cache()
+
+def get_name(fOut):
+    name = fOut.GetName()
+    fOut.Close()
+    return name
+
+outlist=' '.join([ get_name(fOut) for fOut in fOuts ])
+cmd = 'hadd -f '+args.output+' '+outlist
+subprocess.call(cmd, shell=True)
+cmd = 'rm '+outlist
+subprocess.call(cmd, shell=True)

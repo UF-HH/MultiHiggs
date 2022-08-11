@@ -176,6 +176,14 @@ struct EventInfo{
   boost::optional<float> H1Y2_b2_score;
   boost::optional<float> H2Y2_b1_score;
   boost::optional<float> H2Y2_b2_score;
+
+  boost::optional<int> n_loose_btag;
+  boost::optional<int> n_medium_btag;
+  boost::optional<int> n_tight_btag;
+  boost::optional<float> btagavg;
+  
+  boost::optional<float> quadh_score;
+  
   // End Reco 8B Objects
 
   boost::optional< std::vector<GenJet> > genjet_list;
@@ -191,6 +199,8 @@ struct EventInfo{
   boost::optional<int> nfound_select;
   boost::optional<int> nfound_select_h;
   boost::optional<int> nfound_paired_h;
+  boost::optional<int> nfound_select_y;
+  boost::optional<int> nfound_paired_y;
 
   // for ttbar skims
   boost::optional<Jet> bjet1;
