@@ -1,4 +1,4 @@
-ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/ranked_quadh/"
+ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/ranked_quadh_lowm/"
 # ODIR="/store/user/srosenzw/analysis/"
 
 . scripts/arg_submit.sh -v qcd "$@"
