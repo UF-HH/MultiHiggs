@@ -1,1 +1,0 @@
-ALOHARoutine = FFS1_3.o SSS1_3.o FFS2_3.o VVS4_0.o

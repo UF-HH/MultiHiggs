@@ -15,18 +15,25 @@ parser.add_argument('--phi', dest='phi', help='set phi to true', action='store_t
 parser.add_argument('--pt',  dest='pt', help='set pt to true', action='store_true',   default=True)
 parser.add_argument('--btag', dest='btag', action='store_true', default=False)
 parser.add_argument('--bias', dest='bias', action='store_true', default=False)
+parser.add_argument('--presel', dest='presel', action='store_true', default=False)
 
 args = parser.parse_args()
 
 if args.bias:
    extra = ''
-   tag = 'dHHH_pairs'
+   tag = 'bias'
 if args.btag: 
-   tag = 'dHHH_pairs_maxbtag'
+   tag = 'btag'
    extra = '-b'
 
 outfile="output.root"
 cfg="config/skim_ntuple_2018.cfg"
+
+jes_dict = {
+   '2016' : '',
+   '2017' : '',
+   '2018' : 'data/jec/RegroupedV2_Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt'
+}
 
 if args.jes:
    with open("data/jec/RegroupedV2_Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt") as f:

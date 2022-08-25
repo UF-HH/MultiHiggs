@@ -21,4 +21,5 @@ make exe -j && \
 	--input $input \
 	--cfg  $cfg \
 	--output $output \
+	--maxEvts 100 \
 	$@
