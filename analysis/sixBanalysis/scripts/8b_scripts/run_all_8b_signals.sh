@@ -6,14 +6,17 @@ indir=$with_pu
 # indir=$training
 
 cfg="config/8b_config/skim_ntuple_2018_ranked_quadh.cfg"
+outdir="/eos/uscms/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/ranked_quadh_m12/"
 
-skim_ntuple.exe --input $indir/NMSSM_XYY_YToHH_8b_MX_1000_MY_300.txt --cfg $cfg --output NMSSM_XYY_YToHH_8b_MX_1000_MY_300_accstudies.root --is-signal &
-skim_ntuple.exe --input $indir/NMSSM_XYY_YToHH_8b_MX_1000_MY_450.txt --cfg $cfg --output NMSSM_XYY_YToHH_8b_MX_1000_MY_450_accstudies.root --is-signal &
-skim_ntuple.exe --input $indir/NMSSM_XYY_YToHH_8b_MX_700_MY_300.txt --cfg $cfg --output NMSSM_XYY_YToHH_8b_MX_700_MY_300_accstudies.root --is-signal   &
-skim_ntuple.exe --input $indir/NMSSM_XYY_YToHH_8b_MX_800_MY_300.txt --cfg $cfg --output NMSSM_XYY_YToHH_8b_MX_800_MY_300_accstudies.root --is-signal   &
-skim_ntuple.exe --input $indir/NMSSM_XYY_YToHH_8b_MX_800_MY_350.txt --cfg $cfg --output NMSSM_XYY_YToHH_8b_MX_800_MY_350_accstudies.root --is-signal   &
-skim_ntuple.exe --input $indir/NMSSM_XYY_YToHH_8b_MX_900_MY_300.txt --cfg $cfg --output NMSSM_XYY_YToHH_8b_MX_900_MY_300_accstudies.root --is-signal   &
-skim_ntuple.exe --input $indir/NMSSM_XYY_YToHH_8b_MX_900_MY_400.txt --cfg $cfg --output NMSSM_XYY_YToHH_8b_MX_900_MY_400_accstudies.root --is-signal   &
-skim_ntuple.exe --input $indir/NMSSM_XYY_YToHH_8b_MX_1200_MY_500.txt --cfg $cfg --output NMSSM_XYY_YToHH_8b_MX_1200_MY_500_accstudies.root --is-signal &
+run_skim() {
+    skim_ntuple.exe --input ${1}/NMSSM_XYY_YToHH_8b_${3}.txt --cfg ${2} --output NMSSM_XYY_YToHH_8b_${3}_accstudies.root --is-signal
+}
+export -f run_skim
 
-wait $!
+time \
+    parallel -j4 \
+        run_skim $indir $cfg\
+        ::: MX_1000_MY_300 MX_1000_MY_450 MX_700_MY_300 MX_800_MY_300 MX_800_MY_350 MX_900_MY_300 MX_900_MY_400 MX_1200_MY_500
+
+mkdir -p $outdir/NMSSM_XYY_YToHH_8b
+mv NMSSM_XYY_YToHH_8b*.root $outdir/NMSSM_XYY_YToHH_8b
