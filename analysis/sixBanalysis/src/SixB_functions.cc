@@ -138,7 +138,7 @@ void SixB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
   return;
 }
 // match the selected gen b to gen jets
-void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique)
+void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei)
 {
   const double dR_match = 0.4;
 
@@ -151,42 +151,65 @@ void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, boo
     ei.gen_HY2_b2.get_ptr()
   };
 
-  std::vector<int> genjet_idxs;
+  // For debugging
+  if (0)
+    {
+      std::cout << "HX_b1 index:  "<<ei.gen_HX_b1.get_ptr()->getIdx()<<std::endl;
+      std::cout << "HX_b2 index:  "<<ei.gen_HX_b2.get_ptr()->getIdx()<<std::endl;
+      std::cout << "HY1_b1 index: "<<ei.gen_HY1_b1.get_ptr()->getIdx()<<std::endl;
+      std::cout << "HY1_b2 index: "<<ei.gen_HY1_b2.get_ptr()->getIdx()<<std::endl;
+      std::cout << "HY2_b1 index: "<<ei.gen_HY2_b1.get_ptr()->getIdx()<<std::endl;
+      std::cout << "HY2_b2 index: "<<ei.gen_HY2_b2.get_ptr()->getIdx()<<std::endl;
+    }
 
   std::vector<GenJet> genjets;
-  for (unsigned int igj = 0; igj < *(nat.nGenJet); ++igj){
-    GenJet gj (igj, &nat);
-    genjets.push_back(gj);
-  }
-
-  for (GenPart* b : bs_to_match){
-    std::vector<std::tuple<double, int, int>> matched_gj; // dR, idx in nanoAOD, idx in local coll
-    for (unsigned int igj = 0; igj < genjets.size(); ++igj){
-      GenJet& gj = genjets.at(igj);
-      double dR = ROOT::Math::VectorUtil::DeltaR(b->P4(), gj.P4());
-      if (dR < dR_match)
-	matched_gj.push_back(std::make_tuple(dR, gj.getIdx(), igj)); // save the idx in the nanoAOD collection to rebuild this after 
-									  }
-        
-    if (matched_gj.size() > 0){
-      std::sort(matched_gj.begin(), matched_gj.end());
-      auto best_match = matched_gj.at(0);
-      genjet_idxs.push_back(std::get<1>(best_match));
-      if (ensure_unique) // genjet already used, remove it from the input list
-	genjets.erase(genjets.begin() + std::get<2>(best_match)); 
+  for (unsigned int igj = 0; igj < *(nat.nGenJet); ++igj)
+    {
+      GenJet gj (igj, &nat);
+      genjets.push_back(gj);
     }
-    else
-      genjet_idxs.push_back(-1);
-  }
 
-  // matched done, store in ei - use the map built above in bs_to_match to know the correspondence position <-> meaning
-  if (genjet_idxs.at(0) >= 0) ei.gen_HX_b1_genjet  = GenJet(genjet_idxs.at(0), &nat);
-  if (genjet_idxs.at(1) >= 0) ei.gen_HX_b2_genjet  = GenJet(genjet_idxs.at(1), &nat);
-  if (genjet_idxs.at(2) >= 0) ei.gen_HY1_b1_genjet = GenJet(genjet_idxs.at(2), &nat);
-  if (genjet_idxs.at(3) >= 0) ei.gen_HY1_b2_genjet = GenJet(genjet_idxs.at(3), &nat);
-  if (genjet_idxs.at(4) >= 0) ei.gen_HY2_b1_genjet = GenJet(genjet_idxs.at(4), &nat);
-  if (genjet_idxs.at(5) >= 0) ei.gen_HY2_b2_genjet = GenJet(genjet_idxs.at(5), &nat);
+  std::vector<GenPart*> matched_quarks;
+  std::vector<GenJet> matched_genjets;
+  GetMatchedPairs(dR_match, bs_to_match, genjets, matched_quarks, matched_genjets);
 
+  for (unsigned int im=0; im<matched_quarks.size(); im++)
+    {
+      GenPart* b = matched_quarks.at(im);
+      GenJet   j = matched_genjets.at(im);
+
+      int bIdx = b->getIdx();
+      if (bIdx == ei.gen_HX_b1.get_ptr()->getIdx())
+        {
+          ei.gen_HX_b1_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "HX_b1 ("<<ei.gen_HX_b1.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_HX_b2.get_ptr()->getIdx())
+        {
+          ei.gen_HX_b2_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "HX_b2 ("<<ei.gen_HX_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_HY1_b1.get_ptr()->getIdx())
+        {
+          ei.gen_HY1_b1_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "HY1_b1 ("<<ei.gen_HY1_b1.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_HY1_b2.get_ptr()->getIdx())
+        {
+          ei.gen_HY1_b2_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "HY1_b2 ("<<ei.gen_HY1_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_HY2_b1.get_ptr()->getIdx())
+        {
+          ei.gen_HY2_b1_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "HY2_b1 ("<<ei.gen_HY2_b1.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_HY2_b2.get_ptr()->getIdx())
+        {
+          ei.gen_HY2_b2_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "HY2_b2 ("<<ei.gen_HY2_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+    }
   return;
 }
 

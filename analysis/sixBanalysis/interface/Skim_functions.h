@@ -79,7 +79,10 @@ public:
   
   // get the local idx in the supset for each jet in the subset
   std::vector<int> match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset);
-
+  
+  void GetMatchedPairs(const double dR_match, std::vector<GenPart*>& quarks, std::vector<GenJet>& genjets,
+                       std::vector<GenPart*>& matched_quarks, std::vector<GenJet>& matched_genjets);
+  
   void match_genjets_to_reco(NanoAODTree &nat, EventInfo& ei,std::vector<GenJet>& in_gen,std::vector<Jet>& in_reco);
 
 
