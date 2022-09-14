@@ -157,6 +157,16 @@ public:
 
   NanoReaderArray<UChar_t>   Electron_cleanmask                   {fReader, "Electron_cleanmask"};
 
+  // MET Filters
+  NanoReaderValue<Bool_t> Flag_goodVertices                       {fReader, "Flag_goodVertices"}; // primary vertex filter
+  NanoReaderValue<Bool_t> Flag_globalSuperTightHalo2016Filter     {fReader, "Flag_globalSuperTightHalo2016Filter"}; // beam halo filter
+  NanoReaderValue<Bool_t> Flag_HBHENoiseFilter                    {fReader, "Flag_HBHENoiseFilter"}; // HBHE noise filter
+  NanoReaderValue<Bool_t> Flag_HBHENoiseIsoFilter                 {fReader, "Flag_HBHENoiseIsoFilter"}; // HBHEiso noise filter
+  NanoReaderValue<Bool_t> Flag_EcalDeadCellTriggerPrimitiveFilter {fReader, "Flag_EcalDeadCellTriggerPrimitiveFilter"}; // ECAL TP filter
+  NanoReaderValue<Bool_t> Flag_BadPFMuonFilter                    {fReader, "Flag_BadPFMuonFilter"}; // Bad PF Muon Filter
+  NanoReaderValue<Bool_t> Flag_eeBadScFilter                      {fReader, "Flag_eeBadScFilter"}; // ee badSC noise filter
+  NanoReaderValue<Bool_t> Flag_ecalBadCalibFilter                 {fReader, "Flag_ecalBadCalibFilter"}; // ECAL bad calibration filter update (not for 2016)
+  
   NanoReaderValue<UInt_t>    nFatJet                              {fReader, "nFatJet"};
   NanoReaderArray<Float_t>   FatJet_area                          {fReader, "FatJet_area"};
   NanoReaderArray<Float_t>   FatJet_btagCMVA                      {fReader, "FatJet_btagCMVA"};

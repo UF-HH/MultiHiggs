@@ -208,7 +208,8 @@ int main(int argc, char** argv)
       // kpass,
       knull
     };
-
+  
+  string year = config.readStringOpt("parameters::year");
   string skim_type_name = config.readStringOpt("configurations::skimType");
   cout << "[INFO] ... skim type " << skim_type_name << endl;
   const SkimTypes skim_type = (
@@ -627,6 +628,11 @@ int main(int argc, char** argv)
     skf->copy_event_info(nat, ei, !is_data);
     loop_timer.click("Global info");
 
+    // Apply METFilters
+    bool bMETFilters = *nat.Flag_goodVertices && *nat.Flag_globalSuperTightHalo2016Filter && *nat.Flag_HBHENoiseFilter && *nat.Flag_HBHENoiseIsoFilter && *nat.Flag_EcalDeadCellTriggerPrimitiveFilter && *nat.Flag_BadPFMuonFilter && *nat.Flag_eeBadScFilter && (*nat.Flag_ecalBadCalibFilter || (year=="2016"));
+    if (!bMETFilters) continue;
+    loop_timer.click("MET Filters");
+    
     // signal-specific gen info
     if (is_signal)
     {
