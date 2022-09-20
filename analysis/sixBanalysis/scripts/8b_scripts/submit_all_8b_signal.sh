@@ -15,6 +15,7 @@ ODIR="/eos/uscms/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/ranked_
 
 TAG="NMSSM_XYY_YToHH_8b"
 
+rm -rf $ODIR/$TAG/analysis_tar
 make exe -j || exit -1
 
 echo "... tag       : ", $TAG
