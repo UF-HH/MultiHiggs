@@ -94,6 +94,11 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   std::vector<int> OBJ##_genIdx;        \
   std::vector<float> OBJ##_btag;        \
   std::vector<float> OBJ##_qgl;         \
+  std::vector<float> OBJ##_chEmEF;      \
+  std::vector<float> OBJ##_chHEF;       \
+  std::vector<float> OBJ##_neEmEF;      \
+  std::vector<float> OBJ##_neHEF;       \
+  std::vector<int> OBJ##_nConstituents; \
   std::vector<int> OBJ##_id;            \
   std::vector<int> OBJ##_puid;
 

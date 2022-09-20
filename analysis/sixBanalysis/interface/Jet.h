@@ -54,6 +54,11 @@ public:
   int get_genIdx() const { return genIdx; }
   float get_btag() const { return get_property((*this), Jet_btagDeepFlavB); }
   float get_qgl() const { return get_property((*this), Jet_qgl); }
+  float get_chEmEF() const { return get_property((*this), Jet_chEmEF); }      
+  float get_chHEF() const { return get_property((*this), Jet_chHEF); }       
+  float get_neEmEF() const { return get_property((*this), Jet_neEmEF); }      
+  float get_neHEF() const { return get_property((*this), Jet_neHEF); }       
+  int get_nConstituents() const { return get_property((*this), Jet_nConstituents); } 
   int get_id() const { return get_property((*this), Jet_jetId); }
   int get_puid() const { return get_property((*this), Jet_puId); }
   int get_preselIdx() const { return preselIdx; }
