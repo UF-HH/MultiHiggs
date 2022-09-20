@@ -632,6 +632,7 @@ int main(int argc, char** argv)
     bool bMETFilters = *nat.Flag_goodVertices && *nat.Flag_globalSuperTightHalo2016Filter && *nat.Flag_HBHENoiseFilter && *nat.Flag_HBHENoiseIsoFilter && *nat.Flag_EcalDeadCellTriggerPrimitiveFilter && *nat.Flag_BadPFMuonFilter && *nat.Flag_eeBadScFilter && (*nat.Flag_ecalBadCalibFilter || (year=="2016"));
     if (!bMETFilters) continue;
     loop_timer.click("MET Filters");
+    cutflow.add("met filters", nwt);
     
     // signal-specific gen info
     if (is_signal)
