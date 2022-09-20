@@ -1,9 +1,8 @@
-ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/ranked_quadh/"
-# ODIR="/store/user/srosenzw/analysis/"
 
-. scripts/arg_submit.sh -v qcd "$@"
-TAG="JetHT_Data"
 CFG="config/8b_config/skim_ntuple_2018_ranked_quadh.cfg"
+ODIR="/eos/uscms/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/ranked_quadh/"
+
+TAG="JetHT_Data"
 
 make exe -j || exit -1
 
