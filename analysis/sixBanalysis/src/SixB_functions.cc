@@ -138,7 +138,7 @@ void SixB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
   return;
 }
 // match the selected gen b to gen jets
-void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei)
+void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique)
 {
   const double dR_match = 0.4;
 
