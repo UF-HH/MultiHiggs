@@ -53,7 +53,7 @@ public:
    * @param nat NanoAODTree being processed
    * @param ei EventInfo class to store values
    */
-  void match_genbs_to_genjets(NanoAODTree &nat, EventInfo &ei);
+  void match_genbs_to_genjets(NanoAODTree &nat, EventInfo &ei, bool ensure_unique = true) override;
 
   /**
    * @brief Match genjets associacted to a gen b quark to a reco jet
