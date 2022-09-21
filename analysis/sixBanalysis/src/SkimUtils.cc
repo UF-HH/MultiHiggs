@@ -88,26 +88,29 @@ using namespace std;
     ot.OBJ##_p4 = ei.OBJ->P4();                                      \
   }
 
-#define COPY_OPTIONAL_jet_list(OBJ)                          \
-  if (ei.OBJ##_list)                                         \
-  {                                                          \
-    for (Jet & jet : ei.OBJ##_list.get())                    \
-    {                                                        \
-      ot.OBJ##_E.push_back(jet.get_E());                     \
-      ot.OBJ##_m.push_back(jet.get_m());                     \
-      ot.OBJ##_mRegressed.push_back(jet.get_mRegressed());   \
-      ot.OBJ##_pt.push_back(jet.get_pt());                   \
-      ot.OBJ##_ptRegressed.push_back(jet.get_ptRegressed()); \
-      ot.OBJ##_eta.push_back(jet.get_eta());                 \
-      ot.OBJ##_phi.push_back(jet.get_phi());                 \
-      ot.OBJ##_signalId.push_back(jet.get_signalId());       \
-      ot.OBJ##_higgsIdx.push_back(jet.get_higgsIdx());       \
-      ot.OBJ##_genIdx.push_back(jet.get_genIdx());           \
-      ot.OBJ##_btag.push_back(jet.get_btag());               \
-      ot.OBJ##_qgl.push_back(jet.get_qgl());                 \
-      ot.OBJ##_id.push_back(jet.get_id());                   \
-      ot.OBJ##_puid.push_back(jet.get_puid());               \
-    }                                                        \
+#define COPY_OPTIONAL_jet_list(OBJ)                              \
+  if (ei.OBJ##_list) {                                           \
+    for (Jet & jet : ei.OBJ##_list.get()) {                      \
+      ot.OBJ##_E.push_back(jet.get_E());                         \
+      ot.OBJ##_m.push_back(jet.get_m());                         \
+      ot.OBJ##_mRegressed.push_back(jet.get_mRegressed());       \
+      ot.OBJ##_pt.push_back(jet.get_pt());                       \
+      ot.OBJ##_ptRegressed.push_back(jet.get_ptRegressed());     \
+      ot.OBJ##_eta.push_back(jet.get_eta());                     \
+      ot.OBJ##_phi.push_back(jet.get_phi());                     \
+      ot.OBJ##_signalId.push_back(jet.get_signalId());           \
+      ot.OBJ##_higgsIdx.push_back(jet.get_higgsIdx());           \
+      ot.OBJ##_genIdx.push_back(jet.get_genIdx());               \
+      ot.OBJ##_btag.push_back(jet.get_btag());                   \
+      ot.OBJ##_qgl.push_back(jet.get_qgl());                     \
+      ot.OBJ##_chEmEF.push_back(jet.get_chEmEF());               \
+      ot.OBJ##_chHEF.push_back(jet.get_chHEF());                 \
+      ot.OBJ##_neEmEF.push_back(jet.get_neEmEF());               \
+      ot.OBJ##_neHEF.push_back(jet.get_neHEF());                 \
+      ot.OBJ##_nConstituents.push_back(jet.get_nConstituents()); \
+      ot.OBJ##_id.push_back(jet.get_id());                       \
+      ot.OBJ##_puid.push_back(jet.get_puid());                   \
+    }                                                            \
   }
 
 #define COPY_OPTIONAL_dijet_list(OBJ)                    \

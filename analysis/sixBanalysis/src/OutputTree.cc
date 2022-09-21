@@ -102,38 +102,48 @@ using namespace std;
   OBJ##_score = -999.;                                       \
   OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
-#define BRANCH_jet_list(OBJ)                              \
-  tree_->Branch(#OBJ "_E", &OBJ##_E);                     \
-  tree_->Branch(#OBJ "_m", &OBJ##_m);                     \
-  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);   \
-  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                   \
-  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed); \
-  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                 \
-  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                 \
-  tree_->Branch(#OBJ "_signalId", &OBJ##_signalId);       \
-  tree_->Branch(#OBJ "_higgsIdx", &OBJ##_higgsIdx);       \
-  tree_->Branch(#OBJ "_genIdx", &OBJ##_genIdx);           \
-  tree_->Branch(#OBJ "_btag", &OBJ##_btag);               \
-  tree_->Branch(#OBJ "_qgl", &OBJ##_qgl);                 \
-  tree_->Branch(#OBJ "_id", &OBJ##_id);                   \
+#define BRANCH_jet_list(OBJ)                                  \
+  tree_->Branch(#OBJ "_E", &OBJ##_E);                         \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                         \
+  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);       \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                       \
+  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed);     \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                     \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                     \
+  tree_->Branch(#OBJ "_signalId", &OBJ##_signalId);           \
+  tree_->Branch(#OBJ "_higgsIdx", &OBJ##_higgsIdx);           \
+  tree_->Branch(#OBJ "_genIdx", &OBJ##_genIdx);               \
+  tree_->Branch(#OBJ "_btag", &OBJ##_btag);                   \
+  tree_->Branch(#OBJ "_qgl", &OBJ##_qgl);                     \
+  tree_->Branch(#OBJ "_chEmEF", &OBJ##_chEmEF);               \
+  tree_->Branch(#OBJ "_chHEF", &OBJ##_chHEF);                 \
+  tree_->Branch(#OBJ "_neEmEF", &OBJ##_neEmEF);               \
+  tree_->Branch(#OBJ "_neHEF", &OBJ##_neHEF);                 \
+  tree_->Branch(#OBJ "_nConstituents", &OBJ##_nConstituents); \
+  tree_->Branch(#OBJ "_id", &OBJ##_id);                       \
   tree_->Branch(#OBJ "_puid", &OBJ##_puid);
 
-#define CLEAR_jet_list(OBJ)  \
-  OBJ##_E.clear();           \
-  OBJ##_m.clear();           \
-  OBJ##_mRegressed.clear();  \
-  OBJ##_pt.clear();          \
-  OBJ##_ptRegressed.clear(); \
-  OBJ##_eta.clear();         \
-  OBJ##_phi.clear();         \
-  OBJ##_partonFlav.clear();  \
-  OBJ##_hadronFlav.clear();  \
-  OBJ##_signalId.clear();    \
-  OBJ##_higgsIdx.clear();    \
-  OBJ##_genIdx.clear();      \
-  OBJ##_btag.clear();        \
-  OBJ##_qgl.clear();         \
-  OBJ##_id.clear();          \
+#define CLEAR_jet_list(OBJ)    \
+  OBJ##_E.clear();             \
+  OBJ##_m.clear();             \
+  OBJ##_mRegressed.clear();    \
+  OBJ##_pt.clear();            \
+  OBJ##_ptRegressed.clear();   \
+  OBJ##_eta.clear();           \
+  OBJ##_phi.clear();           \
+  OBJ##_partonFlav.clear();    \
+  OBJ##_hadronFlav.clear();    \
+  OBJ##_signalId.clear();      \
+  OBJ##_higgsIdx.clear();      \
+  OBJ##_genIdx.clear();        \
+  OBJ##_btag.clear();          \
+  OBJ##_qgl.clear();           \
+  OBJ##_chEmEF.clear();        \
+  OBJ##_chHEF.clear();         \
+  OBJ##_neEmEF.clear();        \
+  OBJ##_neHEF.clear();         \
+  OBJ##_nConstituents.clear(); \
+  OBJ##_id.clear();            \
   OBJ##_puid.clear();
 
 #define BRANCH_dijet_list(OBJ)                      \

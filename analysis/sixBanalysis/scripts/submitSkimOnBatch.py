@@ -167,7 +167,8 @@ for ijob in range(njobs):
 ## send the filelists to eos
 
 print "[INFO] copying filelists to EOS"
-command = 'xrdcp -f -s {} {}{}'.format(jobsdir+'/'+filelist_proto.format(ijob='*'), eos_server, odir_sample + '/filelist')
+# command = 'xrdcp -f -s {} {}{}'.format(jobsdir+'/'+filelist_proto.format(ijob='*'), eos_server, odir_sample + '/filelist')
+command = 'cp -f {} {}'.format(jobsdir+'/'+filelist_proto.format(ijob='*'), odir_sample + '/filelist')
 if os.system(command) != 0:
     print "[ERROR] Could not copy the filelists to EOS, aborting"
     raise RuntimeError("failed to copy filelists to eos")
