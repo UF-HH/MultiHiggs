@@ -252,9 +252,9 @@ int main(int argc, char** argv)
   ////////////////////////////////////////////////////////////////////////
   // Trigger information
   ////////////////////////////////////////////////////////////////////////
-
+  
   cout << "[INFO] ... loading " << config.readStringListOpt("triggers::makeORof").size() << " triggers" << endl;
-
+  
   const bool apply_trigger     = config.readBoolOpt("triggers::applyTrigger");
   const bool save_trg_decision = config.readBoolOpt("triggers::saveDecision");
   cout << "[INFO] ... is the OR decision of these triggers applied? " << std::boolalpha << apply_trigger << std::noboolalpha << endl;
@@ -634,6 +634,66 @@ int main(int argc, char** argv)
     loop_timer.click("MET Filters");
     cutflow.add("met filters", nwt);
     
+    // Apply muon selection or veto
+    std::vector<Muon> selected_muons = skf->select_muons(config, nat, ei);
+    loop_timer.click("Muon Selection");
+    
+    bool applyMuonVeto = config.readBoolOpt("configurations::applyMuonVeto");
+    bool applyMuonSelection = config.readBoolOpt("configurations::applyMuonSelection");
+    if (applyMuonVeto)
+      {
+	if (selected_muons.size() != 0) continue;
+	ei.n_mu_loose = selected_muons.size();
+	
+	cutflow.add("#mu veto", nwt);
+	loop_timer.click("#mu veto");	
+      }
+    else if (applyMuonSelection)
+      {
+	ei.n_mu_loose = selected_muons.size();
+	
+	if (selected_muons.size() > 0)
+	  {
+	    ei.mu_1 = selected_muons.at(0);
+	  }
+	if (selected_muons.size() > 1)
+	  {
+	    ei.mu_2 = selected_muons.at(1);
+	  }
+	
+	// Need to make a cut here
+	cutflow.add("#mu selection", nwt);
+      }
+        
+    // Apply electron selection or veto
+    std::vector<Electron> selected_electrons = skf->select_electrons(config, nat, ei);
+    loop_timer.click("Electron Selection");
+    
+    bool applyEleVeto = config.readBoolOpt("configurations::applyEleVeto");
+    bool applyEleSelection = config.readBoolOpt("configurations::applyEleSelection");
+    if (applyEleVeto)
+      {
+	if (selected_electrons.size() !=0) continue;
+	ei.n_ele_loose = selected_electrons.size();
+	
+	cutflow.add("e veto", nwt);
+	loop_timer.click("e veto");
+      }
+    else if (applyEleSelection)
+      {
+	ei.n_ele_loose = selected_electrons.size();
+	if (selected_electrons.size() > 0)
+	  {
+	    ei.ele_1 = selected_electrons.at(0);
+	  }
+	if (selected_electrons.size() > 1)
+	  {
+	    ei.ele_2 = selected_electrons.at(1);
+	  }
+	cutflow.add("e selection", nwt);
+      }
+    
+
     // signal-specific gen info
     if (is_signal)
     {
@@ -819,9 +879,6 @@ int main(int argc, char** argv)
         ei.btagSF_WP_M = btsf.get_SF_allJetsPassWP({ttjets.at(0), ttjets.at(1)}, BtagSF::btagWP::medium);
       loop_timer.click("ttbar b jet selection");
     }
-
-    skf->select_leptons(nat, ei);
-    loop_timer.click("Lepton selection");
 
     if (blind && is_data && skf->is_blinded(nat, ei, is_data))
       continue;
