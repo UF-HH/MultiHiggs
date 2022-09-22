@@ -370,7 +370,15 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
       if (is_enabled("gen_brs")) tree_->Branch("bjet2_hadflav", &bjet2_hadflav);
     }
-
+  
+  if (is_enabled("trgeff_brs"))
+    {
+      std::cout << "[INFO] OutputTree : enabling TrgEff branches" << std::endl;
+      // marina
+      //tree_->Branch("HT", &HT);
+      //tree_->Branch("HTb", &HTb);
+    }
+  
   tree_->Branch("n_total_jet",&n_total_jet);
   tree_->Branch("n_jet", &n_jet);
 

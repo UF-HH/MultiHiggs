@@ -1,6 +1,7 @@
 #ifndef SKIM_FUNCTIONS_H
 #define SKIM_FUNCTIONS_H
 
+#include "DirectionalCut.h"
 #include "NanoAODTree.h"
 #include "EventInfo.h"
 #include "Cutflow.h"
