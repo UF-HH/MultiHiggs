@@ -16,7 +16,7 @@ input="input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/NMSSM_XYY_YToHH_8b_MX_1000_MY_450
 
 # cfg="config/8b_config/skim_ntuple_2018_ranked_quadh.cfg"
 # cfg="config/8b_config/accstudies_2018.cfg"
-cfg="config/8b_config/skim_ntuple_2018_t8btag.cfg"
+cfg="config/8b_config/skim_ntuple_2018_t8btag_minmass.cfg"
 # cfg="config/8b_config/testing.cfg"
 # cfg="config/8b_config/skim_ntuple_2018_gnn_jet.cfg"
 
