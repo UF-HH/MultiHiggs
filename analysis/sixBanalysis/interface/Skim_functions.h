@@ -1,10 +1,13 @@
 #ifndef SKIM_FUNCTIONS_H
 #define SKIM_FUNCTIONS_H
 
+#include "DirectionalCut.h"
 #include "NanoAODTree.h"
 #include "EventInfo.h"
 #include "Cutflow.h"
 
+#include "Electron.h"
+#include "Muon.h"
 #include "Jet.h"
 #include "GenJet.h"
 #include "GenPart.h"
@@ -89,9 +92,10 @@ public:
   ////////////////////////////////////////////////////
   /// non-jet functions
   ////////////////////////////////////////////////////
-
-  void select_leptons(NanoAODTree &nat, EventInfo &ei);
-
+  
+  std::vector<Electron> select_electrons(CfgParser &config, NanoAODTree &nat, EventInfo &ei);
+  std::vector<Muon> select_muons(CfgParser &config, NanoAODTree &nat, EventInfo &ei);
+  
   void set_btag_WPs(std::vector<double> btag_wps) { btag_WPs = btag_wps; }
   
   ////////////////////////////////////////////////////

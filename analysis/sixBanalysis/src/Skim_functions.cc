@@ -335,118 +335,151 @@ void Skim_functions::match_genjets_to_reco(NanoAODTree &nat, EventInfo& ei, std:
   }
 }
 
-void Skim_functions::select_leptons(NanoAODTree &nat, EventInfo &ei)
+std::vector<Muon> Skim_functions::select_muons(CfgParser &config, NanoAODTree &nat, EventInfo &ei)
 {
   /**
-   * @brief Selects leptons in the event
+   * @brief Selects muons in the event
    * 
    */
-  std::vector<Electron> electrons;
+  float muonPtCut  = config.readFloatOpt("configurations::muonPtCut");
+  float muonEtaCut = config.readFloatOpt("configurations::muonEtaCut"); 
+  string muonID         = config.readStringOpt("configurations::muonID");
+  string muonIsoCutName = config.readStringOpt("configurations::muonIsoCut");
+  float muonIsoCutValue;
+  
+  if (muonIsoCutName == "vLoose")       muonIsoCutValue = 0.4;
+  else if (muonIsoCutName == "Loose")   muonIsoCutValue = 0.25; // eff. ~98%
+  else if (muonIsoCutName == "Medium")  muonIsoCutValue = 0.20;
+  else if (muonIsoCutName == "Tight")   muonIsoCutValue = 0.15; // eff. ~95%
+  else if (muonIsoCutName == "vTight")  muonIsoCutValue = 0.10;
+  else if (muonIsoCutName == "vvTight") muonIsoCutValue = 0.05;
+  else muonIsoCutValue = 9999.9;
+    
   std::vector<Muon> muons;
-
-  for (unsigned int ie = 0; ie < *(nat.nElectron); ++ie)
-  {
-    Electron ele(ie, &nat);
-    electrons.emplace_back(ele);
-  }
-
-  for (unsigned int imu = 0; imu < *(nat.nMuon); ++imu)
-  {
-    Muon mu(imu, &nat);
-    muons.emplace_back(mu);
-  }
-
-  // apply preselections
-  std::vector<Electron> loose_electrons;
-  std::vector<Muon> loose_muons;
-
-  // std::vector<Electron> tight_electrons;
-  // std::vector<Muon> tight_muons;
-
-  for (auto &el : electrons)
-  {
-
-    float dxy = get_property(el, Electron_dxy);
-    float dz = get_property(el, Electron_dz);
-    float eta = get_property(el, Electron_eta);
-    float pt = get_property(el, Electron_pt);
-    bool ID_WPL = get_property(el, Electron_mvaFall17V2Iso_WPL);
-    // bool ID_WP90 = get_property(el, Electron_mvaFall17V2Iso_WP90);
-    // bool ID_WP80 = get_property(el, Electron_mvaFall17V2Iso_WP80);
-    float iso = get_property(el, Electron_pfRelIso03_all);
-
-    // note: hardcoded selections can be made configurable from cfg if needed
-    const float e_pt_min = 15;
-    const float e_eta_max = 2.5;
-    const float e_iso_max = 0.15;
-
-    const float e_dxy_max_barr = 0.05;
-    const float e_dxy_max_endc = 0.10;
-    const float e_dz_max_barr = 0.10;
-    const float e_dz_max_endc = 0.20;
-
-    bool is_barrel = abs(eta) < 1.479;
-    bool pass_dxy = (is_barrel ? dxy < e_dxy_max_barr : dxy < e_dxy_max_endc);
-    bool pass_dz = (is_barrel ? dz < e_dz_max_barr : dz < e_dz_max_endc);
-
-    // loose electrons for veto
-    if (pt > e_pt_min &&
-        abs(eta) < e_eta_max &&
-        iso < e_iso_max &&
-        pass_dxy &&
-        pass_dz &&
-        ID_WPL)
-      loose_electrons.emplace_back(el);
-  }
-
+  for (unsigned int imu=0; imu < *(nat.nMuon); ++imu)
+    {
+      Muon mu(imu, &nat);
+      muons.emplace_back(mu);
+    }
+  
+  std::vector<Muon> selected_muons;
   for (auto &mu : muons)
-  {
+    {
+      float pt  = get_property(mu, Muon_pt);
+      float eta = get_property(mu, Muon_eta);
+      
+      // Apply pt & eta cuts
+      if (pt < muonPtCut) continue;
+      if (std::abs(eta) > muonEtaCut) continue;
+      
+      // Apply isolation cut
+      // PF-based combined relative isolation with Delta & Beta corrections for PU mitigation, uses a DR cone of 0.4
+      // Link: https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonSelection#Particle_Flow_isolation
+      float iso = get_property(mu, Muon_pfRelIso04_all); 
+      if (iso > muonIsoCutValue) continue;
+      
+      bool ID_WPL = get_property(mu, Muon_looseId);
+      bool ID_WPM = get_property(mu, Muon_mediumId);
+      bool ID_WPT = get_property(mu, Muon_tightId);
+      
+      // Apply ID requirement (to be used
+      if (muonID == "Loose")
+	{
+	  if (!ID_WPL) continue;
+	}
+      else if (muonID == "Medium")
+	{
+	  if (!ID_WPM) continue;
+	}
+      else if (muonID == "Tight")
+	{
+	  if (!ID_WPT) continue;
+	}
+      
+      float dxy = get_property(mu, Muon_dxy);
+      float dz  = get_property(mu, Muon_dz);
+      
+      // note: hardcoded selections can be made configurable from cfg if needed
+      const float mu_dxy_max_barr = 0.05;
+      const float mu_dxy_max_endc = 0.10;
+      const float mu_dz_max_barr = 0.10;
+      const float mu_dz_max_endc = 0.20;
+      
+      bool is_barrel = abs(eta) < 1.2;
+      bool pass_dxy = (is_barrel ? dxy < mu_dxy_max_barr : dxy < mu_dxy_max_endc);
+      bool pass_dz = (is_barrel ? dz < mu_dz_max_barr : dz < mu_dz_max_endc);
+      
+      if (!pass_dxy) continue;
+      if (!pass_dz) continue;
+      
+      selected_muons.emplace_back(mu);
+    }
+  return selected_muons;  
+}
 
-    float dxy = get_property(mu, Muon_dxy);
-    float dz = get_property(mu, Muon_dz);
-    float eta = get_property(mu, Muon_eta);
-    float pt = get_property(mu, Muon_pt);
-    bool ID_WPL = get_property(mu, Muon_looseId);
-    // bool ID_WPM = get_property(mu, Muon_mediumId);
-    // bool ID_WPT = get_property(mu, Muon_tightId);
-    float iso = get_property(mu, Muon_pfRelIso04_all);
 
-    // note: hardcoded selections can be made configurable from cfg if needed
-    const float mu_pt_min = 10;
-    const float mu_eta_max = 2.4;
-    const float mu_iso_max = 0.15;
-
-    const float mu_dxy_max_barr = 0.05;
-    const float mu_dxy_max_endc = 0.10;
-    const float mu_dz_max_barr = 0.10;
-    const float mu_dz_max_endc = 0.20;
-
-    bool is_barrel = abs(eta) < 1.2;
-    bool pass_dxy = (is_barrel ? dxy < mu_dxy_max_barr : dxy < mu_dxy_max_endc);
-    bool pass_dz = (is_barrel ? dz < mu_dz_max_barr : dz < mu_dz_max_endc);
-
-    // loose muons for veto
-    if (pt > mu_pt_min &&
-        abs(eta) < mu_eta_max &&
-        iso < mu_iso_max &&
-        pass_dxy &&
-        pass_dz &&
-        ID_WPL)
-      loose_muons.emplace_back(mu);
-  }
-
-  // copy needed info to the EventInfo
-  if (loose_muons.size() > 0)
-    ei.mu_1 = loose_muons.at(0);
-  if (loose_muons.size() > 1)
-    ei.mu_2 = loose_muons.at(1);
-  if (loose_electrons.size() > 0)
-    ei.ele_1 = loose_electrons.at(0);
-  if (loose_electrons.size() > 1)
-    ei.ele_2 = loose_electrons.at(1);
-
-  ei.n_mu_loose = loose_muons.size();
-  ei.n_ele_loose = loose_electrons.size();
-  // ei.n_mu_tight  = tight_muons.size();
-  // ei.n_ele_tight = tight_electrons.size();
+std::vector<Electron> Skim_functions::select_electrons(CfgParser &config, NanoAODTree &nat, EventInfo &ei)
+{
+  float elePtCut  = config.readFloatOpt("configurations::elePtCut");
+  float eleEtaCut = config.readFloatOpt("configurations::eleEtaCut");
+  string eleID = config.readStringOpt("configurations::eleID");
+  float eleIsoCut = config.readFloatOpt("configurations::eleIsoCut");
+  
+  std::vector<Electron> electrons;
+  for (unsigned int ie = 0; ie < *(nat.nElectron); ++ie)
+    {
+      Electron ele(ie, &nat);
+      electrons.emplace_back(ele);
+    }
+  
+  std::vector<Electron> selected_electrons;
+  for (auto &el : electrons)
+    {
+      float pt = get_property(el, Electron_pt);
+      float eta = get_property(el, Electron_eta);
+      
+      // Apply pT and eta cuts
+      if (pt < elePtCut) continue;
+      if (std::abs(eta) > eleEtaCut) continue;
+      
+      // Apply isolation cut
+      float iso = get_property(el, Electron_pfRelIso03_all);
+      if (iso > eleIsoCut) continue;
+      
+      float dxy = get_property(el, Electron_dxy);
+      float dz  = get_property(el, Electron_dz);
+      
+      bool ID_WPL = get_property(el, Electron_mvaFall17V2Iso_WPL);
+      bool ID_WP90 = get_property(el, Electron_mvaFall17V2Iso_WP90);
+      bool ID_WP80 = get_property(el, Electron_mvaFall17V2Iso_WP80);
+      
+      if (eleID == "Loose")
+	{
+	  if (!ID_WPL) continue;
+	}
+      else if (eleID == "90")
+	{
+	  if (!ID_WP90) continue;
+	}
+      else if (eleID == "80")
+	{
+	  if (!ID_WP80) continue;
+	}
+      
+      // note: hardcoded selections can be made configurable from cfg if needed
+      const float e_dxy_max_barr = 0.05;
+      const float e_dxy_max_endc = 0.10;
+      const float e_dz_max_barr = 0.10;
+      const float e_dz_max_endc = 0.20;
+      
+      bool is_barrel = abs(eta) < 1.479;
+      bool pass_dxy = (is_barrel ? dxy < e_dxy_max_barr : dxy < e_dxy_max_endc);
+      bool pass_dz = (is_barrel ? dz < e_dz_max_barr : dz < e_dz_max_endc);
+      
+      if (!pass_dxy) continue;
+      if (!pass_dz) continue;
+      
+      selected_electrons.emplace_back(el);
+    }
+  return selected_electrons;
 }
