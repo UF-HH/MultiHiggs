@@ -23,7 +23,7 @@ void Skim_functions::initialize_params_from_cfg(CfgParser &config)
    */
   // preselections
   pmap.insert_param<bool>("presel", "apply", config.readBoolOpt("presel::apply"));
-  pmap.insert_param<double>("presel", "pt_min", config.readDoubleOpt("presel::pt_min"));
+  pmap.insert_param<std::vector<double> >("presel", "pt_min", config.readDoubleListOpt("presel::pt_min"));
   pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
   pmap.insert_param<int>("presel", "pf_id", config.readIntOpt("presel::pf_id"));
   pmap.insert_param<int>("presel", "pu_id", config.readIntOpt("presel::pu_id"));
@@ -104,7 +104,7 @@ std::vector<Jet> Skim_functions::get_all_jets(NanoAODTree &nat)
   return jets;
 }
 
-std::vector<Jet> Skim_functions::preselect_jets(NanoAODTree &nat, const std::vector<Jet> &in_jets)
+std::vector<Jet> Skim_functions::preselect_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
   /**
    * @brief Selects jets from in_jets according to preselections defined in config
@@ -114,31 +114,39 @@ std::vector<Jet> Skim_functions::preselect_jets(NanoAODTree &nat, const std::vec
   const bool apply = pmap.get_param<bool>("presel","apply");
   if (!apply) return in_jets;
   
-  const double pt_min = pmap.get_param<double>("presel", "pt_min");
+  const std::vector<double> pt_cuts = pmap.get_param<std::vector<double> >("presel", "pt_min");
   const double eta_max = pmap.get_param<double>("presel", "eta_max");
-  // const double btag_min = btag_WPs.at(0);
   const int pf_id = pmap.get_param<int>("presel", "pf_id");
   const int pu_id = pmap.get_param<int>("presel", "pu_id");
-
+  
   std::vector<Jet> out_jets;
   out_jets.reserve(in_jets.size());
-
-  for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
-  {
-    const Jet &jet = in_jets.at(ij);
-    if (jet.P4().Pt() <= pt_min)
-      continue;
-    if (std::abs(jet.P4().Eta()) >= eta_max)
-      continue;
-    // if (jet.get_btag() <= btag_min) continue;
-    if (!checkBit(jet.get_id(), pf_id))
-      continue;
-    if (jet.P4().Pt() < 50 && !checkBit(jet.get_puid(), pu_id))
-      continue; // PU ID only applies to jet with pT < 50 GeV
-
-    out_jets.emplace_back(jet);
-  }
-
+  
+  unsigned int ptCut_index = 0;
+  
+  // Jets need to be sorted by pT in descending order before applying different pT cuts
+  std::vector<Jet> jets_sortedInPt = pt_sort_jets(nat, ei, in_jets);
+  
+  for (unsigned int ij=0; ij<jets_sortedInPt.size(); ++ij)
+    {
+      const Jet &jet = jets_sortedInPt.at(ij);
+      
+      if (0) std::cout << " jet "<<ij<<"  pt="<<jet.P4().Pt()<<"   pt cut ="<<pt_cuts.at(ptCut_index)<<std::endl;
+      
+      if (jet.P4().Pt() <= pt_cuts.at(ptCut_index))
+	continue;
+      if (std::abs(jet.P4().Eta()) >= eta_max)
+	continue;
+      if (!checkBit(jet.get_id(), pf_id))
+	continue;
+      if (jet.P4().Pt() < 50 && !checkBit(jet.get_puid(), pu_id))
+	continue; // PU ID only applies to jet with pT < 50 GeV
+      
+      out_jets.emplace_back(jet);
+      
+      // Increment cut index only
+      if (ptCut_index < pt_cuts.size()-1) ptCut_index++;
+    }
   return out_jets;
 }
 
@@ -156,31 +164,67 @@ std::vector<Jet> Skim_functions::pt_sort_jets(NanoAODTree &nat, EventInfo& ei, c
   return jets;
 }
 
-std::vector<Jet> Skim_functions::bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+std::vector<Jet> Skim_functions::bias_pt_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
   std::vector<Jet> jets = in_jets;
+  
+  // For debugging
+  if (0)
+    {
+      std::cout << "Input jet collection should be sorted by pT (only) in descending order"<<std::endl;
+      for (unsigned int ij=0; ij<in_jets.size(); ij++)
+	{
+	  const Jet j = in_jets.at(ij);
+	  std::cout<<" jet "<< ij <<"  pt = "<< j.get_pt() <<"   b-disc="<< j.get_btag()<<std::endl;
+	}
+    }
+  
+  // Sort jets by their b-tagging score in descending order
   std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
-
+  
+  // For debugging
+  if (0)
+    {
+      std::cout << "Jets are now sorted by b-tagging score (only) in descending order"<<std::endl;
+      for (unsigned int ij=0; ij<jets.size(); ij++)
+	{
+	  std::cout << "  jet "<<ij<<"  pt = "<<jets.at(ij).get_pt()<<"   b-disc="<<jets.at(ij).get_btag()<<std::endl;
+	}
+    }
+  
+  auto fail_it  = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()<this->btag_WPs[0]; });
   auto loose_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
   auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
   auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
-
+  
   auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
 
   int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
   int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
   int loose_idx  = std::distance(jets.begin(),loose_it.base())-1;
-
-  std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
+  int fail_idx   = std::distance(jets.begin(),fail_it.base())-1;
+  
+  std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx, fail_idx};
   auto start = jets.begin();
   for (int wp_idx : wp_idxs)
-  {
-    if (wp_idx != -1 && start != jets.end()) {
-	    auto end = jets.begin() + wp_idx + 1;
-	    std::sort(start,end,pt_sort);
-	    start = end;
+    {
+      if (wp_idx != -1 && start != jets.end())
+	{
+	  auto end = jets.begin() + wp_idx + 1;
+	  std::sort(start, end, pt_sort);
+	  start = end;
+	}
     }
-  }
+  
+  // For debugging
+  if (0)
+    {
+      std::cout << "Sorted by b-tagging score in descending order and then by pT withing each group (Tight, Medium, Loose, Fail), again in descending order:"<<std::endl;
+      for (unsigned int ij=0; ij<jets.size(); ij++)
+        {
+	  std::cout << "  jet "<<ij<<"  pt = "<<jets.at(ij).get_pt()<<"   b-disc="<<jets.at(ij).get_btag()<<std::endl;
+        }
+    }
   return jets;
 }
 

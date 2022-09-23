@@ -721,11 +721,18 @@ int main(int argc, char** argv)
     }
     
     // Apply preselections to jets (min pT / max eta / PU ID / PF ID)
-    std::vector<Jet> presel_jets = skf->preselect_jets(nat, all_jets);
+    std::vector<Jet> presel_jets = skf->preselect_jets(nat, ei, all_jets);
+    
     ei.nfound_presel = skf->n_gjmatched_in_jetcoll(nat, ei, presel_jets);
+    //std::cout << "Number of selected jets found matched with GEN-level objects = "<<ei.nfound_presel<<std::endl;
+    
     ei.nfound_presel_h = skf->n_ghmatched_in_jetcoll(nat, ei, presel_jets);
+    //std::cout << "Number of selected jets found matched to Higgs objects = "<<ei.nfound_presel_h<<std::endl;
+    
     ei.n_jet = presel_jets.size();
-    loop_timer.click("Jet preselection");
+    //std::cout << "Number of selected jets: "<<ei.n_jet<<std::endl;
+    
+    loop_timer.click("Jet selection");
     if (debug) dumpObjColl(presel_jets, "==== PRESELECTED JETS ===");
     
     if (is_signal) 
@@ -784,21 +791,30 @@ int main(int argc, char** argv)
       }
     else if (skim_type == ksixb)
       {
-	if (presel_jets.size() < 6)
-	  continue;
-	cutflow.add("npresel_jets>=6", nwt);
+	// Preselected jets are all jets in the event sorted in pT
+	const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
+	if (!cfg_nJets.passedCut(presel_jets.size())) continue;
+        cutflow.add("selected jets >= 6", nwt);
 	
+	//=============================================
+	// Jets for pairing selection (either 6 or 0)
+	//=============================================
 	std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
+	if (selected_jets.size() < 6) continue;
+	cutflow.add("Jets for pairing selection");
+	loop_timer.click("Six b jet selection");
+	
 	ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
 	ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
 	
-	loop_timer.click("Six b jet selection");
 	if (debug)
-	  dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
-	if (selected_jets.size() < 6)
-	  continue;
-	cutflow.add("nselect_jets>=6", nwt);
+	  {
+	    dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
+	  }
 	
+	//================================================
+	// Proceed with the pairing of the 6 selected jets
+	//=================================================
 	skf->pair_jets(nat, ei, selected_jets);
 	loop_timer.click("Six b jet pairing");
 	

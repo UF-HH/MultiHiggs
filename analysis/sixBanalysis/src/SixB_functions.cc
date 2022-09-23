@@ -20,7 +20,7 @@ void SixB_functions::initialize_params_from_cfg(CfgParser& config)
 {
   // preselections
   pmap.insert_param<bool>("presel", "apply", config.readBoolOpt("presel::apply"));
-  pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
+  pmap.insert_param<std::vector<double> >("presel", "pt_min", config.readDoubleListOpt("presel::pt_min"));
   pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
   pmap.insert_param<int>   ("presel", "pf_id",   config.readIntOpt("presel::pf_id"));
   pmap.insert_param<int>   ("presel", "pu_id",   config.readIntOpt("presel::pu_id"));
@@ -40,7 +40,6 @@ void SixB_functions::initialize_params_from_cfg(CfgParser& config)
   // parse specific parameters for various functions
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "bias_pt_sort") {
       pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
-      pmap.insert_param<vector<double>>("bias_pt_sort", "pt_cuts",      config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
       pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
   }
 
@@ -320,7 +319,7 @@ void SixB_functions::compute_seljets_genmatch_flags(NanoAODTree& nat, EventInfo&
 std::vector<Jet> SixB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
   std::string sel_type = pmap.get_param<std::string>("configurations", "sixbJetChoice");
-
+  
   // if (sel_type == "btag_order")
   //   return select_sixb_jets_btag_order(nat, ei, in_jets);
 
@@ -348,38 +347,69 @@ std::vector<Jet> SixB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, co
 
 std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
-  // std::vector<Jet> jets = in_jets;
-
-  // std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
-
-  // auto loose_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
-  // auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
-  // auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
-
-  // auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
-
-  // int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
-  // int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
-  // int loose_idx  = std::distance(jets.begin(),loose_it.base())-1;
-
-  // std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
-  // auto start = jets.begin();
-  // for (int wp_idx : wp_idxs)
-  // {
-  //   if (wp_idx != -1 && start != jets.end()) {
-	//     auto end = jets.begin() + wp_idx + 1;
-	//     std::sort(start,end,pt_sort);
-	//     start = end;
-  //   }
-  // }
+  /*
+    input jet collection is in_jets : sorted in pT (only) jets
+    
+    This function sorts the input jet collection, first by the b-tagging score in descending order, and groups the jets into:
+    Tight, Medium, Loose and Fail categories. Within these four categories, the jets are sorted again by their pT in descending order.
+  */
   
+  if (0) // For debugging
+    {
+      std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:   input jet collection (should be ordered in pT only):"<<std::endl;
+      for (unsigned int ij=0; ij<in_jets.size(); ij++)
+	{
+	  std::cout << " jet "<<ij<<"   pT="<<in_jets.at(ij).get_pt()<<"   b-disc.="<<in_jets.at(ij).get_btag()<<std::endl;
+	}
+    }
+  
+  // Sort jets by their b-tagging score in descending order
   std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
+  
+  if (0) // For debugging
+    {
+      std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:  jet collection after sorting by b-tagging score and then pT within each group:"<<std::endl;
+      for (unsigned int ij=0; ij<jets.size(); ij++)
+	{
+	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
+	}
+    }
+  
+  // Select the first 6 jets for the pairing
+  unsigned int n_out = std::min<int>(jets.size(), 6);
+  jets.resize(n_out);
+  
+  bool apply_cuts = pmap.get_param<bool>("bias_pt_sort", "applyJetCuts");
+  if (apply_cuts)
+    {
+      bool pass_cuts = true;
+      std::vector<int> btagWP_cuts = pmap.get_param<std::vector<int>>("bias_pt_sort", "btagWP_cuts");
+      if (btagWP_cuts.size() > n_out)
+	{
+	  throw std::runtime_error("Number of cuts required larger than the jet collection size! Fix me.");
+	}
+      
+      for (unsigned int icut=0; icut<btagWP_cuts.size(); icut++)
+	{
+	  const Jet& j = jets.at(icut);
+	  int btag_wp  = btagWP_cuts.at(icut);
+	  if (j.get_btag() <= btag_WPs[btag_wp])
+	    {
+	      pass_cuts = false; 
+	      break;
+	    }
+	}
 
-  int n_out = std::min<int>(jets.size(), 6);
-  jets.resize(n_out); // take top 6
+      if (!pass_cuts)
+	{
+	  jets.resize(0);
+	}
+    }
+  return jets;
 
+  /*
   // if (debug_) dumpObjColl(jets, "==== JETS SELECTED IN bias_pt_sort BEFORE CUTS ===");
-
+  
   // apply a set of dedicated cuts
   // NOTE: these cuts are applied in the *order* in which jets are passed
   // this means that these
@@ -393,7 +423,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
   // WP ::  2  2  2  1
   // so these cuts do NOT mean "at least 2 tight jets with pt 60/40 + at least two medium jets with pT 40/20"
 
-  bool apply_cuts = pmap.get_param<bool>("bias_pt_sort", "applyJetCuts");
+  //bool apply_cuts = pmap.get_param<bool>("bias_pt_sort", "applyJetCuts");
 
   if (apply_cuts){
     bool pass_cuts = true;
@@ -426,6 +456,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
   }
 
   return jets;  
+  */
 }
 
 
@@ -1260,15 +1291,18 @@ int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
   if (ei.gen_HY2_b2_recojet) matched_jets.push_back(ei.gen_HY2_b2_recojet->getIdx());
 
   std::vector<int> reco_js (in_jets.size());
-  for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
-    reco_js.at(ij) = in_jets.at(ij).getIdx();
-
+  for (unsigned int ij=0; ij<in_jets.size(); ++ij)
+    {
+      reco_js.at(ij) = in_jets.at(ij).getIdx();
+    }
+  
   int nfound = 0;
-  for (int imj : matched_jets){
-    if (std::find(reco_js.begin(), reco_js.end(), imj) != reco_js.end())
-      nfound += 1;
-  }
-
+  for (int imj : matched_jets)
+    {
+      if (std::find(reco_js.begin(), reco_js.end(), imj) != reco_js.end())
+	nfound += 1;
+    }
+  
   return nfound;
 }
 
