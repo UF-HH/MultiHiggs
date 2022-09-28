@@ -39,8 +39,9 @@ void SixB_functions::initialize_params_from_cfg(CfgParser& config)
 
   // parse specific parameters for various functions
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "bias_pt_sort") {
-      pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
-      pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
+    pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
+    pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
+    pmap.insert_param<std::vector<double> >("bias_pt_sort", "pt_cuts", config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
   }
 
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "6jet_DNN") {
@@ -353,7 +354,6 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
     This function sorts the input jet collection, first by the b-tagging score in descending order, and groups the jets into:
     Tight, Medium, Loose and Fail categories. Within these four categories, the jets are sorted again by their pT in descending order.
   */
-  
   if (0) // For debugging
     {
       std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:   input jet collection (should be ordered in pT only):"<<std::endl;
@@ -376,6 +376,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
     }
   
   // Select the first 6 jets for the pairing
+  if (0) std::cout << "Select the first 6 jets for the pairing"<<std::endl;
   unsigned int n_out = std::min<int>(jets.size(), 6);
   jets.resize(n_out);
   
@@ -383,6 +384,8 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
   if (apply_cuts)
     {
       bool pass_cuts = true;
+      
+      if (0) std::cout << "Apply b-tagging cuts on the selected jets"<<std::endl;
       std::vector<int> btagWP_cuts = pmap.get_param<std::vector<int>>("bias_pt_sort", "btagWP_cuts");
       if (btagWP_cuts.size() > n_out)
 	{
@@ -399,64 +402,39 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
 	      break;
 	    }
 	}
-
+      
+      if (0) std::cout << "Apply pT cuts on the selected jets"<<std::endl;
+      const std::vector<double> pt_cuts = pmap.get_param<std::vector<double> >("bias_pt_sort", "pt_cuts");
+      if (pt_cuts.size() > n_out)
+	{
+	  throw std::runtime_error("Number of pT cuts required larger thatn the jet collection size! Fix me.");
+	}
+      
+      unsigned int ptCut_index = 0;
+      // Jets need to be sorted by pT in descending order before applying different pT cuts
+      std::vector<Jet> jets_sortedInPt = pt_sort_jets(nat, ei, jets);
+      for (unsigned int ij=0; ij<jets_sortedInPt.size(); ++ij)
+	{
+	  const Jet &jet = jets_sortedInPt.at(ij);
+	  
+	  if (0) std::cout << " jet "<<ij<<"  pt="<<jet.P4().Pt()<<"   pt cut ="<<pt_cuts.at(ptCut_index)<<std::endl;
+	  
+	  if (jet.P4().Pt() <= pt_cuts.at(ptCut_index))
+	    {
+	      pass_cuts = false;
+	      break;
+	    }
+	  if (ptCut_index < pt_cuts.size()-1) ptCut_index++;
+	}
+      
       if (!pass_cuts)
 	{
 	  jets.resize(0);
 	}
     }
-  return jets;
-
-  /*
-  // if (debug_) dumpObjColl(jets, "==== JETS SELECTED IN bias_pt_sort BEFORE CUTS ===");
   
-  // apply a set of dedicated cuts
-  // NOTE: these cuts are applied in the *order* in which jets are passed
-  // this means that these
-  // pt_cuts     = 60, 40, 40, 20
-  // btagWP_cuts =  2,  2,  1,  1
-  // will be satisfied by a set of jets like the one below
-  // pT :: 100 50 45 25
-  // WP ::  2  2  2  1
-  // but not by the jets below:
-  // pT :: 100 50 25 45
-  // WP ::  2  2  2  1
-  // so these cuts do NOT mean "at least 2 tight jets with pt 60/40 + at least two medium jets with pT 40/20"
-
-  //bool apply_cuts = pmap.get_param<bool>("bias_pt_sort", "applyJetCuts");
-
-  if (apply_cuts){
-    bool pass_cuts = true;
-    
-    std::vector<double> pt_cuts     = pmap.get_param<std::vector<double>>("bias_pt_sort", "pt_cuts");
-    std::vector<int>    btagWP_cuts = pmap.get_param<std::vector<int>>("bias_pt_sort", "btagWP_cuts");
-    
-    unsigned int ncuts = pt_cuts.size();
-    if (jets.size() < ncuts)
-      pass_cuts = false;
-
-    else {
-      for (unsigned int icut = 0; icut < ncuts; icut++){
-        const Jet& ijet = jets[icut];
-        double pt   = pt_cuts[icut];
-        int btag_wp = btagWP_cuts[icut];
-        if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] ){
-	        // if (debug_){
-          //   cout << "==> the jet nr " << icut << " fails cuts, jet dumped below" << endl;
-          //   cout << getObjDescr(ijet) << endl;
-          // }
-          pass_cuts = false;
-          break;
-        }
-      }
-    }
-
-    if (!pass_cuts)
-      jets.resize(0); // empty this vector if cuts were not passed
-  }
-
-  return jets;  
-  */
+  // The resulting jets collection is still sorted by b-tagging score and then by pT
+  return jets;
 }
 
 
@@ -958,7 +936,7 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   return std::make_tuple(HX, HY1, HY2);
 }
 
-std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_D_HHH (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_D_HHH(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
   // Optimial 3D Line to select most signal like higgs
   const float phi = 0.77;
@@ -975,8 +953,8 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
     CompositeCandidate dijet(in_jets[ij1],in_jets[ij2]);
     dijets.push_back( dijet );
   }
-
-
+  
+  
   std::vector< std::pair<float,int> > triH_d_hhh;
   for (unsigned int i = 0; i < triH_pairings.size(); i++)
     {
