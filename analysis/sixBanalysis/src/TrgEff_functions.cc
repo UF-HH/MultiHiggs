@@ -23,6 +23,7 @@ void TrgEff_functions::initialize_params_from_cfg(CfgParser& config)
   // parse specific parameters for various functions
   pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
   pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
+  pmap.insert_param<std::vector<double> >("bias_pt_sort", "pt_cuts", config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
 }
 
 std::vector<Jet> TrgEff_functions::select_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)

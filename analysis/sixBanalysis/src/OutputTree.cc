@@ -102,6 +102,63 @@ using namespace std;
   OBJ##_score = -999.;                                       \
   OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
+#define BRANCH_ele_list(OBJ)                                    \
+  tree_->Branch(#OBJ "_E", &OBJ##_E);                           \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                           \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                         \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                       \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                       \
+  tree_->Branch(#OBJ "_dxy", &OBJ##_dxy);                       \
+  tree_->Branch(#OBJ "_dz",  &OBJ##_dz);                        \
+  tree_->Branch(#OBJ "_charge", &OBJ##_charge);                 \
+  tree_->Branch(#OBJ "_pfRelIso03_all", &OBJ##_pfRelIso03_all);           \
+  tree_->Branch(#OBJ "_mvaFall17V2Iso_WPL", &OBJ##_mvaFall17V2Iso_WPL);   \
+  tree_->Branch(#OBJ "_mvaFall17V2Iso_WP90", &OBJ##_mvaFall17V2Iso_WP90); \
+  tree_->Branch(#OBJ "_mvaFall17V2Iso_WP80", &OBJ##_mvaFall17V2Iso_WP80); 
+
+#define BRANCH_muon_list(OBJ)                                   \
+  tree_->Branch(#OBJ "_E", &OBJ##_E);                           \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                           \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                         \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                       \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                       \
+  tree_->Branch(#OBJ "_dxy", &OBJ##_dxy);                       \
+  tree_->Branch(#OBJ "_dz",  &OBJ##_dz);                        \
+  tree_->Branch(#OBJ "_charge", &OBJ##_charge);                 \
+  tree_->Branch(#OBJ "_pfRelIso04_all", &OBJ##_pfRelIso04_all); \
+  tree_->Branch(#OBJ "_isLoose", &OBJ##_looseId);               \
+  tree_->Branch(#OBJ "_isMedium", &OBJ##_mediumId);             \
+  tree_->Branch(#OBJ "_isTight", &OBJ##_tightId);
+
+#define CLEAR_ele_list(OBJ)     \
+  OBJ##_E.clear();              \
+  OBJ##_m.clear();              \
+  OBJ##_pt.clear();             \
+  OBJ##_eta.clear();            \
+  OBJ##_phi.clear();            \
+  OBJ##_dxy.clear();            \
+  OBJ##_dz.clear();             \
+  OBJ##_charge.clear();         \
+  OBJ##_pfRelIso03_all.clear(); \
+  OBJ##_mvaFall17V2Iso_WPL.clear();  \
+  OBJ##_mvaFall17V2Iso_WP90.clear(); \
+  OBJ##_mvaFall17V2Iso_WP80.clear();
+
+#define CLEAR_muon_list(OBJ)    \
+  OBJ##_E.clear();              \
+  OBJ##_m.clear();		\
+  OBJ##_pt.clear();             \
+  OBJ##_eta.clear();            \
+  OBJ##_phi.clear();            \
+  OBJ##_dxy.clear();            \
+  OBJ##_dz.clear();             \
+  OBJ##_charge.clear();         \
+  OBJ##_pfRelIso04_all.clear(); \
+  OBJ##_looseId.clear();        \
+  OBJ##_mediumId.clear();       \
+  OBJ##_tightId.clear();
+  
+
 #define BRANCH_jet_list(OBJ)                                  \
   tree_->Branch(#OBJ "_E", &OBJ##_E);                         \
   tree_->Branch(#OBJ "_m", &OBJ##_m);                         \
@@ -348,19 +405,21 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 
     tree_->Branch("quadh_score", &quadh_score);
   }
-
-  tree_->Branch("n_mu_loose",  &n_mu_loose);
-  tree_->Branch("n_ele_loose", &n_ele_loose);
-    
-  if (is_enabled("leptons_p4"))
+  
+  tree_->Branch("n_muon", &n_muon);
+  if (is_enabled("muon_coll"))
     {
-      std::cout << "[INFO] OutputTree : enabling lepton p4 branches" << std::endl;
-      BRANCH_m_pt_eta_phi_p4(mu_1);
-      BRANCH_m_pt_eta_phi_p4(mu_2);
-      BRANCH_m_pt_eta_phi_p4(ele_1);
-      BRANCH_m_pt_eta_phi_p4(ele_2);
+      std::cout << "[INFO] OutputTree : enabling muon collection branches" << std::endl;
+      BRANCH_muon_list(muon);
     }
-
+  
+  tree_->Branch("n_ele", &n_ele);
+  if (is_enabled("ele_coll"))
+    {
+      std::cout << "[INFO] OutputTree : enabling electron collection branches" << std::endl;
+      BRANCH_ele_list(ele);
+    }
+  
   if (is_enabled("ttbar_brs"))
     {
       std::cout << "[INFO] OutputTree : enabling ttbar branches" << std::endl;
@@ -458,6 +517,9 @@ void OutputTree::clear()
   n_genjet = 0;
   n_higgs = 0;
 
+  n_ele = 0;
+  n_muon = 0;
+  
   b_6j_score = 0;
   b_3d_score = 0;
   quadh_score = 0;
@@ -472,6 +534,8 @@ void OutputTree::clear()
   genjet_signalId.clear();
   genjet_recoIdx.clear();
 
+  CLEAR_ele_list(ele);
+  CLEAR_muon_list(muon);
   CLEAR_jet_list(jet);
 
   n_dijet = 0;
@@ -612,14 +676,6 @@ void OutputTree::clear()
   n_tight_btag = -1;
   btagavg = -1.;
   // End Reco 8B Objects
-
-  CLEAR_m_pt_eta_phi_p4(mu_1);
-  CLEAR_m_pt_eta_phi_p4(mu_2);
-  CLEAR_m_pt_eta_phi_p4(ele_1);
-  CLEAR_m_pt_eta_phi_p4(ele_2);
-
-  n_mu_loose  = 0;
-  n_ele_loose = 0;
 
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
