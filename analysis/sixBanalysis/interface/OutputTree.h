@@ -79,6 +79,34 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   float OBJ##_score;                                           \
   p4_t OBJ##_p4;
 
+#define DECLARE_ele_list(OBJ)               \
+  std::vector<float> OBJ##_E;               \
+  std::vector<float> OBJ##_m;               \
+  std::vector<float> OBJ##_pt;              \
+  std::vector<float> OBJ##_eta;             \
+  std::vector<float> OBJ##_phi;             \
+  std::vector<float> OBJ##_dxy;             \
+  std::vector<float> OBJ##_dz;              \
+  std::vector<float> OBJ##_charge;          \
+  std::vector<float> OBJ##_pfRelIso03_all;     \
+  std::vector<bool> OBJ##_mvaFall17V2Iso_WPL;  \
+  std::vector<bool> OBJ##_mvaFall17V2Iso_WP90; \
+  std::vector<bool> OBJ##_mvaFall17V2Iso_WP80;
+
+#define DECLARE_muon_list(OBJ)             \
+  std::vector<float> OBJ##_E;              \
+  std::vector<float> OBJ##_m;              \
+  std::vector<float> OBJ##_pt;             \
+  std::vector<float> OBJ##_eta;            \
+  std::vector<float> OBJ##_phi;            \
+  std::vector<float> OBJ##_dxy;            \
+  std::vector<float> OBJ##_dz;             \
+  std::vector<float> OBJ##_charge;         \
+  std::vector<float> OBJ##_pfRelIso04_all; \
+  std::vector<bool> OBJ##_looseId;         \
+  std::vector<bool> OBJ##_mediumId;        \
+  std::vector<bool> OBJ##_tightId;
+
 #define DECLARE_jet_list(OBJ)           \
   std::vector<float> OBJ##_E;           \
   std::vector<float> OBJ##_m;           \
@@ -155,6 +183,9 @@ public:
   int n_jet;
   int n_higgs;
 
+  int n_ele;
+  int n_muon;
+  
   float b_6j_score;
   float b_3d_score;
 
@@ -167,7 +198,9 @@ public:
   std::vector<int> genjet_hadronFlav;
   std::vector<int> genjet_signalId;
   std::vector<int> genjet_recoIdx;
-
+  
+  DECLARE_ele_list(ele);
+  DECLARE_muon_list(muon);
   DECLARE_jet_list(jet);
 
   int n_dijet;
@@ -322,14 +355,6 @@ public:
   int nfound_paired_h;
   int nfound_select_y;
   int nfound_paired_y;
-
-  DECLARE_m_pt_eta_phi_p4(mu_1);
-  DECLARE_m_pt_eta_phi_p4(mu_2);
-  DECLARE_m_pt_eta_phi_p4(ele_1);
-  DECLARE_m_pt_eta_phi_p4(ele_2);
-
-  int n_mu_loose;
-  int n_ele_loose;
 
   DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
   int bjet1_hadflav;

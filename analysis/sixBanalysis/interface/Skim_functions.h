@@ -64,7 +64,7 @@ public:
   std::vector<Jet> get_all_jets(NanoAODTree &nat);
 
   // create a vector with all preselected jets in the event (minimal pt/eta/id requirements)
-  std::vector<Jet> preselect_jets(NanoAODTree &nat, const std::vector<Jet> &in_jets);
+  std::vector<Jet> preselect_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
 
   std::vector<Jet> btag_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
 
