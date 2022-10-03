@@ -38,6 +38,9 @@ struct EventInfo{
   boost::optional<int>    n_genjet;
   boost::optional<int>    n_higgs;
 
+  boost::optional<int>    n_ele;
+  boost::optional<int>    n_muon;
+  
   boost::optional<float>  b_6j_score;
   boost::optional<float>  b_3d_score;
 
@@ -185,7 +188,8 @@ struct EventInfo{
   boost::optional<float> quadh_score;
   
   // End Reco 8B Objects
-
+  boost::optional< std::vector<Electron> > ele_list;
+  boost::optional< std::vector<Muon> > muon_list;
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
   boost::optional<std::vector<DiJet>> dijet_list;
@@ -205,16 +209,6 @@ struct EventInfo{
   // for ttbar skims
   boost::optional<Jet> bjet1;
   boost::optional<Jet> bjet2;
-
-  // info on leptons in the event
-  boost::optional<Muon> mu_1;
-  boost::optional<Muon> mu_2;
-  boost::optional<Electron> ele_1;
-  boost::optional<Electron> ele_2;
-  boost::optional<int> n_mu_loose;
-  boost::optional<int> n_ele_loose;
-  // boost::optional<int> n_mu_tight;
-  // boost::optional<int> n_ele_tight;
 
   // scale factors
   boost::optional<double> btagSF_WP_M;

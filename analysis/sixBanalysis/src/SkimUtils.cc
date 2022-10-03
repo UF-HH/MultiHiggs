@@ -88,6 +88,42 @@ using namespace std;
     ot.OBJ##_p4 = ei.OBJ->P4();                                      \
   }
 
+#define COPY_OPTIONAL_ele_list(OBJ)                                  \
+  if (ei.OBJ##_list) {                                               \
+      for (Electron & ele : ei.OBJ##_list.get()) {		     \
+        ot.OBJ##_E.push_back(ele.get_E());                          \
+	ot.OBJ##_m.push_back(ele.get_m());			     \
+	ot.OBJ##_pt.push_back(ele.get_pt());			     \
+        ot.OBJ##_eta.push_back(ele.get_eta());                       \
+        ot.OBJ##_phi.push_back(ele.get_phi());                       \
+        ot.OBJ##_dxy.push_back(ele.get_dxy());                       \
+        ot.OBJ##_dz.push_back(ele.get_dz());                         \
+        ot.OBJ##_charge.push_back(ele.get_charge());                 \
+        ot.OBJ##_pfRelIso03_all.push_back(ele.get_pfRelIso03_all());            \
+        ot.OBJ##_mvaFall17V2Iso_WPL.push_back(ele.get_mvaFall17V2Iso_WPL());    \
+        ot.OBJ##_mvaFall17V2Iso_WP90.push_back(ele.get_mvaFall17V2Iso_WP90());  \
+        ot.OBJ##_mvaFall17V2Iso_WP80.push_back(ele.get_mvaFall17V2Iso_WP80());  \
+      }								        	\
+  }
+
+#define COPY_OPTIONAL_muon_list(OBJ)                                \
+  if (ei.OBJ##_list) {                                              \
+    for (Muon & muon : ei.OBJ##_list.get()) {			    \
+      ot.OBJ##_E.push_back(muon.get_E());                           \
+      ot.OBJ##_m.push_back(muon.get_m());		            \
+      ot.OBJ##_pt.push_back(muon.get_pt());	                    \
+      ot.OBJ##_eta.push_back(muon.get_eta());		            \
+      ot.OBJ##_phi.push_back(muon.get_phi());			    \
+      ot.OBJ##_dxy.push_back(muon.get_dxy());			    \
+      ot.OBJ##_dz.push_back(muon.get_dz());			    \
+      ot.OBJ##_charge.push_back(muon.get_charge());	            \
+      ot.OBJ##_pfRelIso04_all.push_back(muon.get_pfRelIso04_all()); \
+      ot.OBJ##_looseId.push_back(muon.get_looseId());		    \
+      ot.OBJ##_mediumId.push_back(muon.get_mediumId());             \
+      ot.OBJ##_tightId.push_back(muon.get_tightId());               \
+    }                                                               \
+}
+
 #define COPY_OPTIONAL_jet_list(OBJ)                              \
   if (ei.OBJ##_list) {                                           \
     for (Jet & jet : ei.OBJ##_list.get()) {                      \
@@ -170,10 +206,14 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if(ei.n_total_jet)    ot.n_total_jet     = *ei.n_total_jet;
   if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
   if(ei.n_higgs)        ot.n_higgs         = *ei.n_higgs;
-
+  if(ei.n_ele)          ot.n_ele           = *ei.n_ele;
+  if(ei.n_muon)         ot.n_muon          = *ei.n_muon;
+  
   if(ei.b_6j_score)     ot.b_6j_score      = *ei.b_6j_score;
   if(ei.b_3d_score)     ot.b_3d_score      = *ei.b_3d_score;
 
+  COPY_OPTIONAL_ele_list(ele);
+  COPY_OPTIONAL_muon_list(muon);
   COPY_OPTIONAL_jet_list(jet);
 
   if (ei.genjet_list) {
@@ -351,14 +391,6 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.nfound_paired_h) ot.nfound_paired_h = *ei.nfound_paired_h;
   if (ei.nfound_select_y) ot.nfound_select_y = *ei.nfound_select_y;
   if (ei.nfound_paired_y) ot.nfound_paired_y = *ei.nfound_paired_y;
-
-  COPY_OPTIONAL_m_pt_eta_phi_p4(mu_1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(mu_2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(ele_1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(ele_2);
-
-  ot.n_mu_loose  = *ei.n_mu_loose;
-  ot.n_ele_loose = *ei.n_ele_loose;
 
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);

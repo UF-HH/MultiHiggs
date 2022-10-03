@@ -325,11 +325,11 @@ int main(int argc, char** argv)
   TFile outputFile(outputFileName.c_str(), "recreate");
   OutputTree ot(opts["save-p4"].as<bool>(),
                 map<string, bool>{
-		// {"leptons_p4", config.readBoolOpt("configurations::saveLeptons")},
 		// {"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
 		// {"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
-		{"leptons_p4",  readCfgOptWithDefault<bool>(config, "configurations::saveLeptons", false)},
-                {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
+		{"muon_coll",   readCfgOptWithDefault<bool>(config, "configurations::saveMuonColl", false)},
+		{"ele_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveEleColl", false)},  
+		{"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
 		{"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes", false)},
 	        {"dijets_coll", readCfgOptWithDefault<bool>(config, "configurations::saveDiJets", false)},
 	        {"sixb_brs", (skim_type == ksixb)},
@@ -648,14 +648,14 @@ int main(int argc, char** argv)
     // Apply muon selection or veto
     //==================================
     std::vector<Muon> selected_muons = skf->select_muons(config, nat, ei);
-    ei.n_mu_loose = selected_muons.size();
-    
+    ei.n_muon    = selected_muons.size();
+    ei.muon_list = selected_muons;
+        
     bool applyMuonVeto = config.readBoolOpt("configurations::applyMuonVeto");
     bool applyMuonSelection = config.readBoolOpt("configurations::applyMuonSelection");
     if (applyMuonVeto)
       {
 	if (selected_muons.size() != 0) continue;
-	
 	cutflow.add("#mu veto", nwt);
 	loop_timer.click("#mu veto");
       }
@@ -663,10 +663,6 @@ int main(int argc, char** argv)
       {
 	const DirectionalCut<int> cfg_nMuons(config, "configurations::nMuonsCut");
 	if (!cfg_nMuons.passedCut(selected_muons.size())) continue;
-	
-	if (selected_muons.size() > 0) ei.mu_1 = selected_muons.at(0);
-	if (selected_muons.size() > 1) ei.mu_2 = selected_muons.at(1);
-	
 	cutflow.add("#mu selection", nwt);
 	loop_timer.click("#mu selection");
       }
@@ -675,21 +671,21 @@ int main(int argc, char** argv)
     // Apply electron selection or veto
     //=====================================
     std::vector<Electron> selected_electrons = skf->select_electrons(config, nat, ei);
-    ei.n_ele_loose = selected_electrons.size();
+    ei.n_ele    = selected_electrons.size();
+    ei.ele_list = selected_electrons;
     
     bool applyEleVeto = config.readBoolOpt("configurations::applyEleVeto");
     bool applyEleSelection = config.readBoolOpt("configurations::applyEleSelection");
     if (applyEleVeto)
       {
 	if (selected_electrons.size() !=0) continue;
-	
 	cutflow.add("e veto", nwt);
 	loop_timer.click("e veto");
       }
     else if (applyEleSelection)
       {
-	if (selected_electrons.size() > 0) ei.ele_1 = selected_electrons.at(0);
-	if (selected_electrons.size() > 1) ei.ele_2 = selected_electrons.at(1);
+	const DirectionalCut<int> cfg_nElectrons(config, "configurations::nEleCut");
+	if (!cfg_nElectrons.passedCut(selected_electrons.size())) continue;
 	cutflow.add("e selection", nwt);
 	loop_timer.click("e selection");
       }
@@ -721,11 +717,18 @@ int main(int argc, char** argv)
     }
     
     // Apply preselections to jets (min pT / max eta / PU ID / PF ID)
-    std::vector<Jet> presel_jets = skf->preselect_jets(nat, all_jets);
+    std::vector<Jet> presel_jets = skf->preselect_jets(nat, ei, all_jets);
+    
     ei.nfound_presel = skf->n_gjmatched_in_jetcoll(nat, ei, presel_jets);
+    //std::cout << "Number of selected jets found matched with GEN-level objects = "<<ei.nfound_presel<<std::endl;
+    
     ei.nfound_presel_h = skf->n_ghmatched_in_jetcoll(nat, ei, presel_jets);
+    //std::cout << "Number of selected jets found matched to Higgs objects = "<<ei.nfound_presel_h<<std::endl;
+    
     ei.n_jet = presel_jets.size();
-    loop_timer.click("Jet preselection");
+    //std::cout << "Number of selected jets: "<<ei.n_jet<<std::endl;
+    
+    loop_timer.click("Jet selection");
     if (debug) dumpObjColl(presel_jets, "==== PRESELECTED JETS ===");
     
     if (is_signal) 
@@ -784,21 +787,30 @@ int main(int argc, char** argv)
       }
     else if (skim_type == ksixb)
       {
-	if (presel_jets.size() < 6)
-	  continue;
-	cutflow.add("npresel_jets>=6", nwt);
+	// Preselected jets are all jets in the event sorted in pT
+	const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
+	if (!cfg_nJets.passedCut(presel_jets.size())) continue;
+        cutflow.add("selected jets >= 6", nwt);
 	
+	//=============================================
+	// Jets for pairing selection (either 6 or 0)
+	//=============================================
 	std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
+	if (selected_jets.size() < 6) continue;
+	cutflow.add("Jets for pairing selection");
+	loop_timer.click("Six b jet selection");
+	
 	ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
 	ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
 	
-	loop_timer.click("Six b jet selection");
 	if (debug)
-	  dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
-	if (selected_jets.size() < 6)
-	  continue;
-	cutflow.add("nselect_jets>=6", nwt);
+	  {
+	    dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
+	  }
 	
+	//================================================
+	// Proceed with the pairing of the 6 selected jets
+	//=================================================
 	skf->pair_jets(nat, ei, selected_jets);
 	loop_timer.click("Six b jet pairing");
 	

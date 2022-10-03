@@ -20,7 +20,7 @@ void SixB_functions::initialize_params_from_cfg(CfgParser& config)
 {
   // preselections
   pmap.insert_param<bool>("presel", "apply", config.readBoolOpt("presel::apply"));
-  pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
+  pmap.insert_param<std::vector<double> >("presel", "pt_min", config.readDoubleListOpt("presel::pt_min"));
   pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
   pmap.insert_param<int>   ("presel", "pf_id",   config.readIntOpt("presel::pf_id"));
   pmap.insert_param<int>   ("presel", "pu_id",   config.readIntOpt("presel::pu_id"));
@@ -39,9 +39,9 @@ void SixB_functions::initialize_params_from_cfg(CfgParser& config)
 
   // parse specific parameters for various functions
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "bias_pt_sort") {
-      pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
-      pmap.insert_param<vector<double>>("bias_pt_sort", "pt_cuts",      config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
-      pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
+    pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
+    pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
+    pmap.insert_param<std::vector<double> >("bias_pt_sort", "pt_cuts", config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
   }
 
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "6jet_DNN") {
@@ -320,7 +320,7 @@ void SixB_functions::compute_seljets_genmatch_flags(NanoAODTree& nat, EventInfo&
 std::vector<Jet> SixB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
   std::string sel_type = pmap.get_param<std::string>("configurations", "sixbJetChoice");
-
+  
   // if (sel_type == "btag_order")
   //   return select_sixb_jets_btag_order(nat, ei, in_jets);
 
@@ -348,84 +348,93 @@ std::vector<Jet> SixB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, co
 
 std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
-  // std::vector<Jet> jets = in_jets;
-
-  // std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
-
-  // auto loose_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
-  // auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
-  // auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
-
-  // auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
-
-  // int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
-  // int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
-  // int loose_idx  = std::distance(jets.begin(),loose_it.base())-1;
-
-  // std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
-  // auto start = jets.begin();
-  // for (int wp_idx : wp_idxs)
-  // {
-  //   if (wp_idx != -1 && start != jets.end()) {
-	//     auto end = jets.begin() + wp_idx + 1;
-	//     std::sort(start,end,pt_sort);
-	//     start = end;
-  //   }
-  // }
-  
-  std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
-
-  int n_out = std::min<int>(jets.size(), 6);
-  jets.resize(n_out); // take top 6
-
-  // if (debug_) dumpObjColl(jets, "==== JETS SELECTED IN bias_pt_sort BEFORE CUTS ===");
-
-  // apply a set of dedicated cuts
-  // NOTE: these cuts are applied in the *order* in which jets are passed
-  // this means that these
-  // pt_cuts     = 60, 40, 40, 20
-  // btagWP_cuts =  2,  2,  1,  1
-  // will be satisfied by a set of jets like the one below
-  // pT :: 100 50 45 25
-  // WP ::  2  2  2  1
-  // but not by the jets below:
-  // pT :: 100 50 25 45
-  // WP ::  2  2  2  1
-  // so these cuts do NOT mean "at least 2 tight jets with pt 60/40 + at least two medium jets with pT 40/20"
-
-  bool apply_cuts = pmap.get_param<bool>("bias_pt_sort", "applyJetCuts");
-
-  if (apply_cuts){
-    bool pass_cuts = true;
+  /*
+    input jet collection is in_jets : sorted in pT (only) jets
     
-    std::vector<double> pt_cuts     = pmap.get_param<std::vector<double>>("bias_pt_sort", "pt_cuts");
-    std::vector<int>    btagWP_cuts = pmap.get_param<std::vector<int>>("bias_pt_sort", "btagWP_cuts");
-    
-    unsigned int ncuts = pt_cuts.size();
-    if (jets.size() < ncuts)
-      pass_cuts = false;
-
-    else {
-      for (unsigned int icut = 0; icut < ncuts; icut++){
-        const Jet& ijet = jets[icut];
-        double pt   = pt_cuts[icut];
-        int btag_wp = btagWP_cuts[icut];
-        if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] ){
-	        // if (debug_){
-          //   cout << "==> the jet nr " << icut << " fails cuts, jet dumped below" << endl;
-          //   cout << getObjDescr(ijet) << endl;
-          // }
-          pass_cuts = false;
-          break;
-        }
-      }
+    This function sorts the input jet collection, first by the b-tagging score in descending order, and groups the jets into:
+    Tight, Medium, Loose and Fail categories. Within these four categories, the jets are sorted again by their pT in descending order.
+  */
+  if (0) // For debugging
+    {
+      std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:   input jet collection (should be ordered in pT only):"<<std::endl;
+      for (unsigned int ij=0; ij<in_jets.size(); ij++)
+	{
+	  std::cout << " jet "<<ij<<"   pT="<<in_jets.at(ij).get_pt()<<"   b-disc.="<<in_jets.at(ij).get_btag()<<std::endl;
+	}
     }
-
-    if (!pass_cuts)
-      jets.resize(0); // empty this vector if cuts were not passed
-  }
-
-  return jets;  
+  
+  // Sort jets by their b-tagging score in descending order
+  std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
+  
+  if (0) // For debugging
+    {
+      std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:  jet collection after sorting by b-tagging score and then pT within each group:"<<std::endl;
+      for (unsigned int ij=0; ij<jets.size(); ij++)
+	{
+	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
+	}
+    }
+  
+  // Select the first 6 jets for the pairing
+  if (0) std::cout << "Select the first 6 jets for the pairing"<<std::endl;
+  unsigned int n_out = std::min<int>(jets.size(), 6);
+  jets.resize(n_out);
+  
+  bool apply_cuts = pmap.get_param<bool>("bias_pt_sort", "applyJetCuts");
+  if (apply_cuts)
+    {
+      bool pass_cuts = true;
+      
+      if (0) std::cout << "Apply b-tagging cuts on the selected jets"<<std::endl;
+      std::vector<int> btagWP_cuts = pmap.get_param<std::vector<int>>("bias_pt_sort", "btagWP_cuts");
+      if (btagWP_cuts.size() > n_out)
+	{
+	  throw std::runtime_error("Number of cuts required larger than the jet collection size! Fix me.");
+	}
+      
+      for (unsigned int icut=0; icut<btagWP_cuts.size(); icut++)
+	{
+	  const Jet& j = jets.at(icut);
+	  int btag_wp  = btagWP_cuts.at(icut);
+	  if (j.get_btag() <= btag_WPs[btag_wp])
+	    {
+	      pass_cuts = false; 
+	      break;
+	    }
+	}
+      
+      if (0) std::cout << "Apply pT cuts on the selected jets"<<std::endl;
+      const std::vector<double> pt_cuts = pmap.get_param<std::vector<double> >("bias_pt_sort", "pt_cuts");
+      if (pt_cuts.size() > n_out)
+	{
+	  throw std::runtime_error("Number of pT cuts required larger thatn the jet collection size! Fix me.");
+	}
+      
+      unsigned int ptCut_index = 0;
+      // Jets need to be sorted by pT in descending order before applying different pT cuts
+      std::vector<Jet> jets_sortedInPt = pt_sort_jets(nat, ei, jets);
+      for (unsigned int ij=0; ij<jets_sortedInPt.size(); ++ij)
+	{
+	  const Jet &jet = jets_sortedInPt.at(ij);
+	  
+	  if (0) std::cout << " jet "<<ij<<"  pt="<<jet.P4().Pt()<<"   pt cut ="<<pt_cuts.at(ptCut_index)<<std::endl;
+	  
+	  if (jet.P4().Pt() <= pt_cuts.at(ptCut_index))
+	    {
+	      pass_cuts = false;
+	      break;
+	    }
+	  if (ptCut_index < pt_cuts.size()-1) ptCut_index++;
+	}
+      
+      if (!pass_cuts)
+	{
+	  jets.resize(0);
+	}
+    }
+  
+  // The resulting jets collection is still sorted by b-tagging score and then by pT
+  return jets;
 }
 
 
@@ -927,7 +936,7 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   return std::make_tuple(HX, HY1, HY2);
 }
 
-std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_D_HHH (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
+std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_D_HHH(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {
   // Optimial 3D Line to select most signal like higgs
   const float phi = 0.77;
@@ -944,8 +953,8 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
     CompositeCandidate dijet(in_jets[ij1],in_jets[ij2]);
     dijets.push_back( dijet );
   }
-
-
+  
+  
   std::vector< std::pair<float,int> > triH_d_hhh;
   for (unsigned int i = 0; i < triH_pairings.size(); i++)
     {
@@ -1260,15 +1269,18 @@ int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
   if (ei.gen_HY2_b2_recojet) matched_jets.push_back(ei.gen_HY2_b2_recojet->getIdx());
 
   std::vector<int> reco_js (in_jets.size());
-  for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
-    reco_js.at(ij) = in_jets.at(ij).getIdx();
-
+  for (unsigned int ij=0; ij<in_jets.size(); ++ij)
+    {
+      reco_js.at(ij) = in_jets.at(ij).getIdx();
+    }
+  
   int nfound = 0;
-  for (int imj : matched_jets){
-    if (std::find(reco_js.begin(), reco_js.end(), imj) != reco_js.end())
-      nfound += 1;
-  }
-
+  for (int imj : matched_jets)
+    {
+      if (std::find(reco_js.begin(), reco_js.end(), imj) != reco_js.end())
+	nfound += 1;
+    }
+  
   return nfound;
 }
 
