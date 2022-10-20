@@ -99,7 +99,7 @@ void SixB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
 	if (amothpdgid == 45)
 	  ei.gen_HX = gp;
 	else if (amothpdgid == 35)
-	  assign_to_uninit(gp, {&ei.gen_HY1, &ei.gen_HY2} );
+	  assign_to_uninit(gp, {&ei.gen_H1, &ei.gen_H2} );
       }
 
       // b
@@ -112,28 +112,28 @@ void SixB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
 	  if (amothpdgid == 25){
 	    if (ei.gen_HX && moth_idx == ei.gen_HX->getIdx())
 	      assign_to_uninit(gp, {&ei.gen_HX_b1, &ei.gen_HX_b2} );
-	    if (ei.gen_HY1 && moth_idx == ei.gen_HY1->getIdx())
-	      assign_to_uninit(gp, {&ei.gen_HY1_b1, &ei.gen_HY1_b2} );
-	    if (ei.gen_HY2 && moth_idx == ei.gen_HY2->getIdx())
-	      assign_to_uninit(gp, {&ei.gen_HY2_b1, &ei.gen_HY2_b2} );
+	    if (ei.gen_H1 && moth_idx == ei.gen_H1->getIdx())
+	      assign_to_uninit(gp, {&ei.gen_H1_b1, &ei.gen_H1_b2} );
+	    if (ei.gen_H2 && moth_idx == ei.gen_H2->getIdx())
+	      assign_to_uninit(gp, {&ei.gen_H2_b1, &ei.gen_H2_b2} );
 	  }
 	}
       }
     }
 
   // reorder objects according to pt
-  if (ei.gen_HY1->P4().Pt() < ei.gen_HY2->P4().Pt()){
-    std::swap(ei.gen_HY1,    ei.gen_HY2);
-    std::swap(ei.gen_HY1_b1, ei.gen_HY2_b1);
-    std::swap(ei.gen_HY1_b2, ei.gen_HY2_b2);
+  if (ei.gen_H1->P4Regressed().Pt() < ei.gen_H2->P4Regressed().Pt()){
+    std::swap(ei.gen_H1,    ei.gen_H2);
+    std::swap(ei.gen_H1_b1, ei.gen_H2_b1);
+    std::swap(ei.gen_H1_b2, ei.gen_H2_b2);
   }
 
-  if (ei.gen_HX_b1->P4().Pt() < ei.gen_HX_b2->P4().Pt())
+  if (ei.gen_HX_b1->P4Regressed().Pt() < ei.gen_HX_b2->P4Regressed().Pt())
     std::swap(ei.gen_HX_b1, ei.gen_HX_b2);
-  if (ei.gen_HY1_b1->P4().Pt() < ei.gen_HY1_b2->P4().Pt())
-    std::swap(ei.gen_HY1_b1, ei.gen_HY1_b2);
-  if (ei.gen_HY2_b1->P4().Pt() < ei.gen_HY2_b2->P4().Pt())
-    std::swap(ei.gen_HY2_b1, ei.gen_HY2_b2);
+  if (ei.gen_H1_b1->P4Regressed().Pt() < ei.gen_H1_b2->P4Regressed().Pt())
+    std::swap(ei.gen_H1_b1, ei.gen_H1_b2);
+  if (ei.gen_H2_b1->P4Regressed().Pt() < ei.gen_H2_b2->P4Regressed().Pt())
+    std::swap(ei.gen_H2_b1, ei.gen_H2_b2);
 
   return;
 }
@@ -145,10 +145,10 @@ void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, boo
   std::vector<GenPart*> bs_to_match = {
     ei.gen_HX_b1.get_ptr(),
     ei.gen_HX_b2.get_ptr(),
-    ei.gen_HY1_b1.get_ptr(),
-    ei.gen_HY1_b2.get_ptr(),
-    ei.gen_HY2_b1.get_ptr(),
-    ei.gen_HY2_b2.get_ptr()
+    ei.gen_H1_b1.get_ptr(),
+    ei.gen_H1_b2.get_ptr(),
+    ei.gen_H2_b1.get_ptr(),
+    ei.gen_H2_b2.get_ptr()
   };
 
   // For debugging
@@ -156,10 +156,10 @@ void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, boo
     {
       std::cout << "HX_b1 index:  "<<ei.gen_HX_b1.get_ptr()->getIdx()<<std::endl;
       std::cout << "HX_b2 index:  "<<ei.gen_HX_b2.get_ptr()->getIdx()<<std::endl;
-      std::cout << "HY1_b1 index: "<<ei.gen_HY1_b1.get_ptr()->getIdx()<<std::endl;
-      std::cout << "HY1_b2 index: "<<ei.gen_HY1_b2.get_ptr()->getIdx()<<std::endl;
-      std::cout << "HY2_b1 index: "<<ei.gen_HY2_b1.get_ptr()->getIdx()<<std::endl;
-      std::cout << "HY2_b2 index: "<<ei.gen_HY2_b2.get_ptr()->getIdx()<<std::endl;
+      std::cout << "H1_b1 index: "<<ei.gen_H1_b1.get_ptr()->getIdx()<<std::endl;
+      std::cout << "H1_b2 index: "<<ei.gen_H1_b2.get_ptr()->getIdx()<<std::endl;
+      std::cout << "H2_b1 index: "<<ei.gen_H2_b1.get_ptr()->getIdx()<<std::endl;
+      std::cout << "H2_b2 index: "<<ei.gen_H2_b2.get_ptr()->getIdx()<<std::endl;
     }
 
   std::vector<GenJet> genjets;
@@ -189,25 +189,25 @@ void SixB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, boo
           ei.gen_HX_b2_genjet = GenJet(j.getIdx(), &nat);
           if (0) std::cout << "HX_b2 ("<<ei.gen_HX_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
         }
-      else if (bIdx == ei.gen_HY1_b1.get_ptr()->getIdx())
+      else if (bIdx == ei.gen_H1_b1.get_ptr()->getIdx())
         {
-          ei.gen_HY1_b1_genjet = GenJet(j.getIdx(), &nat);
-          if (0) std::cout << "HY1_b1 ("<<ei.gen_HY1_b1.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+          ei.gen_H1_b1_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "H1_b1 ("<<ei.gen_H1_b1.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
         }
-      else if (bIdx == ei.gen_HY1_b2.get_ptr()->getIdx())
+      else if (bIdx == ei.gen_H1_b2.get_ptr()->getIdx())
         {
-          ei.gen_HY1_b2_genjet = GenJet(j.getIdx(), &nat);
-          if (0) std::cout << "HY1_b2 ("<<ei.gen_HY1_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+          ei.gen_H1_b2_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "H1_b2 ("<<ei.gen_H1_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
         }
-      else if (bIdx == ei.gen_HY2_b1.get_ptr()->getIdx())
+      else if (bIdx == ei.gen_H2_b1.get_ptr()->getIdx())
         {
-          ei.gen_HY2_b1_genjet = GenJet(j.getIdx(), &nat);
-          if (0) std::cout << "HY2_b1 ("<<ei.gen_HY2_b1.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+          ei.gen_H2_b1_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "H2_b1 ("<<ei.gen_H2_b1.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
         }
-      else if (bIdx == ei.gen_HY2_b2.get_ptr()->getIdx())
+      else if (bIdx == ei.gen_H2_b2.get_ptr()->getIdx())
         {
-          ei.gen_HY2_b2_genjet = GenJet(j.getIdx(), &nat);
-          if (0) std::cout << "HY2_b2 ("<<ei.gen_HY2_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+          ei.gen_H2_b2_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "H2_b2 ("<<ei.gen_H2_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
         }
     }
   return;
@@ -217,17 +217,17 @@ void SixB_functions::match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei
 {
   int ij_gen_HX_b1_genjet  = (ei.gen_HX_b1_genjet  ? find_jet_from_genjet(nat, *ei.gen_HX_b1_genjet)  : -1); 
   int ij_gen_HX_b2_genjet  = (ei.gen_HX_b2_genjet  ? find_jet_from_genjet(nat, *ei.gen_HX_b2_genjet)  : -1); 
-  int ij_gen_HY1_b1_genjet = (ei.gen_HY1_b1_genjet ? find_jet_from_genjet(nat, *ei.gen_HY1_b1_genjet) : -1); 
-  int ij_gen_HY1_b2_genjet = (ei.gen_HY1_b2_genjet ? find_jet_from_genjet(nat, *ei.gen_HY1_b2_genjet) : -1); 
-  int ij_gen_HY2_b1_genjet = (ei.gen_HY2_b1_genjet ? find_jet_from_genjet(nat, *ei.gen_HY2_b1_genjet) : -1); 
-  int ij_gen_HY2_b2_genjet = (ei.gen_HY2_b2_genjet ? find_jet_from_genjet(nat, *ei.gen_HY2_b2_genjet) : -1); 
+  int ij_gen_H1_b1_genjet = (ei.gen_H1_b1_genjet ? find_jet_from_genjet(nat, *ei.gen_H1_b1_genjet) : -1); 
+  int ij_gen_H1_b2_genjet = (ei.gen_H1_b2_genjet ? find_jet_from_genjet(nat, *ei.gen_H1_b2_genjet) : -1); 
+  int ij_gen_H2_b1_genjet = (ei.gen_H2_b1_genjet ? find_jet_from_genjet(nat, *ei.gen_H2_b1_genjet) : -1); 
+  int ij_gen_H2_b2_genjet = (ei.gen_H2_b2_genjet ? find_jet_from_genjet(nat, *ei.gen_H2_b2_genjet) : -1); 
 
   if (ij_gen_HX_b1_genjet >= 0)  ei.gen_HX_b1_recojet  = Jet(ij_gen_HX_b1_genjet,  &nat);
   if (ij_gen_HX_b2_genjet >= 0)  ei.gen_HX_b2_recojet  = Jet(ij_gen_HX_b2_genjet,  &nat);
-  if (ij_gen_HY1_b1_genjet >= 0) ei.gen_HY1_b1_recojet = Jet(ij_gen_HY1_b1_genjet, &nat);
-  if (ij_gen_HY1_b2_genjet >= 0) ei.gen_HY1_b2_recojet = Jet(ij_gen_HY1_b2_genjet, &nat);
-  if (ij_gen_HY2_b1_genjet >= 0) ei.gen_HY2_b1_recojet = Jet(ij_gen_HY2_b1_genjet, &nat);
-  if (ij_gen_HY2_b2_genjet >= 0) ei.gen_HY2_b2_recojet = Jet(ij_gen_HY2_b2_genjet, &nat);
+  if (ij_gen_H1_b1_genjet >= 0) ei.gen_H1_b1_recojet = Jet(ij_gen_H1_b1_genjet, &nat);
+  if (ij_gen_H1_b2_genjet >= 0) ei.gen_H1_b2_recojet = Jet(ij_gen_H1_b2_genjet, &nat);
+  if (ij_gen_H2_b1_genjet >= 0) ei.gen_H2_b1_recojet = Jet(ij_gen_H2_b1_genjet, &nat);
+  if (ij_gen_H2_b2_genjet >= 0) ei.gen_H2_b2_recojet = Jet(ij_gen_H2_b2_genjet, &nat);
 
   // select unique occurences in vector
   // note : PAT tools already ensure that match is unique
@@ -237,10 +237,10 @@ void SixB_functions::match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei
   // std::vector<int> imatchs;
   // if (ij_gen_HX_b1_genjet >= 0)  imatchs.push_back(ij_gen_HX_b1_genjet);
   // if (ij_gen_HX_b2_genjet >= 0)  imatchs.push_back(ij_gen_HX_b2_genjet);
-  // if (ij_gen_HY1_b1_genjet >= 0) imatchs.push_back(ij_gen_HY1_b1_genjet);
-  // if (ij_gen_HY1_b2_genjet >= 0) imatchs.push_back(ij_gen_HY1_b2_genjet);
-  // if (ij_gen_HY2_b1_genjet >= 0) imatchs.push_back(ij_gen_HY2_b1_genjet);
-  // if (ij_gen_HY2_b2_genjet >= 0) imatchs.push_back(ij_gen_HY2_b2_genjet);
+  // if (ij_gen_H1_b1_genjet >= 0) imatchs.push_back(ij_gen_H1_b1_genjet);
+  // if (ij_gen_H1_b2_genjet >= 0) imatchs.push_back(ij_gen_H1_b2_genjet);
+  // if (ij_gen_H2_b1_genjet >= 0) imatchs.push_back(ij_gen_H2_b1_genjet);
+  // if (ij_gen_H2_b2_genjet >= 0) imatchs.push_back(ij_gen_H2_b2_genjet);
 
   // sort(imatchs.begin(), imatchs.end());
   // imatchs.erase(unique (imatchs.begin(), imatchs.end()), imatchs.end());
@@ -249,39 +249,39 @@ void SixB_functions::match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei
   int nmatched = 0;
   if (ij_gen_HX_b1_genjet >= 0)  nmatched += 1;
   if (ij_gen_HX_b2_genjet >= 0)  nmatched += 1;
-  if (ij_gen_HY1_b1_genjet >= 0) nmatched += 1;
-  if (ij_gen_HY1_b2_genjet >= 0) nmatched += 1;
-  if (ij_gen_HY2_b1_genjet >= 0) nmatched += 1;
-  if (ij_gen_HY2_b2_genjet >= 0) nmatched += 1;
+  if (ij_gen_H1_b1_genjet >= 0) nmatched += 1;
+  if (ij_gen_H1_b2_genjet >= 0) nmatched += 1;
+  if (ij_gen_H2_b1_genjet >= 0) nmatched += 1;
+  if (ij_gen_H2_b2_genjet >= 0) nmatched += 1;
   ei.gen_bs_N_reco_match = nmatched;
 
   // same as above, but apply acceptance cuts on the matched jets
   int nmatched_acc = 0;
-  if (ei.gen_HX_b1_recojet  && ei.gen_HX_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_HX_b1_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  if (ei.gen_HX_b2_recojet  && ei.gen_HX_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_HX_b2_recojet->P4().Eta())  < 4.8) nmatched_acc += 1;
-  if (ei.gen_HY1_b1_recojet && ei.gen_HY1_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY1_b1_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
-  if (ei.gen_HY1_b2_recojet && ei.gen_HY1_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY1_b2_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
-  if (ei.gen_HY2_b1_recojet && ei.gen_HY2_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY2_b1_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
-  if (ei.gen_HY2_b2_recojet && ei.gen_HY2_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY2_b2_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+  if (ei.gen_HX_b1_recojet && ei.gen_HX_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HX_b1_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+  if (ei.gen_HX_b2_recojet && ei.gen_HX_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HX_b2_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+  if (ei.gen_H1_b1_recojet && ei.gen_H1_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_H1_b1_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+  if (ei.gen_H1_b2_recojet && ei.gen_H1_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_H1_b2_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+  if (ei.gen_H2_b1_recojet && ei.gen_H2_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_H2_b1_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
+  if (ei.gen_H2_b2_recojet && ei.gen_H2_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_H2_b2_recojet->P4().Eta()) < 4.8) nmatched_acc += 1;
   ei.gen_bs_N_reco_match_in_acc = nmatched_acc;
 
   // now compute p4 sums to make the invariant mass of X - FIXME: can add more inv masses for the various cases
   p4_t p4_sum_matched (0,0,0,0);
-  if (ei.gen_HX_b1_recojet) p4_sum_matched  += ei.gen_HX_b1_recojet->P4();
-  if (ei.gen_HX_b2_recojet) p4_sum_matched  += ei.gen_HX_b2_recojet->P4();
-  if (ei.gen_HY1_b1_recojet) p4_sum_matched += ei.gen_HY1_b1_recojet->P4();
-  if (ei.gen_HY1_b2_recojet) p4_sum_matched += ei.gen_HY1_b2_recojet->P4();
-  if (ei.gen_HY2_b1_recojet) p4_sum_matched += ei.gen_HY2_b1_recojet->P4();
-  if (ei.gen_HY2_b2_recojet) p4_sum_matched += ei.gen_HY2_b2_recojet->P4();
+  if (ei.gen_HX_b1_recojet) p4_sum_matched += ei.gen_HX_b1_recojet->P4();
+  if (ei.gen_HX_b2_recojet) p4_sum_matched += ei.gen_HX_b2_recojet->P4();
+  if (ei.gen_H1_b1_recojet) p4_sum_matched += ei.gen_H1_b1_recojet->P4();
+  if (ei.gen_H1_b2_recojet) p4_sum_matched += ei.gen_H1_b2_recojet->P4();
+  if (ei.gen_H2_b1_recojet) p4_sum_matched += ei.gen_H2_b1_recojet->P4();
+  if (ei.gen_H2_b2_recojet) p4_sum_matched += ei.gen_H2_b2_recojet->P4();
   ei.gen_bs_match_recojet_minv = p4_sum_matched.M();
 
   p4_t p4_sum_matched_acc (0,0,0,0);
-  if (ei.gen_HX_b1_recojet  && ei.gen_HX_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_HX_b1_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_HX_b1_recojet->P4();
-  if (ei.gen_HX_b2_recojet  && ei.gen_HX_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_HX_b2_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_HX_b2_recojet->P4();
-  if (ei.gen_HY1_b1_recojet && ei.gen_HY1_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY1_b1_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_HY1_b1_recojet->P4();
-  if (ei.gen_HY1_b2_recojet && ei.gen_HY1_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY1_b2_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_HY1_b2_recojet->P4();
-  if (ei.gen_HY2_b1_recojet && ei.gen_HY2_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY2_b1_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_HY2_b1_recojet->P4();
-  if (ei.gen_HY2_b2_recojet && ei.gen_HY2_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HY2_b2_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_HY2_b2_recojet->P4();
+  if (ei.gen_HX_b1_recojet && ei.gen_HX_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_HX_b1_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_HX_b1_recojet->P4();
+  if (ei.gen_HX_b2_recojet && ei.gen_HX_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_HX_b2_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_HX_b2_recojet->P4();
+  if (ei.gen_H1_b1_recojet && ei.gen_H1_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_H1_b1_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_H1_b1_recojet->P4();
+  if (ei.gen_H1_b2_recojet && ei.gen_H1_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_H1_b2_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_H1_b2_recojet->P4();
+  if (ei.gen_H2_b1_recojet && ei.gen_H2_b1_recojet->P4().Pt() > 20 && std::abs(ei.gen_H2_b1_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_H2_b1_recojet->P4();
+  if (ei.gen_H2_b2_recojet && ei.gen_H2_b2_recojet->P4().Pt() > 20 && std::abs(ei.gen_H2_b2_recojet->P4().Eta()) < 4.8) p4_sum_matched_acc += ei.gen_H2_b2_recojet->P4();
   ei.gen_bs_match_in_acc_recojet_minv = p4_sum_matched_acc.M();
 }
 
@@ -290,9 +290,9 @@ int SixB_functions::get_jet_genmatch_flag (NanoAODTree& nat, EventInfo& ei, cons
     int ijet = jet.getIdx();
     if ( (ei.gen_HX_b1_recojet && ijet == ei.gen_HX_b1_recojet->getIdx())   || (ei.gen_HX_b2_recojet && ijet == ei.gen_HX_b2_recojet->getIdx()) )
         return 0; 
-    if ( (ei.gen_HY1_b1_recojet && ijet == ei.gen_HY1_b1_recojet->getIdx()) || (ei.gen_HY1_b2_recojet && ijet == ei.gen_HY1_b2_recojet->getIdx()) )
+    if ( (ei.gen_H1_b1_recojet && ijet == ei.gen_H1_b1_recojet->getIdx()) || (ei.gen_H1_b2_recojet && ijet == ei.gen_H1_b2_recojet->getIdx()) )
         return 1; 
-    if ( (ei.gen_HY2_b1_recojet && ijet == ei.gen_HY2_b1_recojet->getIdx()) || (ei.gen_HY2_b2_recojet && ijet == ei.gen_HY2_b2_recojet->getIdx()) )
+    if ( (ei.gen_H2_b1_recojet && ijet == ei.gen_H2_b1_recojet->getIdx()) || (ei.gen_H2_b2_recojet && ijet == ei.gen_H2_b2_recojet->getIdx()) )
         return 2; 
     return -1;
 }
@@ -300,19 +300,19 @@ int SixB_functions::get_jet_genmatch_flag (NanoAODTree& nat, EventInfo& ei, cons
 void SixB_functions::compute_seljets_genmatch_flags(NanoAODTree& nat, EventInfo& ei)
 {
     // flags per jet
-    ei.HX_b1_genHflag  = get_jet_genmatch_flag(nat, ei, *ei.HX_b1);
-    ei.HX_b2_genHflag  = get_jet_genmatch_flag(nat, ei, *ei.HX_b2);
-    ei.HY1_b1_genHflag = get_jet_genmatch_flag(nat, ei, *ei.HY1_b1);
-    ei.HY1_b2_genHflag = get_jet_genmatch_flag(nat, ei, *ei.HY1_b2);
-    ei.HY2_b1_genHflag = get_jet_genmatch_flag(nat, ei, *ei.HY2_b1);
-    ei.HY2_b2_genHflag = get_jet_genmatch_flag(nat, ei, *ei.HY2_b2);
+    ei.HX_b1_genHflag = get_jet_genmatch_flag(nat, ei, *ei.HX_b1);
+    ei.HX_b2_genHflag = get_jet_genmatch_flag(nat, ei, *ei.HX_b2);
+    ei.H1_b1_genHflag = get_jet_genmatch_flag(nat, ei, *ei.H1_b1);
+    ei.H1_b2_genHflag = get_jet_genmatch_flag(nat, ei, *ei.H1_b2);
+    ei.H2_b1_genHflag = get_jet_genmatch_flag(nat, ei, *ei.H2_b1);
+    ei.H2_b2_genHflag = get_jet_genmatch_flag(nat, ei, *ei.H2_b2);
 
     // flags per event
     int nfound_paired_h = 0;
 
     if (ei.HX_b1_genHflag > -1 && ei.HX_b1_genHflag == ei.HX_b2_genHflag)  nfound_paired_h += 1;
-    if (ei.HY1_b1_genHflag > -1 && ei.HY1_b1_genHflag == ei.HY1_b2_genHflag) nfound_paired_h += 1;
-    if (ei.HY2_b1_genHflag > -1 && ei.HY2_b1_genHflag == ei.HY2_b2_genHflag) nfound_paired_h += 1;
+    if (ei.H1_b1_genHflag > -1 && ei.H1_b1_genHflag == ei.H1_b2_genHflag) nfound_paired_h += 1;
+    if (ei.H2_b1_genHflag > -1 && ei.H2_b1_genHflag == ei.H2_b2_genHflag) nfound_paired_h += 1;
     ei.nfound_paired_h = nfound_paired_h; // number of selected jets that are from H
 }
 
@@ -359,7 +359,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
       std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:   input jet collection (should be ordered in pT only):" << std::endl;
       for (unsigned int ij=0; ij<in_jets.size(); ij++)
       {
-        std::cout << " jet "<<ij<<"   pT="<<in_jets.at(ij).get_ptRegressed()<<"   b-disc.="<<in_jets.at(ij).get_btag()<<std::endl;
+        std::cout << " jet "<<ij<<"   pT="<<in_jets.at(ij).get_pt()<<"   b-disc.="<<in_jets.at(ij).get_btag()<<std::endl;
       }
     }
   
@@ -371,7 +371,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
       std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:  jet collection after sorting by b-tagging score and then pT within each group:"<<std::endl;
       for (unsigned int ij=0; ij<jets.size(); ij++)
 	{
-	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_ptRegressed()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
+	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
 	}
     }
   
@@ -441,7 +441,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
 std::vector<Jet> SixB_functions::select_sixb_jets_pt_sort (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
   std::vector<Jet> jets = in_jets;
-  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_ptRegressed()>j2.get_ptRegressed(); });
+  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
 
   int n_out = std::min<int>(jets.size(), 6);
   jets.resize(n_out); // take top 6
@@ -490,7 +490,6 @@ std::vector<Jet> SixB_functions::select_sixb_jets_6jet_DNN (NanoAODTree &nat, Ev
     return b_jets;
 }
 
-
 std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets)
 {   
   std::vector<Jet> jets = in_jets;
@@ -517,7 +516,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
     std::vector<Jet>(jets.begin()+n_out_btag,jets.end()).swap(jets); // put into "jets" the remaining elements
 
     stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
-            return ( a.P4().Pt() > b.P4().Pt() ); }
+            return ( a.P4()().Pt() > b.P4()().Pt() ); }
     ); // sort jet by pT (highest to lowest)
 
     int n_to_add = std::min<int>(jets.size(), 6-nleadbtag); // add at most 6-nleadbtag elements (if they are available)
@@ -525,48 +524,17 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
 
     // std::cout << "   ---> IN JETS" << std::endl;
     // for (auto& jet : in_jets)
-    //     std::cout << jet.P4().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
+    //     std::cout << jet.P4()().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
     // std::cout << std::endl << std::endl;
 
     // std::cout << "   ---> OUT JETS" << std::endl;
     // for (auto& jet : out_jets)
-    //     std::cout << jet.P4().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
+    //     std::cout << jet.P4()().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
     // std::cout << std::endl << "-------------------------" << std::endl;
 
     return out_jets;
 }
 
-
-// void SixB_functions::btag_bias_pt_sort(std::vector<Jet>& in_jets)
-// {
-//   std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
-
-//   auto loose_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[0]; });
-//   auto medium_it= std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
-//   auto tight_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
-
-//   auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_ptRegressed()>j2.get_ptRegressed(); };
-
-//   int tight_idx = std::distance(in_jets.begin(),tight_it.base())-1;
-//   int medium_idx = std::distance(in_jets.begin(),medium_it.base())-1;
-//   int loose_idx = std::distance(in_jets.begin(),loose_it.base())-1;
-
-//   std::vector<int> wp_idxs = {tight_idx,medium_idx,loose_idx};
-//   auto start = in_jets.begin();
-//   for (int wp_idx : wp_idxs)
-//     {
-//       if (wp_idx != -1 && start != in_jets.end()) {
-// 	auto end = in_jets.begin() + wp_idx + 1;
-// 	std::sort(start,end,pt_sort);
-// 	start = end;
-//       }
-//     }
-// }
-
-// void SixB_functions::pt_sort(std::vector<Jet>& in_jets)
-// {
-//   std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_ptRegressed()>j2.get_ptRegressed(); });
-// }
 
 // bool SixB_functions::pass_jet_cut(Cutflow& cutflow,const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets)
 // {
@@ -591,24 +559,6 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
 //   return true;
 // }
 
-// int SixB_functions::njets_preselections (const std::vector<Jet>& in_jets)
-// {
-//     double pt_min = pmap.get_param<bool>("presel", "pt_min");
-//     double eta_max = pmap.get_param<bool>("presel", "eta_max");
-//     double pfid = pmap.get_param<bool>("presel", "pf_id");
-//     double puid = pmap.get_param<bool>("presel", "pu_id");
-
-//     int count = 0;
-//     for (unsigned int ij = 0; ij < in_jets.size(); ++ij){
-//         const Jet& jet = in_jets.at(ij);
-//         if (jet.P4().Pt()            <= pt_min)  continue;
-//         if (std::abs(jet.P4().Eta()) >= eta_max) continue;
-//         if (jet.get_id() < 2) continue;
-//         if (jet.P4().Pt() < 50 && jet.get_puid() < 6) continue;
-//         count++;
-//     }
-//     return count;
-// }
 
 // std::vector<Jet> SixB_functions::get_all_jets(NanoAODTree& nat)
 // {
@@ -856,8 +806,8 @@ void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vecto
 {
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> reco_Hs;
 
-  // call the desired algo - expected interface is input jets -> output 3 composite candidate HX, HY1. HY2
-  // the order of HY1, HY2 and of the jets does not matter - they will be reordered after
+  // call the desired algo - expected interface is input jets -> output 3 composite candidate HX, H1. H2
+  // the order of H1, H2 and of the jets does not matter - they will be reordered after
 
   std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
   if (pairAlgo == "passthrough")
@@ -888,46 +838,46 @@ void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vecto
 
   // reorder objects
   CompositeCandidate HX  = std::get<0>(reco_HX_HY_HY);
-  CompositeCandidate HY1 = std::get<1>(reco_HX_HY_HY);
-  CompositeCandidate HY2 = std::get<2>(reco_HX_HY_HY);
+  CompositeCandidate H1 = std::get<1>(reco_HX_HY_HY);
+  CompositeCandidate H2 = std::get<2>(reco_HX_HY_HY);
 
   // rebuild p4 with regressed pT if required
   if (pmap.get_param<bool>("configurations", "useRegressedPtForHp4")){
     HX.rebuildP4UsingRegressedPt(true, true);
-    HY1.rebuildP4UsingRegressedPt(true, true);
-    HY2.rebuildP4UsingRegressedPt(true, true);
+    H1.rebuildP4UsingRegressedPt(true, true);
+    H2.rebuildP4UsingRegressedPt(true, true);
   }
 
-  if (HY1.P4().Pt() < HY2.P4().Pt())
-    std::swap(HY1, HY2);
+  if (H1.P4Regressed().Pt() < H2.P4Regressed().Pt())
+    std::swap(H1, H2);
 
-  if (HX.getComponent1().P4().Pt() < HX.getComponent2().P4().Pt())
+  if (HX.getComponent1().P4Regressed().Pt() < HX.getComponent2().P4Regressed().Pt())
     HX.swapComponents();
 
-  if (HY1.getComponent1().P4().Pt() < HY1.getComponent2().P4().Pt())
-    HY1.swapComponents();
+  if (H1.getComponent1().P4Regressed().Pt() < H1.getComponent2().P4Regressed().Pt())
+    H1.swapComponents();
 
-  if (HY2.getComponent1().P4().Pt() < HY2.getComponent2().P4().Pt())
-    HY2.swapComponents();
+  if (H2.getComponent1().P4Regressed().Pt() < H2.getComponent2().P4Regressed().Pt())
+    H2.swapComponents();
 
-  CompositeCandidate Y(HY1, HY2);
+  CompositeCandidate Y(H1, H2);
   CompositeCandidate X(Y, HX);
 
   ei.X = X;
   ei.Y = Y;
 
-  ei.HX  = HX;
-  ei.HY1 = HY1;
-  ei.HY2 = HY2;
+  ei.HX = HX;
+  ei.H1 = H1;
+  ei.H2 = H2;
 
-  ei.HX_b1  = static_cast<Jet&>(HX.getComponent1());
-  ei.HX_b2  = static_cast<Jet&>(HX.getComponent2());
+  ei.HX_b1 = static_cast<Jet&>(HX.getComponent1());
+  ei.HX_b2 = static_cast<Jet&>(HX.getComponent2());
     
-  ei.HY1_b1 = static_cast<Jet&>(HY1.getComponent1());
-  ei.HY1_b2 = static_cast<Jet&>(HY1.getComponent2());
+  ei.H1_b1 = static_cast<Jet&>(H1.getComponent1());
+  ei.H1_b2 = static_cast<Jet&>(H1.getComponent2());
     
-  ei.HY2_b1 = static_cast<Jet&>(HY2.getComponent1());
-  ei.HY2_b2 = static_cast<Jet&>(HY2.getComponent2());
+  ei.H2_b1 = static_cast<Jet&>(H2.getComponent1());
+  ei.H2_b2 = static_cast<Jet&>(H2.getComponent2());
 
 }
 
@@ -936,11 +886,11 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   if (jets.size() != 6)
     throw std::runtime_error("The jet pairing -passthrough- function requires 6 jets");
 
-  CompositeCandidate HX  (jets.at(0), jets.at(1));
-  CompositeCandidate HY1 (jets.at(2), jets.at(3));
-  CompositeCandidate HY2 (jets.at(4), jets.at(5));
+  CompositeCandidate HX (jets.at(0), jets.at(1));
+  CompositeCandidate H1 (jets.at(2), jets.at(3));
+  CompositeCandidate H2 (jets.at(4), jets.at(5));
 
-  return std::make_tuple(HX, HY1, HY2);
+  return std::make_tuple(HX, H1, H2);
 }
 
 std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_functions::pair_D_HHH(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& in_jets)
@@ -968,9 +918,9 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
       std::vector<CompositeCandidate> tri_dijet_sys;
       for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
 
-      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4().Pt()>dj2.P4().Pt(); });
+      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4Regressed().Pt()>dj2.P4Regressed().Pt(); });
         
-      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4().M(),tri_dijet_sys[1].P4().M(),tri_dijet_sys[2].P4().M());
+      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4Regressed().M(),tri_dijet_sys[1].P4Regressed().M(),tri_dijet_sys[2].P4Regressed().M());
       float d_hhh = m_vec.Cross(r_vec).R();
       triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
     }
@@ -984,7 +934,7 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
 
 
   // Order dijets by highest Pt
-  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4().Pt() > dijets[id2].P4().Pt(); });
+  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4Regressed().Pt() > dijets[id2].P4Regressed().Pt(); });
 
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> higgs_cands = std::make_tuple(dijets[idijets[0]], dijets[idijets[1]], dijets[idijets[2]]);
   return higgs_cands;
@@ -1033,9 +983,9 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
       std::vector<CompositeCandidate> tri_dijet_sys;
       for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
 
-      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4().Pt()>dj2.P4().Pt(); });
+      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4Regressed().Pt()>dj2.P4Regressed().Pt(); });
         
-      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4().M(),tri_dijet_sys[1].P4().M(),tri_dijet_sys[2].P4().M());
+      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4Regressed().M(),tri_dijet_sys[1].P4Regressed().M(),tri_dijet_sys[2].P4Regressed().M());
       float d_hhh = m_vec.Cross(r_vec).R();
       triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
     }
@@ -1062,7 +1012,7 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   std::vector<int> idijets = triH_pairings[itriH];
 
   // Order dijets by highest Pt
-  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4().Pt() > dijets[id2].P4().Pt(); });
+  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4Regressed().Pt() > dijets[id2].P4Regressed().Pt(); });
 
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> higgs_cands = std::make_tuple(dijets[idijets[0]], dijets[idijets[1]], dijets[idijets[2]]);
   return higgs_cands;
@@ -1154,7 +1104,7 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
 
       // vector from origin (0,0,0) to this 3d mass point
       // FIXME: check if this uses standard p4 or regressed p4
-      vec3d masspoint = {pairs.at(ip).at(0).P4().M(), pairs.at(ip).at(1).P4().M(), pairs.at(ip).at(2).P4().M()};
+      vec3d masspoint = {pairs.at(ip).at(0).P4Regressed().M(), pairs.at(ip).at(1).P4Regressed().M(), pairs.at(ip).at(2).P4Regressed().M()};
       
       // compute projection on diagonal - note: diagonal has a norm of 1 already
       double dotprod = masspoint.x*diag.x + masspoint.y*diag.y + masspoint.z*diag.z;
@@ -1207,17 +1157,17 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
           CompositeCandidate hC = tr.at(2);
 
           p4_t vsum (0,0,0,0);
-          vsum += hA.P4();
-          vsum += hB.P4();
-          vsum += hC.P4();
+          vsum += hA.P4Regressed();
+          vsum += hB.P4Regressed();
+          vsum += hC.P4Regressed();
           auto boost_vctr = vsum.BoostToCM();
           ROOT::Math::Boost boost(boost_vctr);
 
           // p4_t vsum_cm  = boost(vsum);
-          p4_t hA_p4_cm = boost(hA.P4());
-          p4_t hB_p4_cm = boost(hB.P4());
-          p4_t hC_p4_cm = boost(hC.P4());
-          // cout << " XCHECK: " << vsum_cm.Pt() << "  x/y/z" << vsum_cm.Px() << " " << vsum_cm.Py() << " " << vsum_cm.Pz() << " || " << vsum_cm.P() << "  " << hA.P4().Pt() << " --> " << hA_p4_cm.Pt() << endl;
+          p4_t hA_p4_cm = boost(hA.P4Regressed());
+          p4_t hB_p4_cm = boost(hB.P4Regressed());
+          p4_t hC_p4_cm = boost(hC.P4Regressed());
+          // cout << " XCHECK: " << vsum_cm.Pt() << "  x/y/z" << vsum_cm.Px() << " " << vsum_cm.Py() << " " << vsum_cm.Pz() << " || " << vsum_cm.P() << "  " << hA.P4Regressed().Pt() << " --> " << hA_p4_cm.Pt() << endl;
           double psum = hA_p4_cm.P() + hB_p4_cm.P() + hC_p4_cm.P();
           psum_idx_afterthresh.push_back(make_pair(psum, ipair));
       }
@@ -1309,9 +1259,9 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   }
   
   else {
-    leadPt.at(0) = make_pair(std::max(reco_Hs_arr.at(0).getComponent1().P4().Pt(), reco_Hs_arr.at(0).getComponent2().P4().Pt()), 0);
-    leadPt.at(1) = make_pair(std::max(reco_Hs_arr.at(1).getComponent1().P4().Pt(), reco_Hs_arr.at(1).getComponent2().P4().Pt()), 1);
-    leadPt.at(2) = make_pair(std::max(reco_Hs_arr.at(2).getComponent1().P4().Pt(), reco_Hs_arr.at(2).getComponent2().P4().Pt()), 2);
+    leadPt.at(0) = make_pair(std::max(reco_Hs_arr.at(0).getComponent1().P4Regressed().Pt(), reco_Hs_arr.at(0).getComponent2().P4Regressed().Pt()), 0);
+    leadPt.at(1) = make_pair(std::max(reco_Hs_arr.at(1).getComponent1().P4Regressed().Pt(), reco_Hs_arr.at(1).getComponent2().P4Regressed().Pt()), 1);
+    leadPt.at(2) = make_pair(std::max(reco_Hs_arr.at(2).getComponent1().P4Regressed().Pt(), reco_Hs_arr.at(2).getComponent2().P4Regressed().Pt()), 2);
   }
 
   sort(leadPt.begin(), leadPt.end());
@@ -1330,10 +1280,10 @@ int SixB_functions::n_gjmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
   std::vector<int> matched_jets;
   if (ei.gen_HX_b1_recojet)  matched_jets.push_back(ei.gen_HX_b1_recojet->getIdx());
   if (ei.gen_HX_b2_recojet)  matched_jets.push_back(ei.gen_HX_b2_recojet->getIdx());
-  if (ei.gen_HY1_b1_recojet) matched_jets.push_back(ei.gen_HY1_b1_recojet->getIdx());
-  if (ei.gen_HY1_b2_recojet) matched_jets.push_back(ei.gen_HY1_b2_recojet->getIdx());
-  if (ei.gen_HY2_b1_recojet) matched_jets.push_back(ei.gen_HY2_b1_recojet->getIdx());
-  if (ei.gen_HY2_b2_recojet) matched_jets.push_back(ei.gen_HY2_b2_recojet->getIdx());
+  if (ei.gen_H1_b1_recojet) matched_jets.push_back(ei.gen_H1_b1_recojet->getIdx());
+  if (ei.gen_H1_b2_recojet) matched_jets.push_back(ei.gen_H1_b2_recojet->getIdx());
+  if (ei.gen_H2_b1_recojet) matched_jets.push_back(ei.gen_H2_b1_recojet->getIdx());
+  if (ei.gen_H2_b2_recojet) matched_jets.push_back(ei.gen_H2_b2_recojet->getIdx());
 
   std::vector<int> reco_js (in_jets.size());
   for (unsigned int ij=0; ij<in_jets.size(); ++ij)
@@ -1356,10 +1306,10 @@ int SixB_functions::n_ghmatched_in_jetcoll(NanoAODTree& nat, EventInfo& ei, cons
   std::vector<int> matched_jets(6,-1);
   if (ei.gen_HX_b1_recojet)  matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
   if (ei.gen_HX_b2_recojet)  matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
-  if (ei.gen_HY1_b1_recojet) matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
-  if (ei.gen_HY1_b2_recojet) matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
-  if (ei.gen_HY2_b1_recojet) matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
-  if (ei.gen_HY2_b2_recojet) matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
+  if (ei.gen_H1_b1_recojet) matched_jets[2] = ei.gen_H1_b1_recojet->getIdx();
+  if (ei.gen_H1_b2_recojet) matched_jets[3] = ei.gen_H1_b2_recojet->getIdx();
+  if (ei.gen_H2_b1_recojet) matched_jets[4] = ei.gen_H2_b1_recojet->getIdx();
+  if (ei.gen_H2_b2_recojet) matched_jets[5] = ei.gen_H2_b2_recojet->getIdx();
 
   std::vector<int> reco_js(in_jets.size());
   for (unsigned int ij = 0; ij < in_jets.size(); ++ij)
@@ -1387,14 +1337,14 @@ void SixB_functions::match_signal_genjets(NanoAODTree &nat, EventInfo& ei, std::
     matched_jets[0] = ei.gen_HX_b1_genjet->getIdx();
   if (ei.gen_HX_b2_genjet)
     matched_jets[1] = ei.gen_HX_b2_genjet->getIdx();
-  if (ei.gen_HY1_b1_genjet)
-    matched_jets[2] = ei.gen_HY1_b1_genjet->getIdx();
-  if (ei.gen_HY1_b2_genjet)
-    matched_jets[3] = ei.gen_HY1_b2_genjet->getIdx();
-  if (ei.gen_HY2_b1_genjet)
-    matched_jets[4] = ei.gen_HY2_b1_genjet->getIdx();
-  if (ei.gen_HY2_b2_genjet)
-    matched_jets[5] = ei.gen_HY2_b2_genjet->getIdx();
+  if (ei.gen_H1_b1_genjet)
+    matched_jets[2] = ei.gen_H1_b1_genjet->getIdx();
+  if (ei.gen_H1_b2_genjet)
+    matched_jets[3] = ei.gen_H1_b2_genjet->getIdx();
+  if (ei.gen_H2_b1_genjet)
+    matched_jets[4] = ei.gen_H2_b1_genjet->getIdx();
+  if (ei.gen_H2_b2_genjet)
+    matched_jets[5] = ei.gen_H2_b2_genjet->getIdx();
 
   for (GenJet &gj : in_jets)
   {
@@ -1419,14 +1369,14 @@ void SixB_functions::match_signal_recojets(NanoAODTree &nat, EventInfo& ei, std:
     matched_jets[0] = ei.gen_HX_b1_recojet->getIdx();
   if (ei.gen_HX_b2_recojet)
     matched_jets[1] = ei.gen_HX_b2_recojet->getIdx();
-  if (ei.gen_HY1_b1_recojet)
-    matched_jets[2] = ei.gen_HY1_b1_recojet->getIdx();
-  if (ei.gen_HY1_b2_recojet)
-    matched_jets[3] = ei.gen_HY1_b2_recojet->getIdx();
-  if (ei.gen_HY2_b1_recojet)
-    matched_jets[4] = ei.gen_HY2_b1_recojet->getIdx();
-  if (ei.gen_HY2_b2_recojet)
-    matched_jets[5] = ei.gen_HY2_b2_recojet->getIdx();
+  if (ei.gen_H1_b1_recojet)
+    matched_jets[2] = ei.gen_H1_b1_recojet->getIdx();
+  if (ei.gen_H1_b2_recojet)
+    matched_jets[3] = ei.gen_H1_b2_recojet->getIdx();
+  if (ei.gen_H2_b1_recojet)
+    matched_jets[4] = ei.gen_H2_b1_recojet->getIdx();
+  if (ei.gen_H2_b2_recojet)
+    matched_jets[5] = ei.gen_H2_b2_recojet->getIdx();
 
   for (Jet &j : in_jets)
   {
