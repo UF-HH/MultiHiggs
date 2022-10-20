@@ -133,7 +133,7 @@ std::vector<Jet> Skim_functions::preselect_jets(NanoAODTree &nat, EventInfo& ei,
       
       if (0) std::cout << " jet "<<ij<<"  pt="<<jet.P4().Pt()<<"   pt cut ="<<pt_cuts.at(ptCut_index)<<std::endl;
       
-      if (jet.P4Regressed().Pt() <= pt_cuts.at(ptCut_index))
+      if (jet.P4().Pt() <= pt_cuts.at(ptCut_index))
 	continue;
       if (std::abs(jet.P4().Eta()) >= eta_max)
 	continue;
@@ -160,7 +160,7 @@ std::vector<Jet> Skim_functions::btag_sort_jets(NanoAODTree &nat, EventInfo& ei,
 std::vector<Jet> Skim_functions::pt_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
   std::vector<Jet> jets = in_jets;
-  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_ptRegressed()>j2.get_ptRegressed(); });
+  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
   return jets;
 }
 
@@ -175,7 +175,7 @@ std::vector<Jet> Skim_functions::bias_pt_sort_jets(NanoAODTree &nat, EventInfo& 
       for (unsigned int ij=0; ij<in_jets.size(); ij++)
 	{
 	  const Jet j = in_jets.at(ij);
-	  std::cout<<" jet "<< ij <<"  pt = "<< j.get_ptRegressed() <<"   b-disc="<< j.get_btag()<<std::endl;
+	  std::cout<<" jet "<< ij <<"  pt = "<< j.get_pt() <<"   b-disc="<< j.get_btag()<<std::endl;
 	}
     }
   
@@ -188,7 +188,7 @@ std::vector<Jet> Skim_functions::bias_pt_sort_jets(NanoAODTree &nat, EventInfo& 
       std::cout << "Jets are now sorted by b-tagging score (only) in descending order"<<std::endl;
       for (unsigned int ij=0; ij<jets.size(); ij++)
 	{
-	  std::cout << "  jet "<<ij<<"  pt = "<<jets.at(ij).get_ptRegressed()<<"   b-disc="<<jets.at(ij).get_btag()<<std::endl;
+	  std::cout << "  jet "<<ij<<"  pt = "<<jets.at(ij).get_pt()<<"   b-disc="<<jets.at(ij).get_btag()<<std::endl;
 	}
     }
   
@@ -197,7 +197,7 @@ std::vector<Jet> Skim_functions::bias_pt_sort_jets(NanoAODTree &nat, EventInfo& 
   auto medium_it= std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
   auto tight_it = std::find_if(jets.rbegin(),jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
   
-  auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_ptRegressed()>j2.get_ptRegressed(); };
+  auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
 
   int tight_idx  = std::distance(jets.begin(),tight_it.base())-1;
   int medium_idx = std::distance(jets.begin(),medium_it.base())-1;
@@ -222,7 +222,7 @@ std::vector<Jet> Skim_functions::bias_pt_sort_jets(NanoAODTree &nat, EventInfo& 
       std::cout << "Sorted by b-tagging score in descending order and then by pT withing each group (Tight, Medium, Loose, Fail), again in descending order:"<<std::endl;
       for (unsigned int ij=0; ij<jets.size(); ij++)
         {
-	  std::cout << "  jet "<<ij<<"  pt = "<<jets.at(ij).get_ptRegressed()<<"   b-disc="<<jets.at(ij).get_btag()<<std::endl;
+	  std::cout << "  jet "<<ij<<"  pt = "<<jets.at(ij).get_pt()<<"   b-disc="<<jets.at(ij).get_btag()<<std::endl;
         }
     }
   return jets;
