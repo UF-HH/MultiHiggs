@@ -256,36 +256,36 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       BRANCH_m_pt_eta_phi_p4(gen_X);
       BRANCH_m_pt_eta_phi_p4(gen_Y);
       BRANCH_m_pt_eta_phi_p4(gen_HX);
-      BRANCH_m_pt_eta_phi_p4(gen_HY1);
-      BRANCH_m_pt_eta_phi_p4(gen_HY2);
+      BRANCH_m_pt_eta_phi_p4(gen_H1);
+      BRANCH_m_pt_eta_phi_p4(gen_H2);
 
       BRANCH_m_pt_eta_phi_p4(gen_HX_b1);
       BRANCH_m_pt_eta_phi_p4(gen_HX_b2);
-      BRANCH_m_pt_eta_phi_p4(gen_HY1_b1);
-      BRANCH_m_pt_eta_phi_p4(gen_HY1_b2);
-      BRANCH_m_pt_eta_phi_p4(gen_HY2_b1);
-      BRANCH_m_pt_eta_phi_p4(gen_HY2_b2);
+      BRANCH_m_pt_eta_phi_p4(gen_H1_b1);
+      BRANCH_m_pt_eta_phi_p4(gen_H1_b2);
+      BRANCH_m_pt_eta_phi_p4(gen_H2_b1);
+      BRANCH_m_pt_eta_phi_p4(gen_H2_b2);
 
       BRANCH_m_pt_eta_phi_p4(gen_HX_b1_genjet);
       BRANCH_m_pt_eta_phi_p4(gen_HX_b2_genjet);
-      BRANCH_m_pt_eta_phi_p4(gen_HY1_b1_genjet);
-      BRANCH_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
-      BRANCH_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
-      BRANCH_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
+      BRANCH_m_pt_eta_phi_p4(gen_H1_b1_genjet);
+      BRANCH_m_pt_eta_phi_p4(gen_H1_b2_genjet);
+      BRANCH_m_pt_eta_phi_p4(gen_H2_b1_genjet);
+      BRANCH_m_pt_eta_phi_p4(gen_H2_b2_genjet);
 
       BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
       BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
-      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1_b1_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1_b2_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2_b1_recojet);
+      BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2_b2_recojet);
 
       tree_->Branch("HX_b1_genHflag", &HX_b1_genHflag);
       tree_->Branch("HX_b2_genHflag", &HX_b2_genHflag);
-      tree_->Branch("HY1_b1_genHflag", &HY1_b1_genHflag);
-      tree_->Branch("HY1_b2_genHflag", &HY1_b2_genHflag);
-      tree_->Branch("HY2_b1_genHflag", &HY2_b1_genHflag);
-      tree_->Branch("HY2_b2_genHflag", &HY2_b2_genHflag);
+      tree_->Branch("H1_b1_genHflag", &H1_b1_genHflag);
+      tree_->Branch("H1_b2_genHflag", &H1_b2_genHflag);
+      tree_->Branch("H2_b1_genHflag", &H2_b1_genHflag);
+      tree_->Branch("H2_b2_genHflag", &H2_b2_genHflag);
 
       tree_->Branch("gen_bs_N_reco_match", &gen_bs_N_reco_match);
       tree_->Branch("gen_bs_N_reco_match_in_acc", &gen_bs_N_reco_match_in_acc);
@@ -304,15 +304,15 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     BRANCH_m_pt_eta_phi_p4(X);
     BRANCH_m_pt_eta_phi_p4(Y);
     BRANCH_m_pt_eta_phi_p4(HX);
-    BRANCH_m_pt_eta_phi_p4(HY1);
-    BRANCH_m_pt_eta_phi_p4(HY2);
+    BRANCH_m_pt_eta_phi_p4(H1);
+    BRANCH_m_pt_eta_phi_p4(H2);
 
     BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b1);
     BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b2);
   }
 
   if (is_enabled("eightb_brs"))
@@ -555,29 +555,29 @@ void OutputTree::clear()
   // Start Gen 6B Objects
   CLEAR_m_pt_eta_phi_p4(gen_Y);
   CLEAR_m_pt_eta_phi_p4(gen_HX);
-  CLEAR_m_pt_eta_phi_p4(gen_HY1);
-  CLEAR_m_pt_eta_phi_p4(gen_HY2);
+  CLEAR_m_pt_eta_phi_p4(gen_H1);
+  CLEAR_m_pt_eta_phi_p4(gen_H2);
 
   CLEAR_m_pt_eta_phi_p4(gen_HX_b1);
   CLEAR_m_pt_eta_phi_p4(gen_HX_b2);
-  CLEAR_m_pt_eta_phi_p4(gen_HY1_b1);
-  CLEAR_m_pt_eta_phi_p4(gen_HY1_b2);
-  CLEAR_m_pt_eta_phi_p4(gen_HY2_b1);
-  CLEAR_m_pt_eta_phi_p4(gen_HY2_b2);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b1);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b2);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b1);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b2);
 
   CLEAR_m_pt_eta_phi_p4(gen_HX_b1_genjet);
   CLEAR_m_pt_eta_phi_p4(gen_HX_b2_genjet);
-  CLEAR_m_pt_eta_phi_p4(gen_HY1_b1_genjet);
-  CLEAR_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
-  CLEAR_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
-  CLEAR_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b1_genjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b2_genjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b1_genjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b2_genjet);
 
   CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
   CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
-  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H1_b1_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H1_b2_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H2_b1_recojet);
+  CLEAR_m_pt_ptRegressed_eta_phi_p4(gen_H2_b2_recojet);
   // End Gen 6B Objects
 
   // Start Gen 8B Objects 
@@ -633,43 +633,43 @@ void OutputTree::clear()
   // Start Reco 6B Objects
   CLEAR_m_pt_eta_phi_p4(Y);
   CLEAR_m_pt_eta_phi_p4(HX);
-  CLEAR_m_pt_eta_phi_p4(HY1);
-  CLEAR_m_pt_eta_phi_p4(HY2);
+  CLEAR_m_pt_eta_phi_p4(H1);
+  CLEAR_m_pt_eta_phi_p4(H2);
 
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b1);
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b2);
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b1);
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b2);
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b1);
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b2);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b1);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b2);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b1);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b2);
 
   HX_b1_genHflag  = -999;
   HX_b2_genHflag  = -999;
-  HY1_b1_genHflag = -999;
-  HY1_b2_genHflag = -999;
-  HY2_b1_genHflag = -999;
-  HY2_b2_genHflag = -999;
+  H1_b1_genHflag = -999;
+  H1_b2_genHflag = -999;
+  H2_b1_genHflag = -999;
+  H2_b2_genHflag = -999;
   // End Reco 6B Objects
 
   // Start Reco 8B Objects
   CLEAR_m_pt_eta_phi_p4(Y);
   CLEAR_m_pt_eta_phi_p4(HX);
-  CLEAR_m_pt_eta_phi_p4(HY1);
-  CLEAR_m_pt_eta_phi_p4(HY2);
+  CLEAR_m_pt_eta_phi_p4(H1);
+  CLEAR_m_pt_eta_phi_p4(H2);
 
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b1);
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b2);
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b1);
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b2);
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b1);
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b2);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b1);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b2);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b1);
+  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b2);
 
   HX_b1_genHflag = -999;
   HX_b2_genHflag = -999;
-  HY1_b1_genHflag = -999;
-  HY1_b2_genHflag = -999;
-  HY2_b1_genHflag = -999;
-  HY2_b2_genHflag = -999;
+  H1_b1_genHflag = -999;
+  H1_b2_genHflag = -999;
+  H2_b1_genHflag = -999;
+  H2_b2_genHflag = -999;
 
   n_loose_btag = -1;
   n_medium_btag = -1;
