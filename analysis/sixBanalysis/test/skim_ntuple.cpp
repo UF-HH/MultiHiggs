@@ -545,10 +545,6 @@ int main(int argc, char** argv)
 
     EventInfo ei;
     ot.clear();
-<<<<<<< HEAD
-
-=======
->>>>>>> e773ec22805107fa5fc32de6a0bb381b9a12fd8a
     loop_timer.click("Input read");
     
     // save the normalization weights.
@@ -593,7 +589,7 @@ int main(int argc, char** argv)
     // Apply METFilters
     //==================================
     bool bMETFilters = *nat.Flag_goodVertices && *nat.Flag_globalSuperTightHalo2016Filter && *nat.Flag_HBHENoiseFilter && *nat.Flag_HBHENoiseIsoFilter && *nat.Flag_EcalDeadCellTriggerPrimitiveFilter && *nat.Flag_BadPFMuonFilter && *nat.Flag_eeBadScFilter && (*nat.Flag_ecalBadCalibFilter || (year=="2016"));
-    if (!bMETFilters) continue;
+    // if (!bMETFilters) continue;
     loop_timer.click("MET Filters");
     cutflow.add("met filters", nwt);
     cutflow_Unweighted.add("met filters");
@@ -773,6 +769,7 @@ int main(int argc, char** argv)
       const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
       if (!cfg_nJets.passedCut(presel_jets.size())) continue;
       cutflow.add("selected jets >= 6", nwt);
+	    cutflow_Unweighted.add("selected jets >= 6");
       
       //=============================================
       // Jets for pairing selection (either 6 or 0)
@@ -780,36 +777,18 @@ int main(int argc, char** argv)
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
       if (selected_jets.size() < 6) continue;
       cutflow.add("Jets for pairing selection");
+      cutflow_Unweighted.add("Jets for pairing selection");
+
       loop_timer.click("Six b jet selection");
       
       ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
       ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
       
-      if (debug)
-      {
-	// Preselected jets are all jets in the event sorted in pT
-	const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
-	if (!cfg_nJets.passedCut(presel_jets.size())) continue;
-        cutflow.add("selected jets >= 6", nwt);
-	cutflow_Unweighted.add("selected jets >= 6");
-	
-	//=============================================
-	// Jets for pairing selection (either 6 or 0)
-	//=============================================
-	std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
-	if (selected_jets.size() < 6) continue;
-	cutflow.add("Jets for pairing selection", nwt);
-	cutflow_Unweighted.add("Jets for pairing selection");
-	
-	loop_timer.click("Six b jet selection");
-	
-	ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
-	ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
-	
 	if (debug)
 	  {
 	    dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
 	  }
+      
 	
 	//================================================
 	// Proceed with the pairing of the 6 selected jets
@@ -825,64 +804,12 @@ int main(int argc, char** argv)
 	
 	skf->compute_event_shapes(nat, ei, selected_jets);
 	loop_timer.click("Event shapes calculation");
-	
-	// if ( applyJetCuts && !skf->pass_jet_cut(cutflow, pt_cuts, btagWP_cuts, presel_jets) )
-	//   continue;
-	
-	// std::vector<Jet> t6_jets = skf->get_6jet_top(presel_jets);
-	// std::vector<DiJet> t6_dijets = skf->get_tri_higgs_D_HHH(t6_jets);
-	
-	/*
-	  EventShapeCalculator t6_esc(t6_jets);
-	  EventShapes t6_event_shapes = t6_esc.get_sphericity_shapes();
-	  ei.t6_event_shapes = t6_event_shapes;
-	  
-	  float t6_jet_btagsum = 0;
-	  for (Jet& j : t6_jets) t6_jet_btagsum += j.get_btag();
-	  ot.userFloat("t6_jet_btagsum") = t6_jet_btagsum;
-	  
-	  int nfound_t6_h = skf->n_gjmatched_in_dijetcoll(t6_dijets);
-	  int nfound_t6 = skf->n_gjmatched_in_jetcoll(nat, ei, t6_jets); 
-	  
-	  std::vector<Jet> nn_jets = skf->get_6jet_NN(ei,presel_jets, *n_6j_classifier);
-	  std::vector<DiJet> nn_dijets = skf->get_2jet_NN(ei,nn_jets, *n_2j_classifier); 
-	  // std::vector<DiJet> nn_dijets = skf->get_3dijet_NN(ei,nn_jets,n_3d_classifier);
-	  
-	  EventShapeCalculator nn_esc(nn_jets);
-	  EventShapes nn_event_shapes = nn_esc.get_sphericity_shapes();
-	  ei.nn_event_shapes = nn_event_shapes;
-	  
-	  float nn_jet_btagsum = 0;
-	  for (Jet& j : nn_jets) nn_jet_btagsum += j.get_btag();
-	  ot.userFloat("nn_jet_btagsum") = nn_jet_btagsum;
-	  
-	  int nfound_nn_h = skf->n_gjmatched_in_dijetcoll(nn_dijets);
-	  int nfound_nn = skf->n_gjmatched_in_jetcoll(nat, ei, nn_jets);
-	  
-	  ot.userInt("nfound_t6")   = nfound_t6;
-	  ot.userInt("nfound_t6_h") = nfound_t6_h;
-	  ot.userInt("nfound_nn")     = nfound_nn;
-	  ot.userInt("nfound_nn_h")     = nfound_nn_h;
-	  
-	  ei.t6_jet_list = t6_jets;
-	  ei.t6_higgs_list = t6_dijets;
-	  ei.n_higgs = t6_dijets.size();
-	  
-	  ei.nn_jet_list = nn_jets;
-	  ei.nn_higgs_list = nn_dijets;
-	*/
-	
-	// loop_timer.click("Six b selection");
-      }
-      
-      //================================================
-      // Proceed with the pairing of the 6 selected jets
-      //=================================================
-      skf->pair_jets(nat, ei, selected_jets);
-      loop_timer.click("Six b jet pairing");
-      
-      if (is_signal)
-      {
+
+    }
+
+  else if (skim_type == khiggscr)
+  {
+
 	if (presel_jets.size() < 6)
 	  continue;
 	cutflow.add("npresel_jets>=6", nwt);
@@ -901,6 +828,8 @@ int main(int argc, char** argv)
 	
 	loop_timer.click("Higgs CR selection");
       }
+
+      
     else if (skim_type == kttbar)
       {
 	if (presel_jets.size() < 2)
