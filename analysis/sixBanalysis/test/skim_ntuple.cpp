@@ -219,15 +219,13 @@ int main(int argc, char** argv)
   const SkimTypes skim_type = (skim_type_name == "sixb"    ? ksixb    :
                                skim_type_name == "ttbar"   ? kttbar   :
                                skim_type_name == "eightb"  ? keightb  :
-			       //  skim_type_name == "shapecr" ? kshapecr :
+			                        //  skim_type_name == "shapecr" ? kshapecr :
                                skim_type_name == "higgscr" ? khiggscr :
-                               skim_type_name == "pass"    ? kpass     :
-                               skim_type_name == "presel"    ? kpresel     :
-                              //  knull
-			       //  skim_type_name == "pass"    ? kpass     :
+                               skim_type_name == "pass"    ? kpass    :
+                               skim_type_name == "presel"  ? kpresel  :
                                skim_type_name == "trgeff"  ? kTrgEff  :
-			                          // knull
-                               );
+                               knull
+                              );
   if (skim_type == knull)
     throw std::runtime_error("skim type not recognized");
 
@@ -329,17 +327,17 @@ int main(int argc, char** argv)
   TFile outputFile(outputFileName.c_str(), "recreate");
   OutputTree ot(opts["save-p4"].as<bool>(),
                 map<string, bool>{
-		// {"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
-		// {"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
-		{"muon_coll",   readCfgOptWithDefault<bool>(config, "configurations::saveMuonColl", false)},
-		{"ele_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveEleColl", false)},  
-		{"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
-		{"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes", false)},
+          // {"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
+          // {"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
+          {"muon_coll",   readCfgOptWithDefault<bool>(config, "configurations::saveMuonColl", false)},
+          {"ele_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveEleColl", false)},  
+          {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
+          {"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes", false)},
 	        {"dijets_coll", readCfgOptWithDefault<bool>(config, "configurations::saveDiJets", false)},
 	        {"sixb_brs", (skim_type == ksixb)},
 	        {"eightb_brs", (skim_type == keightb)},
 	        {"ttbar_brs", (skim_type == kttbar)},
-		{"trgeff_brs", (skim_type == kTrgEff)},
+		      {"trgeff_brs", (skim_type == kTrgEff)},
 	        {"sig_gen_brs", (is_signal)},
 	        {"gen_brs", (!is_data)},
 		  });
