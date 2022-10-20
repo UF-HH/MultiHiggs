@@ -358,9 +358,9 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
     {
       std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:   input jet collection (should be ordered in pT only):" << std::endl;
       for (unsigned int ij=0; ij<in_jets.size(); ij++)
-	{
-	  std::cout << " jet "<<ij<<"   pT="<<in_jets.at(ij).get_pt()<<"   b-disc.="<<in_jets.at(ij).get_btag()<<std::endl;
-	}
+      {
+        std::cout << " jet "<<ij<<"   pT="<<in_jets.at(ij).get_ptRegressed()<<"   b-disc.="<<in_jets.at(ij).get_btag()<<std::endl;
+      }
     }
   
   // Sort jets by their b-tagging score in descending order
@@ -371,7 +371,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
       std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:  jet collection after sorting by b-tagging score and then pT within each group:"<<std::endl;
       for (unsigned int ij=0; ij<jets.size(); ij++)
 	{
-	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
+	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_ptRegressed()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
 	}
     }
   
@@ -441,7 +441,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
 std::vector<Jet> SixB_functions::select_sixb_jets_pt_sort (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
   std::vector<Jet> jets = in_jets;
-  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
+  std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_ptRegressed()>j2.get_ptRegressed(); });
 
   int n_out = std::min<int>(jets.size(), 6);
   jets.resize(n_out); // take top 6
@@ -545,7 +545,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
 //   auto medium_it= std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[1]; });
 //   auto tight_it = std::find_if(in_jets.rbegin(),in_jets.rend(),[this](Jet& j){ return j.get_btag()>this->btag_WPs[2]; });
 
-//   auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_pt()>j2.get_pt(); };
+//   auto pt_sort = [](Jet& j1,Jet& j2) { return j1.get_ptRegressed()>j2.get_ptRegressed(); };
 
 //   int tight_idx = std::distance(in_jets.begin(),tight_it.base())-1;
 //   int medium_idx = std::distance(in_jets.begin(),medium_it.base())-1;
@@ -565,7 +565,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
 
 // void SixB_functions::pt_sort(std::vector<Jet>& in_jets)
 // {
-//   std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
+//   std::sort(in_jets.begin(),in_jets.end(),[](Jet& j1,Jet& j2){ return j1.get_ptRegressed()>j2.get_ptRegressed(); });
 // }
 
 // bool SixB_functions::pass_jet_cut(Cutflow& cutflow,const std::vector<double> pt_cuts,const std::vector<int> btagWP_cuts,const std::vector<Jet> &in_jets)
@@ -583,7 +583,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
 //     double pt = pt_cuts[icut];
 //     int btag_wp = btagWP_cuts[icut];
 
-//     if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] )
+//     if ( ijet.get_ptRegressed() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] )
 //       return false;
 
 //     cutflow.add( "jet" + std::to_string(icut) + "_pt" + std::to_string( (int)pt ) + "_" + wplabels[btag_wp]  );
