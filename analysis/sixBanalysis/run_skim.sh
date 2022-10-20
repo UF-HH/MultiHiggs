@@ -17,7 +17,7 @@ cfg="config/skim_ntuple_2018_presel.cfg"
 # cfg="config/skim_ntuple_2018_cr.cfg"
      
 make exe -j && \
-    bin/skim_ntuple.exe \
+    $exe \
 	--input $input \
 	--cfg  $cfg \
 	--output $output \

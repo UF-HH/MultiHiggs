@@ -37,8 +37,18 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   p4_t OBJ##_p4;
 
 // helper: declares the m/pt/eta/phi/p4 of a variable OBJ
+#define DECLARE_m_pt_eta_phi_score_p4(OBJ) \
+  float OBJ##_m;                           \
+  float OBJ##_pt;                          \
+  float OBJ##_eta;                         \
+  float OBJ##_phi;                         \
+  float OBJ##_score;                       \
+  p4_t OBJ##_p4;
+
+// helper: declares the m/pt/eta/phi/p4 of a variable OBJ
 #define DECLARE_m_pt_ptRegressed_eta_phi_p4(OBJ) \
   float OBJ##_m;                                 \
+  float OBJ##_mRegressed;                        \
   float OBJ##_pt;                                \
   float OBJ##_ptRegressed;                       \
   float OBJ##_eta;                               \
@@ -48,27 +58,76 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 // helper: declares the m/pt/eta/phi/p4/DeepJet of a variable OBJ
 #define DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
   float OBJ##_m;                                         \
+  float OBJ##_mRegressed;                                \
   float OBJ##_pt;                                        \
   float OBJ##_ptRegressed;                               \
   float OBJ##_eta;                                       \
   float OBJ##_phi;                                       \
-  float OBJ##_btag;                                   \
+  float OBJ##_btag;                                      \
   p4_t OBJ##_p4;
 
-#define DECLARE_jet_list(OBJ)        \
-  std::vector<float> OBJ##_E;        \
-  std::vector<float> OBJ##_m;        \
-  std::vector<float> OBJ##_pt;       \
-  std::vector<float> OBJ##_eta;      \
-  std::vector<float> OBJ##_phi;      \
-  std::vector<int> OBJ##_partonFlav; \
-  std::vector<int> OBJ##_hadronFlav; \
-  std::vector<int> OBJ##_signalId;   \
-  std::vector<int> OBJ##_higgsIdx;   \
-  std::vector<int> OBJ##_genIdx;     \
-  std::vector<float> OBJ##_btag;     \
-  std::vector<float> OBJ##_qgl;      \
-  std::vector<int> OBJ##_id;         \
+
+// helper: declares the m/pt/eta/phi/p4/DeepJet of a variable OBJ
+#define DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
+  float OBJ##_m;                                               \
+  float OBJ##_mRegressed;                                      \
+  float OBJ##_pt;                                              \
+  float OBJ##_ptRegressed;                                     \
+  float OBJ##_eta;                                             \
+  float OBJ##_phi;                                             \
+  float OBJ##_btag;                                            \
+  float OBJ##_score;                                           \
+  p4_t OBJ##_p4;
+
+#define DECLARE_ele_list(OBJ)               \
+  std::vector<float> OBJ##_E;               \
+  std::vector<float> OBJ##_m;               \
+  std::vector<float> OBJ##_pt;              \
+  std::vector<float> OBJ##_eta;             \
+  std::vector<float> OBJ##_phi;             \
+  std::vector<float> OBJ##_dxy;             \
+  std::vector<float> OBJ##_dz;              \
+  std::vector<float> OBJ##_charge;          \
+  std::vector<float> OBJ##_pfRelIso03_all;     \
+  std::vector<bool> OBJ##_mvaFall17V2Iso_WPL;  \
+  std::vector<bool> OBJ##_mvaFall17V2Iso_WP90; \
+  std::vector<bool> OBJ##_mvaFall17V2Iso_WP80;
+
+#define DECLARE_muon_list(OBJ)             \
+  std::vector<float> OBJ##_E;              \
+  std::vector<float> OBJ##_m;              \
+  std::vector<float> OBJ##_pt;             \
+  std::vector<float> OBJ##_eta;            \
+  std::vector<float> OBJ##_phi;            \
+  std::vector<float> OBJ##_dxy;            \
+  std::vector<float> OBJ##_dz;             \
+  std::vector<float> OBJ##_charge;         \
+  std::vector<float> OBJ##_pfRelIso04_all; \
+  std::vector<bool> OBJ##_looseId;         \
+  std::vector<bool> OBJ##_mediumId;        \
+  std::vector<bool> OBJ##_tightId;
+
+#define DECLARE_jet_list(OBJ)           \
+  std::vector<float> OBJ##_E;           \
+  std::vector<float> OBJ##_m;           \
+  std::vector<float> OBJ##_mRegressed;  \
+  std::vector<float> OBJ##_pt;          \
+  std::vector<float> OBJ##_ptRegressed; \
+  std::vector<float> OBJ##_eta;         \
+  std::vector<float> OBJ##_phi;         \
+  std::vector<int> OBJ##_partonFlav;    \
+  std::vector<int> OBJ##_hadronFlav;    \
+  std::vector<int> OBJ##_signalId;      \
+  std::vector<int> OBJ##_higgsIdx;      \
+  std::vector<int> OBJ##_genIdx;        \
+  std::vector<float> OBJ##_btag;        \
+  std::vector<float> OBJ##_qgl;         \
+  std::vector<float> OBJ##_chEmEF;      \
+  std::vector<float> OBJ##_chHEF;       \
+  std::vector<float> OBJ##_neEmEF;      \
+  std::vector<float> OBJ##_neHEF;       \
+  std::vector<int> OBJ##_nConstituents; \
+  std::vector<int> OBJ##_id;            \
   std::vector<int> OBJ##_puid;
 
 #define DECLARE_dijet_list(OBJ)    \
@@ -124,6 +183,9 @@ public:
   int n_jet;
   int n_higgs;
 
+  int n_ele;
+  int n_muon;
+  
   float b_6j_score;
   float b_3d_score;
 
@@ -136,8 +198,21 @@ public:
   std::vector<int> genjet_hadronFlav;
   std::vector<int> genjet_signalId;
   std::vector<int> genjet_recoIdx;
-
+  
+  DECLARE_ele_list(ele);
+  DECLARE_muon_list(muon);
   DECLARE_jet_list(jet);
+
+  int n_dijet;
+  std::vector<float> dijet_m;
+  std::vector<float> dijet_pt;
+  std::vector<float> dijet_eta;
+  std::vector<float> dijet_phi;
+  std::vector<float> dijet_dr;
+  std::vector<float> dijet_score;
+  std::vector<int> dijet_signalId;
+  std::vector<int> dijet_j1Idx;
+  std::vector<int> dijet_j2Idx;
 
   float sphericity;
   float sphericity_t;
@@ -240,19 +315,19 @@ public:
   // Start Reco 8B Objects
   DECLARE_m_pt_eta_phi_p4(Y1);
   DECLARE_m_pt_eta_phi_p4(Y2);
-  DECLARE_m_pt_eta_phi_p4(H1Y1);
-  DECLARE_m_pt_eta_phi_p4(H2Y1);
-  DECLARE_m_pt_eta_phi_p4(H1Y2);
-  DECLARE_m_pt_eta_phi_p4(H2Y2);
+  DECLARE_m_pt_eta_phi_score_p4(H1Y1);
+  DECLARE_m_pt_eta_phi_score_p4(H2Y1);
+  DECLARE_m_pt_eta_phi_score_p4(H1Y2);
+  DECLARE_m_pt_eta_phi_score_p4(H2Y2);
 
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b2);
 
   int H1Y1_b1_genHflag;
   int H1Y1_b2_genHflag;
@@ -262,8 +337,14 @@ public:
   int H1Y2_b2_genHflag;
   int H2Y2_b1_genHflag;
   int H2Y2_b2_genHflag;
-  // End Reco 8B Objects
 
+  float quadh_score;
+
+  int n_loose_btag;
+  int n_medium_btag;
+  int n_tight_btag;
+  float btagavg;
+  // End Reco 8B Objects
 
   int nfound_all;
   int nfound_all_h;
@@ -272,14 +353,8 @@ public:
   int nfound_select;
   int nfound_select_h;
   int nfound_paired_h;
-
-  DECLARE_m_pt_eta_phi_p4(mu_1);
-  DECLARE_m_pt_eta_phi_p4(mu_2);
-  DECLARE_m_pt_eta_phi_p4(ele_1);
-  DECLARE_m_pt_eta_phi_p4(ele_2);
-
-  int n_mu_loose;
-  int n_ele_loose;
+  int nfound_select_y;
+  int nfound_paired_y;
 
   DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
   int bjet1_hadflav;

@@ -1,15 +1,19 @@
 #ifndef SKIM_FUNCTIONS_H
 #define SKIM_FUNCTIONS_H
 
+#include "DirectionalCut.h"
 #include "NanoAODTree.h"
 #include "EventInfo.h"
 #include "Cutflow.h"
 
+#include "Electron.h"
+#include "Muon.h"
 #include "Jet.h"
 #include "GenJet.h"
 #include "GenPart.h"
 #include "CompositeCandidate.h"
 #include "DiJet.h"
+#include "Timer.h"
 
 #include "CfgParser.h"
 
@@ -36,6 +40,7 @@ public:
   /// Common Methods
   
   void set_debug(bool debug) { debug_ = debug; }
+  void set_timer(Timer* timer) { loop_timer = timer; }
   
   /**
    * @brief Copy general event info to ei
@@ -45,7 +50,9 @@ public:
    * @param is_mc Flag to store MC specific values
    */
   void copy_event_info(NanoAODTree &nat, EventInfo &ei, bool is_mc);
-  
+
+  virtual bool is_blinded(NanoAODTree &nat, EventInfo &ei, bool is_data) { return false;  };
+
   ////////////////////////////////////////////////////
   /// jet selection functions
   ////////////////////////////////////////////////////
@@ -57,9 +64,11 @@ public:
   std::vector<Jet> get_all_jets(NanoAODTree &nat);
 
   // create a vector with all preselected jets in the event (minimal pt/eta/id requirements)
-  std::vector<Jet> preselect_jets(NanoAODTree &nat, const std::vector<Jet> &in_jets);
+  std::vector<Jet> preselect_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
 
   std::vector<Jet> btag_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
+
+  std::vector<Jet> pt_sort_jets(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
   
   // reorder the collection of the input jets according to the bias pt sort order (b tag groups + pt order inside each group) - used by select_sixb_jets_bias_pt_sort
   std::vector<Jet> bias_pt_sort_jets (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets);
@@ -73,16 +82,20 @@ public:
   
   // get the local idx in the supset for each jet in the subset
   std::vector<int> match_local_idx(std::vector<Jet>& subset,std::vector<Jet>& supset);
-
+  
+  void GetMatchedPairs(const double dR_match, std::vector<GenPart*>& quarks, std::vector<GenJet>& genjets,
+                       std::vector<GenPart*>& matched_quarks, std::vector<GenJet>& matched_genjets);
+  
   void match_genjets_to_reco(NanoAODTree &nat, EventInfo& ei,std::vector<GenJet>& in_gen,std::vector<Jet>& in_reco);
 
 
   ////////////////////////////////////////////////////
   /// non-jet functions
   ////////////////////////////////////////////////////
-
-  void select_leptons(NanoAODTree &nat, EventInfo &ei);
-
+  
+  std::vector<Electron> select_electrons(CfgParser &config, NanoAODTree &nat, EventInfo &ei);
+  std::vector<Muon> select_muons(CfgParser &config, NanoAODTree &nat, EventInfo &ei);
+  
   void set_btag_WPs(std::vector<double> btag_wps) { btag_WPs = btag_wps; }
   
   ////////////////////////////////////////////////////
@@ -191,6 +204,16 @@ public:
    */
   virtual void pair_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) {};
 
+  /**
+   * @brief Calculate all di-jet pairings for input list of jets
+   * 
+   * @param nat  NanoAODTree being processed
+   * @param ei  EventInfo class to store values
+   * @param in_jets  List of jets to pair
+   * @return std::vector<DiJet> of dijets 
+   */
+  std::vector<DiJet> make_dijets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
+
   ////////////////////////////////////////////////////
   /// other jet utilities
   ////////////////////////////////////////////////////
@@ -234,10 +257,13 @@ public:
    */
   virtual void compute_seljets_genmatch_flags(NanoAODTree &nat, EventInfo &ei) {};
 
+  virtual void compute_seljets_btagmulti(NanoAODTree &nat, EventInfo &ei){};
+
 protected:
   std::vector<double> btag_WPs;
 
   bool debug_ = false;
+  Timer* loop_timer;
 
   // loops on targets, and assigns value to the first element of target that is found to be uninitialized
   // returns false if none could be assigned, else return true

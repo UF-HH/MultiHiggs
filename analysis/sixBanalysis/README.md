@@ -9,12 +9,22 @@ make exe -j
 
 ## Run Skims
 
+- Executable file is `bin/skim_ntuple.exe`
 - Config files are located in `config/` directory
 - Input files are located in `input/` directory (make sure to update these any time new samples are generated)
 
 ### To run a skim locally
+The executable is run with command line options which can be printed out using 
+```
+./bin/skim_ntuple.exe --help
+```
 
-Modify `run_skim.sh` to run on desired input file (remember to include `--is-signal` for signal files and `--is-data` for data files) with desired config file. You can specify the max number of events to run on with `--maxEvts 1000`, for example.
+The main required options to run the script are
+```
+./bin/skim_ntuple.exe --input input/${file_list}.txt --cfg  config/${skim_config}.cfg --output ${output_file_name}.root
+```
+
+The shell script `run_skim.sh` can be modified to run on desired input file (remember to include `--is-signal` for signal files and `--is-data` for data files) with desired config file. Any command line argument passed to `run_skim.sh` are passed directly to `bin/skim_ntuple.exe`. You can change the max number of events to run on with `--maxEvts 1000`, for example. 
 ```
 sh run_skim.sh --maxEvts 1000
 ```

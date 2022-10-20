@@ -17,6 +17,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 
 #include "NanoAODTree.h"
 #include <memory>
+#include <iostream>
 
 #define get_property(OBJ, NAME) (OBJ.isValid() ?  OBJ.getNanoAODTree() -> NAME .At(OBJ.getIdx()) : throw std::runtime_error("get property " #NAME " from invalid object"))
 
@@ -48,6 +49,16 @@ public:
   virtual std::unique_ptr<Candidate> clone() const = 0;
   int getCandidateTypeId() const {return typeId_;};
 
+  void set_param(std::string key, float value) { params[key] = value; }
+  float get_param(std::string key, float value) const
+  {
+    if (!has_param(key))
+      return value;
+    // std::cout << "[WARNING] " << key << " not found in Candidate params." << std::endl;
+    return params.at(key);
+  }
+  bool has_param(std::string key) const { return params.find(key) != params.end(); }
+
 protected:
   virtual void buildP4() = 0;
   int idx_;
@@ -57,8 +68,7 @@ protected:
   NanoAODTree* nat_;
   bool isComposite_;
   int typeId_; //11 = Electron , 22 = Photon , 13 = Muon, 15 = Tau, 1 = Jet, 6 = FatJet, 2 = MET, -1 = GenParticle, -10 = CompositeCandidate
-
-
+  std::map<std::string, float> params;
 };
 
 #endif

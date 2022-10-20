@@ -1,0 +1,17 @@
+# X -> YY -> 4H -> 8b
+# with one signal and a few background processes
+imax * number of channels
+jmax * number of backgrounds
+kmax * number of nuisance parameters (sources of systematical uncertainties)
+
+shapes * * particle_net.root $CHANNEL/$PROCESS/baseline/X_m
+----
+bin bin1
+observation -1
+bin           bin1 bin1 bin1
+process		    nmssm qcd ttbar
+process		    -1    0   1
+rate		      -1   -1  -1
+----
+lumi     lnN  1.026 1.026 1.026
+et_trigg lnN  1.01  1.01  1.01

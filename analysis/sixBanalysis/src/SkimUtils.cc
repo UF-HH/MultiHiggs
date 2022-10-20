@@ -20,6 +20,7 @@ using namespace std;
 
 #define COPY_m_pt_ptRegressed_eta_phi_p4(OBJ)        \
   ot.OBJ##_m = ei.OBJ->P4().M();                     \
+  ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();   \
   ot.OBJ##_pt = ei.OBJ->P4().Pt();                   \
   ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt(); \
   ot.OBJ##_eta = ei.OBJ->P4().Eta();                 \
@@ -37,10 +38,22 @@ using namespace std;
     ot.OBJ##_p4 = ei.OBJ->P4();            \
   }
 
+#define COPY_OPTIONAL_m_pt_eta_phi_score_p4(OBJ) \
+  if (ei.OBJ)                                    \
+  {                                              \
+    ot.OBJ##_m = ei.OBJ->P4().M();               \
+    ot.OBJ##_pt = ei.OBJ->P4().Pt();             \
+    ot.OBJ##_eta = ei.OBJ->P4().Eta();           \
+    ot.OBJ##_phi = ei.OBJ->P4().Phi();           \
+    ot.OBJ##_score = ei.OBJ->get_param("score", 0); \
+    ot.OBJ##_p4 = ei.OBJ->P4();                  \
+  }
+
 #define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(OBJ) \
   if (ei.OBJ)                                          \
   {                                                    \
     ot.OBJ##_m = ei.OBJ->P4().M();                     \
+    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();   \
     ot.OBJ##_pt = ei.OBJ->P4().Pt();                   \
     ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt(); \
     ot.OBJ##_eta = ei.OBJ->P4().Eta();                 \
@@ -48,36 +61,92 @@ using namespace std;
     ot.OBJ##_p4 = ei.OBJ->P4();                        \
   }
 
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)        \
-  if (ei.OBJ)                                                         \
-  {                                                                   \
-    ot.OBJ##_m = ei.OBJ->P4().M();                                    \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();                                  \
-    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();                \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();                                \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();                                \
+#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)     \
+  if (ei.OBJ)                                                      \
+  {                                                                \
+    ot.OBJ##_m = ei.OBJ->P4().M();                                 \
+    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();               \
+    ot.OBJ##_pt = ei.OBJ->P4().Pt();                               \
+    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();             \
+    ot.OBJ##_eta = ei.OBJ->P4().Eta();                             \
+    ot.OBJ##_phi = ei.OBJ->P4().Phi();                             \
     ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB); \
-    ot.OBJ##_p4 = ei.OBJ->P4();                                       \
+    ot.OBJ##_p4 = ei.OBJ->P4();                                    \
   }
 
-#define COPY_OPTIONAL_jet_list(OBJ)                      \
-  if (ei.OBJ##_list)                                     \
-  {                                                      \
-    for (Jet & jet : ei.OBJ##_list.get())                \
-    {                                                    \
-      ot.OBJ##_E.push_back(jet.get_E());                 \
-      ot.OBJ##_m.push_back(jet.get_m());                 \
-      ot.OBJ##_pt.push_back(jet.get_pt());               \
-      ot.OBJ##_eta.push_back(jet.get_eta());             \
-      ot.OBJ##_phi.push_back(jet.get_phi());             \
-      ot.OBJ##_signalId.push_back(jet.get_signalId());   \
-      ot.OBJ##_higgsIdx.push_back(jet.get_higgsIdx());   \
-      ot.OBJ##_genIdx.push_back(jet.get_genIdx());       \
-      ot.OBJ##_btag.push_back(jet.get_btag());           \
-      ot.OBJ##_qgl.push_back(jet.get_qgl());             \
-      ot.OBJ##_id.push_back(jet.get_id());               \
-      ot.OBJ##_puid.push_back(jet.get_puid());           \
-    }                                                    \
+#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
+  if (ei.OBJ)                                                        \
+  {                                                                  \
+    ot.OBJ##_m = ei.OBJ->P4().M();                                   \
+    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();                 \
+    ot.OBJ##_pt = ei.OBJ->P4().Pt();                                 \
+    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();               \
+    ot.OBJ##_eta = ei.OBJ->P4().Eta();                               \
+    ot.OBJ##_phi = ei.OBJ->P4().Phi();                               \
+    ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB);   \
+    ot.OBJ##_score = ei.OBJ->get_param("score", 0);                     \
+    ot.OBJ##_p4 = ei.OBJ->P4();                                      \
+  }
+
+#define COPY_OPTIONAL_ele_list(OBJ)                                  \
+  if (ei.OBJ##_list) {                                               \
+      for (Electron & ele : ei.OBJ##_list.get()) {		     \
+        ot.OBJ##_E.push_back(ele.get_E());                          \
+	ot.OBJ##_m.push_back(ele.get_m());			     \
+	ot.OBJ##_pt.push_back(ele.get_pt());			     \
+        ot.OBJ##_eta.push_back(ele.get_eta());                       \
+        ot.OBJ##_phi.push_back(ele.get_phi());                       \
+        ot.OBJ##_dxy.push_back(ele.get_dxy());                       \
+        ot.OBJ##_dz.push_back(ele.get_dz());                         \
+        ot.OBJ##_charge.push_back(ele.get_charge());                 \
+        ot.OBJ##_pfRelIso03_all.push_back(ele.get_pfRelIso03_all());            \
+        ot.OBJ##_mvaFall17V2Iso_WPL.push_back(ele.get_mvaFall17V2Iso_WPL());    \
+        ot.OBJ##_mvaFall17V2Iso_WP90.push_back(ele.get_mvaFall17V2Iso_WP90());  \
+        ot.OBJ##_mvaFall17V2Iso_WP80.push_back(ele.get_mvaFall17V2Iso_WP80());  \
+      }								        	\
+  }
+
+#define COPY_OPTIONAL_muon_list(OBJ)                                \
+  if (ei.OBJ##_list) {                                              \
+    for (Muon & muon : ei.OBJ##_list.get()) {			    \
+      ot.OBJ##_E.push_back(muon.get_E());                           \
+      ot.OBJ##_m.push_back(muon.get_m());		            \
+      ot.OBJ##_pt.push_back(muon.get_pt());	                    \
+      ot.OBJ##_eta.push_back(muon.get_eta());		            \
+      ot.OBJ##_phi.push_back(muon.get_phi());			    \
+      ot.OBJ##_dxy.push_back(muon.get_dxy());			    \
+      ot.OBJ##_dz.push_back(muon.get_dz());			    \
+      ot.OBJ##_charge.push_back(muon.get_charge());	            \
+      ot.OBJ##_pfRelIso04_all.push_back(muon.get_pfRelIso04_all()); \
+      ot.OBJ##_looseId.push_back(muon.get_looseId());		    \
+      ot.OBJ##_mediumId.push_back(muon.get_mediumId());             \
+      ot.OBJ##_tightId.push_back(muon.get_tightId());               \
+    }                                                               \
+}
+
+#define COPY_OPTIONAL_jet_list(OBJ)                              \
+  if (ei.OBJ##_list) {                                           \
+    for (Jet & jet : ei.OBJ##_list.get()) {                      \
+      ot.OBJ##_E.push_back(jet.get_E());                         \
+      ot.OBJ##_m.push_back(jet.get_m());                         \
+      ot.OBJ##_mRegressed.push_back(jet.get_mRegressed());       \
+      ot.OBJ##_pt.push_back(jet.get_pt());                       \
+      ot.OBJ##_ptRegressed.push_back(jet.get_ptRegressed());     \
+      ot.OBJ##_eta.push_back(jet.get_eta());                     \
+      ot.OBJ##_phi.push_back(jet.get_phi());                     \
+      ot.OBJ##_signalId.push_back(jet.get_signalId());           \
+      ot.OBJ##_higgsIdx.push_back(jet.get_higgsIdx());           \
+      ot.OBJ##_genIdx.push_back(jet.get_genIdx());               \
+      ot.OBJ##_btag.push_back(jet.get_btag());                   \
+      ot.OBJ##_qgl.push_back(jet.get_qgl());                     \
+      ot.OBJ##_chEmEF.push_back(jet.get_chEmEF());               \
+      ot.OBJ##_chHEF.push_back(jet.get_chHEF());                 \
+      ot.OBJ##_neEmEF.push_back(jet.get_neEmEF());               \
+      ot.OBJ##_neHEF.push_back(jet.get_neHEF());                 \
+      ot.OBJ##_nConstituents.push_back(jet.get_nConstituents()); \
+      ot.OBJ##_id.push_back(jet.get_id());                       \
+      ot.OBJ##_puid.push_back(jet.get_puid());                   \
+    }                                                            \
   }
 
 #define COPY_OPTIONAL_dijet_list(OBJ)                    \
@@ -137,10 +206,14 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if(ei.n_total_jet)    ot.n_total_jet     = *ei.n_total_jet;
   if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
   if(ei.n_higgs)        ot.n_higgs         = *ei.n_higgs;
-
+  if(ei.n_ele)          ot.n_ele           = *ei.n_ele;
+  if(ei.n_muon)         ot.n_muon          = *ei.n_muon;
+  
   if(ei.b_6j_score)     ot.b_6j_score      = *ei.b_6j_score;
   if(ei.b_3d_score)     ot.b_3d_score      = *ei.b_3d_score;
 
+  COPY_OPTIONAL_ele_list(ele);
+  COPY_OPTIONAL_muon_list(muon);
   COPY_OPTIONAL_jet_list(jet);
 
   if (ei.genjet_list) {
@@ -161,6 +234,23 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     ot.sphericity   = ei.event_shapes.get().sphericity;
     ot.sphericity_t = ei.event_shapes.get().transverse_sphericity;
     ot.aplanarity   = ei.event_shapes.get().aplanarity;
+  }
+
+  if (ei.dijet_list) {
+
+    ot.n_dijet = ei.dijet_list.get().size();
+    for (DiJet &dijet : ei.dijet_list.get())
+    {
+      ot.dijet_m.push_back(dijet.M());                   
+      ot.dijet_pt.push_back(dijet.Pt());                 
+      ot.dijet_eta.push_back(dijet.Eta());               
+      ot.dijet_phi.push_back(dijet.Phi());               
+      ot.dijet_dr.push_back(dijet.dR());
+      ot.dijet_score.push_back(dijet.get_param("score", 0));
+      ot.dijet_signalId.push_back(dijet.get_signalId());
+      ot.dijet_j1Idx.push_back(dijet.get_j1Idx());
+      ot.dijet_j2Idx.push_back(dijet.get_j2Idx());
+    }
   }
 
 
@@ -261,19 +351,19 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   // Start Reco 8B Objects
   COPY_OPTIONAL_m_pt_eta_phi_p4(Y1);
   COPY_OPTIONAL_m_pt_eta_phi_p4(Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H1Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H2Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H1Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H2Y2);
+  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H1Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H2Y1);
+  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H1Y2);
+  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H2Y2);
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b2);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b1);
+  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b2);
 
   if (ei.H1Y1_b1_genHflag)  ot.H1Y1_b1_genHflag  = *ei.H1Y1_b1_genHflag;
   if (ei.H1Y1_b2_genHflag)  ot.H1Y1_b2_genHflag  = *ei.H1Y1_b2_genHflag;
@@ -283,6 +373,13 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.H1Y2_b2_genHflag)  ot.H1Y2_b2_genHflag  = *ei.H1Y2_b2_genHflag;
   if (ei.H2Y2_b1_genHflag)  ot.H2Y2_b1_genHflag  = *ei.H2Y2_b1_genHflag;
   if (ei.H2Y2_b2_genHflag)  ot.H2Y2_b2_genHflag  = *ei.H2Y2_b2_genHflag;
+
+  if (ei.n_loose_btag) ot.n_loose_btag = *ei.n_loose_btag;
+  if (ei.n_medium_btag) ot.n_medium_btag = *ei.n_medium_btag;
+  if (ei.n_tight_btag) ot.n_tight_btag = *ei.n_tight_btag;
+  if (ei.btagavg) ot.btagavg = *ei.btagavg;
+
+  if (ei.quadh_score) ot.quadh_score = *ei.quadh_score;
   // End Reco 8B Objects
 
   if (ei.nfound_all) ot.nfound_all = *ei.nfound_all;
@@ -292,14 +389,8 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.nfound_select) ot.nfound_select = *ei.nfound_select;
   if (ei.nfound_select_h) ot.nfound_select_h = *ei.nfound_select_h;
   if (ei.nfound_paired_h) ot.nfound_paired_h = *ei.nfound_paired_h;
-
-  COPY_OPTIONAL_m_pt_eta_phi_p4(mu_1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(mu_2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(ele_1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(ele_2);
-
-  ot.n_mu_loose  = *ei.n_mu_loose;
-  ot.n_ele_loose = *ei.n_ele_loose;
+  if (ei.nfound_select_y) ot.nfound_select_y = *ei.nfound_select_y;
+  if (ei.nfound_paired_y) ot.nfound_paired_y = *ei.nfound_paired_y;
 
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
   COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);

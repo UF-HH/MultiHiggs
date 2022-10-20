@@ -3,6 +3,14 @@
 
 #include "Skim_functions.h"
 
+// #include "cpp_geometric.h"
+
+#include "EvalONNX.h"
+#include "Combinatorics.h"
+
+typedef std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> H4_tuple;
+typedef std::tuple<CompositeCandidate, CompositeCandidate> YY_tuple;
+
 class EightB_functions : public Skim_functions{
     
 public:
@@ -14,6 +22,8 @@ public:
     cout << "[INFO] ... Using EightB_functions" << endl; 
   }
 
+  bool is_blinded(NanoAODTree &nat, EventInfo &ei, bool is_data);
+  
   ////////////////////////////////////////////////////
   /// parameter initialization
   ////////////////////////////////////////////////////
@@ -94,7 +104,9 @@ public:
    */
   std::vector<Jet> select_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
 
-  std::vector<Jet> select_eightb_jets_maxbtag        (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets); // by b tag (highest first)
+  std::vector<Jet> select_eightb_jets_maxbtag(NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets); // by b tag (highest first)
+
+  std::vector<Jet> select_eightb_jets_gnn(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
 
   ////////////////////////////////////////////////////
   /// Higgs pairing functions
@@ -109,7 +121,22 @@ public:
    */
   void pair_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
 
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
+  YY_tuple pair_4H_2Y(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
+
+  H4_tuple pair_4H_passthrough (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
+  H4_tuple pair_4H_min_mass_spread (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet>& jets);
+  H4_tuple pair_4H_gnn(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
+  H4_tuple pair_4H_gnn_dijet(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
+  H4_tuple pair_4H_gnn_quadh(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
+
+  YY_tuple pair_YY_passthrough(NanoAODTree &nat, EventInfo &ei, const H4_tuple &reco_Hs);
+  YY_tuple pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const H4_tuple &reco_Hs);
+  
+  YY_tuple pair_2Y_4H(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets);
+
+  YY_tuple pair_4H_min_mass_spread (NanoAODTree &nat, EventInfo& ei, const YY_tuple &reco_Ys);
+
+  YY_tuple pair_YY_min_mass_spread(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet>& jets);
 
   ////////////////////////////////////////////////////
   /// other jet utilities
@@ -155,5 +182,17 @@ public:
    */
   void compute_seljets_genmatch_flags(NanoAODTree &nat, EventInfo &ei) override;
 
+  void compute_seljets_btagmulti(NanoAODTree &nat, EventInfo &ei) override;
+
+private:
+  // std::unique_ptr<TorchUtils::GeoModel> gnn_classifier_;
+  std::unique_ptr<EvalONNX> onnx_classifier_;
+
+  typedef std::vector<std::vector<std::vector<int>>> index_group;
+  index_group quadH_jet_groups;
+  index_group diY_higgs_groups;
+
+  index_group diY_jet_groups;
+  index_group diH_y_groups;
 };
 #endif //EIGHTB_FUNCTIONS_H

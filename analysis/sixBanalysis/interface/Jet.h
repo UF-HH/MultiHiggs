@@ -17,7 +17,8 @@ public:
     Jet *clonedJet = new Jet(this->getIdx(), this->getNanoAODTree());
     clonedJet->setP4Regressed(this->P4Regressed());
     clonedJet->setP4(this->P4());
-    return std::unique_ptr<Jet> (clonedJet);
+    clonedJet->params = this->params;
+    return std::unique_ptr<Jet>(clonedJet);
   }
   float getBregCorr();
   float getBregRes();
@@ -38,22 +39,30 @@ public:
 
   int preselIdx = -1;
   void set_preselIdx(int idx) { preselIdx = idx; }
-	
-  float get_E() const        { return this->P4().E(); }
-  float get_m() const        { return this->P4().M(); }
-  float get_pt() const       { return this->P4Regressed().Pt(); }
-  float get_eta() const      { return this->P4().Eta(); }
-  float get_phi() const      { return this->P4().Phi(); }
-  int get_partonFlav() const { return get_property ((*this), Jet_partonFlavour); }
-  int get_hadronFlav() const { return get_property ((*this), Jet_hadronFlavour); }
-  int get_signalId() const   { return signalId; }
-  int get_higgsIdx() const    { return higgsIdx; }
-  int get_genIdx() const     { return genIdx; }
-  float get_btag() const     { return get_property ((*this), Jet_btagDeepFlavB); }
-  float get_qgl() const      { return get_property ((*this), Jet_qgl); }
-  int get_id() const         { return get_property ((*this),Jet_jetId); }
-  int get_puid() const       { return get_property ((*this), Jet_puId); }
-  int get_preselIdx() const  { return preselIdx; }
+
+  float get_E() const { return this->P4().E(); }
+  float get_m() const { return this->P4().M(); }
+  float get_mRegressed() const { return this->P4Regressed().M(); }
+  float get_pt() const { return this->P4().Pt(); }
+  float get_ptRegressed() const { return this->P4Regressed().Pt(); }
+  float get_eta() const { return this->P4().Eta(); }
+  float get_phi() const { return this->P4().Phi(); }
+  int get_partonFlav() const { return get_property((*this), Jet_partonFlavour); }
+  int get_hadronFlav() const { return get_property((*this), Jet_hadronFlavour); }
+  int get_signalId() const { return signalId; }
+  int get_higgsIdx() const { return higgsIdx; }
+  int get_genIdx() const { return genIdx; }
+  float get_btag() const { return get_property((*this), Jet_btagDeepFlavB); }
+  float get_qgl() const { return get_property((*this), Jet_qgl); }
+  float get_chEmEF() const { return get_property((*this), Jet_chEmEF); }      
+  float get_chHEF() const { return get_property((*this), Jet_chHEF); }       
+  float get_neEmEF() const { return get_property((*this), Jet_neEmEF); }      
+  float get_neHEF() const { return get_property((*this), Jet_neHEF); }       
+  int get_nConstituents() const { return get_property((*this), Jet_nConstituents); } 
+  int get_id() const { return get_property((*this), Jet_jetId); }
+  int get_puid() const { return get_property((*this), Jet_puId); }
+  int get_preselIdx() const { return preselIdx; }
+
 private:
   void buildP4() override; 
 

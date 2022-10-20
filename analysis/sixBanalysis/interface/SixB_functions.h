@@ -50,11 +50,8 @@ public:
 
   /**
    * @brief Match selected gen bs to gen jets
-   * This method should be overriden 
    * @param nat NanoAODTree being processed
    * @param ei EventInfo class to store values
-   * @param ensure_unique if true, ensures that a gen jet is not matched to two different partons
-  // otherwise it will match to the closest parton found
    */
   void match_genbs_to_genjets(NanoAODTree &nat, EventInfo &ei, bool ensure_unique = true) override;
 

@@ -22,10 +22,10 @@ Follow these steps to install CMSSW, MadGraph, and the BSM model
 
 ```
 # install CMSSW release
-cmsrel CMSSW_10_6_19_patch2
-cd CMSSW_10_6_19_patch2/src
+cmsrel CMSSW_10_6_28_patch2
+cd CMSSW_10_6_28_patch2/src
 cmsenv
-git cms-addpkg CommonTools/Utils CondFormats/JetMETObjects CondFormats/Serialization FWCore/MessageLogger FWCore/Utilities JetMETCorrections/Modules PhysicsTools/TensorFlow
+git cms-addpkg CommonTools/Utils CondFormats/JetMETObjects CondFormats/Serialization FWCore/MessageLogger FWCore/Utilities JetMETCorrections/Modules PhysicsTools/TensorFlow PhysicsTools/ONNXRuntime
 scram b -j 4
 git clone https://github.com/UF-HH/sixB
 

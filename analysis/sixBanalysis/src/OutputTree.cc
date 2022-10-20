@@ -20,8 +20,28 @@ using namespace std;
   OBJ##_phi = -999.;               \
   OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
+  
+// helper: creates the pt/eta/phi/p4 branches of a variable OBJ
+#define BRANCH_m_pt_eta_phi_score_p4(OBJ)     \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);         \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);       \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);     \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);     \
+  tree_->Branch(#OBJ "_score", &OBJ##_score); \
+  if (savetlv_)                               \
+    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
+
+#define CLEAR_m_pt_eta_phi_score_p4(OBJ) \
+  OBJ##_m = -999.;                       \
+  OBJ##_pt = -999.;                      \
+  OBJ##_eta = -999.;                     \
+  OBJ##_phi = -999.;                     \
+  OBJ##_score = -999.;                   \
+  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
+
 #define BRANCH_m_pt_ptRegressed_eta_phi_p4(OBJ)           \
   tree_->Branch(#OBJ "_m", &OBJ##_m);                     \
+  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);   \
   tree_->Branch(#OBJ "_pt", &OBJ##_pt);                   \
   tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed); \
   tree_->Branch(#OBJ "_eta", &OBJ##_eta);                 \
@@ -31,6 +51,7 @@ using namespace std;
 
 #define CLEAR_m_pt_ptRegressed_eta_phi_p4(OBJ) \
   OBJ##_m = -999.;                             \
+  OBJ##_mRegressed = -999.;                    \
   OBJ##_pt = -999.;                            \
   OBJ##_ptRegressed = -999.;                   \
   OBJ##_eta = -999.;                           \
@@ -39,51 +60,147 @@ using namespace std;
 
 #define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)   \
   tree_->Branch(#OBJ "_m", &OBJ##_m);                     \
+  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);   \
   tree_->Branch(#OBJ "_pt", &OBJ##_pt);                   \
   tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed); \
   tree_->Branch(#OBJ "_eta", &OBJ##_eta);                 \
   tree_->Branch(#OBJ "_phi", &OBJ##_phi);                 \
-  tree_->Branch(#OBJ "_btag", &OBJ##_btag);         \
+  tree_->Branch(#OBJ "_btag", &OBJ##_btag);               \
   if (savetlv_)                                           \
     tree_->Branch(#OBJ "_p4", &OBJ##_p4);
 
 #define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
   OBJ##_m = -999.;                                     \
+  OBJ##_mRegressed = -999.;                            \
   OBJ##_pt = -999.;                                    \
   OBJ##_ptRegressed = -999.;                           \
   OBJ##_eta = -999.;                                   \
   OBJ##_phi = -999.;                                   \
-  OBJ##_btag = -999.;                               \
+  OBJ##_btag = -999.;                                  \
   OBJ##_p4.SetCoordinates(0, 0, 0, 0);
 
-#define BRANCH_jet_list(OBJ)                        \
-  tree_->Branch(#OBJ "_E", &OBJ##_E);               \
-  tree_->Branch(#OBJ "_m", &OBJ##_m);               \
-  tree_->Branch(#OBJ "_pt", &OBJ##_pt);             \
-  tree_->Branch(#OBJ "_eta", &OBJ##_eta);           \
-  tree_->Branch(#OBJ "_phi", &OBJ##_phi);           \
-  tree_->Branch(#OBJ "_signalId", &OBJ##_signalId); \
-  tree_->Branch(#OBJ "_higgsIdx", &OBJ##_higgsIdx); \
-  tree_->Branch(#OBJ "_genIdx", &OBJ##_genIdx);     \
-  tree_->Branch(#OBJ "_btag", &OBJ##_btag);         \
-  tree_->Branch(#OBJ "_qgl", &OBJ##_qgl);           \
-  tree_->Branch(#OBJ "_id", &OBJ##_id);             \
+#define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                         \
+  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);       \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                       \
+  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed);     \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                     \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                     \
+  tree_->Branch(#OBJ "_btag", &OBJ##_btag);                   \
+  tree_->Branch(#OBJ "_score", &OBJ##_score);                 \
+  if (savetlv_)                                               \
+    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
+
+#define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
+  OBJ##_m = -999.;                                           \
+  OBJ##_mRegressed = -999.;                                  \
+  OBJ##_pt = -999.;                                          \
+  OBJ##_ptRegressed = -999.;                                 \
+  OBJ##_eta = -999.;                                         \
+  OBJ##_phi = -999.;                                         \
+  OBJ##_btag = -999.;                                        \
+  OBJ##_score = -999.;                                       \
+  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
+
+#define BRANCH_ele_list(OBJ)                                    \
+  tree_->Branch(#OBJ "_E", &OBJ##_E);                           \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                           \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                         \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                       \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                       \
+  tree_->Branch(#OBJ "_dxy", &OBJ##_dxy);                       \
+  tree_->Branch(#OBJ "_dz",  &OBJ##_dz);                        \
+  tree_->Branch(#OBJ "_charge", &OBJ##_charge);                 \
+  tree_->Branch(#OBJ "_pfRelIso03_all", &OBJ##_pfRelIso03_all);           \
+  tree_->Branch(#OBJ "_mvaFall17V2Iso_WPL", &OBJ##_mvaFall17V2Iso_WPL);   \
+  tree_->Branch(#OBJ "_mvaFall17V2Iso_WP90", &OBJ##_mvaFall17V2Iso_WP90); \
+  tree_->Branch(#OBJ "_mvaFall17V2Iso_WP80", &OBJ##_mvaFall17V2Iso_WP80); 
+
+#define BRANCH_muon_list(OBJ)                                   \
+  tree_->Branch(#OBJ "_E", &OBJ##_E);                           \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                           \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                         \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                       \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                       \
+  tree_->Branch(#OBJ "_dxy", &OBJ##_dxy);                       \
+  tree_->Branch(#OBJ "_dz",  &OBJ##_dz);                        \
+  tree_->Branch(#OBJ "_charge", &OBJ##_charge);                 \
+  tree_->Branch(#OBJ "_pfRelIso04_all", &OBJ##_pfRelIso04_all); \
+  tree_->Branch(#OBJ "_isLoose", &OBJ##_looseId);               \
+  tree_->Branch(#OBJ "_isMedium", &OBJ##_mediumId);             \
+  tree_->Branch(#OBJ "_isTight", &OBJ##_tightId);
+
+#define CLEAR_ele_list(OBJ)     \
+  OBJ##_E.clear();              \
+  OBJ##_m.clear();              \
+  OBJ##_pt.clear();             \
+  OBJ##_eta.clear();            \
+  OBJ##_phi.clear();            \
+  OBJ##_dxy.clear();            \
+  OBJ##_dz.clear();             \
+  OBJ##_charge.clear();         \
+  OBJ##_pfRelIso03_all.clear(); \
+  OBJ##_mvaFall17V2Iso_WPL.clear();  \
+  OBJ##_mvaFall17V2Iso_WP90.clear(); \
+  OBJ##_mvaFall17V2Iso_WP80.clear();
+
+#define CLEAR_muon_list(OBJ)    \
+  OBJ##_E.clear();              \
+  OBJ##_m.clear();		\
+  OBJ##_pt.clear();             \
+  OBJ##_eta.clear();            \
+  OBJ##_phi.clear();            \
+  OBJ##_dxy.clear();            \
+  OBJ##_dz.clear();             \
+  OBJ##_charge.clear();         \
+  OBJ##_pfRelIso04_all.clear(); \
+  OBJ##_looseId.clear();        \
+  OBJ##_mediumId.clear();       \
+  OBJ##_tightId.clear();
+  
+
+#define BRANCH_jet_list(OBJ)                                  \
+  tree_->Branch(#OBJ "_E", &OBJ##_E);                         \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);                         \
+  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);       \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                       \
+  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed);     \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                     \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                     \
+  tree_->Branch(#OBJ "_signalId", &OBJ##_signalId);           \
+  tree_->Branch(#OBJ "_higgsIdx", &OBJ##_higgsIdx);           \
+  tree_->Branch(#OBJ "_genIdx", &OBJ##_genIdx);               \
+  tree_->Branch(#OBJ "_btag", &OBJ##_btag);                   \
+  tree_->Branch(#OBJ "_qgl", &OBJ##_qgl);                     \
+  tree_->Branch(#OBJ "_chEmEF", &OBJ##_chEmEF);               \
+  tree_->Branch(#OBJ "_chHEF", &OBJ##_chHEF);                 \
+  tree_->Branch(#OBJ "_neEmEF", &OBJ##_neEmEF);               \
+  tree_->Branch(#OBJ "_neHEF", &OBJ##_neHEF);                 \
+  tree_->Branch(#OBJ "_nConstituents", &OBJ##_nConstituents); \
+  tree_->Branch(#OBJ "_id", &OBJ##_id);                       \
   tree_->Branch(#OBJ "_puid", &OBJ##_puid);
 
-#define CLEAR_jet_list(OBJ) \
-  OBJ##_E.clear();          \
-  OBJ##_m.clear();          \
-  OBJ##_pt.clear();         \
-  OBJ##_eta.clear();        \
-  OBJ##_phi.clear();        \
-  OBJ##_partonFlav.clear(); \
-  OBJ##_hadronFlav.clear(); \
-  OBJ##_signalId.clear();   \
-  OBJ##_higgsIdx.clear();   \
-  OBJ##_genIdx.clear();     \
-  OBJ##_btag.clear();       \
-  OBJ##_qgl.clear();        \
-  OBJ##_id.clear();         \
+#define CLEAR_jet_list(OBJ)    \
+  OBJ##_E.clear();             \
+  OBJ##_m.clear();             \
+  OBJ##_mRegressed.clear();    \
+  OBJ##_pt.clear();            \
+  OBJ##_ptRegressed.clear();   \
+  OBJ##_eta.clear();           \
+  OBJ##_phi.clear();           \
+  OBJ##_partonFlav.clear();    \
+  OBJ##_hadronFlav.clear();    \
+  OBJ##_signalId.clear();      \
+  OBJ##_higgsIdx.clear();      \
+  OBJ##_genIdx.clear();        \
+  OBJ##_btag.clear();          \
+  OBJ##_qgl.clear();           \
+  OBJ##_chEmEF.clear();        \
+  OBJ##_chHEF.clear();         \
+  OBJ##_neEmEF.clear();        \
+  OBJ##_neHEF.clear();         \
+  OBJ##_nConstituents.clear(); \
+  OBJ##_id.clear();            \
   OBJ##_puid.clear();
 
 #define BRANCH_dijet_list(OBJ)                      \
@@ -260,39 +377,49 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("nfound_select", &nfound_select);
       tree_->Branch("nfound_select_h", &nfound_select_h);
       tree_->Branch("nfound_paired_h", &nfound_paired_h);
+      tree_->Branch("nfound_select_y", &nfound_select_y);
+      tree_->Branch("nfound_paired_y", &nfound_paired_y);
     }
 
     BRANCH_m_pt_eta_phi_p4(X);
     BRANCH_m_pt_eta_phi_p4(Y1);
     BRANCH_m_pt_eta_phi_p4(Y2);
-    BRANCH_m_pt_eta_phi_p4(H1Y1);
-    BRANCH_m_pt_eta_phi_p4(H2Y1);
-    BRANCH_m_pt_eta_phi_p4(H1Y2);
-    BRANCH_m_pt_eta_phi_p4(H2Y2);
+    BRANCH_m_pt_eta_phi_score_p4(H1Y1);
+    BRANCH_m_pt_eta_phi_score_p4(H2Y1);
+    BRANCH_m_pt_eta_phi_score_p4(H1Y2);
+    BRANCH_m_pt_eta_phi_score_p4(H2Y2);
 
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y1_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y1_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1Y2_b2);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b1);
-    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2Y2_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b2);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b1);
+    BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b2);
 
+    tree_->Branch("n_loose_btag", &n_loose_btag);
+    tree_->Branch("n_medium_btag", &n_medium_btag);
+    tree_->Branch("n_tight_btag", &n_tight_btag);
+    tree_->Branch("btagavg", &btagavg);
+
+    tree_->Branch("quadh_score", &quadh_score);
   }
-
-  tree_->Branch("n_mu_loose",  &n_mu_loose);
-  tree_->Branch("n_ele_loose", &n_ele_loose);
-    
-  if (is_enabled("leptons_p4"))
+  
+  tree_->Branch("n_muon", &n_muon);
+  if (is_enabled("muon_coll"))
     {
-      std::cout << "[INFO] OutputTree : enabling lepton p4 branches" << std::endl;
-      BRANCH_m_pt_eta_phi_p4(mu_1);
-      BRANCH_m_pt_eta_phi_p4(mu_2);
-      BRANCH_m_pt_eta_phi_p4(ele_1);
-      BRANCH_m_pt_eta_phi_p4(ele_2);
+      std::cout << "[INFO] OutputTree : enabling muon collection branches" << std::endl;
+      BRANCH_muon_list(muon);
     }
-
+  
+  tree_->Branch("n_ele", &n_ele);
+  if (is_enabled("ele_coll"))
+    {
+      std::cout << "[INFO] OutputTree : enabling electron collection branches" << std::endl;
+      BRANCH_ele_list(ele);
+    }
+  
   if (is_enabled("ttbar_brs"))
     {
       std::cout << "[INFO] OutputTree : enabling ttbar branches" << std::endl;
@@ -302,7 +429,15 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
       if (is_enabled("gen_brs")) tree_->Branch("bjet2_hadflav", &bjet2_hadflav);
     }
-
+  
+  if (is_enabled("trgeff_brs"))
+    {
+      std::cout << "[INFO] OutputTree : enabling TrgEff branches" << std::endl;
+      // marina
+      //tree_->Branch("HT", &HT);
+      //tree_->Branch("HTb", &HTb);
+    }
+  
   tree_->Branch("n_total_jet",&n_total_jet);
   tree_->Branch("n_jet", &n_jet);
 
@@ -313,6 +448,22 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       BRANCH_jet_list(jet);
       tree_->Branch("b_6j_score",    &b_6j_score);
     }
+
+  if (is_enabled("dijets_coll"))
+  {
+    std::cout << "[INFO] OutputTree : enabling dijet collection branches" << std::endl;
+
+    tree_->Branch("n_dijet", &n_dijet);
+    tree_->Branch("dijet_m", &dijet_m);
+    tree_->Branch("dijet_pt", &dijet_pt);
+    tree_->Branch("dijet_eta", &dijet_eta);
+    tree_->Branch("dijet_phi", &dijet_phi);
+    tree_->Branch("dijet_dr", &dijet_dr);
+    tree_->Branch("dijet_score", &dijet_score);
+    tree_->Branch("dijet_signalId", &dijet_signalId);
+    tree_->Branch("dijet_j1Idx", &dijet_j1Idx);
+    tree_->Branch("dijet_j2Idx", &dijet_j2Idx);
+  }
 
   if (is_enabled("gen_brs"))
     {
@@ -366,8 +517,12 @@ void OutputTree::clear()
   n_genjet = 0;
   n_higgs = 0;
 
+  n_ele = 0;
+  n_muon = 0;
+  
   b_6j_score = 0;
   b_3d_score = 0;
+  quadh_score = 0;
 
   genjet_E.clear();	    
   genjet_m.clear();		
@@ -379,7 +534,20 @@ void OutputTree::clear()
   genjet_signalId.clear();
   genjet_recoIdx.clear();
 
+  CLEAR_ele_list(ele);
+  CLEAR_muon_list(muon);
   CLEAR_jet_list(jet);
+
+  n_dijet = 0;
+  dijet_m.clear();
+  dijet_pt.clear();
+  dijet_eta.clear();
+  dijet_phi.clear();
+  dijet_dr.clear();
+  dijet_score.clear();
+  dijet_signalId.clear();
+  dijet_j1Idx.clear();
+  dijet_j2Idx.clear();
 
   CLEAR_m_pt_eta_phi_p4(gen_X_fc);
   CLEAR_m_pt_eta_phi_p4(gen_X);
@@ -446,7 +614,7 @@ void OutputTree::clear()
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b2_recojet);
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b1_recojet);
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b2_recojet);
-  // End Gen 8B Objects 
+  // End Gen 8B Objects
 
   gen_bs_N_reco_match        = -999;
   gen_bs_N_reco_match_in_acc = -999;
@@ -502,15 +670,12 @@ void OutputTree::clear()
   HY1_b2_genHflag = -999;
   HY2_b1_genHflag = -999;
   HY2_b2_genHflag = -999;
+
+  n_loose_btag = -1;
+  n_medium_btag = -1;
+  n_tight_btag = -1;
+  btagavg = -1.;
   // End Reco 8B Objects
-
-  CLEAR_m_pt_eta_phi_p4(mu_1);
-  CLEAR_m_pt_eta_phi_p4(mu_2);
-  CLEAR_m_pt_eta_phi_p4(ele_1);
-  CLEAR_m_pt_eta_phi_p4(ele_2);
-
-  n_mu_loose  = 0;
-  n_ele_loose = 0;
 
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
   CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);

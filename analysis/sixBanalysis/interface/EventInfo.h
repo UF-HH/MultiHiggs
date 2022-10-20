@@ -38,6 +38,9 @@ struct EventInfo{
   boost::optional<int>    n_genjet;
   boost::optional<int>    n_higgs;
 
+  boost::optional<int>    n_ele;
+  boost::optional<int>    n_muon;
+  
   boost::optional<float>  b_6j_score;
   boost::optional<float>  b_3d_score;
 
@@ -145,6 +148,11 @@ struct EventInfo{
   boost::optional<CompositeCandidate> H1Y2;
   boost::optional<CompositeCandidate> H2Y2;
 
+  boost::optional<float> H1Y1_score;
+  boost::optional<float> H2Y1_score;
+  boost::optional<float> H1Y2_score;
+  boost::optional<float> H2Y2_score;
+
   boost::optional<Jet> H1Y1_b1;
   boost::optional<Jet> H1Y1_b2;
   boost::optional<Jet> H2Y1_b1;
@@ -162,10 +170,29 @@ struct EventInfo{
   boost::optional<int> H1Y2_b2_genHflag;
   boost::optional<int> H2Y2_b1_genHflag;
   boost::optional<int> H2Y2_b2_genHflag;
-  // End Reco 8B Objects
 
+  boost::optional<float> H1Y1_b1_score;
+  boost::optional<float> H1Y1_b2_score;
+  boost::optional<float> H2Y1_b1_score;
+  boost::optional<float> H2Y1_b2_score;
+  boost::optional<float> H1Y2_b1_score;
+  boost::optional<float> H1Y2_b2_score;
+  boost::optional<float> H2Y2_b1_score;
+  boost::optional<float> H2Y2_b2_score;
+
+  boost::optional<int> n_loose_btag;
+  boost::optional<int> n_medium_btag;
+  boost::optional<int> n_tight_btag;
+  boost::optional<float> btagavg;
+  
+  boost::optional<float> quadh_score;
+  
+  // End Reco 8B Objects
+  boost::optional< std::vector<Electron> > ele_list;
+  boost::optional< std::vector<Muon> > muon_list;
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
+  boost::optional<std::vector<DiJet>> dijet_list;
 
   boost::optional<EventShapes> event_shapes;
 
@@ -176,20 +203,12 @@ struct EventInfo{
   boost::optional<int> nfound_select;
   boost::optional<int> nfound_select_h;
   boost::optional<int> nfound_paired_h;
+  boost::optional<int> nfound_select_y;
+  boost::optional<int> nfound_paired_y;
 
   // for ttbar skims
   boost::optional<Jet> bjet1;
   boost::optional<Jet> bjet2;
-
-  // info on leptons in the event
-  boost::optional<Muon> mu_1;
-  boost::optional<Muon> mu_2;
-  boost::optional<Electron> ele_1;
-  boost::optional<Electron> ele_2;
-  boost::optional<int> n_mu_loose;
-  boost::optional<int> n_ele_loose;
-  // boost::optional<int> n_mu_tight;
-  // boost::optional<int> n_ele_tight;
 
   // scale factors
   boost::optional<double> btagSF_WP_M;

@@ -24,30 +24,39 @@ class EventSample:
         self.histodesc  = {}
         self.slices     = {}
         self.selections = collections.OrderedDict()
-        
         # verbosity
         # 0: no printout at all
         # 1: only essential printouts (start/stop/etc)
         # 2: logging of actions (histos booked, etc)
         # 3: debug
         self.verb       = 1 
-
-        # sampletype = sampletype.lower()
-        # if not sampletype in ['data', 'mc']:
-        #     raise RuntimeError("wrong sample type")
     
     def build_dataframe(self, files):
-        """ build the dataframe from a list of file names """
+        '''
+        Build the dataframe from a list of file names
+        '''
         self.chain = ROOT.TChain(self.treename)
         if self.verb >= 1 : print("[INFO] building", self.name, "with", len(files), "files")
         for f in files:
             self.chain.Add(f)
         self.rdf = ROOT.RDataFrame(self.chain)
+        #entries = self.rdf.Count()
+        #print("Entries = ", entries.GetValue())
+        return
+        
+    def GetContent(self):
+        '''
+        '''
+        print("\nContent of sample %s" % (self.name))
+        for i, column in enumerate(self.rdf.GetColumnNames()):
+            print(i, column)
+        return
 
     def add_column(self, colname, colexpr):
         if self.verb >= 1:
             print('[INFO] adding column', colname, 'to', self.name, 'defined as', colexpr)
         self.rdf = self.rdf.Define(colname, colexpr)
+        return
 
     def build_dataframe_from_filelist(self, filelistname):
         """ parse a filelist and build the dataframe """
@@ -136,6 +145,8 @@ class EventSample:
 
             if 'binning' in hd:
                 hmodel = ROOT.RDF.TH1DModel(uuid, htitle, len(hd['binning'] -1), array('d', hd['binning']))
+            elif 'nbins' in hd:
+                hmodel = ROOT.RDF.TH1DModel(uuid, htitle, hd['nbins'], hd['min'], hd['max'])
             else:
                 hmodel = ROOT.RDF.TH1DModel(uuid, htitle, *hd['bins'])
             
