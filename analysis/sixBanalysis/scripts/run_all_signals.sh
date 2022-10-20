@@ -1,7 +1,8 @@
-skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_600_MY_400_accstudies.root  --is-signal &
-skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_500.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_700_MY_500_accstudies.root  --is-signal &
-skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_700_MY_400_accstudies.root  --is-signal &
-skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_600_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_600_MY_300_accstudies.root  --is-signal &
-skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_500_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_500_MY_300_accstudies.root  --is-signal &
-skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_450_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_450_MY_300_accstudies.root  --is-signal &
-skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_700_MY_300_accstudies.root  --is-signal &
+skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_1000_MY_400_accstudies.root  --is-signal &
+skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_1000_MY_500_accstudies.root  --is-signal &
+skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_1000_MY_600_accstudies.root  --is-signal &
+skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_1200_MY_400_accstudies.root  --is-signal &
+skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_1200_MY_500_accstudies.root  --is-signal &
+skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_1200_MY_600_accstudies.root  --is-signal &
+skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_1200_MY_800_accstudies.root  --is-signal &
+skim_ntuple.exe --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_300.txt --cfg config/skim_ntuple_2018.cfg  --output NMSSM_XYH_YToHH_6b_MX_1200_MY_900_accstudies.root  --is-signal &

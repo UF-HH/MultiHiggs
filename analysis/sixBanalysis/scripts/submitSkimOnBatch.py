@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser(description='Command line parser of skim option
 parser.add_argument('--input'     ,  dest = 'input'     ,  help = 'input filelist'           ,  required = True        )
 parser.add_argument('--tag'       ,  dest = 'tag'       ,  help = 'production tag'           ,  required = True        )
 parser.add_argument('--njobs'     ,  dest = 'njobs'     ,  help = 'njobs'                    ,  type     = int         ,   default = 50    )
+parser.add_argument('--jes-shift-syst'     ,  dest = 'jes'     ,  help = 'jes'                    ,  type     = str         ,   default = ""    )
 parser.add_argument('--memory'    ,  dest = 'memory'    ,  help = 'request memory'           ,  type     = int         ,   default = None  )
 #### --------------------------------------------------- - expert usage
 parser.add_argument('--outputName', dest='oname',  help='the name of the directory of this sample (if not given, auto from filelist)', default = None)

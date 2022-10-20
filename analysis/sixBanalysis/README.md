@@ -1,6 +1,6 @@
 ## Installation
 
-Please see the [README.md](https://github.com/UF-HH/sixB#install-instructions) in the root folder before attempting to run these skims if you haven't already. Once installation of the repo has been completed, follow these steps to set up the analysis code.
+Please see the README.md in the root folder before attempting to run these skims if you haven't already. Once installation of the repo has been completed, follow these steps to set up the analysis code.
 
 ```
 source scripts/setup.sh

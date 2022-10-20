@@ -1,26 +1,25 @@
-# ODIR="/store/user/ekoenig/6BAnalysis/NTuples/2018/"
-ODIR="/store/user/srosenzw/analysis/"
+ODIR="/store/user/srosenzw/sixb/ntuples/Summer2018UL/"
 
-. scripts/arg_submit.sh -v qcd "$@"
-TAG="TTJets"
+# . scripts/arg_submit.sh -v qcd "$@"
+TAG="dHHH_pairs"
 CFG="config/skim_ntuple_2018.cfg"
 
-# make exe -j || exit -1
+make exe -j || exit -1
 
-# echo "... tag       : ", $TAG
-# echo "... saving to : ", $ODIR
+echo "... tag       : ", $TAG
+echo "... saving to : ", $ODIR
 
-# python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input input/Run2_UL/2018/TTJets.txt         
+python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input input/Run2_UL/2018/TTJets.txt --forceOverwrite   
 # # python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg config/skim_ntuple_2018_ttbar.cfg --njobs 100 --input input/Run2_UL/2018/SingleMuon_Run2.txt --is-data
 
 
 #############
 
-TAG="ttbar_2018_10Jan2022"
-ODIR="/store/group/lpchbb/lcadamur/sixb_ntuples/"
+# TAG="ttbar_2018_10Jan2022"
+# ODIR="/store/group/lpchbb/lcadamur/sixb_ntuples/"
 
-echo "... tag       : ", $TAG
-echo "... saving to : ", $ODIR
+# echo "... tag       : ", $TAG
+# echo "... saving to : ", $ODIR
 
-python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg config/skim_ntuple_2018_ttbar.cfg --njobs 100 --input input/Run2_UL/2018/TTJets.txt         
-python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg config/skim_ntuple_2018_ttbar.cfg --njobs 100 --input input/Run2_UL/2018/SingleMuon_Run2.txt --is-data
+# python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg config/skim_ntuple_2018_ttbar.cfg --njobs 100 --input input/Run2_UL/2018/TTJets.txt         
+# python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg config/skim_ntuple_2018_ttbar.cfg --njobs 100 --input input/Run2_UL/2018/SingleMuon_Run2.txt --is-data

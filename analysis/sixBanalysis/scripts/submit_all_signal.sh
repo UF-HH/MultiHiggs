@@ -1,201 +1,68 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# To produce the input .txt files:
-# 
-# cd <working_area>/sixB/analysis/sixBanalysis/input/PrivateMC_2018
-# ./getSamples.py -d /eos/uscms/store/group/lpchbb/srosenzw/XYH_YToHH/CRAB_PrivateMC
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ODIR="/store/user/mkolosov/HHHTo6B/"
+# set -e
+# if submitting -b and -t, make sure -b is before -t !!!!
 
-. scripts/arg_submit.sh -v sr "$@"
+ODIR="/store/user/srosenzw/sixb/ntuples/Summer2018UL/"
+CFG="config/skim_ntuple_2018.cfg"
+TAG="bias/NMSSM"
+EXTRA=""
 
-# TAG="${TAG}NMSSM"
-# CFG="config/skim_ntuple_2018_nocuts.cfg"
-# TAG="NMSSM_nocuts"
+ARGS=$(getopt -a --options npbo:c:t:d --long "jes:,jer:,no-cuts,presel,btag-ordered,odir:,cfg:,tag:dry-run" -- "$@")
+eval set -- "$ARGS"
 
-CFG="config/skim_ntuple_2018_marina.cfg"
-TAG="Summer2018UL_29Sep2022_withoutLeptonVeto"
+while true; do
+  case "$1" in
+      --jes)
+         EXTRA+="--jes-shift-syst $2 "
+         shift 2;;
+      --jer)
+         EXTRA+="--jer-shift-syst $2 "
+         shift 2;;
+      -n|--no-cuts)
+         TAG="NMSSM_nocuts"
+         CFG="config/skim_ntuple_2018_nocuts.cfg"
+         shift;;
+      -p|--presel)
+         TAG="NMSSM_presel"
+         CFG="config/skim_ntuple_2018_presel.cfg"
+         shift;;
+      -b|--btag-ordered) # order by b tag
+         TAG="btag/NMSSM"
+         CFG="config/skim_ntuple_2018_maxbtag.cfg"
+         shift;;
+      -o|--odir) # specify output directory
+         ODIR="$2"
+         shift 2;;
+      -c|--cfg) # specify config file
+         CFG="$2"
+         shift 2;;
+      -t|--tag) # specify tag
+         TAG="$2"
+         shift 2;;
+      -d|--dry-run)
+         EXTRA+="--dryrun"
+         shift;;
+      --)
+      break;;
+      *)
+      printf "Unknown option %s\n" "$1"
+      exit 1;;
+  esac
+done
 
 make exe -j || exit -1
 
 echo "... tag       : ", $TAG
+echo "... cfg       : ", $CFG
 echo "... saving to : ", $ODIR
 
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_450_MY_300_sl7_nano_100k.txt )
+relDir='input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/'
+files=$(ls ${relDir})
 for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
+    if [[ "$input" == "misc" ]]; then
+        continue
+    fi
+    input="${relDir}${input}"
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal --forceOverwrite "$EXTRA"
 done
 
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_500_MY_300_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_600_MY_300_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_600_MY_400_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_300_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_2M.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_500_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_800_MY_300_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_800_MY_400_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_800_MY_500_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_800_MY_600_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_900_MY_300_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_900_MY_400_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_900_MY_500_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_900_MY_600_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_900_MY_700_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1000_MY_300_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1000_MY_400_sl7_nano_100k.txt ) 
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1000_MY_500_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1000_MY_600_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1000_MY_700_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1000_MY_800_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1100_MY_300_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1100_MY_400_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1100_MY_500_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1100_MY_600_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1100_MY_700_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1100_MY_800_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1100_MY_900_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1200_MY_300_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1200_MY_400_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1200_MY_500_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1200_MY_600_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1200_MY_700_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1200_MY_800_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
-
-files=$(ls input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_1200_MY_900_sl7_nano_100k.txt )
-for input in ${files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal
-done
+# python scripts/submitSkimOnBatch.py --tag studies --outputDir /store/user/srosenzw/sixb/ntuples/Summer2018UL/ --cfg config/skim_ntuple_2018_presel.cfg --njobs 100 --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/NMSSM_XYH_YToHH_6b_MX_700_MY_400_10M.txt --is-signal

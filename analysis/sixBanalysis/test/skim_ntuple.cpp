@@ -208,7 +208,8 @@ int main(int argc, char** argv)
       keightb,
       // kshapecr,
       khiggscr,
-      // kpass,
+      kpass,
+      kpresel,
       knull
     };
   
@@ -220,9 +221,12 @@ int main(int argc, char** argv)
                                skim_type_name == "eightb"  ? keightb  :
 			       //  skim_type_name == "shapecr" ? kshapecr :
                                skim_type_name == "higgscr" ? khiggscr :
+                               skim_type_name == "pass"    ? kpass     :
+                               skim_type_name == "presel"    ? kpresel     :
+                              //  knull
 			       //  skim_type_name == "pass"    ? kpass     :
                                skim_type_name == "trgeff"  ? kTrgEff  :
-			       knull
+			                          // knull
                                );
   if (skim_type == knull)
     throw std::runtime_error("skim type not recognized");
@@ -400,6 +404,9 @@ int main(int argc, char** argv)
     break;
   case kttbar:
     skf = new TTBar_functions();
+    break;
+  case kpresel:
+    skf = new SixB_functions();
     break;
   default:
     skf = new Skim_functions();
