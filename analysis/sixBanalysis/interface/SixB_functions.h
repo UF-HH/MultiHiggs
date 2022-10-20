@@ -200,6 +200,7 @@ public:
 
   //////////// functions for the jet selection
   // std::vector<Jet> select_sixb_jets_btag_order     (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by b tag (highest first)
+  std::vector<Jet> selectJetsForPairing            (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by the b tag groups + pt within but apply cuts on sorted by pT b-jets
   std::vector<Jet> select_sixb_jets_bias_pt_sort   (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by the b tag groups + pt within
   std::vector<Jet> select_sixb_jets_pt_sort        (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by pt (highest first)
   std::vector<Jet> select_sixb_jets_6jet_DNN       (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // use the 6 jet classifier

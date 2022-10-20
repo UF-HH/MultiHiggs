@@ -38,11 +38,12 @@ void SixB_functions::initialize_params_from_cfg(CfgParser& config)
   pmap.insert_param<bool>("configurations", "useRegressedPtForHp4", config.readBoolOpt("configurations::useRegressedPtForHp4"));
 
   // parse specific parameters for various functions
-  if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "bias_pt_sort") {
-    pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
-    pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
-    pmap.insert_param<std::vector<double> >("bias_pt_sort", "pt_cuts", config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
-  }
+  if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "bias_pt_sort" || pmap.get_param<string> ("configurations", "sixbJetChoice") == "btag_sortedpt_cuts")
+    {
+      pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
+      pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
+      pmap.insert_param<std::vector<double> >("bias_pt_sort", "pt_cuts", config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
+    }
 
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "6jet_DNN") {
       pmap.insert_param<string> ("6jet_DNN", "model_path", config.readStringOpt("6jet_DNN::model_path"));
@@ -323,16 +324,16 @@ std::vector<Jet> SixB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, co
   
   // if (sel_type == "btag_order")
   //   return select_sixb_jets_btag_order(nat, ei, in_jets);
-
-  if (sel_type == "btag_pt_sort")
-    return select_sixb_jets_btag_pt_sort(nat, ei, in_jets);
-
+  
   if (sel_type == "bias_pt_sort")
     return select_sixb_jets_bias_pt_sort(nat, ei, in_jets);
-
+  
+  else if (sel_type == "btag_sortedpt_cuts")
+    return selectJetsForPairing(nat, ei, in_jets);
+  
   else if (sel_type == "pt_sort")
     return select_sixb_jets_pt_sort(nat, ei, in_jets);
-
+  
   else if (sel_type == "6jet_DNN")
     return select_sixb_jets_6jet_DNN(nat, ei, in_jets);
 
@@ -357,6 +358,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
     This function sorts the input jet collection, first by the b-tagging score in descending order, and groups the jets into:
     Tight, Medium, Loose and Fail categories. Within these four categories, the jets are sorted again by their pT in descending order.
   */
+  
   if (0) // For debugging
     {
       std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:   input jet collection (should be ordered in pT only):" << std::endl;
@@ -372,6 +374,87 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
   if (0) // For debugging
     {
       std::cout << "SixB_functions::select_sixb_jets_bias_pt_sort:  jet collection after sorting by b-tagging score and then pT within each group:"<<std::endl;
+      for (unsigned int ij=0; ij<jets.size(); ij++)
+	{
+	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
+	}
+    }
+  
+  // Select the first 6 jets for the pairing
+  unsigned int n_out = std::min<int>(jets.size(), 6);
+  jets.resize(n_out);
+  
+  bool apply_cuts = pmap.get_param<bool>("bias_pt_sort", "applyJetCuts");
+  if (apply_cuts)
+    {
+      bool pass_cuts = true;
+      
+      std::vector<double> pt_cuts     = pmap.get_param<std::vector<double>>("bias_pt_sort", "pt_cuts");
+      std::vector<int>    btagWP_cuts = pmap.get_param<std::vector<int>>("bias_pt_sort", "btagWP_cuts");
+      
+      unsigned int ncuts = pt_cuts.size();
+      if (jets.size() < ncuts)
+	{
+	  pass_cuts = false;
+	}
+      else
+	{
+	  for (unsigned int icut = 0; icut < ncuts; icut++)
+	    {
+	      const Jet& ijet = jets[icut];
+	      double pt   = pt_cuts[icut];
+	      int btag_wp = btagWP_cuts[icut];
+	      if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] )
+		{
+		  // if (debug_){
+		  //   cout << "==> the jet nr " << icut << " fails cuts, jet dumped below" << endl;
+		  //   cout << getObjDescr(ijet) << endl;
+		  // }
+		  pass_cuts = false;
+		  break;
+		}
+	    }
+	}
+      if (!pass_cuts)
+	jets.resize(0); // empty this vector if cuts were not passed
+    }
+  
+  if (0) // For debugging
+    {
+      std::cout << "SixB_functions: final collection of jets"<<std::endl;
+      for (unsigned int ij=0; ij<jets.size(); ij++)
+	{
+	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
+	}
+    }
+  return jets;  
+}
+
+std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+{
+  /*
+    input jet collection is in_jets : sorted in pT (only) jets
+    
+    This function sorts the input jet collection, first by the b-tagging score in descending order, and groups the jets into:
+    Tight, Medium, Loose and Fail categories. Within these four categories, the jets are sorted again by their pT in descending order.
+  */
+  std::cout << " "<<std::endl;
+  if (0) // For debugging
+    {
+      std::cout << "SixB_functions::selectJetsForPairing:   input jet collection (should be ordered in pT only):"<<std::endl;
+      for (unsigned int ij=0; ij<in_jets.size(); ij++)
+	{
+	  std::cout << " jet "<<ij<<"   pT="<<in_jets.at(ij).get_pt()<<"   b-disc.="<<in_jets.at(ij).get_btag()<<std::endl;
+	}
+    }
+  
+  std::cout << "Sort jets by their b-tagging score in descending order"<<std::endl;
+  // Sort jets by their b-tagging score in descending order
+  std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
+  
+  if (0) // For debugging
+    {
+      std::cout << "SixB_functions::selectJetsForPairing:  jet collection after sorting by b-tagging score and then pT within each group:"<<std::endl;
       for (unsigned int ij=0; ij<jets.size(); ij++)
 	{
 	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
@@ -435,7 +518,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
 	  jets.resize(0);
 	}
     }
-  
+
   // The resulting jets collection is still sorted by b-tagging score and then by pT
   return jets;
 }
