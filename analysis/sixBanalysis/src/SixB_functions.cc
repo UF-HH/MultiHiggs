@@ -324,6 +324,9 @@ std::vector<Jet> SixB_functions::select_jets(NanoAODTree& nat, EventInfo& ei, co
   // if (sel_type == "btag_order")
   //   return select_sixb_jets_btag_order(nat, ei, in_jets);
 
+  if (sel_type == "btag_pt_sort")
+    return select_sixb_jets_btag_pt_sort(nat, ei, in_jets);
+
   if (sel_type == "bias_pt_sort")
     return select_sixb_jets_bias_pt_sort(nat, ei, in_jets);
 
@@ -438,7 +441,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
 }
 
 
-std::vector<Jet> SixB_functions::select_sixb_jets_pt_sort (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
+std::vector<Jet> SixB_functions::select_sixb_jets_pt_sort(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {
   std::vector<Jet> jets = in_jets;
   std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_pt()>j2.get_pt(); });
