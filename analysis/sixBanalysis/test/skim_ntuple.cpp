@@ -561,7 +561,8 @@ int main(int argc, char** argv)
   const auto start_loop_t = chrono::high_resolution_clock::now();
 
   Cutflow cutflow;
-    
+  Cutflow cutflow_Unweighted("h_cutflow_unweighted", "Unweighted selection cutflow");
+  
   for (int iEv = 0; true; ++iEv)
   {
     if (maxEvts >= 0 && iEv >= maxEvts)
@@ -596,10 +597,8 @@ int main(int argc, char** argv)
 
     EventInfo ei;
     ot.clear();
-
-
     loop_timer.click("Input read");
-
+    
     // save the normalization weights.
     // IMPORTANT NOTE: this must occurr *before* any MC event is filtered because of analysis selections to correctly compute the normalization
     if (!is_data && save_genw_tree){
@@ -619,12 +618,14 @@ int main(int argc, char** argv)
     }
     // ------- events can start be filtered from here (after saving all gen weights)
     cutflow.add("total", nwt);
-      
+    cutflow_Unweighted.add("total");
+        
     // trigger requirements
     if (apply_trigger && !(nat.getTrgOr()) )
       continue;
     cutflow.add("trigger", nwt);
-      
+    cutflow_Unweighted.add("trigger");
+  
     if (save_trg_decision) {
       auto listOfPassedTriggers = nat.getTrgPassed();
       for (auto& t : listOfPassedTriggers)
@@ -643,6 +644,7 @@ int main(int argc, char** argv)
     if (!bMETFilters) continue;
     loop_timer.click("MET Filters");
     cutflow.add("met filters", nwt);
+    cutflow_Unweighted.add("met filters");
     
     //==================================
     // Apply muon selection or veto
@@ -657,6 +659,7 @@ int main(int argc, char** argv)
       {
 	if (selected_muons.size() != 0) continue;
 	cutflow.add("#mu veto", nwt);
+	cutflow_Unweighted.add("#mu veto");
 	loop_timer.click("#mu veto");
       }
     else if (applyMuonSelection)
@@ -664,6 +667,7 @@ int main(int argc, char** argv)
 	const DirectionalCut<int> cfg_nMuons(config, "configurations::nMuonsCut");
 	if (!cfg_nMuons.passedCut(selected_muons.size())) continue;
 	cutflow.add("#mu selection", nwt);
+	cutflow_Unweighted.add("#mu selection");
 	loop_timer.click("#mu selection");
       }
     
@@ -680,6 +684,7 @@ int main(int argc, char** argv)
       {
 	if (selected_electrons.size() !=0) continue;
 	cutflow.add("e veto", nwt);
+	cutflow_Unweighted.add("e veto");
 	loop_timer.click("e veto");
       }
     else if (applyEleSelection)
@@ -687,6 +692,7 @@ int main(int argc, char** argv)
 	const DirectionalCut<int> cfg_nElectrons(config, "configurations::nEleCut");
 	if (!cfg_nElectrons.passedCut(selected_electrons.size())) continue;
 	cutflow.add("e selection", nwt);
+	cutflow_Unweighted.add("e selection");
 	loop_timer.click("e selection");
       }
     
@@ -750,7 +756,7 @@ int main(int argc, char** argv)
 	const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
 	if (!cfg_nJets.passedCut(presel_jets.size())) continue;
 	cutflow.add("npresel_jets >= 6", nwt);	
-	
+	cutflow_Unweighted.add("npresel_jets >= 6");
 	// Sorted jets passed cuts
 	//std::vector<Jet> sorted_jets = skf->select_jets(nat, ei, presel_jets);
 	
@@ -762,7 +768,7 @@ int main(int argc, char** argv)
 	if (presel_jets.size() < 8)
 	  continue;
 	cutflow.add("npresel_jets>=8", nwt);
-	
+	cutflow_Unweighted.add("npresel_jets>=8");
 	// std::vector<DiJet> dijets = skf->make_dijets(nat, ei, presel_jets);
 	// ei.dijet_list = dijets;
 	
@@ -772,6 +778,7 @@ int main(int argc, char** argv)
 	if (selected_jets.size() < 8)
 	  continue;
 	cutflow.add("nselect_jets>=8", nwt);
+	cutflow_Unweighted.add("nselect_jets>=8");
 	skf->pair_jets(nat, ei, selected_jets);
 	skf->compute_seljets_btagmulti(nat, ei);
 	loop_timer.click("Eight b jet pairing");
@@ -791,13 +798,16 @@ int main(int argc, char** argv)
 	const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
 	if (!cfg_nJets.passedCut(presel_jets.size())) continue;
         cutflow.add("selected jets >= 6", nwt);
+	cutflow_Unweighted.add("selected jets >= 6");
 	
 	//=============================================
 	// Jets for pairing selection (either 6 or 0)
 	//=============================================
 	std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
 	if (selected_jets.size() < 6) continue;
-	cutflow.add("Jets for pairing selection");
+	cutflow.add("Jets for pairing selection", nwt);
+	cutflow_Unweighted.add("Jets for pairing selection");
+	
 	loop_timer.click("Six b jet selection");
 	
 	ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
@@ -876,7 +886,8 @@ int main(int argc, char** argv)
 	if (presel_jets.size() < 6)
 	  continue;
 	cutflow.add("npresel_jets>=6", nwt);
-	
+	cutflow_Unweighted.add("npresel_jets>=6");
+
 	// if ( applyJetCuts && !skf->pass_jet_cut(cutflow,pt_cuts,btagWP_cuts,presel_jets) )
 	//   continue;
 	
@@ -895,6 +906,7 @@ int main(int argc, char** argv)
 	if (presel_jets.size() < 2)
 	  continue;
 	cutflow.add("npresel_jets>=2", nwt);
+	cutflow_Unweighted.add("npresel_jets>=2");
 	
 	std::vector<Jet> ttjets = skf->select_jets(nat, ei, presel_jets); // ttjets sorted by DeepJet
 	double deepjet1 = get_property(ttjets.at(0), Jet_btagDeepFlavB);
@@ -905,6 +917,7 @@ int main(int argc, char** argv)
 	if (nbtag < nMinBtag)
 	  continue;
 	cutflow.add("ttbar_jet_cut", nwt);
+	cutflow_Unweighted.add("ttbar_jet_cut");
 	if (!is_data)
 	  ei.btagSF_WP_M = btsf.get_SF_allJetsPassWP({ttjets.at(0), ttjets.at(1)}, BtagSF::btagWP::medium);
 	loop_timer.click("ttbar b jet selection");
@@ -927,6 +940,7 @@ int main(int argc, char** argv)
 
   outputFile.cd();
   cutflow.write(outputFile);
+  cutflow_Unweighted.write(outputFile);
   ot.write();
   if (!is_data)
     nwt.write();
