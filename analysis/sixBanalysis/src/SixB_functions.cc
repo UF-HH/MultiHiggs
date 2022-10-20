@@ -123,17 +123,17 @@ void SixB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
     }
 
   // reorder objects according to pt
-  if (ei.gen_H1->P4Regressed().Pt() < ei.gen_H2->P4Regressed().Pt()){
+  if (ei.gen_H1->P4().Pt() < ei.gen_H2->P4().Pt()){
     std::swap(ei.gen_H1,    ei.gen_H2);
     std::swap(ei.gen_H1_b1, ei.gen_H2_b1);
     std::swap(ei.gen_H1_b2, ei.gen_H2_b2);
   }
 
-  if (ei.gen_HX_b1->P4Regressed().Pt() < ei.gen_HX_b2->P4Regressed().Pt())
+  if (ei.gen_HX_b1->P4().Pt() < ei.gen_HX_b2->P4().Pt())
     std::swap(ei.gen_HX_b1, ei.gen_HX_b2);
-  if (ei.gen_H1_b1->P4Regressed().Pt() < ei.gen_H1_b2->P4Regressed().Pt())
+  if (ei.gen_H1_b1->P4().Pt() < ei.gen_H1_b2->P4().Pt())
     std::swap(ei.gen_H1_b1, ei.gen_H1_b2);
-  if (ei.gen_H2_b1->P4Regressed().Pt() < ei.gen_H2_b2->P4Regressed().Pt())
+  if (ei.gen_H2_b1->P4().Pt() < ei.gen_H2_b2->P4().Pt())
     std::swap(ei.gen_H2_b1, ei.gen_H2_b2);
 
   return;
@@ -602,7 +602,7 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
     std::vector<Jet>(jets.begin()+n_out_btag,jets.end()).swap(jets); // put into "jets" the remaining elements
 
     stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
-            return ( a.P4()().Pt() > b.P4()().Pt() ); }
+            return ( a.P4().Pt() > b.P4().Pt() ); }
     ); // sort jet by pT (highest to lowest)
 
     int n_to_add = std::min<int>(jets.size(), 6-nleadbtag); // add at most 6-nleadbtag elements (if they are available)
@@ -610,12 +610,12 @@ std::vector<Jet> SixB_functions::select_sixb_jets_maxbtag_highpT(NanoAODTree& na
 
     // std::cout << "   ---> IN JETS" << std::endl;
     // for (auto& jet : in_jets)
-    //     std::cout << jet.P4()().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
+    //     std::cout << jet.P4().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
     // std::cout << std::endl << std::endl;
 
     // std::cout << "   ---> OUT JETS" << std::endl;
     // for (auto& jet : out_jets)
-    //     std::cout << jet.P4()().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
+    //     std::cout << jet.P4().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
     // std::cout << std::endl << "-------------------------" << std::endl;
 
     return out_jets;
@@ -898,8 +898,8 @@ void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vecto
   std::string pairAlgo = pmap.get_param<std::string>("configurations", "jetPairsChoice");
   if (pairAlgo == "passthrough")
     reco_Hs = pair_passthrough(nat, ei, in_jets);
-  else if (pairAlgo == "m_H")
-    reco_Hs = pair_mH(nat, ei, in_jets);
+  // else if (pairAlgo == "m_H")
+    // reco_Hs = pair_mH(nat, ei, in_jets);
   else if (pairAlgo == "D_HHH")
     reco_Hs = pair_D_HHH(nat, ei, in_jets);
   else if (pairAlgo == "D_HHH_corr") {
@@ -934,16 +934,16 @@ void SixB_functions::pair_jets(NanoAODTree& nat, EventInfo& ei, const std::vecto
     H2.rebuildP4UsingRegressedPt(true, true);
   }
 
-  if (H1.P4Regressed().Pt() < H2.P4Regressed().Pt())
+  if (H1.P4().Pt() < H2.P4().Pt())
     std::swap(H1, H2);
 
-  if (HX.getComponent1().P4Regressed().Pt() < HX.getComponent2().P4Regressed().Pt())
+  if (HX.getComponent1().P4().Pt() < HX.getComponent2().P4().Pt())
     HX.swapComponents();
 
-  if (H1.getComponent1().P4Regressed().Pt() < H1.getComponent2().P4Regressed().Pt())
+  if (H1.getComponent1().P4().Pt() < H1.getComponent2().P4().Pt())
     H1.swapComponents();
 
-  if (H2.getComponent1().P4Regressed().Pt() < H2.getComponent2().P4Regressed().Pt())
+  if (H2.getComponent1().P4().Pt() < H2.getComponent2().P4().Pt())
     H2.swapComponents();
 
   CompositeCandidate Y(H1, H2);
@@ -1004,9 +1004,9 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
       std::vector<CompositeCandidate> tri_dijet_sys;
       for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
 
-      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4Regressed().Pt()>dj2.P4Regressed().Pt(); });
+      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4().Pt()>dj2.P4().Pt(); });
         
-      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4Regressed().M(),tri_dijet_sys[1].P4Regressed().M(),tri_dijet_sys[2].P4Regressed().M());
+      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4().M(),tri_dijet_sys[1].P4().M(),tri_dijet_sys[2].P4().M());
       float d_hhh = m_vec.Cross(r_vec).R();
       triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
     }
@@ -1020,9 +1020,11 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
 
 
   // Order dijets by highest Pt
-  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4Regressed().Pt() > dijets[id2].P4Regressed().Pt(); });
+  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4().Pt() > dijets[id2].P4().Pt(); });
 
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> higgs_cands = std::make_tuple(dijets[idijets[0]], dijets[idijets[1]], dijets[idijets[2]]);
+
+
   return higgs_cands;
 
   // std::vector<CompositeCandidate> higgs_list;
@@ -1059,6 +1061,7 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   { 
     int ij1 = ijets[0]; int ij2 = ijets[1];
     CompositeCandidate dijet(in_jets[ij1],in_jets[ij2]);
+    dijet.rebuildP4UsingRegressedPt(true, true);
     dijets.push_back( dijet );
   }
 
@@ -1069,9 +1072,9 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
       std::vector<CompositeCandidate> tri_dijet_sys;
       for (int id : triH_pairings[i]) tri_dijet_sys.push_back( dijets[id] );
 
-      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4Regressed().Pt()>dj2.P4Regressed().Pt(); });
+      std::sort(tri_dijet_sys.begin(),tri_dijet_sys.end(),[](CompositeCandidate& dj1,CompositeCandidate& dj2){ return dj1.P4().Pt()>dj2.P4().Pt(); });
         
-      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4Regressed().M(),tri_dijet_sys[1].P4Regressed().M(),tri_dijet_sys[2].P4Regressed().M());
+      ROOT::Math::XYZVectorF m_vec(tri_dijet_sys[0].P4().M(),tri_dijet_sys[1].P4().M(),tri_dijet_sys[2].P4().M());
       float d_hhh = m_vec.Cross(r_vec).R();
       triH_d_hhh.push_back( std::make_pair(d_hhh,i) );
     }
@@ -1098,7 +1101,7 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   std::vector<int> idijets = triH_pairings[itriH];
 
   // Order dijets by highest Pt
-  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4Regressed().Pt() > dijets[id2].P4Regressed().Pt(); });
+  std::sort(idijets.begin(),idijets.end(),[dijets](int id1,int id2){ return dijets[id1].P4().Pt() > dijets[id2].P4().Pt(); });
 
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> higgs_cands = std::make_tuple(dijets[idijets[0]], dijets[idijets[1]], dijets[idijets[2]]);
   return higgs_cands;
@@ -1190,7 +1193,7 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
 
       // vector from origin (0,0,0) to this 3d mass point
       // FIXME: check if this uses standard p4 or regressed p4
-      vec3d masspoint = {pairs.at(ip).at(0).P4Regressed().M(), pairs.at(ip).at(1).P4Regressed().M(), pairs.at(ip).at(2).P4Regressed().M()};
+      vec3d masspoint = {pairs.at(ip).at(0).P4().M(), pairs.at(ip).at(1).P4().M(), pairs.at(ip).at(2).P4().M()};
       
       // compute projection on diagonal - note: diagonal has a norm of 1 already
       double dotprod = masspoint.x*diag.x + masspoint.y*diag.y + masspoint.z*diag.z;
@@ -1243,17 +1246,17 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
           CompositeCandidate hC = tr.at(2);
 
           p4_t vsum (0,0,0,0);
-          vsum += hA.P4Regressed();
-          vsum += hB.P4Regressed();
-          vsum += hC.P4Regressed();
+          vsum += hA.P4();
+          vsum += hB.P4();
+          vsum += hC.P4();
           auto boost_vctr = vsum.BoostToCM();
           ROOT::Math::Boost boost(boost_vctr);
 
           // p4_t vsum_cm  = boost(vsum);
-          p4_t hA_p4_cm = boost(hA.P4Regressed());
-          p4_t hB_p4_cm = boost(hB.P4Regressed());
-          p4_t hC_p4_cm = boost(hC.P4Regressed());
-          // cout << " XCHECK: " << vsum_cm.Pt() << "  x/y/z" << vsum_cm.Px() << " " << vsum_cm.Py() << " " << vsum_cm.Pz() << " || " << vsum_cm.P() << "  " << hA.P4Regressed().Pt() << " --> " << hA_p4_cm.Pt() << endl;
+          p4_t hA_p4_cm = boost(hA.P4());
+          p4_t hB_p4_cm = boost(hB.P4());
+          p4_t hC_p4_cm = boost(hC.P4());
+          // cout << " XCHECK: " << vsum_cm.Pt() << "  x/y/z" << vsum_cm.Px() << " " << vsum_cm.Py() << " " << vsum_cm.Pz() << " || " << vsum_cm.P() << "  " << hA.P4().Pt() << " --> " << hA_p4_cm.Pt() << endl;
           double psum = hA_p4_cm.P() + hB_p4_cm.P() + hC_p4_cm.P();
           psum_idx_afterthresh.push_back(make_pair(psum, ipair));
       }
@@ -1339,15 +1342,15 @@ std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> SixB_func
   std::vector<std::pair<double, int>> leadPt(3);
 
   if (pmap.get_param<bool>("leadJetInX", "useRegressedPt")){
-    leadPt.at(0) = make_pair(std::max(dynamic_cast<Jet&>(reco_Hs_arr.at(0).getComponent1()).P4Regressed().Pt(), dynamic_cast<Jet&>(reco_Hs_arr.at(0).getComponent2()).P4Regressed().Pt()), 0);
-    leadPt.at(1) = make_pair(std::max(dynamic_cast<Jet&>(reco_Hs_arr.at(1).getComponent1()).P4Regressed().Pt(), dynamic_cast<Jet&>(reco_Hs_arr.at(1).getComponent2()).P4Regressed().Pt()), 1);
-    leadPt.at(2) = make_pair(std::max(dynamic_cast<Jet&>(reco_Hs_arr.at(2).getComponent1()).P4Regressed().Pt(), dynamic_cast<Jet&>(reco_Hs_arr.at(2).getComponent2()).P4Regressed().Pt()), 2);    
+    leadPt.at(0) = make_pair(std::max(dynamic_cast<Jet&>(reco_Hs_arr.at(0).getComponent1()).P4().Pt(), dynamic_cast<Jet&>(reco_Hs_arr.at(0).getComponent2()).P4().Pt()), 0);
+    leadPt.at(1) = make_pair(std::max(dynamic_cast<Jet&>(reco_Hs_arr.at(1).getComponent1()).P4().Pt(), dynamic_cast<Jet&>(reco_Hs_arr.at(1).getComponent2()).P4().Pt()), 1);
+    leadPt.at(2) = make_pair(std::max(dynamic_cast<Jet&>(reco_Hs_arr.at(2).getComponent1()).P4().Pt(), dynamic_cast<Jet&>(reco_Hs_arr.at(2).getComponent2()).P4().Pt()), 2);    
   }
   
   else {
-    leadPt.at(0) = make_pair(std::max(reco_Hs_arr.at(0).getComponent1().P4Regressed().Pt(), reco_Hs_arr.at(0).getComponent2().P4Regressed().Pt()), 0);
-    leadPt.at(1) = make_pair(std::max(reco_Hs_arr.at(1).getComponent1().P4Regressed().Pt(), reco_Hs_arr.at(1).getComponent2().P4Regressed().Pt()), 1);
-    leadPt.at(2) = make_pair(std::max(reco_Hs_arr.at(2).getComponent1().P4Regressed().Pt(), reco_Hs_arr.at(2).getComponent2().P4Regressed().Pt()), 2);
+    leadPt.at(0) = make_pair(std::max(reco_Hs_arr.at(0).getComponent1().P4().Pt(), reco_Hs_arr.at(0).getComponent2().P4().Pt()), 0);
+    leadPt.at(1) = make_pair(std::max(reco_Hs_arr.at(1).getComponent1().P4().Pt(), reco_Hs_arr.at(1).getComponent2().P4().Pt()), 1);
+    leadPt.at(2) = make_pair(std::max(reco_Hs_arr.at(2).getComponent1().P4().Pt(), reco_Hs_arr.at(2).getComponent2().P4().Pt()), 2);
   }
 
   sort(leadPt.begin(), leadPt.end());
