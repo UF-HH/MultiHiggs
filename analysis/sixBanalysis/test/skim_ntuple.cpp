@@ -438,41 +438,6 @@ int main(int argc, char** argv)
   if (config.hasOpt("configurations::blinded"))
     blind = config.readBoolOpt("configurations::blinded");
 
-  // string f_2j_classifier = config.readStringOpt("configurations::2jet_classifier");
-  // // string f_3d_classifier = config.readStringOpt("configurations::3dijet_classifier");
-  // string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
-
-  // EvalNN n_2j_classifier("n_2j_classifier",f_2j_classifier);
-  // // EvalNN n_3d_classifier("n_3d_classifier",f_3d_classifier);
-  // EvalNN n_6j_classifier("n_6j_classifier",f_6j_classifier);
-
-  // n_2j_classifier.write(outputFile);
-  // // n_3d_classifier.write(outputFile);
-  // n_6j_classifier.write(outputFile);
-
-  // cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
-  // // cout << "[INFO] Loading 3 DiJet Classifier: " << f_3d_classifier << endl;
-  // cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
-
-  // string f_2j_classifier = readCfgOptWithDefault<string>(config, "configurations::2jet_classifier", "");
-  // string f_6j_classifier = readCfgOptWithDefault<string>(config, "configurations::6jet_classifier", "");
-
-  // std::unique_ptr<EvalNN> n_2j_classifier;
-  // std::unique_ptr<EvalNN> n_6j_classifier;
-
-  // if (!f_2j_classifier.empty()){
-  //   n_2j_classifier = std::unique_ptr<EvalNN> (new EvalNN("n_2j_classifier",f_2j_classifier));
-  //   n_2j_classifier -> write(outputFile);
-  //   cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
-  // }
-
-  // if (!f_6j_classifier.empty()){
-  //   n_6j_classifier = std::unique_ptr<EvalNN> (new EvalNN("n_6j_classifier",f_6j_classifier));
-  //   n_6j_classifier -> write(outputFile);
-  //   cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
-  // }
-
-
   // -----------
 
   JetTools jt;
@@ -518,28 +483,6 @@ int main(int argc, char** argv)
 
   skf->initialize_params_from_cfg(config);
   skf->initialize_functions(outputFile);
-
-  // skf->pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
-  // skf->pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
-  // skf->pmap.insert_param<int>   ("presel", "pf_id",   config.readIntOpt("presel::pf_id"));
-  // skf->pmap.insert_param<int>   ("presel", "pu_id",   config.readIntOpt("presel::pu_id"));
-
-  // // cout << "       ... presel::pt_min  : " << skf->get_param<double>("presel::pt_min")   << endl;
-  // // cout << "       ... presel::eta_max : " << skf->get_param<double>("presel::eta_max")  << endl;
-  // // cout << "       ... presel::pf_id   : " << skf->get_param<int>   ("presel::pf_id")    << endl;
-  // // cout << "       ... presel::pu_id   : " << skf->get_param<int>   ("presel::pu_id")    << endl;
-
-  // skf->pmap.insert_param<std::string>("configurations", "sixbJetChoice", config.readStringOpt("configurations::sixbJetChoice"));
-  // // cout << "       ... configurations::sixbJetChoice : " << skf->get_param<string> ("configurations::sixbJetChoice")  << endl;
-
-  // // parse specific parameters for various functions
-  // if (skf->pmap.get_param<string> ("configurations", "sixbJetChoice") == "bias_pt_sort")
-  // {
-  //     skf->pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
-  //     skf->pmap.insert_param<vector<double>>("bias_pt_sort", "pt_cuts",      config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
-  //     skf->pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
-  // }
-
 
   ////////////////////////////////////////////////////////////////////////
   // Execute event loop
@@ -829,54 +772,6 @@ int main(int argc, char** argv)
 	
 	skf->compute_event_shapes(nat, ei, selected_jets);
 	loop_timer.click("Event shapes calculation");
-	
-	// if ( applyJetCuts && !skf->pass_jet_cut(cutflow, pt_cuts, btagWP_cuts, presel_jets) )
-	//   continue;
-	
-	// std::vector<Jet> t6_jets = skf->get_6jet_top(presel_jets);
-	// std::vector<DiJet> t6_dijets = skf->get_tri_higgs_D_HHH(t6_jets);
-	
-	/*
-	  EventShapeCalculator t6_esc(t6_jets);
-	  EventShapes t6_event_shapes = t6_esc.get_sphericity_shapes();
-	  ei.t6_event_shapes = t6_event_shapes;
-	  
-	  float t6_jet_btagsum = 0;
-	  for (Jet& j : t6_jets) t6_jet_btagsum += j.get_btag();
-	  ot.userFloat("t6_jet_btagsum") = t6_jet_btagsum;
-	  
-	  int nfound_t6_h = skf->n_gjmatched_in_dijetcoll(t6_dijets);
-	  int nfound_t6 = skf->n_gjmatched_in_jetcoll(nat, ei, t6_jets); 
-	  
-	  std::vector<Jet> nn_jets = skf->get_6jet_NN(ei,presel_jets, *n_6j_classifier);
-	  std::vector<DiJet> nn_dijets = skf->get_2jet_NN(ei,nn_jets, *n_2j_classifier); 
-	  // std::vector<DiJet> nn_dijets = skf->get_3dijet_NN(ei,nn_jets,n_3d_classifier);
-	  
-	  EventShapeCalculator nn_esc(nn_jets);
-	  EventShapes nn_event_shapes = nn_esc.get_sphericity_shapes();
-	  ei.nn_event_shapes = nn_event_shapes;
-	  
-	  float nn_jet_btagsum = 0;
-	  for (Jet& j : nn_jets) nn_jet_btagsum += j.get_btag();
-	  ot.userFloat("nn_jet_btagsum") = nn_jet_btagsum;
-	  
-	  int nfound_nn_h = skf->n_gjmatched_in_dijetcoll(nn_dijets);
-	  int nfound_nn = skf->n_gjmatched_in_jetcoll(nat, ei, nn_jets);
-	  
-	  ot.userInt("nfound_t6")   = nfound_t6;
-	  ot.userInt("nfound_t6_h") = nfound_t6_h;
-	  ot.userInt("nfound_nn")     = nfound_nn;
-	  ot.userInt("nfound_nn_h")     = nfound_nn_h;
-	  
-	  ei.t6_jet_list = t6_jets;
-	  ei.t6_higgs_list = t6_dijets;
-	  ei.n_higgs = t6_dijets.size();
-	  
-	  ei.nn_jet_list = nn_jets;
-	  ei.nn_higgs_list = nn_dijets;
-	*/
-	
-	// loop_timer.click("Six b selection");
       }
     else if (skim_type == khiggscr)
       {
