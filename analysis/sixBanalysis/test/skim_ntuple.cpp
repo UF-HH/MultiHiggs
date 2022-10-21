@@ -672,6 +672,8 @@ int main(int argc, char** argv)
     
     // Apply preselections to jets (min pT / max eta / PU ID / PF ID)
     std::vector<Jet> presel_jets = skf->preselect_jets(nat, ei, all_jets);
+
+
     
     ei.nfound_presel = skf->n_gjmatched_in_jetcoll(nat, ei, presel_jets);
     //std::cout << "Number of selected jets found matched with GEN-level objects = "<<ei.nfound_presel<<std::endl;
@@ -765,69 +767,75 @@ int main(int argc, char** argv)
     }
     else if (skim_type == ksixb)
     {
-      // Preselected jets are all jets in the event sorted in pT
-      const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
-      if (!cfg_nJets.passedCut(presel_jets.size())) continue;
-      cutflow.add("selected jets >= 6", nwt);
-	    cutflow_Unweighted.add("selected jets >= 6");
-      
-      //=============================================
-      // Jets for pairing selection (either 6 or 0)
-      //=============================================
-      std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
-      if (selected_jets.size() < 6) continue;
-      cutflow.add("Jets for pairing selection");
-      cutflow_Unweighted.add("Jets for pairing selection");
+      // if (presel_jets.size() < 6)
+	  // continue;
+	  cutflow.add("npresel_jets>=6", nwt);
+	  cutflow_Unweighted.add("npresel_jets>=6");
 
-      loop_timer.click("Six b jet selection");
+    // Preselected jets are all jets in the event sorted in pT
+    const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
+    if (!cfg_nJets.passedCut(presel_jets.size())) continue;
+    cutflow.add("selected jets >= 6", nwt);
+    cutflow_Unweighted.add("selected jets >= 6");
+    
+    //=============================================
+    // Jets for pairing selection (either 6 or 0)
+    //=============================================
+    std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
+    if (selected_jets.size() < 6) continue;
+    cutflow.add("Jets for pairing selection");
+    cutflow_Unweighted.add("Jets for pairing selection");
+
+    loop_timer.click("Six b jet selection");
+    
+    ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
+    ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
+    
+
+    if (debug)
+      {
+        dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
+      }
       
-      ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
-      ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
-      
-	if (debug)
-	  {
-	    dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
-	  }
-      
-	
-	//================================================
-	// Proceed with the pairing of the 6 selected jets
-	//=================================================
-	skf->pair_jets(nat, ei, selected_jets);
-	loop_timer.click("Six b jet pairing");
-	
-	if (is_signal)
-	  {
-	    skf->compute_seljets_genmatch_flags(nat, ei);
-	    loop_timer.click("Six b pairing flags");
-	  }
-	
-	skf->compute_event_shapes(nat, ei, selected_jets);
-	loop_timer.click("Event shapes calculation");
+    
+    //================================================
+    // Proceed with the pairing of the 6 selected jets
+    //=================================================
+    skf->pair_jets(nat, ei, selected_jets);
+    loop_timer.click("Six b jet pairing");
+    
+  if (is_signal)
+    {
+      skf->compute_seljets_genmatch_flags(nat, ei);
+      loop_timer.click("Six b pairing flags");
+    }
+  
+  skf->compute_event_shapes(nat, ei, selected_jets);
+  loop_timer.click("Event shapes calculation");
 
     }
 
-  else if (skim_type == khiggscr)
-  {
+  // else if (skim_type == khiggscr)
+  // {
 
-	if (presel_jets.size() < 6)
-	  continue;
-	cutflow.add("npresel_jets>=6", nwt);
-	cutflow_Unweighted.add("npresel_jets>=6");
+	// if (presel_jets.size() < 6)
+	//   continue;
+	// cutflow.add("npresel_jets>=6", nwt);
+	// cutflow_Unweighted.add("npresel_jets>=6");
 
-	// if ( applyJetCuts && !skf->pass_jet_cut(cutflow,pt_cuts,btagWP_cuts,presel_jets) )
-	//   continue;
+	// // if ( applyJetCuts && !skf->pass_jet_cut(cutflow,pt_cuts,btagWP_cuts,presel_jets) )
+	// //   continue;
 	
-	// if ( !skf->pass_higgs_cr(all_higgs) )
-	//   continue;
-	// cutflow.add("higgs_veto_cr", nwt);
+	// // if ( !skf->pass_higgs_cr(all_higgs) )
+	// //   continue;
+	// // cutflow.add("higgs_veto_cr", nwt);
 	
-	// if ( jet6_btagsum >= 3.8 )
-	//   continue;
-	// cutflow.add("jet6_btagsum<3.8", nwt);
+	// // if ( jet6_btagsum >= 3.8 )
+	// //   continue;
+	// // cutflow.add("jet6_btagsum<3.8", nwt);
 	
-	loop_timer.click("Higgs CR selection");
-      }
+	// loop_timer.click("Higgs CR selection");
+  //     }
 
       
     else if (skim_type == kttbar)
