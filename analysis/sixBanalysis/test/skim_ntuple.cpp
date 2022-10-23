@@ -589,7 +589,7 @@ int main(int argc, char** argv)
     // Apply METFilters
     //==================================
     bool bMETFilters = *nat.Flag_goodVertices && *nat.Flag_globalSuperTightHalo2016Filter && *nat.Flag_HBHENoiseFilter && *nat.Flag_HBHENoiseIsoFilter && *nat.Flag_EcalDeadCellTriggerPrimitiveFilter && *nat.Flag_BadPFMuonFilter && *nat.Flag_eeBadScFilter && (*nat.Flag_ecalBadCalibFilter || (year=="2016"));
-    // if (!bMETFilters) continue;
+    if (!bMETFilters) continue;
     loop_timer.click("MET Filters");
     cutflow.add("met filters", nwt);
     cutflow_Unweighted.add("met filters");
