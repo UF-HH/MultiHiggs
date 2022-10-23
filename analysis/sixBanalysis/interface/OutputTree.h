@@ -223,29 +223,29 @@ public:
   // Start Gen 6B Objects
   DECLARE_m_pt_eta_phi_p4(gen_Y);
   DECLARE_m_pt_eta_phi_p4(gen_HX);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2);
+  DECLARE_m_pt_eta_phi_p4(gen_H1);
+  DECLARE_m_pt_eta_phi_p4(gen_H2);
 
   DECLARE_m_pt_eta_phi_p4(gen_HX_b1);
   DECLARE_m_pt_eta_phi_p4(gen_HX_b2);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1_b2);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2_b2);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b1);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b2);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b1);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b2);
 
   DECLARE_m_pt_eta_phi_p4(gen_HX_b1_genjet);
   DECLARE_m_pt_eta_phi_p4(gen_HX_b2_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HY1_b2_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HY2_b2_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b1_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b2_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b1_genjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b2_genjet);
 
   DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
   DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY1_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HY2_b2_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1_b2_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2_b1_recojet);
+  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2_b2_recojet);
   // End Gen 6B Objects
 
   
@@ -294,22 +294,22 @@ public:
   // Start Reco 6B Objects
   DECLARE_m_pt_eta_phi_p4(Y);
   DECLARE_m_pt_eta_phi_p4(HX);
-  DECLARE_m_pt_eta_phi_p4(HY1);
-  DECLARE_m_pt_eta_phi_p4(HY2);
+  DECLARE_m_pt_eta_phi_p4(H1);
+  DECLARE_m_pt_eta_phi_p4(H2);
 
   DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b1);
   DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY1_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HY2_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b2);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b1);
+  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b2);
 
   int HX_b1_genHflag;
   int HX_b2_genHflag;
-  int HY1_b1_genHflag;
-  int HY1_b2_genHflag;
-  int HY2_b1_genHflag;
-  int HY2_b2_genHflag;
+  int H1_b1_genHflag;
+  int H1_b2_genHflag;
+  int H2_b1_genHflag;
+  int H2_b2_genHflag;
   // End Reco 6B Objects
 
   // Start Reco 8B Objects

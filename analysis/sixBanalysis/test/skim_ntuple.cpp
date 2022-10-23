@@ -219,15 +219,13 @@ int main(int argc, char** argv)
   const SkimTypes skim_type = (skim_type_name == "sixb"    ? ksixb    :
                                skim_type_name == "ttbar"   ? kttbar   :
                                skim_type_name == "eightb"  ? keightb  :
-			       //  skim_type_name == "shapecr" ? kshapecr :
+			                        //  skim_type_name == "shapecr" ? kshapecr :
                                skim_type_name == "higgscr" ? khiggscr :
-                               skim_type_name == "pass"    ? kpass     :
-                               skim_type_name == "presel"    ? kpresel     :
-                              //  knull
-			       //  skim_type_name == "pass"    ? kpass     :
+                               skim_type_name == "pass"    ? kpass    :
+                               skim_type_name == "presel"  ? kpresel  :
                                skim_type_name == "trgeff"  ? kTrgEff  :
-			                          // knull
-                               );
+                               knull
+                              );
   if (skim_type == knull)
     throw std::runtime_error("skim type not recognized");
 
@@ -329,17 +327,17 @@ int main(int argc, char** argv)
   TFile outputFile(outputFileName.c_str(), "recreate");
   OutputTree ot(opts["save-p4"].as<bool>(),
                 map<string, bool>{
-		// {"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
-		// {"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
-		{"muon_coll",   readCfgOptWithDefault<bool>(config, "configurations::saveMuonColl", false)},
-		{"ele_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveEleColl", false)},  
-		{"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
-		{"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes", false)},
+          // {"jet_coll",   config.readBoolOpt("configurations::saveJetColl")},
+          // {"shape_brs",  config.readBoolOpt("configurations::saveShapes")},
+          {"muon_coll",   readCfgOptWithDefault<bool>(config, "configurations::saveMuonColl", false)},
+          {"ele_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveEleColl", false)},  
+          {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
+          {"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes", false)},
 	        {"dijets_coll", readCfgOptWithDefault<bool>(config, "configurations::saveDiJets", false)},
 	        {"sixb_brs", (skim_type == ksixb)},
 	        {"eightb_brs", (skim_type == keightb)},
 	        {"ttbar_brs", (skim_type == kttbar)},
-		{"trgeff_brs", (skim_type == kTrgEff)},
+		      {"trgeff_brs", (skim_type == kTrgEff)},
 	        {"sig_gen_brs", (is_signal)},
 	        {"gen_brs", (!is_data)},
 		  });
@@ -438,41 +436,6 @@ int main(int argc, char** argv)
   if (config.hasOpt("configurations::blinded"))
     blind = config.readBoolOpt("configurations::blinded");
 
-  // string f_2j_classifier = config.readStringOpt("configurations::2jet_classifier");
-  // // string f_3d_classifier = config.readStringOpt("configurations::3dijet_classifier");
-  // string f_6j_classifier = config.readStringOpt("configurations::6jet_classifier");
-
-  // EvalNN n_2j_classifier("n_2j_classifier",f_2j_classifier);
-  // // EvalNN n_3d_classifier("n_3d_classifier",f_3d_classifier);
-  // EvalNN n_6j_classifier("n_6j_classifier",f_6j_classifier);
-
-  // n_2j_classifier.write(outputFile);
-  // // n_3d_classifier.write(outputFile);
-  // n_6j_classifier.write(outputFile);
-
-  // cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
-  // // cout << "[INFO] Loading 3 DiJet Classifier: " << f_3d_classifier << endl;
-  // cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
-
-  // string f_2j_classifier = readCfgOptWithDefault<string>(config, "configurations::2jet_classifier", "");
-  // string f_6j_classifier = readCfgOptWithDefault<string>(config, "configurations::6jet_classifier", "");
-
-  // std::unique_ptr<EvalNN> n_2j_classifier;
-  // std::unique_ptr<EvalNN> n_6j_classifier;
-
-  // if (!f_2j_classifier.empty()){
-  //   n_2j_classifier = std::unique_ptr<EvalNN> (new EvalNN("n_2j_classifier",f_2j_classifier));
-  //   n_2j_classifier -> write(outputFile);
-  //   cout << "[INFO] Loading 2 Jet Classifier: " << f_2j_classifier << endl;
-  // }
-
-  // if (!f_6j_classifier.empty()){
-  //   n_6j_classifier = std::unique_ptr<EvalNN> (new EvalNN("n_6j_classifier",f_6j_classifier));
-  //   n_6j_classifier -> write(outputFile);
-  //   cout << "[INFO] Loading 6 Jet Classifier: " << f_6j_classifier << endl;
-  // }
-
-
   // -----------
 
   JetTools jt;
@@ -518,28 +481,6 @@ int main(int argc, char** argv)
 
   skf->initialize_params_from_cfg(config);
   skf->initialize_functions(outputFile);
-
-  // skf->pmap.insert_param<double>("presel", "pt_min",  config.readDoubleOpt("presel::pt_min"));
-  // skf->pmap.insert_param<double>("presel", "eta_max", config.readDoubleOpt("presel::eta_max"));
-  // skf->pmap.insert_param<int>   ("presel", "pf_id",   config.readIntOpt("presel::pf_id"));
-  // skf->pmap.insert_param<int>   ("presel", "pu_id",   config.readIntOpt("presel::pu_id"));
-
-  // // cout << "       ... presel::pt_min  : " << skf->get_param<double>("presel::pt_min")   << endl;
-  // // cout << "       ... presel::eta_max : " << skf->get_param<double>("presel::eta_max")  << endl;
-  // // cout << "       ... presel::pf_id   : " << skf->get_param<int>   ("presel::pf_id")    << endl;
-  // // cout << "       ... presel::pu_id   : " << skf->get_param<int>   ("presel::pu_id")    << endl;
-
-  // skf->pmap.insert_param<std::string>("configurations", "sixbJetChoice", config.readStringOpt("configurations::sixbJetChoice"));
-  // // cout << "       ... configurations::sixbJetChoice : " << skf->get_param<string> ("configurations::sixbJetChoice")  << endl;
-
-  // // parse specific parameters for various functions
-  // if (skf->pmap.get_param<string> ("configurations", "sixbJetChoice") == "bias_pt_sort")
-  // {
-  //     skf->pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
-  //     skf->pmap.insert_param<vector<double>>("bias_pt_sort", "pt_cuts",      config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
-  //     skf->pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
-  // }
-
 
   ////////////////////////////////////////////////////////////////////////
   // Execute event loop
@@ -648,7 +589,7 @@ int main(int argc, char** argv)
     // Apply METFilters
     //==================================
     bool bMETFilters = *nat.Flag_goodVertices && *nat.Flag_globalSuperTightHalo2016Filter && *nat.Flag_HBHENoiseFilter && *nat.Flag_HBHENoiseIsoFilter && *nat.Flag_EcalDeadCellTriggerPrimitiveFilter && *nat.Flag_BadPFMuonFilter && *nat.Flag_eeBadScFilter && (*nat.Flag_ecalBadCalibFilter || (year=="2016"));
-    if (!bMETFilters) continue;
+    // if (!bMETFilters) continue;
     loop_timer.click("MET Filters");
     cutflow.add("met filters", nwt);
     cutflow_Unweighted.add("met filters");
@@ -707,12 +648,12 @@ int main(int argc, char** argv)
     // Save signal specific GEN info
     //======================================
     if (is_signal)
-      {
-	skf->select_gen_particles(nat, ei);        // find gen level X, Y, H, b
-	skf->match_genbs_to_genjets(nat, ei);      // match the b quarks found above to the genjets
-	skf->match_genbs_genjets_to_reco(nat, ei); // match the genjets found above to the reco jets
-	loop_timer.click("Signal gen level");
-      }
+    {
+      skf->select_gen_particles(nat, ei);        // find gen level X, Y, H, b
+      skf->match_genbs_to_genjets(nat, ei);      // match the b quarks found above to the genjets
+      skf->match_genbs_genjets_to_reco(nat, ei); // match the genjets found above to the reco jets
+      loop_timer.click("Signal gen level");
+    }
     
     //======================================
     // Jet Selection
@@ -731,6 +672,8 @@ int main(int argc, char** argv)
     
     // Apply preselections to jets (min pT / max eta / PU ID / PF ID)
     std::vector<Jet> presel_jets = skf->preselect_jets(nat, ei, all_jets);
+
+
     
     ei.nfound_presel = skf->n_gjmatched_in_jetcoll(nat, ei, presel_jets);
     //std::cout << "Number of selected jets found matched with GEN-level objects = "<<ei.nfound_presel<<std::endl;
@@ -745,13 +688,13 @@ int main(int argc, char** argv)
     if (debug) dumpObjColl(presel_jets, "==== PRESELECTED JETS ===");
     
     if (is_signal) 
-      {
-	skf->match_signal_recojets(nat,ei,presel_jets);
-	std::vector<GenJet> all_genjets = skf->get_all_genjets(nat);
-	skf->match_genjets_to_reco(nat,ei,all_genjets,presel_jets);
-	skf->match_signal_genjets(nat,ei,all_genjets);
-	ei.genjet_list = all_genjets;
-      }
+    {
+      skf->match_signal_recojets(nat,ei,presel_jets);
+      std::vector<GenJet> all_genjets = skf->get_all_genjets(nat);
+      skf->match_genjets_to_reco(nat,ei,all_genjets,presel_jets);
+      skf->match_signal_genjets(nat,ei,all_genjets);
+      ei.genjet_list = all_genjets;
+    }
     
     ei.jet_list = presel_jets;
     
@@ -771,6 +714,25 @@ int main(int argc, char** argv)
 
       }
     else if (skim_type == keightb)
+    {
+      if (presel_jets.size() < 8)
+        continue;
+      cutflow.add("npresel_jets>=8", nwt);
+    
+      // std::vector<DiJet> dijets = skf->make_dijets(nat, ei, presel_jets);
+      // ei.dijet_list = dijets;
+      
+      std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
+      loop_timer.click("Eight B Selection");
+      
+      if (selected_jets.size() < 8)
+        continue;
+      cutflow.add("nselect_jets>=8", nwt);
+      skf->pair_jets(nat, ei, selected_jets);
+      skf->compute_seljets_btagmulti(nat, ei);
+      loop_timer.click("Eight b jet pairing");
+      
+      if (is_signal)
       {
 	if (presel_jets.size() < 8)
 	  continue;
@@ -799,115 +761,83 @@ int main(int argc, char** argv)
 	skf->compute_event_shapes(nat, ei, selected_jets);
 	loop_timer.click("Event shapes calculation");
       }
+    
+      skf->compute_event_shapes(nat, ei, selected_jets);
+      loop_timer.click("Event shapes calculation");
+    }
     else if (skim_type == ksixb)
-      {
-	// Preselected jets are all jets in the event sorted in pT
-	const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
-	if (!cfg_nJets.passedCut(presel_jets.size())) continue;
-        cutflow.add("selected jets >= 6", nwt);
-	cutflow_Unweighted.add("selected jets >= 6");
-	
-	//=============================================
-	// Jets for pairing selection (either 6 or 0)
-	//=============================================
-	std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
-	if (selected_jets.size() < 6) continue;
-	cutflow.add("Jets for pairing selection", nwt);
-	cutflow_Unweighted.add("Jets for pairing selection");
-	
-	loop_timer.click("Six b jet selection");
-	
-	ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
-	ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
-	
-	if (debug)
-	  {
-	    dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
-	  }
-	
-	//================================================
-	// Proceed with the pairing of the 6 selected jets
-	//=================================================
-	skf->pair_jets(nat, ei, selected_jets);
-	loop_timer.click("Six b jet pairing");
-	
-	if (is_signal)
-	  {
-	    skf->compute_seljets_genmatch_flags(nat, ei);
-	    loop_timer.click("Six b pairing flags");
-	  }
-	
-	skf->compute_event_shapes(nat, ei, selected_jets);
-	loop_timer.click("Event shapes calculation");
-	
-	// if ( applyJetCuts && !skf->pass_jet_cut(cutflow, pt_cuts, btagWP_cuts, presel_jets) )
-	//   continue;
-	
-	// std::vector<Jet> t6_jets = skf->get_6jet_top(presel_jets);
-	// std::vector<DiJet> t6_dijets = skf->get_tri_higgs_D_HHH(t6_jets);
-	
-	/*
-	  EventShapeCalculator t6_esc(t6_jets);
-	  EventShapes t6_event_shapes = t6_esc.get_sphericity_shapes();
-	  ei.t6_event_shapes = t6_event_shapes;
-	  
-	  float t6_jet_btagsum = 0;
-	  for (Jet& j : t6_jets) t6_jet_btagsum += j.get_btag();
-	  ot.userFloat("t6_jet_btagsum") = t6_jet_btagsum;
-	  
-	  int nfound_t6_h = skf->n_gjmatched_in_dijetcoll(t6_dijets);
-	  int nfound_t6 = skf->n_gjmatched_in_jetcoll(nat, ei, t6_jets); 
-	  
-	  std::vector<Jet> nn_jets = skf->get_6jet_NN(ei,presel_jets, *n_6j_classifier);
-	  std::vector<DiJet> nn_dijets = skf->get_2jet_NN(ei,nn_jets, *n_2j_classifier); 
-	  // std::vector<DiJet> nn_dijets = skf->get_3dijet_NN(ei,nn_jets,n_3d_classifier);
-	  
-	  EventShapeCalculator nn_esc(nn_jets);
-	  EventShapes nn_event_shapes = nn_esc.get_sphericity_shapes();
-	  ei.nn_event_shapes = nn_event_shapes;
-	  
-	  float nn_jet_btagsum = 0;
-	  for (Jet& j : nn_jets) nn_jet_btagsum += j.get_btag();
-	  ot.userFloat("nn_jet_btagsum") = nn_jet_btagsum;
-	  
-	  int nfound_nn_h = skf->n_gjmatched_in_dijetcoll(nn_dijets);
-	  int nfound_nn = skf->n_gjmatched_in_jetcoll(nat, ei, nn_jets);
-	  
-	  ot.userInt("nfound_t6")   = nfound_t6;
-	  ot.userInt("nfound_t6_h") = nfound_t6_h;
-	  ot.userInt("nfound_nn")     = nfound_nn;
-	  ot.userInt("nfound_nn_h")     = nfound_nn_h;
-	  
-	  ei.t6_jet_list = t6_jets;
-	  ei.t6_higgs_list = t6_dijets;
-	  ei.n_higgs = t6_dijets.size();
-	  
-	  ei.nn_jet_list = nn_jets;
-	  ei.nn_higgs_list = nn_dijets;
-	*/
-	
-	// loop_timer.click("Six b selection");
-      }
-    else if (skim_type == khiggscr)
-      {
-	if (presel_jets.size() < 6)
-	  continue;
-	cutflow.add("npresel_jets>=6", nwt);
-	cutflow_Unweighted.add("npresel_jets>=6");
+    {
+      // if (presel_jets.size() < 6)
+	  // continue;
+	  cutflow.add("npresel_jets>=6", nwt);
+	  cutflow_Unweighted.add("npresel_jets>=6");
 
-	// if ( applyJetCuts && !skf->pass_jet_cut(cutflow,pt_cuts,btagWP_cuts,presel_jets) )
-	//   continue;
-	
-	// if ( !skf->pass_higgs_cr(all_higgs) )
-	//   continue;
-	// cutflow.add("higgs_veto_cr", nwt);
-	
-	// if ( jet6_btagsum >= 3.8 )
-	//   continue;
-	// cutflow.add("jet6_btagsum<3.8", nwt);
-	
-	loop_timer.click("Higgs CR selection");
+    // Preselected jets are all jets in the event sorted in pT
+    const DirectionalCut<int> cfg_nJets(config, "presel::njetsCut");
+    if (!cfg_nJets.passedCut(presel_jets.size())) continue;
+    cutflow.add("selected jets >= 6", nwt);
+    cutflow_Unweighted.add("selected jets >= 6");
+    
+    //=============================================
+    // Jets for pairing selection (either 6 or 0)
+    //=============================================
+    std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
+    if (selected_jets.size() < 6) continue;
+    cutflow.add("Jets for pairing selection");
+    cutflow_Unweighted.add("Jets for pairing selection");
+
+    loop_timer.click("Six b jet selection");
+    
+    ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
+    ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
+    
+
+    if (debug)
+      {
+        dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
       }
+      
+    
+    //================================================
+    // Proceed with the pairing of the 6 selected jets
+    //=================================================
+    skf->pair_jets(nat, ei, selected_jets);
+    loop_timer.click("Six b jet pairing");
+    
+  if (is_signal)
+    {
+      skf->compute_seljets_genmatch_flags(nat, ei);
+      loop_timer.click("Six b pairing flags");
+    }
+  
+  skf->compute_event_shapes(nat, ei, selected_jets);
+  loop_timer.click("Event shapes calculation");
+
+    }
+
+  // else if (skim_type == khiggscr)
+  // {
+
+	// if (presel_jets.size() < 6)
+	//   continue;
+	// cutflow.add("npresel_jets>=6", nwt);
+	// cutflow_Unweighted.add("npresel_jets>=6");
+
+	// // if ( applyJetCuts && !skf->pass_jet_cut(cutflow,pt_cuts,btagWP_cuts,presel_jets) )
+	// //   continue;
+	
+	// // if ( !skf->pass_higgs_cr(all_higgs) )
+	// //   continue;
+	// // cutflow.add("higgs_veto_cr", nwt);
+	
+	// // if ( jet6_btagsum >= 3.8 )
+	// //   continue;
+	// // cutflow.add("jet6_btagsum<3.8", nwt);
+	
+	// loop_timer.click("Higgs CR selection");
+  //     }
+
+      
     else if (skim_type == kttbar)
       {
 	if (presel_jets.size() < 2)
@@ -929,6 +859,25 @@ int main(int argc, char** argv)
 	  ei.btagSF_WP_M = btsf.get_SF_allJetsPassWP({ttjets.at(0), ttjets.at(1)}, BtagSF::btagWP::medium);
 	loop_timer.click("ttbar b jet selection");
       }
+    else if (skim_type == kttbar)
+    {
+      if (presel_jets.size() < 2)
+        continue;
+      cutflow.add("npresel_jets>=2", nwt);
+      
+      std::vector<Jet> ttjets = skf->select_jets(nat, ei, presel_jets); // ttjets sorted by DeepJet
+      double deepjet1 = get_property(ttjets.at(0), Jet_btagDeepFlavB);
+      double deepjet2 = get_property(ttjets.at(1), Jet_btagDeepFlavB);
+      int nbtag = 0;
+      if (deepjet1 > btag_WPs.at(bTagWP)) nbtag += 1;
+      if (deepjet2 > btag_WPs.at(bTagWP)) nbtag += 1;
+      if (nbtag < nMinBtag)
+        continue;
+      cutflow.add("ttbar_jet_cut", nwt);
+      if (!is_data)
+        ei.btagSF_WP_M = btsf.get_SF_allJetsPassWP({ttjets.at(0), ttjets.at(1)}, BtagSF::btagWP::medium);
+      loop_timer.click("ttbar b jet selection");
+    }
     
     if (blind && is_data && skf->is_blinded(nat, ei, is_data))
       continue;
@@ -941,7 +890,6 @@ int main(int argc, char** argv)
     su::fill_output_tree(ot, nat, ei);
     loop_timer.click("Output tree fill");
   } // Closes Event Loop 
-  
   
   const auto end_loop_t = chrono::high_resolution_clock::now();
 

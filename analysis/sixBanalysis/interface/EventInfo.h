@@ -50,29 +50,29 @@ struct EventInfo{
   // Start Gen 6B Objects
   boost::optional<GenPart>  gen_Y;
   boost::optional<GenPart>  gen_HX;    // H from the X->YH process
-  boost::optional<GenPart>  gen_HY1;   // H from the X->YH, Y->HH process
-  boost::optional<GenPart>  gen_HY2;   // H from the X->YH, Y->HH process
+  boost::optional<GenPart>  gen_H1;   // H from the X->YH, Y->HH process
+  boost::optional<GenPart>  gen_H2;   // H from the X->YH, Y->HH process
 
   boost::optional<GenPart>  gen_HX_b1;
   boost::optional<GenPart>  gen_HX_b2;
-  boost::optional<GenPart>  gen_HY1_b1;
-  boost::optional<GenPart>  gen_HY1_b2;
-  boost::optional<GenPart>  gen_HY2_b1;
-  boost::optional<GenPart>  gen_HY2_b2;
+  boost::optional<GenPart>  gen_H1_b1;
+  boost::optional<GenPart>  gen_H1_b2;
+  boost::optional<GenPart>  gen_H2_b1;
+  boost::optional<GenPart>  gen_H2_b2;
 
   boost::optional<GenJet> gen_HX_b1_genjet; // genjets matched to the 6 b
   boost::optional<GenJet> gen_HX_b2_genjet;
-  boost::optional<GenJet> gen_HY1_b1_genjet;
-  boost::optional<GenJet> gen_HY1_b2_genjet;
-  boost::optional<GenJet> gen_HY2_b1_genjet;
-  boost::optional<GenJet> gen_HY2_b2_genjet;
+  boost::optional<GenJet> gen_H1_b1_genjet;
+  boost::optional<GenJet> gen_H1_b2_genjet;
+  boost::optional<GenJet> gen_H2_b1_genjet;
+  boost::optional<GenJet> gen_H2_b2_genjet;
 
   boost::optional<Jet> gen_HX_b1_recojet; // recojets matched to the 6 b
   boost::optional<Jet> gen_HX_b2_recojet;
-  boost::optional<Jet> gen_HY1_b1_recojet;
-  boost::optional<Jet> gen_HY1_b2_recojet;
-  boost::optional<Jet> gen_HY2_b1_recojet;
-  boost::optional<Jet> gen_HY2_b2_recojet;
+  boost::optional<Jet> gen_H1_b1_recojet;
+  boost::optional<Jet> gen_H1_b2_recojet;
+  boost::optional<Jet> gen_H2_b1_recojet;
+  boost::optional<Jet> gen_H2_b2_recojet;
   // End Gen 6B Objects
 
   boost::optional<int> gen_bs_N_reco_match;
@@ -122,22 +122,22 @@ struct EventInfo{
   boost::optional<CompositeCandidate> X;
   boost::optional<CompositeCandidate> Y;
   boost::optional<CompositeCandidate> HX;
-  boost::optional<CompositeCandidate> HY1;
-  boost::optional<CompositeCandidate> HY2;
+  boost::optional<CompositeCandidate> H1;
+  boost::optional<CompositeCandidate> H2;
 
   boost::optional<Jet> HX_b1;
   boost::optional<Jet> HX_b2;
-  boost::optional<Jet> HY1_b1;
-  boost::optional<Jet> HY1_b2;
-  boost::optional<Jet> HY2_b1;
-  boost::optional<Jet> HY2_b2;
+  boost::optional<Jet> H1_b1;
+  boost::optional<Jet> H1_b2;
+  boost::optional<Jet> H2_b1;
+  boost::optional<Jet> H2_b2;
 
   boost::optional<int> HX_b1_genHflag;
   boost::optional<int> HX_b2_genHflag;
-  boost::optional<int> HY1_b1_genHflag;
-  boost::optional<int> HY1_b2_genHflag;
-  boost::optional<int> HY2_b1_genHflag;
-  boost::optional<int> HY2_b2_genHflag;
+  boost::optional<int> H1_b1_genHflag;
+  boost::optional<int> H1_b2_genHflag;
+  boost::optional<int> H2_b1_genHflag;
+  boost::optional<int> H2_b2_genHflag;
   // End Reco 6B Objects
 
   // Start Reco 8B Objects

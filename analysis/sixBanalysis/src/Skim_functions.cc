@@ -219,7 +219,7 @@ std::vector<Jet> Skim_functions::bias_pt_sort_jets(NanoAODTree &nat, EventInfo& 
   // For debugging
   if (0)
     {
-      std::cout << "Sorted by b-tagging score in descending order and then by pT withing each group (Tight, Medium, Loose, Fail), again in descending order:"<<std::endl;
+      std::cout << "Sorted by b-tagging score in descending order and then by pT within each group (Tight, Medium, Loose, Fail), again in descending order:"<<std::endl;
       for (unsigned int ij=0; ij<jets.size(); ij++)
         {
 	  std::cout << "  jet "<<ij<<"  pt = "<<jets.at(ij).get_pt()<<"   b-disc="<<jets.at(ij).get_btag()<<std::endl;
