@@ -589,11 +589,15 @@ int main(int argc, char** argv)
     // Apply METFilters
     //==================================
     bool bMETFilters = *nat.Flag_goodVertices && *nat.Flag_globalSuperTightHalo2016Filter && *nat.Flag_HBHENoiseFilter && *nat.Flag_HBHENoiseIsoFilter && *nat.Flag_EcalDeadCellTriggerPrimitiveFilter && *nat.Flag_BadPFMuonFilter && *nat.Flag_eeBadScFilter && (*nat.Flag_ecalBadCalibFilter || (year=="2016"));
-    // if (!bMETFilters) continue;
-    loop_timer.click("MET Filters");
-    cutflow.add("met filters", nwt);
-    cutflow_Unweighted.add("met filters");
-    
+    bool applyMETFilters = config.readBoolOpt("configurations::applyMETFilters");
+    if (applyMETFilters) {
+      if (!bMETFilters)
+        continue;
+      loop_timer.click("MET Filters");
+      cutflow.add("met filters", nwt);
+      cutflow_Unweighted.add("met filters");
+    }
+
     //==================================
     // Apply muon selection or veto
     //==================================
@@ -713,55 +717,30 @@ int main(int argc, char** argv)
 	// Work on-going here...
 
       }
-    else if (skim_type == keightb)
-    {
+    else if (skim_type == keightb) {
       if (presel_jets.size() < 8)
         continue;
       cutflow.add("npresel_jets>=8", nwt);
-    
+      cutflow_Unweighted.add("npresel_jets>=8");
+
       // std::vector<DiJet> dijets = skf->make_dijets(nat, ei, presel_jets);
       // ei.dijet_list = dijets;
-      
+
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
       loop_timer.click("Eight B Selection");
-      
+
       if (selected_jets.size() < 8)
         continue;
       cutflow.add("nselect_jets>=8", nwt);
+      cutflow_Unweighted.add("nselect_jets>=8");
       skf->pair_jets(nat, ei, selected_jets);
       skf->compute_seljets_btagmulti(nat, ei);
       loop_timer.click("Eight b jet pairing");
-      
-      if (is_signal)
-      {
-	if (presel_jets.size() < 8)
-	  continue;
-	cutflow.add("npresel_jets>=8", nwt);
-	cutflow_Unweighted.add("npresel_jets>=8");
-	// std::vector<DiJet> dijets = skf->make_dijets(nat, ei, presel_jets);
-	// ei.dijet_list = dijets;
-	
-	std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
-	loop_timer.click("Eight B Selection");
-	
-	if (selected_jets.size() < 8)
-	  continue;
-	cutflow.add("nselect_jets>=8", nwt);
-	cutflow_Unweighted.add("nselect_jets>=8");
-	skf->pair_jets(nat, ei, selected_jets);
-	skf->compute_seljets_btagmulti(nat, ei);
-	loop_timer.click("Eight b jet pairing");
-	
-	if (is_signal)
-	  {
-	    skf->compute_seljets_genmatch_flags(nat, ei);
-	    loop_timer.click("Eight b pairing flags");
-	  }
-	
-	skf->compute_event_shapes(nat, ei, selected_jets);
-	loop_timer.click("Event shapes calculation");
+
+      if (is_signal) {
+        skf->compute_seljets_genmatch_flags(nat, ei);
+        loop_timer.click("Eight b pairing flags");
       }
-    
       skf->compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
     }
