@@ -119,7 +119,6 @@ def main(args):
     cmd = "eos root://cmseos.fnal.gov find --childcount --maxdepth 1 -d" + " " + args.dirName
     dirContents = Execute(cmd)
     
-    taskReports = {}
     for count, d in enumerate(dirContents):
         
         # Skip the first directory, which is the args.dirName
