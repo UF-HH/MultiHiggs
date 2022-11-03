@@ -1,0 +1,11 @@
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/100000/5DEEB95E-0859-AD48-9DDB-4285F5374C07.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/0156189E-F4FA-1E40-91B3-88819935AF22.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/254AD0EC-6135-044D-BC49-95F104E14B88.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/26B69030-B9DE-9640-9E99-F0114311E60D.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/6255980A-9D86-BE4C-943D-921DE24EC8CF.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/6DFD20CA-5099-0D48-B773-7E23F95435E3.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/79AE98C6-733B-5C4C-8018-5CB2BDED8FFB.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/7DE89961-7FF1-D74B-A8CE-869C19042ABF.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/BCB79A38-3262-0444-B905-4A616A467297.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/C4B15A06-7ACF-9247-92E5-AB7DEBB71D5D.root
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL16NanoAODv9/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mcRun2_asymptotic_v17-v1/110000/EFE235D8-7795-B842-8776-864333CC781D.root

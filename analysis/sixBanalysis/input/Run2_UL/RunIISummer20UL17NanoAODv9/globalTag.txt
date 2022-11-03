@@ -1,0 +1,7 @@
+{
+  "GlobalTag" : [
+  {
+  "MC"   : "106X_mc2017_realistic_v9",
+  "Data" : "106X_dataRun2_v37",
+  },]
+}
