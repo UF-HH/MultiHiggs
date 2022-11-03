@@ -177,10 +177,10 @@ NMSSM_XYH_YToHH_6b_MX_1200_MY_900 = sam.Sample(name       = "NMSSM_XYH_YToHH_6b_
                                                sampletype = "mc",
                                                files      = [path["2018"]+'srosenzw_NMSSM_XYH_YToHH_6b_MX_1200_MY_900_sl7_nano_100k/ntuple.root'],
                                                sampledesc = {**lumiMap["2018"], 'xs' : 0.3, 'xs_units' : 'pb'})
-'''
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Suzanne's samples
-
+'''
 directories["2018"] = '/store/user/srosenzw/sixb/ntuples/Summer2018UL/bias/NMSSM/'
 path["2018"] = "".join([redirector, directories["2018"]])
 NMSSM_XYH_YToHH_6b_MX_450_MY_300 = sam.Sample(name       = "NMSSM_XYH_YToHH_6b_MX_450_MY_300",
@@ -327,9 +327,8 @@ NMSSM_XYH_YToHH_6b_MX_1200_MY_900 = sam.Sample(name       = "NMSSM_XYH_YToHH_6b_
                                                sampletype = "mc",
                                                files      = [path["2018"]+'NMSSM_XYH_YToHH_6b_MX_1200_MY_900/ntuple.root'],
                                                sampledesc = {**lumiMap["2018"], 'xs' : 0.3, 'xs_units' : 'pb'})
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 '''
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Marina's samples
 directories["2018"] = '/store/user/mkolosov/HHHTo6B/Summer2018UL_29Sep2022_withoutLeptonVeto/'

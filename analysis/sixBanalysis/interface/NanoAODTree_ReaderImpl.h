@@ -50,7 +50,7 @@ public:
   bool Next();
   bool getTrgOr() {return trg_reader_.getTrgOr();};
   std::vector<std::string> getTrgPassed() {return trg_reader_.getTrgPassed();};
-
+  
   // the chain and TTreeReader
   TTreeReader   fReader;
 
@@ -77,6 +77,8 @@ public:
     for(const auto & branch : *theBranchList)
       {
 	std::string branchName = branch->GetName();
+	
+	//std::cout << "branchName = "<<branchName<<std::endl;
 	if(branchName.find(branchNameTemplate) != std::string::npos)
 	  {
 	    attachCustomValueBranch<T>(branchName,returnDefault, defaultValue);
@@ -166,6 +168,15 @@ public:
   NanoReaderValue<Bool_t> Flag_BadPFMuonFilter                    {fReader, "Flag_BadPFMuonFilter"}; // Bad PF Muon Filter
   NanoReaderValue<Bool_t> Flag_eeBadScFilter                      {fReader, "Flag_eeBadScFilter"}; // ee badSC noise filter
   NanoReaderValue<Bool_t> Flag_ecalBadCalibFilter                 {fReader, "Flag_ecalBadCalibFilter"}; // ECAL bad calibration filter update (not for 2016)
+
+  // Triggers
+  NanoReaderValue<Bool_t> HLT_IsoMu24 {fReader, "HLT_IsoMu24"};
+  NanoReaderValue<Bool_t> HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5 {fReader, "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5"};
+  NanoReaderValue<Bool_t> HLT_PFHT330PT30_QuadPFJet_75_60_45_40 {fReader, "HLT_PFHT330PT30_QuadPFJet_75_60_45_40"};
+  NanoReaderValue<Bool_t> HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94 {fReader, "HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94"};
+  NanoReaderValue<Bool_t> HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59 {fReader, "HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59"};
+  NanoReaderValue<Bool_t> HLT_PFHT400_SixPFJet32 {fReader, "HLT_PFHT400_SixPFJet32"};
+  NanoReaderValue<Bool_t> HLT_PFHT450_SixPFJet36 {fReader, "HLT_PFHT450_SixPFJet36"};
   
   NanoReaderValue<UInt_t>    nFatJet                              {fReader, "nFatJet"};
   NanoReaderArray<Float_t>   FatJet_area                          {fReader, "FatJet_area"};
