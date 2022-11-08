@@ -1,6 +1,6 @@
 
-CFG="config/8b_config/skim_ntuple_2018_t8btag_minmass.cfg"
-ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/t8btag_minmass/"
+CFG="config/8b_config/skim_ntuple_2018_t8btag_minmass_jet_eta28.cfg"
+ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/t8btag_minmass_jet_eta28/"
 
 TAG="QCD"
 

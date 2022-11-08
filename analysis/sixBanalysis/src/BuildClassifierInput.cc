@@ -137,6 +137,13 @@ std::vector<float> buildClassifierInput::build_2jet_classifier_input(const std::
   return build_2jet_classifier_input(input_jets);
 }
 
+float get_X_E(const std::vector<Jet>& in_jets)
+{
+  auto X_p4 = in_jets[0].P4() + in_jets[1].P4() + in_jets[2].P4() + in_jets[3].P4() + 
+              in_jets[4].P4() + in_jets[5].P4() + in_jets[6].P4() + in_jets[7].P4();
+  return X_p4.Et();
+}
+
 std::map<std::string, std::vector<float>> buildClassifierInput::build_gnn_classifier_input(
     const std::vector<Jet>& in_jets, const std::vector<DiJet>& in_dijets) 
 {
@@ -144,6 +151,8 @@ std::map<std::string, std::vector<float>> buildClassifierInput::build_gnn_classi
 
   std::vector<std::string> features = {"jet_ptRegressed",
                                        "jet_mRegressed",
+                                       "jet_relpt",
+                                       "jet_relm",
                                        "jet_eta",
                                        "jet_phi",
                                        "jet_btag",
@@ -157,10 +166,13 @@ std::map<std::string, std::vector<float>> buildClassifierInput::build_gnn_classi
   for (std::string feature : features)
     params[feature] = std::vector<float>();
 
-  for (const Jet& j : in_jets)
+  float X_E = get_X_E(in_jets);
+  for (const Jet& j : in_jets) 
   {
     params["jet_ptRegressed"].push_back(j.get_ptRegressed());
     params["jet_mRegressed"].push_back(j.get_mRegressed());
+    params["jet_relpt"].push_back(j.get_ptRegressed()/X_E);
+    params["jet_relm"].push_back(j.get_mRegressed()/X_E);
     params["jet_eta"].push_back(j.get_eta());
     params["jet_phi"].push_back(j.get_phi());
     params["jet_btag"].push_back(j.get_btag());
