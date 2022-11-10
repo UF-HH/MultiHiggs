@@ -171,13 +171,7 @@ public:
 
   // Triggers
   NanoReaderValue<Bool_t> HLT_IsoMu24 {fReader, "HLT_IsoMu24"};
-  NanoReaderValue<Bool_t> HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5 {fReader, "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5"};
-  NanoReaderValue<Bool_t> HLT_PFHT330PT30_QuadPFJet_75_60_45_40 {fReader, "HLT_PFHT330PT30_QuadPFJet_75_60_45_40"};
-  NanoReaderValue<Bool_t> HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94 {fReader, "HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94"};
-  NanoReaderValue<Bool_t> HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59 {fReader, "HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59"};
-  NanoReaderValue<Bool_t> HLT_PFHT400_SixPFJet32 {fReader, "HLT_PFHT400_SixPFJet32"};
-  NanoReaderValue<Bool_t> HLT_PFHT450_SixPFJet36 {fReader, "HLT_PFHT450_SixPFJet36"};
-  
+
   NanoReaderValue<UInt_t>    nFatJet                              {fReader, "nFatJet"};
   NanoReaderArray<Float_t>   FatJet_area                          {fReader, "FatJet_area"};
   NanoReaderArray<Float_t>   FatJet_btagCMVA                      {fReader, "FatJet_btagCMVA"};
