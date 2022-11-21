@@ -10,7 +10,6 @@ NormWeightTree::NormWeightTree (string name, string title) :
 }
 
 void NormWeightTree::init_weights(NanoAODTree& nat, std::map<std::string, std::string> pu_data){
-    
   init_gen_weight();
   init_pu_weight(
 		 pu_data.at("filename"),
@@ -25,11 +24,11 @@ void NormWeightTree::init_weights(NanoAODTree& nat, std::map<std::string, std::s
 
 void NormWeightTree::read_weights(NanoAODTree &nat)
 {
-  read_gen_weight   (nat);
-  read_pu_weight    (nat);
-  read_pdf_weight   (nat);
-  read_scale_weight (nat);
-  read_ps_weight    (nat);
+  read_gen_weight(nat);
+  read_pu_weight(nat);
+  read_pdf_weight(nat);
+  read_scale_weight(nat);
+  read_ps_weight(nat);
 }
 
 // -----------------------------------------------

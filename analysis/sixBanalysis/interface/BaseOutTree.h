@@ -29,8 +29,8 @@ public:
   bool declareUserIntBranchList(std::vector<std::string> nameList, int defaultClearValue = 0);
 
   // throws an exception if the branch name was not declared
-  int&   userInt   (std::string name) {return userInts_   . getVal(name);}
-  float& userFloat (std::string name) {return userFloats_ . getVal(name);}
+  int&   userInt   (std::string name) {return userInts_.getVal(name);}
+  float& userFloat (std::string name) {return userFloats_.getVal(name);}
 
   // access the underlying TTree
   TTree* getTree() {return tree_.get();}

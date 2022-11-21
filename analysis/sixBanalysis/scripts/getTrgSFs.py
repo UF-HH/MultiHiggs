@@ -220,12 +220,14 @@ if __name__ == "__main__":
     VERBOSE       = True
     YEAR          = "2018"
     TRGROOTFILE   = "TriggerEfficiencies_2018.root"
+    #TRGROOTFILE   = "TriggerEfficiencies_2018_woTriggerMatching.root"
     DIRNAME       = "/store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_wTrgMatching_08Nov2022"
     REDIRECTOR    = "root://cmseos.fnal.gov/"
     FORMATS       = [".png", ".pdf", ".C"]
     SAVEPATH      = getPublicPath()
-    STUDY         = "TriggerEfficiencies"
-
+    STUDY         = "TriggerEfficiencies_wTrgMatching"
+    #STUDY         = "TriggerEfficiencies_woTriggerMatching"
+    
     parser = ArgumentParser(description="Derive the trigger scale factors")
     parser.add_argument("-v", "--verbose", dest="verbose", default=VERBOSE, action="store_true", help="Verbose mode for debugging purposes [default: %s]" % (VERBOSE))
     parser.add_argument("-d", "--dir", dest="dirName", type=str, action="store", default=DIRNAME, help="Location of the samples (a directory above) [default: %s]" % (DIRNAME))

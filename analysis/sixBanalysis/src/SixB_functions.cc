@@ -438,7 +438,6 @@ std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInf
     This function sorts the input jet collection, first by the b-tagging score in descending order, and groups the jets into:
     Tight, Medium, Loose and Fail categories. Within these four categories, the jets are sorted again by their pT in descending order.
   */
-  std::cout << " "<<std::endl;
   if (0) // For debugging
     {
       std::cout << "SixB_functions::selectJetsForPairing:   input jet collection (should be ordered in pT only):"<<std::endl;
@@ -448,7 +447,7 @@ std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInf
 	}
     }
   
-  std::cout << "Sort jets by their b-tagging score in descending order"<<std::endl;
+  if (0) std::cout << "Sort jets by their b-tagging score in descending order"<<std::endl;
   // Sort jets by their b-tagging score in descending order
   std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
   

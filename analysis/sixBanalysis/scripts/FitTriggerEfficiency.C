@@ -143,7 +143,7 @@ void doFit(TFile &outputRootFile, TVirtualPad *theCanvas, TFile &theInputFile, s
   outputRootFile.WriteObject(fitResults.Get(), fitResultName.data());
   
   outputFile << "    std::pair<TF1*, KFitResult*> f" << pairObjectName <<" = createPair(" << std::endl;
-  outputFile << "        ((TGraphErrors*)triggerFitFile.Get(\"" << fullFunctionName << "\"))->GetFunction(\""<< theFunction->GetName() << "\")," << std::endl;
+  outputFile << "        ((TGraphAsymmErrors*)triggerFitFile.Get(\"" << fullFunctionName << "\"))->GetFunction(\""<< theFunction->GetName() << "\")," << std::endl;
   outputFile << "        (KFitResult*)triggerFitFile.Get(\"" << fitResultName << "\")"<< std::endl;
   outputFile << "    );" << std::endl;
   outputFile << std::endl;
@@ -178,7 +178,7 @@ void doAllFit2018(std::string inputFileName)
   outputFile << "#include \"TFile.h\""                                  << std::endl;
   outputFile << "#include \"TF1.h\""                                    << std::endl;
   outputFile << "#include \"TFitResult.h\""                             << std::endl;
-  outputFile << "#include \"TGraphErrors.h\""                           << std::endl;
+  outputFile << "#include \"TGraphAsymmErrors.h\""                           << std::endl;
   outputFile << "#include \"Math/WrappedMultiTF1.h\""                   << std::endl;
   outputFile                                                            << std::endl;
   outputFile << "namespace TriggerFitCurves2018\n{"                     << std::endl;
