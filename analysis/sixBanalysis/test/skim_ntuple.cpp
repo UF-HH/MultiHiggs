@@ -791,8 +791,6 @@ int main(int argc, char** argv)
 	    dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
 	  }
 
-	//std::cout << "\n========= Event with 6 selected jets = "<<iEv<<std::endl;
-		
 	//========================================
 	// Apply trigger matching
 	//========================================
@@ -800,8 +798,6 @@ int main(int argc, char** argv)
 	if (applyTrgMatching)
 	  {
 	    bool triggerMatched = false;
-	    
-	    //=============================================================RESET FLAGS=========================================================
 	    // Reset all jet flags
 	    for(auto& triggerAndJetVector : triggerObjectPerJetCount_)
 	      {
@@ -818,6 +814,7 @@ int main(int argc, char** argv)
 	      {
 		for(auto& filterAndCount : triggerAndFilterMapCount.second) filterAndCount.second = 0;
 	      }
+	    
 	    //==================================================================================================================================
 	    // Check trigger-offline object matching
 	    //==================================================================================================================================
@@ -826,7 +823,6 @@ int main(int argc, char** argv)
 	      {
 		int triggerObjectId     = nat.TrigObj_id.At(trigObjIt);
 		int triggerFilterBitSum = nat.TrigObj_filterBits.At(trigObjIt);
-		
 		for(auto &triggerAndJetsFilterMap : triggerObjectPerJetCount_) // One path at a time
 		  {
 		    for(auto &triggerFilter : triggerAndJetsFilterMap.second[0]) // I use the first jet map to search for filters
@@ -835,7 +831,6 @@ int main(int argc, char** argv)
 			if((triggerFilterBitSum >> triggerFilter.first.second) & 0x1) //check object passes the filter
 			  {
 			    auto jetIdAndMinDeltaRandPt = getClosestJetIndexToTriggerObject(nat.TrigObj_eta.At(trigObjIt), nat.TrigObj_phi.At(trigObjIt), selected_jets, trgMatchingDeltaR);
-			    
 			    if (0)
 			      {
 				std::cout << "Trigger obj. index = "<<trigObjIt
@@ -860,7 +855,6 @@ int main(int argc, char** argv)
 				else if (triggerObjectId == 3) std::cout << "    (HT)"<<std::endl;
 				else std::cout<<" "<<std::endl;
 			      }
-			    
 			    int bestMatchingIndex = std::get<0>(jetIdAndMinDeltaRandPt);
 			    if(bestMatchingIndex >= 0)
 			      {
@@ -890,7 +884,6 @@ int main(int argc, char** argv)
 		      }
 		  }
 	      }
-	    
 	    // Check if trigger matching is satisfied
 	    std::map<std::string, bool> triggerResult;
 	    for(const auto & triggerRequirements : any_cast<std::map<std::string, std::map< std::pair<int,int>, int > > >(triggerObjectAndMinNumberMap))
@@ -941,7 +934,6 @@ int main(int argc, char** argv)
 	
 	if (saveTrgSF)
 	  {
-	    
 	    if (0)
 	      {
 		for (unsigned int ij=0; ij<selected_jets.size(); ij++)
@@ -949,7 +941,6 @@ int main(int argc, char** argv)
 		    std::cout << "jet = "<<ij<<"   pT="<<selected_jets.at(ij).get_pt()<<"    b-tag="<<selected_jets.at(ij).get_btag()<<std::endl;
 		  }
 	      }
-	    
 	    if (trgEfficiencyCalculator_ != nullptr)
 	      {
 		auto triggerScaleFactorDataAndMonteCarloEfficiency = trgEfficiencyCalculator_->getScaleFactorDataAndMonteCarloEfficiency(selected_jets);
