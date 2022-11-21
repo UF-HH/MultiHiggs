@@ -157,6 +157,80 @@ std::tuple<int,float,float> getClosestJetIndexToTriggerObject(float triggerObjec
   return {closestJetIndex, minDR, minDRjetPt};
 }
 
+void initializeTriggerRequirements(CfgParser& config, OutputTree& ot, std::vector<std::string>& triggerVector, std::map<std::string, std::map<std::pair<int, int>, int> >& triggerObjectAndMinNumberMap,
+				   std::map< std::string, std::vector<std::map<std::pair<int,int>, bool>>>& triggerObjectPerJetCount_,
+				   std::map< std::string, std::map<std::pair<int,int>, int>>& triggerObjectTotalCount_)
+{
+  std::vector<std::string> triggerAndNameVector = config.readStringListOpt("triggers::makeORof");
+  if (triggerAndNameVector.size() == 0)
+    std::cout << " No trigger listed" << std::endl;
+  else
+    std::cout<<" Use the logical OR of the following triggers:"<<std::endl;
+  
+  for (auto& trigger : triggerAndNameVector)
+    {
+      if (trigger == "") continue;
+      std::string delimiter = ":";
+      size_t pos=0;
+      
+      std::vector<std::string> triggerTokens = split_by_delimiter(trigger, ":");
+      if (triggerTokens.size() != 2) throw std::runtime_error("Could not parse trigger entry " + trigger + " , aborting");
+      
+      triggerVector.push_back(triggerTokens[1]);
+      std::cout << "   - " << triggerTokens[0] << "  ==> " << triggerTokens[1] << std::endl;
+      if (!config.hasOpt(Form("triggers::%s_ObjectRequirements", triggerTokens[0].data()) ))
+        {
+	  std::cout << " Config file does not contain any trigger object requirements for this trigger"<<std::endl;
+          continue;
+        }
+      std::vector<std::string> triggerObjectMatchingVector = config.readStringListOpt(Form("triggers::%s_ObjectRequirements", triggerTokens[0].data()));
+      
+      // Initialize the trigger object and min number for this trigger
+      triggerObjectAndMinNumberMap[triggerTokens[1]] = std::map<std::pair<int,int>, int>();
+      for (auto & triggerObject : triggerObjectMatchingVector)
+        {
+	  std::vector<std::string> triggerObjectTokens;
+          while((pos = triggerObject.find(delimiter)) != std::string::npos)
+            {
+              triggerObjectTokens.push_back(triggerObject.substr(0, pos));
+              triggerObject.erase(0, pos + delimiter.length());
+            }
+          triggerObjectTokens.push_back(triggerObject); // last part splitted
+          if (triggerObjectTokens.size() != 3)
+            {
+              throw std::runtime_error("** skim_ntuple : could not parse trigger entry " + triggerObject + " , aborting");
+            }
+          triggerObjectAndMinNumberMap[triggerTokens[1]][std::pair<int,int>(atoi(triggerObjectTokens[0].data()),atoi(triggerObjectTokens[1].data()))] = atoi(triggerObjectTokens[2].data());
+        }
+    }
+  
+  bool saveTrg = config.readBoolOpt("triggers::saveDecision");
+  if (saveTrg)
+    {
+      for (auto& tname : triggerVector)
+	ot.declareUserIntBranch(tname, 0);
+    }
+  
+  int numberOfCandidates = config.readIntOpt("triggers::candidatesForTrgMatching");
+  for (auto & triggerRequirements : any_cast<std::map<std::string, std::map< std::pair<int,int>, int > > >(triggerObjectAndMinNumberMap))
+    {
+      ot.declareUserIntBranch(triggerRequirements.first+"_ObjectMatched", 0);
+      std::map<std::pair<int,int>, bool> theTriggerFlagMap ;
+      std::map<std::pair<int,int>, int>  theTriggerCountMap;
+      for (const auto & triggerObject : triggerRequirements.second)
+	{
+	  theTriggerFlagMap [triggerObject.first] = false;
+	  theTriggerCountMap[triggerObject.first] = 0;
+	}
+      triggerObjectTotalCount_[triggerRequirements.first] = theTriggerCountMap;
+      for (int i=0; i< numberOfCandidates; ++i)
+	{
+	  triggerObjectPerJetCount_[triggerRequirements.first].push_back(theTriggerFlagMap);
+	}
+    }  
+  return;
+}
+
 // -----------------------------------
 
 enum SkimTypes
@@ -292,8 +366,7 @@ int main(int argc, char** argv)
   const bool saveTrg            = config.readBoolOpt("triggers::saveDecision");
   const string trgEffFileName   = config.readStringOpt("triggers::TriggerEfficiencyFileName");
   
-  // Apply the following only if MC
-  const bool saveTrgSF         = (!is_data) && applyTrg && config.readBoolOpt("triggers::saveTrgSF");
+  const bool saveTrgSF          = (!is_data) && applyTrg && config.readBoolOpt("triggers::saveTrgSF");
   const bool simulateTrg        = applyTrg && config.readBoolOpt("triggers::SimulateTrigger");
   const bool applyTrgMatching   = applyTrg && config.readBoolOpt("triggers::applyTrgObjectMatching");
   const float trgMatchingDeltaR = config.readFloatOpt("triggers::MaxDeltaR"); 
@@ -301,68 +374,19 @@ int main(int argc, char** argv)
   
   std::cout <<"\033[1;34m Apply decision  : \033[0m"<<std::boolalpha<<applyTrg<<std::noboolalpha<<std::endl;
   std::cout <<"\033[1;34m Save decisions  : \033[0m"<<std::boolalpha<<saveTrg<<std::noboolalpha<<std::endl;
-  std::cout <<"\033[1;34m Save SFs       : \033[0m"<<std::boolalpha<<saveTrgSF<<std::noboolalpha<<std::endl;
+  std::cout <<"\033[1;34m Save SFs        : \033[0m"<<std::boolalpha<<saveTrgSF<<std::noboolalpha<<std::endl;
   std::cout <<"\033[1;34m Simulate        : \033[0m"<<std::boolalpha<<simulateTrg<<std::noboolalpha<<std::endl;
-  //std::cout <<"\033[1;34m Apply turn-on cuts : \033[0m"<<std::boolalpha<<applyTurnOnCuts<<std::noboolalpha<<std::endl;
   std::cout <<"\033[1;34m Apply matching  : \033[0m"<<std::boolalpha<<applyTrgMatching<<std::noboolalpha<<std::endl;
   if (applyTrgMatching) std::cout << "\033[1;34m DeltaR          : \033[0m"<<trgMatchingDeltaR<<std::noboolalpha<<std::endl;
   
-  std::vector<std::string> triggerAndNameVector = config.readStringListOpt("triggers::makeORof");
-  if (triggerAndNameVector.size() == 0)
-    {
-      std::cout << " No trigger listed" << std::endl;
-    }
-  else
-    {
-      std::cout<<" Use the logical OR of the following triggers:"<<std::endl;
-    }
-  
   std::vector<std::string> triggerVector; // Contains the names of the triggers used 
-  std::map<std::string, std::map<std::pair<int, int>, int> > triggerObjectAndMinNumberMap; // <triggerName, <objectBit, minNumber> >
-  for (auto& trigger : triggerAndNameVector)
-    {
-      if (trigger == "") continue;
-      std::string delimiter = ":";
-      size_t pos=0;
-      
-      std::vector<std::string> triggerTokens = split_by_delimiter(trigger, ":");
-      if (triggerTokens.size() != 2) throw std::runtime_error("Could not parse trigger entry " + trigger + " , aborting");
-      
-      triggerVector.push_back(triggerTokens[1]);
-      std::cout << "   - " << triggerTokens[0] << "  ==> " << triggerTokens[1] << std::endl;
-      if (!config.hasOpt(Form("triggers::%s_ObjectRequirements", triggerTokens[0].data()) ))
-	{
-	  std::cout << " Config file does not contain any trigger object requirements for this trigger"<<std::endl;
-	  continue;
-	}
-      std::vector<std::string> triggerObjectMatchingVector = config.readStringListOpt(Form("triggers::%s_ObjectRequirements", triggerTokens[0].data()));
-      
-      // Initialize the trigger object and min number for this trigger
-      triggerObjectAndMinNumberMap[triggerTokens[1]] = std::map<std::pair<int,int>, int>();
-      for (auto & triggerObject : triggerObjectMatchingVector)
-        {
-	  std::vector<std::string> triggerObjectTokens;
-	  while((pos = triggerObject.find(delimiter)) != std::string::npos)
-            {
-	      triggerObjectTokens.push_back(triggerObject.substr(0, pos));
-	      triggerObject.erase(0, pos + delimiter.length());
-            }
-	  triggerObjectTokens.push_back(triggerObject); // last part splitted
-	  if (triggerObjectTokens.size() != 3)
-            {
-	      throw std::runtime_error("** skim_ntuple : could not parse trigger entry " + triggerObject + " , aborting");
-            }
-	  triggerObjectAndMinNumberMap[triggerTokens[1]][std::pair<int,int>(atoi(triggerObjectTokens[0].data()),atoi(triggerObjectTokens[1].data()))] = atoi(triggerObjectTokens[2].data());
-	}
-    }
+  std::map<std::string, std::map<std::pair<int, int>, int> > triggerObjectAndMinNumberMap; // <triggerName, <filter bit, minimum number of objects> >
+  std::map< std::string, std::vector<std::map<std::pair<int,int>, bool>>> triggerObjectPerJetCount_; 
+  std::map< std::string, std::map<std::pair<int,int>, int>> triggerObjectTotalCount_;
+  initializeTriggerRequirements(config, ot, triggerVector, triggerObjectAndMinNumberMap, triggerObjectPerJetCount_, triggerObjectTotalCount_);
   
   // Store the trigger names
   nat.triggerReader().setTriggers(triggerVector);
-  if (saveTrg)
-    {
-      for (auto& tname : triggerVector)
-	ot.declareUserIntBranch(tname, 0);
-    }
   
   // Initialize the trigger scale factors
   TriggerEfficiencyCalculator *trgEfficiencyCalculator_{nullptr};
@@ -376,27 +400,7 @@ int main(int argc, char** argv)
     }
   if (simulateTrg) trgEfficiencyCalculator_->simulateTrigger(&ot);
   //trgEfficiencyCalculator_ -> applyTurnOnCut(applyTurnOnCuts);
-  
-  int numberOfCandidates = config.readIntOpt("triggers::candidatesForTrgMatching");
-  std::map< std::string, std::vector<std::map<std::pair<int,int>, bool>>> triggerObjectPerJetCount_; 
-  std::map< std::string, std::map<std::pair<int,int>, int>> triggerObjectTotalCount_;
-  for (auto & triggerRequirements : any_cast<std::map<std::string, std::map< std::pair<int,int>, int > > >(triggerObjectAndMinNumberMap))
-    {
-      ot.declareUserIntBranch(triggerRequirements.first+"_ObjectMatched", 0);
-      std::map<std::pair<int,int>, bool> theTriggerFlagMap ;
-      std::map<std::pair<int,int>, int>  theTriggerCountMap;
-      for (const auto & triggerObject : triggerRequirements.second)
-	{
-	  theTriggerFlagMap [triggerObject.first] = false;
-	  theTriggerCountMap[triggerObject.first] = 0;
-	}
-      triggerObjectTotalCount_[triggerRequirements.first] = theTriggerCountMap;
-      for (int i=0; i< numberOfCandidates; ++i)
-	{
-	  triggerObjectPerJetCount_[triggerRequirements.first].push_back(theTriggerFlagMap);
-	}
-    }
-  
+    
   //----------------------------------
   // PU weights
   //----------------------------------
