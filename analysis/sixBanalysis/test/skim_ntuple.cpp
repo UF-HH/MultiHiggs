@@ -489,7 +489,7 @@ int main(int argc, char** argv)
 		  {"eightb_brs", (skim_type == keightb)},
 		  {"sig_gen_brs", (is_signal)},
 		  {"gen_brs", (!is_data)},
-		  {"saveTrgSF", readCfgOptWithDefault<bool>(config, "triggers::saveTrgSF", false)},
+		  {"saveTrgSF", (!is_data) && readCfgOptWithDefault<bool>(config, "triggers::saveTrgSF", false)},
 		    });
   NormWeightTree nwt;
   NanoAODTree nat (&ch);
@@ -503,7 +503,7 @@ int main(int argc, char** argv)
   const string trgEffFileName   = config.readStringOpt("triggers::TriggerEfficiencyFileName");
   
   const bool saveTrgSF          = (!is_data) && applyTrg && config.readBoolOpt("triggers::saveTrgSF");
-  const bool simulateTrg        = applyTrg && config.readBoolOpt("triggers::SimulateTrigger");
+  const bool simulateTrg        = (!is_data) && applyTrg && config.readBoolOpt("triggers::SimulateTrigger");
   const bool applyTrgMatching   = applyTrg && config.readBoolOpt("triggers::applyTrgObjectMatching");
   
   //const bool applyTurnOnCuts    = applyTrg && config.readBoolOpt("triggers::applyTurnOnCuts");
