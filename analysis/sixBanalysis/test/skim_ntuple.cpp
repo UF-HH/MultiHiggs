@@ -157,6 +157,142 @@ std::tuple<int,float,float> getClosestJetIndexToTriggerObject(float triggerObjec
   return {closestJetIndex, minDR, minDRjetPt};
 }
 
+bool performTriggerMatching(NanoAODTree& nat, OutputTree& ot, CfgParser& config,
+			    std::map<std::string, std::map<std::pair<int, int>, int> >& triggerObjectAndMinNumberMap,
+			    std::map< std::string, std::vector<std::map<std::pair<int,int>, bool>>>& triggerObjectPerJetCount_,
+			    std::map< std::string, std::map<std::pair<int,int>, int>>& triggerObjectTotalCount_, std::vector<Jet> selected_jets)
+{
+  bool triggerMatched = false;
+  //std::vector<int> matched_jets;
+  const float trgMatchingDeltaR = config.readFloatOpt("triggers::MaxDeltaR");
+  
+  // Reset all jet flags
+  for(auto& triggerAndJetVector : triggerObjectPerJetCount_)
+    {
+      for(auto& jetMap : triggerAndJetVector.second)
+	{
+	  for(auto& filterAndFlag : jetMap)
+	    {
+	      filterAndFlag.second = false;
+	    }
+	}
+    }
+  // Reset all filter counts
+  for(auto& triggerAndFilterMapCount : triggerObjectTotalCount_)
+    {
+      for(auto& filterAndCount : triggerAndFilterMapCount.second) filterAndCount.second = 0;
+    }
+  
+  // Loop over all trigger objects
+  for (uint trigObjIt = 0; trigObjIt < *(nat.nTrigObj); ++trigObjIt)
+    {
+      int triggerObjectId     = nat.TrigObj_id.At(trigObjIt);
+      int triggerFilterBitSum = nat.TrigObj_filterBits.At(trigObjIt);
+      for(auto &triggerAndJetsFilterMap : triggerObjectPerJetCount_) // One path at a time                                                                                                        
+	{
+	  for(auto &triggerFilter : triggerAndJetsFilterMap.second[0]) // I use the first jet map to search for filters                                                                           
+	    {
+	      if(triggerObjectId != triggerFilter.first.first) continue;
+	      if((triggerFilterBitSum >> triggerFilter.first.second) & 0x1) //check object passes the filter                                                                                      
+		{
+		  auto jetIdAndMinDeltaRandPt = getClosestJetIndexToTriggerObject(nat.TrigObj_eta.At(trigObjIt), nat.TrigObj_phi.At(trigObjIt), selected_jets, trgMatchingDeltaR);
+
+		  if (0)
+		    {
+		      std::cout << "Trigger obj. index = "<<trigObjIt
+				<< "  trigger bit = "<< triggerFilter.first.second
+				<< "  matched with jet ="<<jetIdAndMinDeltaRandPt;
+		      if (triggerFilter.first.second == 1)      std::cout << "  Filter = hltBTagCaloCSVp087Triple   ";
+		      else if (triggerFilter.first.second == 2) std::cout << "  Filter = hltDoubleCentralJet90      ";
+		      else if (triggerFilter.first.second == 3) std::cout << "  Filter = hltDoublePFCentralJetLooseID90     ";
+		      else if (triggerFilter.first.second == 4) std::cout << "  Filter = hltL1sTripleJetVBFIorHTTIorDoubleJetCIorSingleJet    ";
+		      else if (triggerFilter.first.second == 5) std::cout << "  Filter = hltQuadCentralJet30    ";
+		      else if (triggerFilter.first.second == 6) std::cout << "  Filter = hltQuadPFCentralJetLooseID30    ";
+		      else if (triggerFilter.first.second == 10) std::cout << "  Filter = hltL1sQuadJetC60IorHTT380IorHTT280QuadJetIorHTT300QuadJet    ";
+		      else if (triggerFilter.first.second == 11) std::cout << "  Filter = hltBTagCaloDeepCSVp17Double     ";
+		      else if (triggerFilter.first.second == 12) std::cout << "  Filter = hltPFCentralJetLooseIDQuad30    ";
+		      else if (triggerFilter.first.second == 13) std::cout << "  Filter = hlt1PFCentralJetLooseID75     ";
+		      else if (triggerFilter.first.second == 14) std::cout << "  Filter = hlt2PFCentralJetLooseID60     ";
+		      else if (triggerFilter.first.second == 15) std::cout << "  Filter = hlt3PFCentralJetLooseID45     ";
+		      else if (triggerFilter.first.second == 16) std::cout << "  Filter = hlt4PFCentralJetLooseID40     ";
+		      else if (triggerFilter.first.second == 17) std::cout << "  Filter = hltBTagPFDeepCSV4p5Triple     ";
+		      else std::cout << " Other filter (HT?)"<<std::endl;
+		      if (triggerObjectId == 1) std::cout << "   (Jet)"<<std::endl;
+		      else if (triggerObjectId == 3) std::cout << "    (HT)"<<std::endl;
+		      else std::cout<<" "<<std::endl;
+		    }
+		  int bestMatchingIndex = std::get<0>(jetIdAndMinDeltaRandPt);
+		  if(bestMatchingIndex >= 0)
+		    {
+		      triggerAndJetsFilterMap.second.at(bestMatchingIndex).at(triggerFilter.first) = true;
+		      //matched_jets.push_back(bestMatchingIndex);
+		    }
+		}
+	    }
+	}
+    } // Closes loop over trigger objects
+  
+  // Count all filters passed
+  for(auto& triggerAndJetVector : triggerObjectPerJetCount_)
+    {
+      if (0) std::cout<<"Trigger path = "<< triggerAndJetVector.first<<std::endl;
+      for(auto& jetMap : triggerAndJetVector.second)
+	{
+	  for(auto& filterAndFlag : jetMap)
+	    {
+	      if (0) std::cout<<" Trigger Object ID "<<filterAndFlag.first.first<< " -  Filter " << filterAndFlag.first.second << " -> ";
+	      if(filterAndFlag.second)
+		{
+		  if (0) std::cout<< "true" << std::endl;
+		  ++triggerObjectTotalCount_.at(triggerAndJetVector.first).at(filterAndFlag.first);
+		}
+	      //else std::cout<< "false" << std::endl;
+	    }
+	}
+    }
+
+  // Check if trigger matching is satisfied
+  std::map<std::string, bool> triggerResult;
+  for(const auto & triggerRequirements : any_cast<std::map<std::string, std::map< std::pair<int,int>, int > > >(triggerObjectAndMinNumberMap))
+    {
+      triggerResult[triggerRequirements.first] = true;
+      if(std::find(nat.getTrgPassed().begin(), nat.getTrgPassed().end(), triggerRequirements.first) == nat.getTrgPassed().end()) // triggers not fired
+	{
+	  triggerResult[triggerRequirements.first] = false;
+	  continue;
+	}
+      
+      for (const auto & requiredNumberOfObjects : triggerRequirements.second) // triggers fired
+	{
+	  if (0)
+	    {
+	      std::cout<<"Id = " << requiredNumberOfObjects.first.first<< " - Filter = "<< requiredNumberOfObjects.first.second;
+	      std::cout<<"  -> Required = " << requiredNumberOfObjects.second;
+	      std::cout<<"  -> Passed = " << triggerObjectTotalCount_[triggerRequirements.first][requiredNumberOfObjects.first];
+	    }
+	  if(triggerObjectTotalCount_[triggerRequirements.first][requiredNumberOfObjects.first] < requiredNumberOfObjects.second)
+	    {
+	      triggerResult[triggerRequirements.first]  = false; // Number of object not enough
+	      //std::cout << " false"<<std::endl;
+	    }
+	  //else
+	  //  {
+	  //std::cout << " true"<<std::endl;
+	  // }
+	}
+    }
+  
+  for(const auto & triggerChecked : triggerResult)
+    {
+      if(triggerChecked.second)
+	{
+	  ot.userInt(triggerChecked.first+"_ObjectMatched") = 1;
+	  triggerMatched = true;
+	}
+    }
+  return triggerMatched;
+}
+
 void initializeTriggerRequirements(CfgParser& config, OutputTree& ot, std::vector<std::string>& triggerVector, std::map<std::string, std::map<std::pair<int, int>, int> >& triggerObjectAndMinNumberMap,
 				   std::map< std::string, std::vector<std::map<std::pair<int,int>, bool>>>& triggerObjectPerJetCount_,
 				   std::map< std::string, std::map<std::pair<int,int>, int>>& triggerObjectTotalCount_)
@@ -369,7 +505,7 @@ int main(int argc, char** argv)
   const bool saveTrgSF          = (!is_data) && applyTrg && config.readBoolOpt("triggers::saveTrgSF");
   const bool simulateTrg        = applyTrg && config.readBoolOpt("triggers::SimulateTrigger");
   const bool applyTrgMatching   = applyTrg && config.readBoolOpt("triggers::applyTrgObjectMatching");
-  const float trgMatchingDeltaR = config.readFloatOpt("triggers::MaxDeltaR"); 
+  
   //const bool applyTurnOnCuts    = applyTrg && config.readBoolOpt("triggers::applyTurnOnCuts");
   
   std::cout <<"\033[1;34m Apply decision  : \033[0m"<<std::boolalpha<<applyTrg<<std::noboolalpha<<std::endl;
@@ -377,8 +513,7 @@ int main(int argc, char** argv)
   std::cout <<"\033[1;34m Save SFs        : \033[0m"<<std::boolalpha<<saveTrgSF<<std::noboolalpha<<std::endl;
   std::cout <<"\033[1;34m Simulate        : \033[0m"<<std::boolalpha<<simulateTrg<<std::noboolalpha<<std::endl;
   std::cout <<"\033[1;34m Apply matching  : \033[0m"<<std::boolalpha<<applyTrgMatching<<std::noboolalpha<<std::endl;
-  if (applyTrgMatching) std::cout << "\033[1;34m DeltaR          : \033[0m"<<trgMatchingDeltaR<<std::noboolalpha<<std::endl;
-  
+    
   std::vector<std::string> triggerVector; // Contains the names of the triggers used 
   std::map<std::string, std::map<std::pair<int, int>, int> > triggerObjectAndMinNumberMap; // <triggerName, <filter bit, minimum number of objects> >
   std::map< std::string, std::vector<std::map<std::pair<int,int>, bool>>> triggerObjectPerJetCount_; 
@@ -758,6 +893,48 @@ int main(int argc, char** argv)
 	  continue;
 	cutflow.add("nselect_jets>=8", nwt);
 	cutflow_Unweighted.add("nselect_jets>=8");
+	
+	//========================================
+	// Apply trigger matching
+	//========================================
+	if (applyTrgMatching)
+	  {
+	    bool triggerMatched = performTriggerMatching(nat, ot, config, triggerObjectAndMinNumberMap, triggerObjectPerJetCount_, triggerObjectTotalCount_, selected_jets);
+	    if (!triggerMatched) continue;
+	    cutflow.add("Trigger matching", nwt);
+	    cutflow_Unweighted.add("Trigger matching");
+	    loop_timer.click("Trigger object - offline object matching");
+	  }
+	
+	//=======================================
+	// Calculate trigger scale factor
+	//=======================================
+	if (saveTrgSF)
+	  {
+	    if (trgEfficiencyCalculator_ != nullptr)
+	      {
+		auto triggerScaleFactorDataAndMonteCarloEfficiency = trgEfficiencyCalculator_->getScaleFactorDataAndMonteCarloEfficiency(selected_jets);
+		ot.triggerScaleFactor        = std::get<0>(std::get<0>(triggerScaleFactorDataAndMonteCarloEfficiency));
+		ot.triggerDataEfficiency     = std::get<0>(std::get<1>(triggerScaleFactorDataAndMonteCarloEfficiency));
+		ot.triggerMcEfficiency       = std::get<0>(std::get<2>(triggerScaleFactorDataAndMonteCarloEfficiency));
+		ot.triggerScaleFactorUp      = std::get<1>(std::get<0>(triggerScaleFactorDataAndMonteCarloEfficiency));
+		ot.triggerDataEfficiencyUp   = std::get<1>(std::get<1>(triggerScaleFactorDataAndMonteCarloEfficiency));
+		ot.triggerMcEfficiencyUp     = std::get<1>(std::get<2>(triggerScaleFactorDataAndMonteCarloEfficiency));
+		ot.triggerScaleFactorDown    = std::get<2>(std::get<0>(triggerScaleFactorDataAndMonteCarloEfficiency));
+		ot.triggerDataEfficiencyDown = std::get<2>(std::get<1>(triggerScaleFactorDataAndMonteCarloEfficiency));
+		ot.triggerMcEfficiencyDown   = std::get<2>(std::get<2>(triggerScaleFactorDataAndMonteCarloEfficiency));
+		if (0)
+		  {
+		    std::cout << "\nTrigger scale factor = "<<ot.triggerScaleFactor << std::endl;
+		    std::cout << "Data Efficiency      = "<<ot.triggerDataEfficiency << std::endl;
+		    std::cout << "MC Efficiency        = "<<ot.triggerMcEfficiency << std::endl;
+		  }
+	      }
+	  }
+	
+	//================================================
+	// Proceed with the jets pairing
+	//================================================
 	skf->pair_jets(nat, ei, selected_jets);
 	skf->compute_seljets_btagmulti(nat, ei);
 	loop_timer.click("Eight b jet pairing");
@@ -795,156 +972,32 @@ int main(int argc, char** argv)
 	    dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
 	  }
 
+	if (0)
+	  {
+	    std::cout << "\n SELECTED JETS:"<<std::endl;
+	    for (unsigned int ij=0; ij<selected_jets.size(); ij++)
+	      {
+		std::cout << "jet = "<<ij<<"   pT="<<selected_jets.at(ij).get_pt()<<"    b-tag="<<selected_jets.at(ij).get_btag()<<std::endl;
+	      }
+	  }
+	
 	//========================================
 	// Apply trigger matching
 	//========================================
-	std::vector<int> matched_jets;
 	if (applyTrgMatching)
 	  {
-	    bool triggerMatched = false;
-	    // Reset all jet flags
-	    for(auto& triggerAndJetVector : triggerObjectPerJetCount_)
-	      {
-		for(auto& jetMap : triggerAndJetVector.second)
-		  {
-		    for(auto& filterAndFlag : jetMap)
-		      {
-			filterAndFlag.second = false;
-		      }
-		  }
-	      }
-	    // Reset all filter counts
-	    for(auto& triggerAndFilterMapCount : triggerObjectTotalCount_)
-	      {
-		for(auto& filterAndCount : triggerAndFilterMapCount.second) filterAndCount.second = 0;
-	      }
-	    
-	    //==================================================================================================================================
-	    // Check trigger-offline object matching
-	    //==================================================================================================================================
-	    // Loop over all trigger objects
-	    for (uint trigObjIt = 0; trigObjIt < *(nat.nTrigObj); ++trigObjIt)
-	      {
-		int triggerObjectId     = nat.TrigObj_id.At(trigObjIt);
-		int triggerFilterBitSum = nat.TrigObj_filterBits.At(trigObjIt);
-		for(auto &triggerAndJetsFilterMap : triggerObjectPerJetCount_) // One path at a time
-		  {
-		    for(auto &triggerFilter : triggerAndJetsFilterMap.second[0]) // I use the first jet map to search for filters
-		      {
-			if(triggerObjectId != triggerFilter.first.first) continue;
-			if((triggerFilterBitSum >> triggerFilter.first.second) & 0x1) //check object passes the filter
-			  {
-			    auto jetIdAndMinDeltaRandPt = getClosestJetIndexToTriggerObject(nat.TrigObj_eta.At(trigObjIt), nat.TrigObj_phi.At(trigObjIt), selected_jets, trgMatchingDeltaR);
-			    if (0)
-			      {
-				std::cout << "Trigger obj. index = "<<trigObjIt
-					  << "  trigger bit = "<< triggerFilter.first.second
-					  << "  matched with jet ="<<jetIdAndMinDeltaRandPt;
-				if (triggerFilter.first.second == 1)      std::cout << "  Filter = hltBTagCaloCSVp087Triple   ";
-				else if (triggerFilter.first.second == 2) std::cout << "  Filter = hltDoubleCentralJet90      ";
-				else if (triggerFilter.first.second == 3) std::cout << "  Filter = hltDoublePFCentralJetLooseID90     ";
-				else if (triggerFilter.first.second == 4) std::cout << "  Filter = hltL1sTripleJetVBFIorHTTIorDoubleJetCIorSingleJet    ";
-				else if (triggerFilter.first.second == 5) std::cout << "  Filter = hltQuadCentralJet30    ";
-				else if (triggerFilter.first.second == 6) std::cout << "  Filter = hltQuadPFCentralJetLooseID30    ";
-				else if (triggerFilter.first.second == 10) std::cout << "  Filter = hltL1sQuadJetC60IorHTT380IorHTT280QuadJetIorHTT300QuadJet    ";
-				else if (triggerFilter.first.second == 11) std::cout << "  Filter = hltBTagCaloDeepCSVp17Double     ";
-				else if (triggerFilter.first.second == 12) std::cout << "  Filter = hltPFCentralJetLooseIDQuad30    ";
-				else if (triggerFilter.first.second == 13) std::cout << "  Filter = hlt1PFCentralJetLooseID75     ";
-				else if (triggerFilter.first.second == 14) std::cout << "  Filter = hlt2PFCentralJetLooseID60     ";
-				else if (triggerFilter.first.second == 15) std::cout << "  Filter = hlt3PFCentralJetLooseID45     ";
-				else if (triggerFilter.first.second == 16) std::cout << "  Filter = hlt4PFCentralJetLooseID40     ";
-				else if (triggerFilter.first.second == 17) std::cout << "  Filter = hltBTagPFDeepCSV4p5Triple     ";
-				else std::cout << " Other filter (HT?)"<<std::endl;
-				if (triggerObjectId == 1) std::cout << "   (Jet)"<<std::endl;
-				else if (triggerObjectId == 3) std::cout << "    (HT)"<<std::endl;
-				else std::cout<<" "<<std::endl;
-			      }
-			    int bestMatchingIndex = std::get<0>(jetIdAndMinDeltaRandPt);
-			    if(bestMatchingIndex >= 0)
-			      {
-				triggerAndJetsFilterMap.second.at(bestMatchingIndex).at(triggerFilter.first) = true;
-				matched_jets.push_back(bestMatchingIndex);
-			      }
-			  }
-		      }
-		  }
-	      } // Closes loop over trigger objects
-	    
-	    // Count all filters passed
-	    for(auto& triggerAndJetVector : triggerObjectPerJetCount_)
-	      {
-		if (0) std::cout<<"Trigger path = "<< triggerAndJetVector.first<<std::endl;
-		for(auto& jetMap : triggerAndJetVector.second)
-		  {
-		    for(auto& filterAndFlag : jetMap) 
-		      {
-			if (0) std::cout<<" Trigger Object ID "<<filterAndFlag.first.first<< " -  Filter " << filterAndFlag.first.second << " -> ";
-			if(filterAndFlag.second) 
-			  {
-			    if (0) std::cout<< "true" << std::endl;
-			    ++triggerObjectTotalCount_.at(triggerAndJetVector.first).at(filterAndFlag.first);
-			  }
-			//else std::cout<< "false" << std::endl;
-		      }
-		  }
-	      }
-	    // Check if trigger matching is satisfied
-	    std::map<std::string, bool> triggerResult;
-	    for(const auto & triggerRequirements : any_cast<std::map<std::string, std::map< std::pair<int,int>, int > > >(triggerObjectAndMinNumberMap))
-	      {
-		triggerResult[triggerRequirements.first] = true;
-		if(std::find(listOfPassedTriggers.begin(),listOfPassedTriggers.end(),triggerRequirements.first) == listOfPassedTriggers.end()) // triggers not fired
-		  {
-		    triggerResult[triggerRequirements.first] = false;
-		    continue;
-		  }
-		
-		for (const auto & requiredNumberOfObjects : triggerRequirements.second) // triggers fired
-		  {
-		    if (0)
-		      {
-			std::cout<<"Id = " << requiredNumberOfObjects.first.first<< " - Filter = "<< requiredNumberOfObjects.first.second;
-			std::cout<<"  -> Required = " << requiredNumberOfObjects.second;
-			std::cout<<"  -> Passed = " << triggerObjectTotalCount_[triggerRequirements.first][requiredNumberOfObjects.first];
-		      }
-		    if(triggerObjectTotalCount_[triggerRequirements.first][requiredNumberOfObjects.first] < requiredNumberOfObjects.second)
-		      {
-			triggerResult[triggerRequirements.first]  = false; // Number of object not enought
-			//std::cout << " false"<<std::endl;
-		      }
-		    //else
-		    //  {
-		    //std::cout << " true"<<std::endl;
-		    // }
-		  }
-	      }
-	    
-	    for(const auto & triggerChecked : triggerResult)
-	      {
-		if(triggerChecked.second)
-		  {
-		    ot.userInt(triggerChecked.first+"_ObjectMatched") = 1;
-		    triggerMatched = true;
-		  }
-	      }
-	    //===========================================
-	    // Require trigger-object matching
-	    //===========================================
+	    bool triggerMatched = performTriggerMatching(nat, ot, config, triggerObjectAndMinNumberMap, triggerObjectPerJetCount_, triggerObjectTotalCount_, selected_jets);
 	    if (!triggerMatched) continue;
 	    cutflow.add("Trigger matching", nwt);
 	    cutflow_Unweighted.add("Trigger matching");
 	    loop_timer.click("Trigger object - offline object matching");
-	  } // Closes if statement for trigger matching
+	  }
 	
+	//=======================================
+	// Calculate trigger scale factor
+	//=======================================
 	if (saveTrgSF)
 	  {
-	    if (0)
-	      {
-		for (unsigned int ij=0; ij<selected_jets.size(); ij++)
-		  {
-		    std::cout << "jet = "<<ij<<"   pT="<<selected_jets.at(ij).get_pt()<<"    b-tag="<<selected_jets.at(ij).get_btag()<<std::endl;
-		  }
-	      }
 	    if (trgEfficiencyCalculator_ != nullptr)
 	      {
 		auto triggerScaleFactorDataAndMonteCarloEfficiency = trgEfficiencyCalculator_->getScaleFactorDataAndMonteCarloEfficiency(selected_jets);
@@ -957,9 +1010,12 @@ int main(int argc, char** argv)
 		ot.triggerScaleFactorDown    = std::get<2>(std::get<0>(triggerScaleFactorDataAndMonteCarloEfficiency));
 		ot.triggerDataEfficiencyDown = std::get<2>(std::get<1>(triggerScaleFactorDataAndMonteCarloEfficiency));
 		ot.triggerMcEfficiencyDown   = std::get<2>(std::get<2>(triggerScaleFactorDataAndMonteCarloEfficiency));
-		//std::cout << "Trigger scale factor = "<<ot.triggerScaleFactor << std::endl;
-		//std::cout << "Data Efficiency      = "<<ot.triggerDataEfficiency << std::endl;
-		//std::cout << "MC Efficiency        = "<<ot.triggerMcEfficiency << std::endl;
+		if (0)
+		  {
+		    std::cout << "Trigger scale factor = "<<ot.triggerScaleFactor << std::endl;
+		    std::cout << "Data Efficiency      = "<<ot.triggerDataEfficiency << std::endl;
+		    std::cout << "MC Efficiency        = "<<ot.triggerMcEfficiency << std::endl;
+		  }
 	      }
 	  }
 	
