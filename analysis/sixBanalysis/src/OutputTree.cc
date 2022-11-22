@@ -247,7 +247,21 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 
   tree_->Branch("n_other_pv",     &n_other_pv);
   tree_->Branch("rhofastjet_all", &rhofastjet_all);
-
+  
+  if (is_enabled("saveTrgSF"))
+    {
+      std::cout << "[INFO] OutputTree : enabling trigger scale factor branches"<<std::endl;
+      tree_->Branch("triggerScaleFactor", &triggerScaleFactor);
+      tree_->Branch("triggerDataEfficiency", &triggerDataEfficiency);
+      tree_->Branch("triggerMcEfficiency", &triggerMcEfficiency);
+      tree_->Branch("triggerScaleFactorUp", &triggerScaleFactorUp);
+      tree_->Branch("triggerDataEfficiencyUp", &triggerDataEfficiencyUp);
+      tree_->Branch("triggerMcEfficiencyUp", &triggerMcEfficiencyUp);
+      tree_->Branch("triggerScaleFactorDown", &triggerScaleFactorDown);
+      tree_->Branch("triggerDataEfficiencyDown", &triggerDataEfficiencyDown);
+      tree_->Branch("triggerMcEfficiencyDown", &triggerMcEfficiencyDown);
+    }
+  
   if (is_enabled("sixb_brs"))
   {
     if (is_enabled("sig_gen_brs"))
@@ -420,6 +434,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       BRANCH_ele_list(ele);
     }
   
+  /*
   if (is_enabled("ttbar_brs"))
     {
       std::cout << "[INFO] OutputTree : enabling ttbar branches" << std::endl;
@@ -429,14 +444,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
       if (is_enabled("gen_brs")) tree_->Branch("bjet2_hadflav", &bjet2_hadflav);
     }
-  
-  if (is_enabled("trgeff_brs"))
-    {
-      std::cout << "[INFO] OutputTree : enabling TrgEff branches" << std::endl;
-      // marina
-      //tree_->Branch("HT", &HT);
-      //tree_->Branch("HTb", &HTb);
-    }
+  */
   
   tree_->Branch("n_total_jet",&n_total_jet);
   tree_->Branch("n_jet", &n_jet);
@@ -512,7 +520,17 @@ void OutputTree::clear()
   n_pu           = 0;
   n_true_int     = 0;
   rhofastjet_all = 0;
-
+  
+  triggerScaleFactor        = 1.;
+  triggerDataEfficiency     = 1.;
+  triggerMcEfficiency       = 1.;
+  triggerScaleFactorUp      = 1.;
+  triggerDataEfficiencyUp   = 1.;
+  triggerMcEfficiencyUp     = 1.;
+  triggerScaleFactorDown    = 1.;
+  triggerDataEfficiencyDown = 1.;
+  triggerMcEfficiencyDown   = 1.;
+  
   n_jet = 0;
   n_genjet = 0;
   n_higgs = 0;
@@ -677,11 +695,10 @@ void OutputTree::clear()
   btagavg = -1.;
   // End Reco 8B Objects
 
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
-  CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
-
-  bjet1_hadflav = -999;
-  bjet2_hadflav = -999;
+  //CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+  //CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+  //bjet1_hadflav = -999;
+  //bjet2_hadflav = -999;
 
   btagSF_WP_M = -999.;
 
