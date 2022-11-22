@@ -5,15 +5,15 @@ training="input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/training_5M/"
 
 
 # indir=$no_pu
-# indir=$with_pu
-indir=$training
+indir=$with_pu
+# indir=$training
 
 # CFG="config/8b_config/accstudies_2018.cfg"
 # ODIR="/eos/uscms/store/user/ekoenig/8BAnalysis/NTuples/2018/accstudies/raw_with_pu"
 
 CFG="config/8b_config/skim_ntuple_2018_t8btag_minmass.cfg"
-# ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/t8btag_minmass/"
-ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/training/training_5M/"
+ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/t8btag_minmass/"
+# ODIR="/store/user/ekoenig/8BAnalysis/NTuples/2018/training/training_5M/"
 
 TAG="NMSSM_XYY_YToHH_8b"
 
