@@ -18,6 +18,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 #include "NanoAODTree.h"
 #include <memory>
 #include <iostream>
+#include "TLorentzVector.h"
 
 #define get_property(OBJ, NAME) (OBJ.isValid() ?  OBJ.getNanoAODTree() -> NAME .At(OBJ.getIdx()) : throw std::runtime_error("get property " #NAME " from invalid object"))
 

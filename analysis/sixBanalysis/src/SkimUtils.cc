@@ -392,15 +392,15 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.nfound_select_y) ot.nfound_select_y = *ei.nfound_select_y;
   if (ei.nfound_paired_y) ot.nfound_paired_y = *ei.nfound_paired_y;
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+  //COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+  //COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
 
   // must check validity of reader because this is not defined in data
-  if (ei.bjet1 && nat.Jet_hadronFlavour.IsValid())
-    ot.bjet1_hadflav = get_property(ei.bjet1.get(), Jet_hadronFlavour);
+  //if (ei.bjet1 && nat.Jet_hadronFlavour.IsValid())
+  //  ot.bjet1_hadflav = get_property(ei.bjet1.get(), Jet_hadronFlavour);
 
-  if (ei.bjet2 && nat.Jet_hadronFlavour.IsValid())
-    ot.bjet2_hadflav = get_property(ei.bjet2.get(), Jet_hadronFlavour);
+  //if (ei.bjet2 && nat.Jet_hadronFlavour.IsValid())
+  //  ot.bjet2_hadflav = get_property(ei.bjet2.get(), Jet_hadronFlavour);
 
   if (ei.btagSF_WP_M) ot.btagSF_WP_M = *ei.btagSF_WP_M;
 

@@ -176,6 +176,18 @@ public:
   int    n_pu;
   double n_true_int;
   double rhofastjet_all;
+  
+  // Trigger scale factor branches
+  float triggerScaleFactor;
+  float triggerDataEfficiency;
+  float triggerMcEfficiency;
+  float triggerScaleFactorUp;
+  float triggerDataEfficiencyUp;
+  float triggerMcEfficiencyUp;
+  float triggerScaleFactorDown;
+  float triggerDataEfficiencyDown;
+  float triggerMcEfficiencyDown;
+  
   double lhe_ht;
 
   int n_genjet;
@@ -355,15 +367,14 @@ public:
   int nfound_paired_h;
   int nfound_select_y;
   int nfound_paired_y;
-
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
-  int bjet1_hadflav;
-        
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
-  int bjet2_hadflav;
+  
+  //DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
+  //int bjet1_hadflav;
+  //DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
+  //int bjet2_hadflav;
 
   double btagSF_WP_M;
-
+    
 private:
   void init_branches(std::map<std::string, bool> branch_switches);
   // std::unique_ptr<TTree> tree_;
