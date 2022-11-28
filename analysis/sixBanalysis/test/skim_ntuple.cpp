@@ -33,6 +33,7 @@ namespace su = SkimUtils;
 #include "TriggerEfficiencyCalculator.h"
 
 #include "Cutflow.h"
+#include "HistoCollection.h"
 #include "EvalNN.h"
 
 #include "Timer.h"
@@ -683,7 +684,8 @@ int main(int argc, char** argv)
   
   Cutflow cutflow;
   Cutflow cutflow_Unweighted("h_cutflow_unweighted", "Unweighted selection cutflow");
-  
+  HistoCollection histograms;
+
   for (int iEv = 0; true; ++iEv)
   {
     if (maxEvts >= 0 && iEv >= maxEvts)
@@ -782,6 +784,8 @@ int main(int argc, char** argv)
     std::vector<Muon> selected_muons = skf->select_muons(config, nat, ei);
     ei.n_muon    = selected_muons.size();
     ei.muon_list = selected_muons;
+    histograms.get("n_mu", ";N Muons;Events", 10, 0, 10).Fill(selected_muons.size(), nwt); 
+
     bool applyMuonVeto = config.readBoolOpt("configurations::applyMuonVeto");
     bool applyMuonSelection = config.readBoolOpt("configurations::applyMuonSelection");
     if (applyMuonVeto)
@@ -806,6 +810,8 @@ int main(int argc, char** argv)
     std::vector<Electron> selected_electrons = skf->select_electrons(config, nat, ei);
     ei.n_ele    = selected_electrons.size();
     ei.ele_list = selected_electrons;
+    histograms.get("n_ele", ";N Electrons;Events", 10, 0, 10).Fill(selected_electrons.size(), nwt);
+
     bool applyEleVeto = config.readBoolOpt("configurations::applyEleVeto");
     bool applyEleSelection = config.readBoolOpt("configurations::applyEleSelection");
     if (applyEleVeto)
@@ -853,6 +859,8 @@ int main(int argc, char** argv)
     
     // Apply preselections to jets (min pT / max eta / PU ID / PF ID)
     std::vector<Jet> presel_jets = skf->preselect_jets(nat, ei, all_jets);
+    histograms.get("n_presel_jet", ";N Preselected Jets;Events", 20, 0, 20).Fill(presel_jets.size(), nwt);
+
     ei.n_jet    = presel_jets.size();
     ei.jet_list = presel_jets;
         
@@ -1051,8 +1059,7 @@ int main(int argc, char** argv)
   // Write cutflow histograms to file
   cutflow.write(outputFile);
   cutflow_Unweighted.write(outputFile);
-  
-  // Write trees to file
+  histograms.write(outputFile);
   ot.write();
   if (!is_data) nwt.write();
   
