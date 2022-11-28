@@ -323,28 +323,28 @@ int main(int argc, char** argv)
   float jetFirstHighestDeepFlavB_eta_;
   int jetFirstHighestDeepFlavB_hadronFlavour_;
   
-  tOut->Branch("run",              &run_);
-  tOut->Branch("luminosityBlock",  &luminosityBlock_);
-  tOut->Branch("event",            &event_);
-  tOut->Branch("btag_SF",           &btag_SF_);
-  tOut->Branch("weight",            &weight_);
-  tOut->Branch("highestIsoElecton_pt"    , &highestIsoElecton_pt_ );
-  tOut->Branch("electronTimesMuoncharge" , &electronTimesMuoncharge_ );
-  tOut->Branch("jetFirstHighestPt_pt" , &jetFirstHighestPt_pt_ );
+  tOut->Branch("run", &run_);
+  tOut->Branch("luminosityBlock", &luminosityBlock_);
+  tOut->Branch("event", &event_);
+  tOut->Branch("btag_SF", &btag_SF_);
+  tOut->Branch("weight", &weight_);
+  tOut->Branch("highestIsoElecton_pt", &highestIsoElecton_pt_);
+  tOut->Branch("electronTimesMuoncharge", &electronTimesMuoncharge_);
+  tOut->Branch("jetFirstHighestPt_pt", &jetFirstHighestPt_pt_);
   tOut->Branch("jetSecondHighestPt_pt", &jetSecondHighestPt_pt_);
-  tOut->Branch("jetThirdHighestPt_pt" , &jetThirdHighestPt_pt_ );
-  tOut->Branch("jetForthHighestPt_pt" , &jetForthHighestPt_pt_ );
-  tOut->Branch("fourHighestJetPt_sum" , &fourHighestJetPt_sum_ );
-  tOut->Branch("caloJetSum"  , &caloJetSum_  );
-  tOut->Branch("numberOfJetsCaloHT"    , &numberOfJetsCaloHT_    );
-  tOut->Branch("pfJetSum"  , &pfJetSum_  );
-  tOut->Branch("numberOfJetsPfHT"    , &numberOfJetsPfHT_    );
-  tOut->Branch("onlyJetSum"  , &onlyJetSum_  );
-  tOut->Branch("numberOfJetsOnlyHT"    , &numberOfJetsOnlyHT_    );
-  tOut->Branch("jetFirstHighestDeepFlavB_deepFlavB" , &jetFirstHighestDeepFlavB_deepFlavB_ );
-  tOut->Branch("jetFirstHighestDeepFlavB_pt" , &jetFirstHighestDeepFlavB_pt_ );
-  tOut->Branch("jetFirstHighestDeepFlavB_eta" , &jetFirstHighestDeepFlavB_eta_ );
-  tOut->Branch("jetFirstHighestDeepFlavB_hadronFlavour" , &jetFirstHighestDeepFlavB_hadronFlavour_ );
+  tOut->Branch("jetThirdHighestPt_pt", &jetThirdHighestPt_pt_);
+  tOut->Branch("jetForthHighestPt_pt", &jetForthHighestPt_pt_);
+  tOut->Branch("fourHighestJetPt_sum", &fourHighestJetPt_sum_);
+  tOut->Branch("caloJetSum", &caloJetSum_);
+  tOut->Branch("numberOfJetsCaloHT", &numberOfJetsCaloHT_);
+  tOut->Branch("pfJetSum", &pfJetSum_);
+  tOut->Branch("numberOfJetsPfHT", &numberOfJetsPfHT_);
+  tOut->Branch("onlyJetSum", &onlyJetSum_);
+  tOut->Branch("numberOfJetsOnlyHT", &numberOfJetsOnlyHT_);
+  tOut->Branch("jetFirstHighestDeepFlavB_deepFlavB", &jetFirstHighestDeepFlavB_deepFlavB_);
+  tOut->Branch("jetFirstHighestDeepFlavB_pt", &jetFirstHighestDeepFlavB_pt_);
+  tOut->Branch("jetFirstHighestDeepFlavB_eta", &jetFirstHighestDeepFlavB_eta_);
+  tOut->Branch("jetFirstHighestDeepFlavB_hadronFlavour", &jetFirstHighestDeepFlavB_hadronFlavour_);
   
   //enable trigger filters
   std::map<std::pair<int,int>, std::string > triggerObjectsForStudies        ; // <<objectId, FilterId> , filterName>
@@ -386,7 +386,7 @@ int main(int argc, char** argv)
 	  triggerObjectTokens.push_back(triggerObject); // last part splitted 
 	  if (triggerObjectTokens.size() != 3)
             {
-	      throw std::runtime_error("** skim_ntuple : could not parse triggerObject for Cuts entry " + triggerObject + " , aborting");
+	      throw std::runtime_error("** skim_trigger : could not parse triggerObject for Cuts entry " + triggerObject + " , aborting");
             }
 	  
 	  std::pair<int,int> objectAndFilter = std::make_pair(atoi(triggerObjectTokens[0].data()),atoi(triggerObjectTokens[1].data())); // <objectId, Filter Id>                                      
@@ -440,7 +440,6 @@ int main(int argc, char** argv)
 	  tOut->Branch((triggerObjectsForStudies[objectAndFilter] + "_jetFirstHighestDeepFlavB_triggerFlag").data(), &jetFirstHighestDeepFlavB_triggerFlag_[objectAndFilter]);
         }
     }
-  
   
   Cutflow cutflow;
   Cutflow cutflow_Unweighted("h_cutflow_unweighted", "Unweighted selection cutflow");

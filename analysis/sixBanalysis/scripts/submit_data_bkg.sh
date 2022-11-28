@@ -5,7 +5,7 @@ ODIR="/store/user/mkolosov/HHHTo6B/"
 
 . scripts/arg_submit.sh -v sr "$@"
 
-CFG="config/skim_ntuple_2018_106X_NanoAODv9_marina.cfg"
+CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
 TAG="Summer2018UL_29Sep2022_withoutLeptonVeto"
 
 make exe -j || exit -1
