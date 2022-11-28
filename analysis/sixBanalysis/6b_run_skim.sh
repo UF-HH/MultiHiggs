@@ -8,7 +8,7 @@ exe=bin/skim_ntuple.exe
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 2017
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-cfg="config/skim_ntuple_2017_106X_NanoAODv9_marina.cfg" 
+cfg="config/skim_ntuple_2017_106X_NanoAODv9.cfg" 
 
 # Run 2017 data
 output="NTuple_BTagCSV_Run2017B.root"
@@ -21,7 +21,7 @@ input="input/Run2_UL/RunIISummer20UL17NanoAODv9/BTagCSV_Run2017B.txt --is-data"
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 2018
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#cfg="config/skim_ntuple_2018_106X_NanoAODv9_marina.cfg"
+#cfg="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
 
 # Run signal
 #output="NTuple_NMSSM_XYH_YToHH_6b_MX_450_MY_300.root"

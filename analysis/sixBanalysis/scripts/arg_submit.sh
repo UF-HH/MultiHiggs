@@ -16,14 +16,14 @@ done
 case "${region}" in
     "sr")
 	TAG="SR/${tag}"
-	CFG="config/skim_ntuple_2018_106X_NanoAODv9_marina.cfg";;
+	CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg";;
     "qcd")
 	TAG="QCD_SR/${tag}"
-	CFG="config/skim_ntuple_2018_106X_NanoAODv9_marina.cfg";;
+	CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg";;
     "cr")
 	TAG="Higgs_CR/${tag}"
-	CFG="config/skim_ntuple_2018_106X_NanoAODv9_marina.cfg";;
+	CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg";;
     *)
 	TAG="SR/${tag}"
-	CFG="config/skim_ntuple_2018_106X_NanoAODv9_marina.cfg";;
+	CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg";;
 esac
