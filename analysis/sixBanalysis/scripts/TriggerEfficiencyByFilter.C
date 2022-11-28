@@ -323,18 +323,18 @@ void ProduceAllTriggerEfficiencies2018()
   ROOT::EnableThreadSafety();
   
   // With trigger-offline object matching
-  std::string DataFile   = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_wTrgMatching_08Nov2022/SingleMuon/ntuple.root";
-  std::string TTFile     = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_wTrgMatching_08Nov2022/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/ntuple.root";
-  std::string SignalFile = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_wTrgMatching_08Nov2022/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_2M/ntuple.root";
+  //std::string DataFile   = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_wTrgMatching_08Nov2022/SingleMuon/ntuple.root";
+  //std::string TTFile     = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_wTrgMatching_08Nov2022/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/ntuple.root";
+  //std::string SignalFile = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_wTrgMatching_08Nov2022/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_2M/ntuple.root";
   
-  //std::string DataFile   = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_woTrgMatching_10Nov2022/SingleMuon/ntuple.root";
-  //std::string TTFile     = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_woTrgMatching_10Nov2022/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/ntuple.root";
-  //std::string SignalFile = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_woTrgMatching_10Nov2022/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_2M/ntuple.root"; 
+  std::string DataFile   = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_woTrgMatching_10Nov2022/SingleMuon/ntuple.root";
+  std::string TTFile     = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_woTrgMatching_10Nov2022/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/ntuple.root";
+  std::string SignalFile = "root://cmseos.fnal.gov//store/user/mkolosov/HHHTo6B/TriggerStudies/Summer2018UL_TRGcurves_woTrgMatching_10Nov2022/srosenzw_NMSSM_XYH_YToHH_6b_MX_700_MY_400_sl7_nano_2M/ntuple.root"; 
   
   std::cout << "\n Will procude trigger efficiencies for 2018"<<std::endl;
   
-  std::thread theMatchedTriggerThread(ProduceAllTriggerEfficienciesFiles2018, DataFile, TTFile, SignalFile, "TriggerEfficiencies_2018.root", true);
-  //std::thread theMatchedTriggerThread(ProduceAllTriggerEfficienciesFiles2018, DataFile, TTFile, SignalFile, "TriggerEfficiencies_2018_woTriggerMatching.root", true);
+  //std::thread theMatchedTriggerThread(ProduceAllTriggerEfficienciesFiles2018, DataFile, TTFile, SignalFile, "TriggerEfficiency_BeforeFit_2018_wMatching.root", true);
+  std::thread theMatchedTriggerThread(ProduceAllTriggerEfficienciesFiles2018, DataFile, TTFile, SignalFile, "TriggerEfficiencies_BeforeFit_2018_woMatching.root", true);
   theMatchedTriggerThread.join();
 }
 
