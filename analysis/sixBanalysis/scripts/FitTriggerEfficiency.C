@@ -172,7 +172,7 @@ void doAllFit2018(std::string inputFileName)
   TFile theInputFile(inputFileName.data());
   std::vector<double> initialParameters;
   
-  std::string outputFileName = "TriggerEfficiency_Fit_2018.root";
+  std::string outputFileName = "TriggerEfficiency_Fit_2018_woMatching.root";
   TFile outputRootFile(outputFileName.data(), "RECREATE");
   
   outputFile << "#include \"TFile.h\""                                  << std::endl;
@@ -308,5 +308,6 @@ void doAllFit2018(std::string inputFileName)
 
 void FitTriggerEfficiency()
 {
-  doAllFit2018("TriggerEfficiencies_2018.root");
+  //doAllFit2018("TriggerEfficiencies_2018.root");
+  doAllFit2018("TriggerEfficiencies_BeforeFit_2018_woMatching.root");
 }
