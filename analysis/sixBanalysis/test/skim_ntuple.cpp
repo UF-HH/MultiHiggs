@@ -861,6 +861,15 @@ int main(int argc, char** argv)
     std::vector<Jet> presel_jets = skf->preselect_jets(nat, ei, all_jets);
     histograms.get("n_presel_jet", ";N Preselected Jets;Events", 20, 0, 20).Fill(presel_jets.size(), nwt);
 
+    if (is_signal) 
+      {
+	skf->match_signal_recojets(nat,ei,presel_jets);
+	std::vector<GenJet> all_genjets = skf->get_all_genjets(nat);
+	skf->match_genjets_to_reco(nat,ei,all_genjets,presel_jets);
+	skf->match_signal_genjets(nat,ei,all_genjets);
+	ei.genjet_list = all_genjets;
+      }
+      
     ei.n_jet    = presel_jets.size();
     ei.jet_list = presel_jets;
         
@@ -872,14 +881,6 @@ int main(int argc, char** argv)
     loop_timer.click("Jet selection");
     if (debug) dumpObjColl(presel_jets, "==== PRESELECTED JETS ===");
     
-    if (is_signal) 
-      {
-	skf->match_signal_recojets(nat,ei,presel_jets);
-	std::vector<GenJet> all_genjets = skf->get_all_genjets(nat);
-	skf->match_genjets_to_reco(nat,ei,all_genjets,presel_jets);
-	skf->match_signal_genjets(nat,ei,all_genjets);
-	ei.genjet_list = all_genjets;
-      }
     
     //=================================
     // Apply analysis-specific skims
