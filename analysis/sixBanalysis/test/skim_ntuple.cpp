@@ -530,6 +530,13 @@ int main(int argc, char** argv)
     {
       trgEfficiencyCalculator_ = new TriggerEfficiencyCalculator_2018(trgEffFileName, nat);
     }
+  else if (year == "2017")
+    {
+      if (!is_data && saveTrgSF)
+	{
+	  std::cout << "Option to save the trigger scale factor is enabled but no trigger efficiency file exists for 2017 yet. Will skip trigger scale factor.."<<std::endl;
+	}
+    }
   else
     {
       throw std::invalid_argument("No trigger efficiency file exists for the year requested");
