@@ -4,7 +4,7 @@ DESCRIPTION:
 This script is used to retrieve the list of ROOT files for each sample.
 
 USAGE:
-./getSamples.py -d /eos/uscms/store/group/lpchbb/srosenzw/XYH_YToHH/CRAB_PrivateMC
+./getSamples.py -d /eos/uscms/store/group/lpchbb/srosenzw/XYH_YToHH/CRAB_PrivateMC/Summer20UL18
 
  To overwrite existing .TXT files, do:
 ./getSamples.py -d /eos/uscms/store/group/lpchbb/srosenzw/XYH_YToHH/CRAB_PrivateMC --overwrite
@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
     # Default values
     VERBOSE   = True
-    DIRNAME   = "/eos/uscms/store/group/lpchbb/srosenzw/XYH_YToHH/CRAB_PrivateMC"
+    DIRNAME   = "/eos/uscms/store/group/lpchbb/srosenzw/XYH_YToHH/CRAB_PrivateMC/Summer20UL18"
     OVERWRITE = False
     
     parser = ArgumentParser(description="Save ROOT files location in .txt")

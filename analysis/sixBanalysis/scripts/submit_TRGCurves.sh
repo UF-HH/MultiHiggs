@@ -11,7 +11,7 @@ ODIR="/store/user/mkolosov/HHHTo6B/TriggerStudies/"
 CFG="config/skim_trigger_2017_106X_NanoAODv9.cfg"
 
 # Submit Trigger skimming with matching
-TAG="Summer2017UL_TRGcurves_wTrgMatching_28Nov2022"
+TAG="Summer2017UL_TRGcurves_wTrgMatching_15Dec2022"
 
 make exe -j || exit -1
 echo "... tag       : ", $TAG
@@ -25,18 +25,18 @@ for input in ${TT_files[@]}; do
 done
 
 # Submit Trigger skimming without matching
-TAG="Summer2017UL_TRGcurves_woTrgMatching_28Nov2022"
+#TAG="Summer2017UL_TRGcurves_woTrgMatching_28Nov2022"
 
-make exe -j || exit -1
-echo "... tag       : ", $TAG
-echo "... saving to : ", $ODIR
+#make exe -j || exit -1
+#echo "... tag       : ", $TAG
+#echo "... saving to : ", $ODIR
 
-for input in ${DATA_files[@]}; do
-    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-data
-done
-for input in ${TT_files[@]}; do
-    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input
-done
+#for input in ${DATA_files[@]}; do
+#    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-data
+#done
+#for input in ${TT_files[@]}; do
+#    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input
+#done
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,7 +53,7 @@ done
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Submit Trigger skimming with matching
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#TAG="Summer2018UL_TRGcurves_wTrgMatching_10Nov2022"
+#TAG="Summer2018UL_TRGcurves_wTrgMatching_14Dec2022_4bCode"
 
 #make exe -j || exit -1
 #echo "... tag       : ", $TAG
@@ -78,7 +78,7 @@ done
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Sumbit Trigger skimming without matching
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#TAG="Summer2018UL_TRGcurves_woTrgMatching_10Nov2022"
+#TAG="Summer2018UL_TRGcurves_woTrgMatching_15Dec2022"
 
 #make exe -j || exit -1
 #echo "... tag       : ", $TAG
