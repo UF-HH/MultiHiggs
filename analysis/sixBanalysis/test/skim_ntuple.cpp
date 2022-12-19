@@ -189,6 +189,7 @@ bool performTriggerMatching(NanoAODTree& nat, OutputTree& ot, CfgParser& config,
     {
       int triggerObjectId     = nat.TrigObj_id.At(trigObjIt);
       int triggerFilterBitSum = nat.TrigObj_filterBits.At(trigObjIt);
+      
       for(auto &triggerAndJetsFilterMap : triggerObjectPerJetCount_) // One path at a time                                                                                                        
 	{
 	  for(auto &triggerFilter : triggerAndJetsFilterMap.second[0]) // I use the first jet map to search for filters                                                                           
@@ -503,10 +504,9 @@ int main(int argc, char** argv)
   const bool saveTrg            = config.readBoolOpt("triggers::saveDecision");
   const string trgEffFileName   = config.readStringOpt("triggers::TriggerEfficiencyFileName");
   
-  const bool saveTrgSF          = (!is_data) && applyTrg && config.readBoolOpt("triggers::saveTrgSF");
+  const bool saveTrgSF          = (!is_data) && config.readBoolOpt("triggers::saveTrgSF");
   const bool simulateTrg        = (!is_data) && applyTrg && config.readBoolOpt("triggers::SimulateTrigger");
   const bool applyTrgMatching   = applyTrg && config.readBoolOpt("triggers::applyTrgObjectMatching");
-  
   //const bool applyTurnOnCuts    = applyTrg && config.readBoolOpt("triggers::applyTurnOnCuts");
   
   std::cout <<"\033[1;34m Apply decision  : \033[0m"<<std::boolalpha<<applyTrg<<std::noboolalpha<<std::endl;
@@ -514,15 +514,23 @@ int main(int argc, char** argv)
   std::cout <<"\033[1;34m Save SFs        : \033[0m"<<std::boolalpha<<saveTrgSF<<std::noboolalpha<<std::endl;
   std::cout <<"\033[1;34m Simulate        : \033[0m"<<std::boolalpha<<simulateTrg<<std::noboolalpha<<std::endl;
   std::cout <<"\033[1;34m Apply matching  : \033[0m"<<std::boolalpha<<applyTrgMatching<<std::noboolalpha<<std::endl;
-    
+  
   std::vector<std::string> triggerVector; // Contains the names of the triggers used 
   std::map<std::string, std::map<std::pair<int, int>, int> > triggerObjectAndMinNumberMap; // <triggerName, <filter bit, minimum number of objects> >
   std::map< std::string, std::vector<std::map<std::pair<int,int>, bool>>> triggerObjectPerJetCount_; 
   std::map< std::string, std::map<std::pair<int,int>, int>> triggerObjectTotalCount_;
   initializeTriggerRequirements(config, ot, triggerVector, triggerObjectAndMinNumberMap, triggerObjectPerJetCount_, triggerObjectTotalCount_);
   
+  std::vector<std::string> cleanedTrgVector;
+  for (unsigned int i=0; i<triggerVector.size(); i++)
+    {
+      bool trgExists = ch.FindBranch(triggerVector.at(i).c_str());
+      if (!trgExists) continue;
+      cleanedTrgVector.push_back(triggerVector.at(i));
+    }
+  
   // Store the trigger names
-  nat.triggerReader().setTriggers(triggerVector);
+  nat.triggerReader().setTriggers(cleanedTrgVector);
   
   // Initialize the trigger scale factors
   TriggerEfficiencyCalculator *trgEfficiencyCalculator_{nullptr};
@@ -532,10 +540,7 @@ int main(int argc, char** argv)
     }
   else if (year == "2017")
     {
-      if (!is_data && saveTrgSF)
-	{
-	  std::cout << "Option to save the trigger scale factor is enabled but no trigger efficiency file exists for 2017 yet. Will skip trigger scale factor.."<<std::endl;
-	}
+      trgEfficiencyCalculator_ = new TriggerEfficiencyCalculator_2017(trgEffFileName, nat);
     }
   else
     {
@@ -699,7 +704,7 @@ int main(int argc, char** argv)
       break;
 
     loop_timer.start_lap();
-
+    
     if (!nat.Next()) break;
     if (iEv % 10000 == 0 || debug) {
       cout << "... processing event " << iEv << endl;
