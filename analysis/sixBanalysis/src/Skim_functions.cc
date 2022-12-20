@@ -87,6 +87,22 @@ std::vector<GenJet> Skim_functions::get_all_genjets(NanoAODTree &nat)
   return jets;
 }
 
+std::vector<FatJet> Skim_functions::get_all_fatjets(NanoAODTree &nat)
+{
+  /**
+   * @brief Returns list of all reco fat-jets in the event
+   *
+   */
+  std::vector<FatJet> fatjets;
+  fatjets.reserve(*(nat.nFatJet));
+  for (unsigned int ij = 0; ij < *(nat.nFatJet); ++ij)
+    {
+      FatJet fatjet(ij, &nat);
+      fatjets.emplace_back(fatjet);
+    }
+  return fatjets;
+}
+
 std::vector<Jet> Skim_functions::get_all_jets(NanoAODTree &nat)
 {
   /**

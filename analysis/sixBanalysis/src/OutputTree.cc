@@ -158,6 +158,81 @@ using namespace std;
   OBJ##_mediumId.clear();       \
   OBJ##_tightId.clear();
   
+#define BRANCH_fatjet_list(OBJ)            \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);    \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);  \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);  \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);	   \
+  tree_->Branch(#OBJ "_msoftdrop", &OBJ##_msoftdrop);	\
+  tree_->Branch(#OBJ "_area", &OBJ##_area);		\
+  tree_->Branch(#OBJ "_n2b1", &OBJ##_n2b1);		\
+  tree_->Branch(#OBJ "_n3b1", &OBJ##_n3b1);		\
+  tree_->Branch(#OBJ "_rawFactor", &OBJ##_rawFactor);	\
+  tree_->Branch(#OBJ "_tau1", &OBJ##_tau1);		\
+  tree_->Branch(#OBJ "_tau2", &OBJ##_tau2);		\
+  tree_->Branch(#OBJ "_tau3", &OBJ##_tau3);		\
+  tree_->Branch(#OBJ "_tau4", &OBJ##_tau4);		\
+  tree_->Branch(#OBJ "_jetId", &OBJ##_jetId);		\
+  tree_->Branch(#OBJ "_subJetIdx1", &OBJ##_subJetIdx1);	\
+  tree_->Branch(#OBJ "_subJetIdx2", &OBJ##_subJetIdx2);	\
+  tree_->Branch(#OBJ "_nPFCand", &OBJ##_nPFCand);	\
+  tree_->Branch(#OBJ "_PNetQCDb", &OBJ##_PNetQCDb);	\
+  tree_->Branch(#OBJ "_PNetQCDbb", &OBJ##_PNetQCDbb);	\
+  tree_->Branch(#OBJ "_PNetQCDc", &OBJ##_PNetQCDc);	\
+  tree_->Branch(#OBJ "_PNetQCDcc", &OBJ##_PNetQCDcc);	\
+  tree_->Branch(#OBJ "_PNetQCDothers", &OBJ##_PNetQCDothers);	\
+  tree_->Branch(#OBJ "_PNetXbb", &OBJ##_PNetXbb);		\
+  tree_->Branch(#OBJ "_PNetXcc", &OBJ##_PNetXcc);		\
+  tree_->Branch(#OBJ "_PNetXqq", &OBJ##_PNetXqq);		\
+  tree_->Branch(#OBJ "_deepTagMD_H4q", &OBJ##_deepTagMD_H4q);	\
+  tree_->Branch(#OBJ "_deepTagMD_Hbb", &OBJ##_deepTagMD_Hbb);	\
+  tree_->Branch(#OBJ "_deepTagMD_T", &OBJ##_deepTagMD_T);	\
+  tree_->Branch(#OBJ "_deepTagMD_W", &OBJ##_deepTagMD_W);	\
+  tree_->Branch(#OBJ "_deepTagMD_Z", &OBJ##_deepTagMD_Z);	\
+  tree_->Branch(#OBJ "_deepTagMD_bbvsL", &OBJ##_deepTagMD_bbvsL);	\
+  tree_->Branch(#OBJ "_deepTagMD_ccvsL", &OBJ##_deepTagMD_ccvsL);	\
+  tree_->Branch(#OBJ "_deepTag_QCD", &OBJ##_deepTag_QCD);		\
+  tree_->Branch(#OBJ "_deepTag_QCDothers", &OBJ##_deepTag_QCDothers);	\
+  tree_->Branch(#OBJ "_deepTag_W", &OBJ##_deepTag_W);			\
+  tree_->Branch(#OBJ "_deepTag_Z", &OBJ##_deepTag_Z);
+
+#define CLEAR_fatjet_list(OBJ) \
+  OBJ##_pt.clear();            \
+  OBJ##_eta.clear();           \
+  OBJ##_phi.clear();	       \
+  OBJ##_m.clear();	       \
+  OBJ##_msoftdrop.clear();     \
+  OBJ##_area.clear();	       \
+  OBJ##_n2b1.clear();	       \
+  OBJ##_n3b1.clear();	       \
+  OBJ##_rawFactor.clear();     \
+  OBJ##_tau1.clear();	       \
+  OBJ##_tau2.clear();	       \
+  OBJ##_tau3.clear();	       \
+  OBJ##_tau4.clear();	       \
+  OBJ##_jetId.clear();	       \
+  OBJ##_subJetIdx1.clear();    \
+  OBJ##_subJetIdx2.clear();    \
+  OBJ##_nPFCand.clear();       \
+  OBJ##_PNetQCDb.clear();      \
+  OBJ##_PNetQCDbb.clear();     \
+  OBJ##_PNetQCDc.clear();      \
+  OBJ##_PNetQCDcc.clear();     \
+  OBJ##_PNetQCDothers.clear(); \
+  OBJ##_PNetXbb.clear();       \
+  OBJ##_PNetXcc.clear();       \
+  OBJ##_PNetXqq.clear();       \
+  OBJ##_deepTagMD_H4q.clear(); \
+  OBJ##_deepTagMD_Hbb.clear(); \
+  OBJ##_deepTagMD_T.clear();   \
+  OBJ##_deepTagMD_W.clear();   \
+  OBJ##_deepTagMD_Z.clear();   \
+  OBJ##_deepTagMD_bbvsL.clear();		\
+  OBJ##_deepTagMD_ccvsL.clear();		\
+  OBJ##_deepTag_QCD.clear();			\
+  OBJ##_deepTag_QCDothers.clear();		\
+  OBJ##_deepTag_W.clear();			\
+  OBJ##_deepTag_Z.clear();
 
 #define BRANCH_jet_list(OBJ)                                  \
   tree_->Branch(#OBJ "_E", &OBJ##_E);                         \
@@ -448,7 +523,8 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
   
   tree_->Branch("n_total_jet",&n_total_jet);
   tree_->Branch("n_jet", &n_jet);
-
+  tree_->Branch("n_fatjet", &n_fatjet);
+    
   if (is_enabled("jet_coll"))
     {
       std::cout << "[INFO] OutputTree : enabling jet collection branches" << std::endl;
@@ -457,6 +533,12 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("b_6j_score",    &b_6j_score);
     }
 
+  if (is_enabled("fatjet_coll"))
+    {
+      std::cout << "[INFO] OutputTree : enabling fatjet collection branches" << std::endl;
+      BRANCH_fatjet_list(fatjet);
+    }
+  
   if (is_enabled("dijets_coll"))
   {
     std::cout << "[INFO] OutputTree : enabling dijet collection branches" << std::endl;
@@ -534,7 +616,7 @@ void OutputTree::clear()
   n_jet = 0;
   n_genjet = 0;
   n_higgs = 0;
-
+  n_fatjet = 0;
   n_ele = 0;
   n_muon = 0;
   
@@ -555,7 +637,8 @@ void OutputTree::clear()
   CLEAR_ele_list(ele);
   CLEAR_muon_list(muon);
   CLEAR_jet_list(jet);
-
+  CLEAR_fatjet_list(fatjet);
+  
   n_dijet = 0;
   dijet_m.clear();
   dijet_pt.clear();

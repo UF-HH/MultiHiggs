@@ -9,6 +9,7 @@
 #include "Electron.h"
 #include "Muon.h"
 #include "Jet.h"
+#include "FatJet.h"
 #include "GenJet.h"
 #include "GenPart.h"
 #include "CompositeCandidate.h"
@@ -59,7 +60,10 @@ public:
 
   // create a vector with all jets in the event
   std::vector<GenJet> get_all_genjets(NanoAODTree &nat);
-
+  
+  // create a vector with all fatjets in the event
+  std::vector<FatJet> get_all_fatjets(NanoAODTree &nat);
+  
   // create a vector with all jets in the event
   std::vector<Jet> get_all_jets(NanoAODTree &nat);
 

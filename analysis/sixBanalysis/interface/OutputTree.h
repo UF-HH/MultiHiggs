@@ -107,6 +107,44 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   std::vector<bool> OBJ##_mediumId;        \
   std::vector<bool> OBJ##_tightId;
 
+#define DECLARE_fatjet_list(OBJ)           \
+  std::vector<float> OBJ##_pt;		   \
+  std::vector<float> OBJ##_eta;            \
+  std::vector<float> OBJ##_phi;            \
+  std::vector<float> OBJ##_m;              \
+  std::vector<float> OBJ##_msoftdrop;      \
+  std::vector<float> OBJ##_area;	   \
+  std::vector<float> OBJ##_n2b1;           \
+  std::vector<float> OBJ##_n3b1;           \
+  std::vector<float> OBJ##_rawFactor;      \
+  std::vector<float> OBJ##_tau1;           \
+  std::vector<float> OBJ##_tau2;           \
+  std::vector<float> OBJ##_tau3;           \
+  std::vector<float> OBJ##_tau4;           \
+  std::vector<int>   OBJ##_jetId;          \
+  std::vector<int>   OBJ##_subJetIdx1;     \
+  std::vector<int>   OBJ##_subJetIdx2;     \
+  std::vector<int>   OBJ##_nPFCand;        \
+  std::vector<float> OBJ##_PNetQCDb;       \
+  std::vector<float> OBJ##_PNetQCDbb;      \
+  std::vector<float> OBJ##_PNetQCDc;       \
+  std::vector<float> OBJ##_PNetQCDcc;      \
+  std::vector<float> OBJ##_PNetQCDothers;  \
+  std::vector<float> OBJ##_PNetXbb;        \
+  std::vector<float> OBJ##_PNetXcc;        \
+  std::vector<float> OBJ##_PNetXqq;        \
+  std::vector<float> OBJ##_deepTagMD_H4q;  \
+  std::vector<float> OBJ##_deepTagMD_Hbb;  \
+  std::vector<float> OBJ##_deepTagMD_T;    \
+  std::vector<float> OBJ##_deepTagMD_W;    \
+  std::vector<float> OBJ##_deepTagMD_Z;    \
+  std::vector<float> OBJ##_deepTagMD_bbvsL;   \
+  std::vector<float> OBJ##_deepTagMD_ccvsL;   \
+  std::vector<float> OBJ##_deepTag_QCD;       \
+  std::vector<float> OBJ##_deepTag_QCDothers; \
+  std::vector<float> OBJ##_deepTag_W;         \
+  std::vector<float> OBJ##_deepTag_Z;
+
 #define DECLARE_jet_list(OBJ)           \
   std::vector<float> OBJ##_E;           \
   std::vector<float> OBJ##_m;           \
@@ -194,7 +232,8 @@ public:
   int n_total_jet;
   int n_jet;
   int n_higgs;
-
+  int n_fatjet;
+  
   int n_ele;
   int n_muon;
   
@@ -214,7 +253,8 @@ public:
   DECLARE_ele_list(ele);
   DECLARE_muon_list(muon);
   DECLARE_jet_list(jet);
-
+  DECLARE_fatjet_list(fatjet);
+  
   int n_dijet;
   std::vector<float> dijet_m;
   std::vector<float> dijet_pt;

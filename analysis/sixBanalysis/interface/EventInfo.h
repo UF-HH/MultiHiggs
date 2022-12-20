@@ -14,6 +14,7 @@
 
 #include "CompositeCandidate.h"
 #include "Jet.h"
+#include "FatJet.h"
 #include "Muon.h"
 #include "Electron.h"
 #include "GenPart.h"
@@ -37,7 +38,7 @@ struct EventInfo{
   boost::optional<int>    n_jet;
   boost::optional<int>    n_genjet;
   boost::optional<int>    n_higgs;
-
+  boost::optional<int>    n_fatjet;
   boost::optional<int>    n_ele;
   boost::optional<int>    n_muon;
   
@@ -192,6 +193,7 @@ struct EventInfo{
   boost::optional< std::vector<Muon> > muon_list;
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
+  boost::optional< std::vector<FatJet> > fatjet_list;
   boost::optional<std::vector<DiJet>> dijet_list;
 
   boost::optional<EventShapes> event_shapes;

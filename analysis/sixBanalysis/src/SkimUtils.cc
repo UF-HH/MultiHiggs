@@ -124,6 +124,48 @@ using namespace std;
     }                                                               \
 }
 
+#define COPY_OPTIONAL_fatjet_list(OBJ)		                    \
+  if (ei.OBJ##_list) {				                    \
+    for (FatJet & fatjet : ei.OBJ##_list.get()) {		    \
+      ot.OBJ##_pt.push_back(fatjet.get_pt());			    \
+      ot.OBJ##_eta.push_back(fatjet.get_eta());		            \
+      ot.OBJ##_phi.push_back(fatjet.get_phi());		            \
+      ot.OBJ##_m.push_back(fatjet.get_mass());		            \
+      ot.OBJ##_msoftdrop.push_back(fatjet.get_msoftdrop());	    \
+      ot.OBJ##_area.push_back(fatjet.get_area());		    \
+      ot.OBJ##_n2b1.push_back(fatjet.get_n2b1());		    \
+      ot.OBJ##_n3b1.push_back(fatjet.get_n3b1());		    \
+      ot.OBJ##_rawFactor.push_back(fatjet.get_rawFactor());	    \
+      ot.OBJ##_tau1.push_back(fatjet.get_tau1());		    \
+      ot.OBJ##_tau2.push_back(fatjet.get_tau2());		    \
+      ot.OBJ##_tau3.push_back(fatjet.get_tau3());		    \
+      ot.OBJ##_tau4.push_back(fatjet.get_tau4());		    \
+      ot.OBJ##_jetId.push_back(fatjet.get_jetId());		    \
+      ot.OBJ##_subJetIdx1.push_back(fatjet.get_subJetIdx1());	    \
+      ot.OBJ##_subJetIdx2.push_back(fatjet.get_subJetIdx2());	    \
+      ot.OBJ##_nPFCand.push_back(fatjet.get_nPFCand());		    \
+      ot.OBJ##_PNetQCDb.push_back(fatjet.get_PNetQCDb());	    \
+      ot.OBJ##_PNetQCDbb.push_back(fatjet.get_PNetQCDbb());	    \
+      ot.OBJ##_PNetQCDc.push_back(fatjet.get_PNetQCDc());	    \
+      ot.OBJ##_PNetQCDcc.push_back(fatjet.get_PNetQCDcc());	    \
+      ot.OBJ##_PNetQCDothers.push_back(fatjet.get_PNetQCDothers()); \
+      ot.OBJ##_PNetXbb.push_back(fatjet.get_PNetXbb());		    \
+      ot.OBJ##_PNetXcc.push_back(fatjet.get_PNetXcc());		    \
+      ot.OBJ##_PNetXqq.push_back(fatjet.get_PNetXqq());		    \
+      ot.OBJ##_deepTagMD_H4q.push_back(fatjet.get_deepTagMD_H4q()); \
+      ot.OBJ##_deepTagMD_Hbb.push_back(fatjet.get_deepTagMD_Hbb()); \
+      ot.OBJ##_deepTagMD_T.push_back(fatjet.get_deepTagMD_T());	    \
+      ot.OBJ##_deepTagMD_W.push_back(fatjet.get_deepTagMD_W());	    \
+      ot.OBJ##_deepTagMD_Z.push_back(fatjet.get_deepTagMD_Z());	    \
+      ot.OBJ##_deepTagMD_bbvsL.push_back(fatjet.get_deepTagMD_bbvsL());     \
+      ot.OBJ##_deepTagMD_ccvsL.push_back(fatjet.get_deepTagMD_ccvsL());     \
+      ot.OBJ##_deepTag_QCD.push_back(fatjet.get_deepTag_QCD());	            \
+      ot.OBJ##_deepTag_QCDothers.push_back(fatjet.get_deepTag_QCDothers()); \
+      ot.OBJ##_deepTag_W.push_back(fatjet.get_deepTag_W());	            \
+      ot.OBJ##_deepTag_Z.push_back(fatjet.get_deepTag_Z());		    \
+    }									    \
+  }
+
 #define COPY_OPTIONAL_jet_list(OBJ)                              \
   if (ei.OBJ##_list) {                                           \
     for (Jet & jet : ei.OBJ##_list.get()) {                      \
@@ -206,6 +248,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if(ei.n_total_jet)    ot.n_total_jet     = *ei.n_total_jet;
   if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
   if(ei.n_higgs)        ot.n_higgs         = *ei.n_higgs;
+  if(ei.n_fatjet)       ot.n_fatjet        = *ei.n_fatjet;
   if(ei.n_ele)          ot.n_ele           = *ei.n_ele;
   if(ei.n_muon)         ot.n_muon          = *ei.n_muon;
   
@@ -215,6 +258,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   COPY_OPTIONAL_ele_list(ele);
   COPY_OPTIONAL_muon_list(muon);
   COPY_OPTIONAL_jet_list(jet);
+  COPY_OPTIONAL_fatjet_list(fatjet);
 
   if (ei.genjet_list) {
     for (GenJet& jet : ei.genjet_list.get()) {
