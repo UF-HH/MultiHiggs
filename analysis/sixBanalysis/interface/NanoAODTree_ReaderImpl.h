@@ -191,8 +191,8 @@ public:
   NanoReaderArray<Int_t>     FatJet_subJetIdx2                    {fReader, "FatJet_subJetIdx2"};
   NanoReaderArray<Int_t>     FatJet_genJetAK8Idx                  {fReader, "FatJet_genJetAK8Idx"};
   NanoReaderArray<Int_t>     FatJet_hadronFlavour                 {fReader, "FatJet_hadronFlavour"};
-  NanoReaderArray<Int_t>     FatJet_nBHadrons                     {fReader, "FatJet_nBHadrons"};
-  NanoReaderArray<Int_t>     FatJet_nCHadrons                     {fReader, "FatJet_nCHadrons"};
+  NanoReaderArray<UChar_t>   FatJet_nBHadrons                     {fReader, "FatJet_nBHadrons"};
+  NanoReaderArray<UChar_t>   FatJet_nCHadrons                     {fReader, "FatJet_nCHadrons"};
   NanoReaderArray<Int_t>     FatJet_nPFCand                       {fReader, "FatJet_nPFCand"};
   NanoReaderArray<Float_t>   FatJet_ParticleNetMD_probQCDb        {fReader, "FatJet_ParticleNetMD_probQCDb"};
   NanoReaderArray<Float_t>   FatJet_ParticleNetMD_probQCDbb       {fReader, "FatJet_ParticleNetMD_probQCDbb"};
@@ -431,7 +431,13 @@ public:
   NanoReaderArray<Float_t>   SubJet_tau2                          {fReader, "SubJet_tau2"};
   NanoReaderArray<Float_t>   SubJet_tau3                          {fReader, "SubJet_tau3"};
   NanoReaderArray<Float_t>   SubJet_tau4                          {fReader, "SubJet_tau4"};
-        
+
+  NanoReaderArray<Float_t>   SubGenJetAK8_eta                     {fReader, "SubGenJetAK8_eta"};
+  NanoReaderArray<Float_t>   SubGenJetAK8_mass                    {fReader, "SubGenJetAK8_mass"};
+  NanoReaderArray<Float_t>   SubGenJetAK8_phi                     {fReader, "SubGenJetAK8_phi"};
+  NanoReaderArray<Float_t>   SubGenJetAK8_pt                      {fReader, "SubGenJetAK8_pt"};
+  NanoReaderArray<UInt_t>    nSubGenJetAK8                        {fReader, "nSubGenJetAK8"};
+  
   NanoReaderValue<UInt_t>    nTau                                 {fReader, "nTau"};
   NanoReaderArray<Float_t>   Tau_chargedIso                       {fReader, "Tau_chargedIso"};
   NanoReaderArray<Float_t>   Tau_dxy                              {fReader, "Tau_dxy"};

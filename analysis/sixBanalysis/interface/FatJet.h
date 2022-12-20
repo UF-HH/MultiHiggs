@@ -2,6 +2,7 @@
 #define FATJET_H
 
 #include "Candidate.h"
+#include "SubJet.h"
 
 class FatJet : public Candidate
 {
@@ -75,10 +76,109 @@ public:
   
   float get_deepTag_W() const { return get_property((*this), FatJet_deepTag_WvsQCD); }
   float get_deepTag_Z() const { return get_property((*this), FatJet_deepTag_ZvsQCD); }
-
+  
+  std::vector<SubJet> get_subjets() const
+    {
+      std::vector<SubJet> subjets;
+      if (get_property((*this), FatJet_subJetIdx1) != -1)
+	{
+	  SubJet subjet1(get_property((*this), FatJet_subJetIdx1), this->getNanoAODTree());
+	  subjets.push_back(subjet1);
+	  
+	  if (get_property((*this), FatJet_subJetIdx2) != -1)
+	    {
+	      SubJet subjet2(get_property((*this), FatJet_subJetIdx2), this->getNanoAODTree());
+	      subjets.push_back(subjet2);
+	    }
+	}
+      return subjets;
+    }
+  
+  float get_subjet1_pt() const {
+    if (get_property((*this), FatJet_subJetIdx1) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx1), this->getNanoAODTree());
+	return subjet.get_pt();
+      }
+    else return -99.0;
+  }
+  float get_subjet1_eta() const {
+    if (get_property((*this), FatJet_subJetIdx1) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx1), this->getNanoAODTree());
+	return subjet.get_eta();
+      }
+    else return -99.0;
+  }
+  float get_subjet1_phi() const {
+    if (get_property((*this), FatJet_subJetIdx1) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx1), this->getNanoAODTree());
+	return subjet.get_phi();
+      }
+    else return -99.0;
+  }
+  float get_subjet1_mass() const {
+    if (get_property((*this), FatJet_subJetIdx1) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx1), this->getNanoAODTree());
+	return subjet.get_mass();
+      }
+    else return -99.0;
+  }
+  float get_subjet1_btagDeepB() const {
+    if (get_property((*this), FatJet_subJetIdx1) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx1), this->getNanoAODTree());
+	return subjet.get_btagDeepB();
+      }
+    else return -99.0;
+  }
+  float get_subjet2_pt() const {
+    if (get_property((*this), FatJet_subJetIdx2) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx2), this->getNanoAODTree());
+	return subjet.get_pt();
+      }
+    else return -99.0;
+  }
+  float get_subjet2_eta() const {
+    if (get_property((*this), FatJet_subJetIdx2) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx2), this->getNanoAODTree());
+	return subjet.get_eta();
+      }
+    else return -99.0;
+  }
+  float get_subjet2_phi() const {
+    if (get_property((*this), FatJet_subJetIdx2) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx2), this->getNanoAODTree());
+	return subjet.get_phi();
+      }
+    else return -99.0;
+  }
+  float get_subjet2_mass() const {
+    if (get_property((*this), FatJet_subJetIdx2) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx2), this->getNanoAODTree());
+	return subjet.get_mass();
+      }
+    else return -99.0;
+  }
+  float get_subjet2_btagDeepB() const {
+    if (get_property((*this), FatJet_subJetIdx2) != -1)
+      {
+	SubJet subjet(get_property((*this), FatJet_subJetIdx2), this->getNanoAODTree());
+	return subjet.get_btagDeepB();
+      }
+    else return -99.0;
+  }
+  
 private:
   void buildP4() override; 
-
+  
+  
 };
 
 #endif

@@ -15,6 +15,7 @@
 #include "CompositeCandidate.h"
 #include "Jet.h"
 #include "FatJet.h"
+#include "SubJet.h"
 #include "Muon.h"
 #include "Electron.h"
 #include "GenPart.h"

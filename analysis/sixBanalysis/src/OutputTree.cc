@@ -173,8 +173,6 @@ using namespace std;
   tree_->Branch(#OBJ "_tau3", &OBJ##_tau3);		\
   tree_->Branch(#OBJ "_tau4", &OBJ##_tau4);		\
   tree_->Branch(#OBJ "_jetId", &OBJ##_jetId);		\
-  tree_->Branch(#OBJ "_subJetIdx1", &OBJ##_subJetIdx1);	\
-  tree_->Branch(#OBJ "_subJetIdx2", &OBJ##_subJetIdx2);	\
   tree_->Branch(#OBJ "_genJetAK8Idx", &OBJ##_genJetAK8Idx); \
   tree_->Branch(#OBJ "_hadronFlavour", &OBJ##_hadronFlavour); \
   tree_->Branch(#OBJ "_nBHadrons", &OBJ##_nBHadrons); \
@@ -198,7 +196,19 @@ using namespace std;
   tree_->Branch(#OBJ "_deepTag_QCD", &OBJ##_deepTag_QCD);		\
   tree_->Branch(#OBJ "_deepTag_QCDothers", &OBJ##_deepTag_QCDothers);	\
   tree_->Branch(#OBJ "_deepTag_W", &OBJ##_deepTag_W);			\
-  tree_->Branch(#OBJ "_deepTag_Z", &OBJ##_deepTag_Z);
+  tree_->Branch(#OBJ "_deepTag_Z", &OBJ##_deepTag_Z);			\
+  tree_->Branch(#OBJ "_nsubjets",  &OBJ##_nsubjets);			\
+  tree_->Branch(#OBJ "_subjet1_pt",  &OBJ##_subjet1_pt);		\
+  tree_->Branch(#OBJ "_subjet1_eta", &OBJ##_subjet1_eta);		\
+  tree_->Branch(#OBJ "_subjet1_phi", &OBJ##_subjet1_phi);               \
+  tree_->Branch(#OBJ "_subjet1_m",   &OBJ##_subjet1_m);			\
+  tree_->Branch(#OBJ "_subjet1_btagDeepB", &OBJ##_subjet2_btagDeepB);   \
+  tree_->Branch(#OBJ "_subjet2_pt",  &OBJ##_subjet2_pt);                \
+  tree_->Branch(#OBJ "_subjet2_eta", &OBJ##_subjet2_eta);               \
+  tree_->Branch(#OBJ "_subjet2_phi", &OBJ##_subjet2_phi);		\
+  tree_->Branch(#OBJ "_subjet2_m",   &OBJ##_subjet2_m);			\
+  tree_->Branch(#OBJ "_subjet2_btagDeepB", &OBJ##_subjet2_btagDeepB);
+  
 
 #define CLEAR_fatjet_list(OBJ) \
   OBJ##_pt.clear();            \
@@ -215,8 +225,6 @@ using namespace std;
   OBJ##_tau3.clear();	       \
   OBJ##_tau4.clear();	       \
   OBJ##_jetId.clear();	       \
-  OBJ##_subJetIdx1.clear();    \
-  OBJ##_subJetIdx2.clear();    \
   OBJ##_genJetAK8Idx.clear();  \
   OBJ##_hadronFlavour.clear(); \
   OBJ##_nBHadrons.clear();     \
@@ -240,7 +248,18 @@ using namespace std;
   OBJ##_deepTag_QCD.clear();			\
   OBJ##_deepTag_QCDothers.clear();		\
   OBJ##_deepTag_W.clear();			\
-  OBJ##_deepTag_Z.clear();
+  OBJ##_deepTag_Z.clear();			\
+  OBJ##_nsubjets.clear();			\
+  OBJ##_subjet1_pt.clear();			\
+  OBJ##_subjet1_eta.clear();			\
+  OBJ##_subjet1_phi.clear();			\
+  OBJ##_subjet1_m.clear();			\
+  OBJ##_subjet1_btagDeepB.clear();		\
+  OBJ##_subjet2_pt.clear();			\
+  OBJ##_subjet2_eta.clear();			\
+  OBJ##_subjet2_phi.clear();			\
+  OBJ##_subjet2_m.clear();			\
+  OBJ##_subjet2_btagDeepB.clear();
 
 #define BRANCH_jet_list(OBJ)                                  \
   tree_->Branch(#OBJ "_E", &OBJ##_E);                         \

@@ -122,8 +122,6 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   std::vector<float> OBJ##_tau3;           \
   std::vector<float> OBJ##_tau4;           \
   std::vector<int>   OBJ##_jetId;          \
-  std::vector<int>   OBJ##_subJetIdx1;     \
-  std::vector<int>   OBJ##_subJetIdx2;     \
   std::vector<int>   OBJ##_genJetAK8Idx;   \
   std::vector<int>   OBJ##_hadronFlavour;  \
   std::vector<int>   OBJ##_nBHadrons;      \
@@ -147,7 +145,18 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   std::vector<float> OBJ##_deepTag_QCD;       \
   std::vector<float> OBJ##_deepTag_QCDothers; \
   std::vector<float> OBJ##_deepTag_W;         \
-  std::vector<float> OBJ##_deepTag_Z;
+  std::vector<float> OBJ##_deepTag_Z;         \
+  std::vector<int>   OBJ##_nsubjets;          \
+  std::vector<float> OBJ##_subjet1_pt;        \
+  std::vector<float> OBJ##_subjet1_eta;       \
+  std::vector<float> OBJ##_subjet1_phi;       \
+  std::vector<float> OBJ##_subjet1_m;         \
+  std::vector<float> OBJ##_subjet1_btagDeepB; \
+  std::vector<float> OBJ##_subjet2_pt;        \
+  std::vector<float> OBJ##_subjet2_eta;       \
+  std::vector<float> OBJ##_subjet2_phi;       \
+  std::vector<float> OBJ##_subjet2_m;         \
+  std::vector<float> OBJ##_subjet2_btagDeepB;
 
 #define DECLARE_jet_list(OBJ)           \
   std::vector<float> OBJ##_E;           \

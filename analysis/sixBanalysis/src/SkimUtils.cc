@@ -141,9 +141,7 @@ using namespace std;
       ot.OBJ##_tau3.push_back(fatjet.get_tau3());		    \
       ot.OBJ##_tau4.push_back(fatjet.get_tau4());		    \
       ot.OBJ##_jetId.push_back(fatjet.get_jetId());		    \
-      ot.OBJ##_subJetIdx1.push_back(fatjet.get_subJetIdx1());	    \
-      ot.OBJ##_subJetIdx2.push_back(fatjet.get_subJetIdx2());	    \
-      ot.OBJ##_genJetAK8Idx.push_back(fatjet.get_genJetAK8Idx());    \
+      ot.OBJ##_genJetAK8Idx.push_back(fatjet.get_genJetAK8Idx());  \
       ot.OBJ##_hadronFlavour.push_back(fatjet.get_hadronFlavour());  \
       ot.OBJ##_nBHadrons.push_back(fatjet.get_nBHadrons());	       \
       ot.OBJ##_nCHadrons.push_back(fatjet.get_nCHadrons());	       \
@@ -167,6 +165,17 @@ using namespace std;
       ot.OBJ##_deepTag_QCDothers.push_back(fatjet.get_deepTag_QCDothers()); \
       ot.OBJ##_deepTag_W.push_back(fatjet.get_deepTag_W());	            \
       ot.OBJ##_deepTag_Z.push_back(fatjet.get_deepTag_Z());		    \
+      ot.OBJ##_nsubjets.push_back(fatjet.get_subjets().size());	\
+      ot.OBJ##_subjet1_pt.push_back(fatjet.get_subjet1_pt());	\
+      ot.OBJ##_subjet1_eta.push_back(fatjet.get_subjet1_eta());             \
+      ot.OBJ##_subjet1_phi.push_back(fatjet.get_subjet1_phi());	            \
+      ot.OBJ##_subjet1_m.push_back(fatjet.get_subjet1_mass());              \
+      ot.OBJ##_subjet1_btagDeepB.push_back(fatjet.get_subjet1_btagDeepB()); \
+      ot.OBJ##_subjet2_pt.push_back(fatjet.get_subjet2_pt());		    \
+      ot.OBJ##_subjet2_eta.push_back(fatjet.get_subjet2_eta());             \
+      ot.OBJ##_subjet2_phi.push_back(fatjet.get_subjet2_phi());             \
+      ot.OBJ##_subjet2_m.push_back(fatjet.get_subjet2_mass());              \
+      ot.OBJ##_subjet2_btagDeepB.push_back(fatjet.get_subjet2_btagDeepB()); \
     }									    \
   }
 
