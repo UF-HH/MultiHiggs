@@ -33,7 +33,7 @@ public:
   float get_pt() const { return get_property((*this), FatJet_pt); }
   float get_eta() const { return get_property((*this), FatJet_eta); }
   float get_mass() const { return get_property((*this), FatJet_mass); }
-  float get_msoftdrop() const { return get_property((*this), FatJet_msoftdrop); }
+  float get_massSD_UnCorrected() const { return get_property((*this), FatJet_msoftdrop); }
   float get_n2b1() const { return get_property((*this), FatJet_n2b1); }
   float get_n3b1() const { return get_property((*this), FatJet_n3b1); }
   float get_phi() const { return get_property((*this), FatJet_phi); }
@@ -45,6 +45,10 @@ public:
   int get_jetId() const { return get_property((*this), FatJet_jetId); }
   int get_subJetIdx1() const { return get_property((*this), FatJet_subJetIdx1); }
   int get_subJetIdx2() const { return get_property((*this), FatJet_subJetIdx2); }
+  int get_genJetAK8Idx() const { return get_property((*this), FatJet_genJetAK8Idx); }
+  int get_hadronFlavour() const { return get_property((*this), FatJet_hadronFlavour); }
+  int get_nBHadrons() const { return get_property((*this), FatJet_nBHadrons); }
+  int get_nCHadrons() const { return get_property((*this), FatJet_nCHadrons); }
   int get_nPFCand() const { return get_property((*this), FatJet_nPFCand); }
   float get_area() const { return get_property((*this), FatJet_area); }
   

@@ -112,7 +112,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   std::vector<float> OBJ##_eta;            \
   std::vector<float> OBJ##_phi;            \
   std::vector<float> OBJ##_m;              \
-  std::vector<float> OBJ##_msoftdrop;      \
+  std::vector<float> OBJ##_mSD_UnCorrected;\
   std::vector<float> OBJ##_area;	   \
   std::vector<float> OBJ##_n2b1;           \
   std::vector<float> OBJ##_n3b1;           \
@@ -124,6 +124,10 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   std::vector<int>   OBJ##_jetId;          \
   std::vector<int>   OBJ##_subJetIdx1;     \
   std::vector<int>   OBJ##_subJetIdx2;     \
+  std::vector<int>   OBJ##_genJetAK8Idx;   \
+  std::vector<int>   OBJ##_hadronFlavour;  \
+  std::vector<int>   OBJ##_nBHadrons;      \
+  std::vector<int>   OBJ##_nCHadrons;      \
   std::vector<int>   OBJ##_nPFCand;        \
   std::vector<float> OBJ##_PNetQCDb;       \
   std::vector<float> OBJ##_PNetQCDbb;      \
@@ -233,6 +237,7 @@ public:
   int n_jet;
   int n_higgs;
   int n_fatjet;
+  int n_genfatjet;
   
   int n_ele;
   int n_muon;
@@ -249,6 +254,16 @@ public:
   std::vector<int> genjet_hadronFlav;
   std::vector<int> genjet_signalId;
   std::vector<int> genjet_recoIdx;
+  
+  std::vector<float> genfatjet_E;
+  std::vector<float> genfatjet_m;
+  std::vector<float> genfatjet_pt;
+  std::vector<float> genfatjet_eta;
+  std::vector<float> genfatjet_phi;
+  std::vector<int>   genfatjet_signalId;
+  std::vector<int>   genfatjet_recoIdx;
+  std::vector<int>   genfatjet_partonFlav;
+  std::vector<int>   genfatjet_hadronFlav;
   
   DECLARE_ele_list(ele);
   DECLARE_muon_list(muon);

@@ -131,7 +131,7 @@ using namespace std;
       ot.OBJ##_eta.push_back(fatjet.get_eta());		            \
       ot.OBJ##_phi.push_back(fatjet.get_phi());		            \
       ot.OBJ##_m.push_back(fatjet.get_mass());		            \
-      ot.OBJ##_msoftdrop.push_back(fatjet.get_msoftdrop());	    \
+      ot.OBJ##_mSD_UnCorrected.push_back(fatjet.get_massSD_UnCorrected());	\
       ot.OBJ##_area.push_back(fatjet.get_area());		    \
       ot.OBJ##_n2b1.push_back(fatjet.get_n2b1());		    \
       ot.OBJ##_n3b1.push_back(fatjet.get_n3b1());		    \
@@ -143,7 +143,11 @@ using namespace std;
       ot.OBJ##_jetId.push_back(fatjet.get_jetId());		    \
       ot.OBJ##_subJetIdx1.push_back(fatjet.get_subJetIdx1());	    \
       ot.OBJ##_subJetIdx2.push_back(fatjet.get_subJetIdx2());	    \
-      ot.OBJ##_nPFCand.push_back(fatjet.get_nPFCand());		    \
+      ot.OBJ##_genJetAK8Idx.push_back(fatjet.get_genJetAK8Idx());    \
+      ot.OBJ##_hadronFlavour.push_back(fatjet.get_hadronFlavour());  \
+      ot.OBJ##_nBHadrons.push_back(fatjet.get_nBHadrons());	       \
+      ot.OBJ##_nCHadrons.push_back(fatjet.get_nCHadrons());	       \
+      ot.OBJ##_nPFCand.push_back(fatjet.get_nPFCand());	       \
       ot.OBJ##_PNetQCDb.push_back(fatjet.get_PNetQCDb());	    \
       ot.OBJ##_PNetQCDbb.push_back(fatjet.get_PNetQCDbb());	    \
       ot.OBJ##_PNetQCDc.push_back(fatjet.get_PNetQCDc());	    \
@@ -249,6 +253,7 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if(ei.n_genjet)       ot.n_genjet        = *ei.n_genjet;
   if(ei.n_higgs)        ot.n_higgs         = *ei.n_higgs;
   if(ei.n_fatjet)       ot.n_fatjet        = *ei.n_fatjet;
+  if(ei.n_genfatjet)    ot.n_genfatjet     = *ei.n_genfatjet;
   if(ei.n_ele)          ot.n_ele           = *ei.n_ele;
   if(ei.n_muon)         ot.n_muon          = *ei.n_muon;
   
@@ -271,6 +276,20 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
       ot.genjet_hadronFlav.push_back( jet.get_hadronFlav() );
       ot.genjet_signalId.push_back( jet.get_signalId() );
       ot.genjet_recoIdx.push_back( jet.get_recoIdx() );
+    }
+  }
+  
+  if (ei.genfatjet_list) {
+    for (GenJetAK8& fatjet : ei.genfatjet_list.get()) {
+      ot.genfatjet_E.push_back( fatjet.get_E() );
+      ot.genfatjet_m.push_back( fatjet.get_m() );
+      ot.genfatjet_pt.push_back( fatjet.get_pt() );
+      ot.genfatjet_eta.push_back( fatjet.get_eta() );
+      ot.genfatjet_phi.push_back( fatjet.get_phi() );
+      ot.genfatjet_signalId.push_back( fatjet.get_signalId() );
+      ot.genfatjet_recoIdx.push_back( fatjet.get_recoIdx() );
+      ot.genfatjet_hadronFlav.push_back( fatjet.get_hadronFlav() );
+      ot.genfatjet_partonFlav.push_back( fatjet.get_partonFlav() );
     }
   }
 

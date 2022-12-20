@@ -19,6 +19,7 @@
 #include "Electron.h"
 #include "GenPart.h"
 #include "GenJet.h"
+#include "GenJetAK8.h"
 #include "DiJet.h"
 #include "EventShapeCalculator.h"
 
@@ -38,6 +39,7 @@ struct EventInfo{
   boost::optional<int>    n_jet;
   boost::optional<int>    n_genjet;
   boost::optional<int>    n_higgs;
+  boost::optional<int>    n_genfatjet;
   boost::optional<int>    n_fatjet;
   boost::optional<int>    n_ele;
   boost::optional<int>    n_muon;
@@ -193,6 +195,7 @@ struct EventInfo{
   boost::optional< std::vector<Muon> > muon_list;
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
+  boost::optional< std::vector<GenJetAK8> > genfatjet_list;
   boost::optional< std::vector<FatJet> > fatjet_list;
   boost::optional<std::vector<DiJet>> dijet_list;
 

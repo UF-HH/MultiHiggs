@@ -163,7 +163,7 @@ using namespace std;
   tree_->Branch(#OBJ "_eta", &OBJ##_eta);  \
   tree_->Branch(#OBJ "_phi", &OBJ##_phi);  \
   tree_->Branch(#OBJ "_m", &OBJ##_m);	   \
-  tree_->Branch(#OBJ "_msoftdrop", &OBJ##_msoftdrop);	\
+  tree_->Branch(#OBJ "_mSD_UnCorrected", &OBJ##_mSD_UnCorrected);	\
   tree_->Branch(#OBJ "_area", &OBJ##_area);		\
   tree_->Branch(#OBJ "_n2b1", &OBJ##_n2b1);		\
   tree_->Branch(#OBJ "_n3b1", &OBJ##_n3b1);		\
@@ -175,6 +175,10 @@ using namespace std;
   tree_->Branch(#OBJ "_jetId", &OBJ##_jetId);		\
   tree_->Branch(#OBJ "_subJetIdx1", &OBJ##_subJetIdx1);	\
   tree_->Branch(#OBJ "_subJetIdx2", &OBJ##_subJetIdx2);	\
+  tree_->Branch(#OBJ "_genJetAK8Idx", &OBJ##_genJetAK8Idx); \
+  tree_->Branch(#OBJ "_hadronFlavour", &OBJ##_hadronFlavour); \
+  tree_->Branch(#OBJ "_nBHadrons", &OBJ##_nBHadrons); \
+  tree_->Branch(#OBJ "_nCHadrons", &OBJ##_nCHadrons); \
   tree_->Branch(#OBJ "_nPFCand", &OBJ##_nPFCand);	\
   tree_->Branch(#OBJ "_PNetQCDb", &OBJ##_PNetQCDb);	\
   tree_->Branch(#OBJ "_PNetQCDbb", &OBJ##_PNetQCDbb);	\
@@ -201,7 +205,7 @@ using namespace std;
   OBJ##_eta.clear();           \
   OBJ##_phi.clear();	       \
   OBJ##_m.clear();	       \
-  OBJ##_msoftdrop.clear();     \
+  OBJ##_mSD_UnCorrected.clear();     \
   OBJ##_area.clear();	       \
   OBJ##_n2b1.clear();	       \
   OBJ##_n3b1.clear();	       \
@@ -213,6 +217,10 @@ using namespace std;
   OBJ##_jetId.clear();	       \
   OBJ##_subJetIdx1.clear();    \
   OBJ##_subJetIdx2.clear();    \
+  OBJ##_genJetAK8Idx.clear();  \
+  OBJ##_hadronFlavour.clear(); \
+  OBJ##_nBHadrons.clear();     \
+  OBJ##_nCHadrons.clear();     \
   OBJ##_nPFCand.clear();       \
   OBJ##_PNetQCDb.clear();      \
   OBJ##_PNetQCDbb.clear();     \
@@ -523,8 +531,6 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
   
   tree_->Branch("n_total_jet",&n_total_jet);
   tree_->Branch("n_jet", &n_jet);
-  tree_->Branch("n_fatjet", &n_fatjet);
-    
   if (is_enabled("jet_coll"))
     {
       std::cout << "[INFO] OutputTree : enabling jet collection branches" << std::endl;
@@ -536,6 +542,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
   if (is_enabled("fatjet_coll"))
     {
       std::cout << "[INFO] OutputTree : enabling fatjet collection branches" << std::endl;
+      tree_->Branch("n_fatjet", &n_fatjet);
       BRANCH_fatjet_list(fatjet);
     }
   
@@ -577,6 +584,20 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
         tree_->Branch("genjet_signalId", &genjet_signalId);
         tree_->Branch("genjet_recoIdx", &genjet_recoIdx);
       }
+      
+      if (is_enabled("fatjet_coll"))
+	{
+	  tree_->Branch("n_genfatjet", &n_genfatjet);
+	  tree_->Branch("genfatjet_E", &genfatjet_E);
+	  tree_->Branch("genfatjet_m", &genfatjet_m);
+	  tree_->Branch("genfatjet_pt", &genfatjet_pt);
+	  tree_->Branch("genfatjet_eta", &genfatjet_eta);
+	  tree_->Branch("genfatjet_phi", &genfatjet_phi);
+	  tree_->Branch("genfatjet_signalId", &genfatjet_signalId);
+	  tree_->Branch("genfatjet_recoIdx", &genfatjet_recoIdx);
+	  tree_->Branch("genfatjet_hadronFlav", &genfatjet_hadronFlav);
+	  tree_->Branch("genfatjet_partonFlav", &genfatjet_partonFlav);
+	}
     }
 
   if (is_enabled("shape_brs"))
@@ -586,9 +607,6 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("sphericity_t",&sphericity_t);
       tree_->Branch("aplanarity",  &aplanarity);
     }
-
-	
-
   // note that the initialization of the user branches is made separately when calling declareUser*Branch
 }
 
@@ -616,6 +634,7 @@ void OutputTree::clear()
   n_jet = 0;
   n_genjet = 0;
   n_higgs = 0;
+  n_genfatjet = 0;
   n_fatjet = 0;
   n_ele = 0;
   n_muon = 0;
@@ -634,6 +653,16 @@ void OutputTree::clear()
   genjet_signalId.clear();
   genjet_recoIdx.clear();
 
+  genfatjet_E.clear();
+  genfatjet_m.clear();
+  genfatjet_pt.clear();
+  genfatjet_eta.clear();
+  genfatjet_phi.clear();
+  genfatjet_signalId.clear();
+  genfatjet_recoIdx.clear();
+  genfatjet_partonFlav.clear();
+  genfatjet_hadronFlav.clear();
+  
   CLEAR_ele_list(ele);
   CLEAR_muon_list(muon);
   CLEAR_jet_list(jet);

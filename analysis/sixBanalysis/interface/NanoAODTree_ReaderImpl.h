@@ -189,6 +189,10 @@ public:
   NanoReaderArray<Float_t>   FatJet_tau4                          {fReader, "FatJet_tau4"};
   NanoReaderArray<Int_t>     FatJet_subJetIdx1                    {fReader, "FatJet_subJetIdx1"};
   NanoReaderArray<Int_t>     FatJet_subJetIdx2                    {fReader, "FatJet_subJetIdx2"};
+  NanoReaderArray<Int_t>     FatJet_genJetAK8Idx                  {fReader, "FatJet_genJetAK8Idx"};
+  NanoReaderArray<Int_t>     FatJet_hadronFlavour                 {fReader, "FatJet_hadronFlavour"};
+  NanoReaderArray<Int_t>     FatJet_nBHadrons                     {fReader, "FatJet_nBHadrons"};
+  NanoReaderArray<Int_t>     FatJet_nCHadrons                     {fReader, "FatJet_nCHadrons"};
   NanoReaderArray<Int_t>     FatJet_nPFCand                       {fReader, "FatJet_nPFCand"};
   NanoReaderArray<Float_t>   FatJet_ParticleNetMD_probQCDb        {fReader, "FatJet_ParticleNetMD_probQCDb"};
   NanoReaderArray<Float_t>   FatJet_ParticleNetMD_probQCDbb       {fReader, "FatJet_ParticleNetMD_probQCDbb"};
@@ -219,7 +223,7 @@ public:
   NanoReaderArray<Float_t>   GenJetAK8_mass                       {fReader, "GenJetAK8_mass"};
   NanoReaderArray<Float_t>   GenJetAK8_phi                        {fReader, "GenJetAK8_phi"};
   NanoReaderArray<Float_t>   GenJetAK8_pt                         {fReader, "GenJetAK8_pt"};
-        
+  
   NanoReaderValue<UInt_t>    nGenJet                              {fReader, "nGenJet"};
   NanoReaderArray<Float_t>   GenJet_eta                           {fReader, "GenJet_eta"};
   NanoReaderArray<Float_t>   GenJet_mass                          {fReader, "GenJet_mass"};
