@@ -364,6 +364,22 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("triggerMcEfficiencyDown", &triggerMcEfficiencyDown);
     }
   
+  if (is_enabled("fourb_brs"))
+    {
+      if (is_enabled("sig_gen_brs"))
+	{
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_fc);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_fc);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b1);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b2);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b1);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b2);
+	}
+    } // 4b final state
+
+
   if (is_enabled("sixb_brs"))
   {
     if (is_enabled("sig_gen_brs"))
@@ -716,6 +732,10 @@ void OutputTree::clear()
   dijet_j1Idx.clear();
   dijet_j2Idx.clear();
 
+  // Start Gen 4b Objects
+  CLEAR_m_pt_eta_phi_p4(gen_H1_fc);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_fc);
+    
   CLEAR_m_pt_eta_phi_p4(gen_X_fc);
   CLEAR_m_pt_eta_phi_p4(gen_X);
 

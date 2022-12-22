@@ -334,7 +334,9 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     }
   }
 
-
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_fc);
+  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_fc);
+  
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
   COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);
   

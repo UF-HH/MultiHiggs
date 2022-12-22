@@ -49,6 +49,9 @@ struct EventInfo{
   boost::optional<float>  b_6j_score;
   boost::optional<float>  b_3d_score;
 
+  boost::optional<GenPart>  gen_H1_fc;
+  boost::optional<GenPart>  gen_H2_fc;
+  
   boost::optional<GenPart>  gen_X_fc; // first copy at LHE
   boost::optional<GenPart>  gen_X;
 

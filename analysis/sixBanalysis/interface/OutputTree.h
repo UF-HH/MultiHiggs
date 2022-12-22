@@ -303,6 +303,9 @@ public:
   float sphericity_t;
   float aplanarity;
 
+  DECLARE_m_pt_eta_phi_p4(gen_H1_fc);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_fc);
+  
   DECLARE_m_pt_eta_phi_p4(gen_X_fc);
   DECLARE_m_pt_eta_phi_p4(gen_X);
   // Start Gen 6B Objects
