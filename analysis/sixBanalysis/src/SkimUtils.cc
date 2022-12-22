@@ -299,6 +299,15 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
       ot.genfatjet_recoIdx.push_back( fatjet.get_recoIdx() );
       ot.genfatjet_hadronFlav.push_back( fatjet.get_hadronFlav() );
       ot.genfatjet_partonFlav.push_back( fatjet.get_partonFlav() );
+      ot.genfatjet_nsubjets.push_back( fatjet.get_nsubjets() );
+      ot.genfatjet_subjet1_pt.push_back( fatjet.get_subjet1_pt() );
+      ot.genfatjet_subjet1_eta.push_back( fatjet.get_subjet1_eta() );
+      ot.genfatjet_subjet1_phi.push_back( fatjet.get_subjet1_phi() );
+      ot.genfatjet_subjet1_m.push_back( fatjet.get_subjet1_mass() );
+      ot.genfatjet_subjet2_pt.push_back( fatjet.get_subjet2_pt() );
+      ot.genfatjet_subjet2_eta.push_back( fatjet.get_subjet2_eta() );
+      ot.genfatjet_subjet2_phi.push_back( fatjet.get_subjet2_phi() );
+      ot.genfatjet_subjet2_m.push_back(fatjet.get_subjet2_mass() );
     }
   }
 

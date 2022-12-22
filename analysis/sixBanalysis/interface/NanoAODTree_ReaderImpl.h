@@ -436,7 +436,7 @@ public:
   NanoReaderArray<Float_t>   SubGenJetAK8_mass                    {fReader, "SubGenJetAK8_mass"};
   NanoReaderArray<Float_t>   SubGenJetAK8_phi                     {fReader, "SubGenJetAK8_phi"};
   NanoReaderArray<Float_t>   SubGenJetAK8_pt                      {fReader, "SubGenJetAK8_pt"};
-  NanoReaderArray<UInt_t>    nSubGenJetAK8                        {fReader, "nSubGenJetAK8"};
+  NanoReaderValue<UInt_t>    nSubGenJetAK8                        {fReader, "nSubGenJetAK8"};
   
   NanoReaderValue<UInt_t>    nTau                                 {fReader, "nTau"};
   NanoReaderArray<Float_t>   Tau_chargedIso                       {fReader, "Tau_chargedIso"};

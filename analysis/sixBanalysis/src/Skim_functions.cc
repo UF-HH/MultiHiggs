@@ -70,6 +70,22 @@ int Skim_functions::find_jet_from_genjet(NanoAODTree &nat, const GenJet &gj)
   return -1;
 }
 
+std::vector<SubGenJetAK8> Skim_functions::get_all_subgenjets(NanoAODTree &nat)
+{
+  /**
+   * @brief Returns list of all gen subjets of AK8 in the event
+   *
+   */
+  std::vector<SubGenJetAK8> subjets;
+  subjets.reserve(*(nat.nSubGenJetAK8));
+  for (unsigned int ij = 0; ij < *(nat.nSubGenJetAK8); ++ij)
+    {
+      SubGenJetAK8 subjet(ij, &nat);
+      subjets.emplace_back(subjet);
+    }
+  return subjets;
+}
+
 std::vector<GenJetAK8> Skim_functions::get_all_genfatjets(NanoAODTree &nat)
 {
   /**

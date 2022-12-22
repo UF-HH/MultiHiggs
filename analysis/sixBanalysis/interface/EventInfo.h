@@ -21,6 +21,7 @@
 #include "GenPart.h"
 #include "GenJet.h"
 #include "GenJetAK8.h"
+#include "SubGenJetAK8.h"
 #include "DiJet.h"
 #include "EventShapeCalculator.h"
 

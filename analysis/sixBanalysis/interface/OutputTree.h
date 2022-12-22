@@ -273,6 +273,15 @@ public:
   std::vector<int>   genfatjet_recoIdx;
   std::vector<int>   genfatjet_partonFlav;
   std::vector<int>   genfatjet_hadronFlav;
+  std::vector<int>   genfatjet_nsubjets;
+  std::vector<float> genfatjet_subjet1_pt;
+  std::vector<float> genfatjet_subjet1_m;
+  std::vector<float> genfatjet_subjet1_phi;
+  std::vector<float> genfatjet_subjet1_eta;
+  std::vector<float> genfatjet_subjet2_pt;
+  std::vector<float> genfatjet_subjet2_m;
+  std::vector<float> genfatjet_subjet2_eta;
+  std::vector<float> genfatjet_subjet2_phi;
   
   DECLARE_ele_list(ele);
   DECLARE_muon_list(muon);

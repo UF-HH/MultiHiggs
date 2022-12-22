@@ -616,6 +616,15 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 	  tree_->Branch("genfatjet_recoIdx", &genfatjet_recoIdx);
 	  tree_->Branch("genfatjet_hadronFlav", &genfatjet_hadronFlav);
 	  tree_->Branch("genfatjet_partonFlav", &genfatjet_partonFlav);
+	  tree_->Branch("genfatjet_nsubjets", &genfatjet_nsubjets);
+	  tree_->Branch("genfatjet_subjet1_pt", &genfatjet_subjet1_pt);
+	  tree_->Branch("genfatjet_subjet1_m", &genfatjet_subjet1_m);
+	  tree_->Branch("genfatjet_subjet1_eta", &genfatjet_subjet1_eta);
+	  tree_->Branch("genfatjet_subjet1_phi", &genfatjet_subjet1_phi);
+	  tree_->Branch("genfatjet_subjet2_pt", &genfatjet_subjet2_pt);
+	  tree_->Branch("genfatjet_subjet2_m", &genfatjet_subjet2_m);
+	  tree_->Branch("genfatjet_subjet2_eta", &genfatjet_subjet2_eta);
+	  tree_->Branch("genfatjet_subjet2_phi", &genfatjet_subjet2_phi);
 	}
     }
 
@@ -681,6 +690,15 @@ void OutputTree::clear()
   genfatjet_recoIdx.clear();
   genfatjet_partonFlav.clear();
   genfatjet_hadronFlav.clear();
+  genfatjet_nsubjets.clear();
+  genfatjet_subjet1_pt.clear();
+  genfatjet_subjet1_m.clear();
+  genfatjet_subjet1_eta.clear();
+  genfatjet_subjet1_phi.clear();
+  genfatjet_subjet2_pt.clear();
+  genfatjet_subjet2_m.clear();
+  genfatjet_subjet2_eta.clear();
+  genfatjet_subjet2_phi.clear();
   
   CLEAR_ele_list(ele);
   CLEAR_muon_list(muon);

@@ -61,6 +61,9 @@ public:
   // create a vector with all jets in the event
   std::vector<GenJet> get_all_genjets(NanoAODTree &nat);
   
+  // create a vector with all gen subjets of fatjets in the event
+  std::vector<SubGenJetAK8> get_all_subgenjets(NanoAODTree &nat);
+  
   // create a vector with all gen fatjets in the event
   std::vector<GenJetAK8> get_all_genfatjets(NanoAODTree &nat);
   
