@@ -1,4 +1,4 @@
- #include "SixB_functions.h"
+#include "SixB_functions.h"
 #include "Math/VectorUtil.h"
 #include "Math/Vector3D.h"
 #include "Math/Functions.h"

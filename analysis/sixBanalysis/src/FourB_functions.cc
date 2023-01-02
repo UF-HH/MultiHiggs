@@ -29,12 +29,10 @@ void FourB_functions::initialize_functions(TFile& outputFile)
 
 void FourB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
 {
-
   std::vector<GenPart> HiggsBosons_FirstCopy;
   std::vector<GenPart> HiggsBosons_LastCopy;
   std::vector<GenPart> BQuarks_FirstCopy;
   
-  std::cout << "\nselect_gen_particles"<<std::endl;
   for (uint igp = 0; igp < *(nat.nGenPart); ++igp)
     {
       GenPart gp(igp, &nat);
@@ -44,9 +42,6 @@ void FourB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
       bool isLastCopy  = gp.isLastCopy();
       bool isFirstCopy = gp.isFirstCopy();
       
-      std::cout << "igp ="<<igp<<"   ID="<<pdgID<<"   status="<<status<<"  last="<<isLastCopy<<"  first="<<isFirstCopy<<std::endl;
-      //GenPart mother(get_property(gp, GenPart_genPartIdxMother), &nat);
-            
       // Higgs boson
       if (pdgID == 25)
 	{
@@ -88,7 +83,6 @@ void FourB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
       ei.gen_H2 = HiggsBosons_LastCopy.at(0);
     }
   
-  std::cout << "Size of b-quarks vector ="<<BQuarks_FirstCopy.size()<<std::endl;
   assert(BQuarks_FirstCopy.size() == 4);
   
   std::vector<GenPart> bQuarksFromH1;
@@ -135,5 +129,145 @@ void FourB_functions::select_gen_particles(NanoAODTree& nat, EventInfo& ei)
       ei.gen_H2_b1 = bQuarksFromH2.at(1);
       ei.gen_H2_b2 = bQuarksFromH2.at(0);
     }
+  return;
+}
+
+// Match the selected gen b to gen fatjets (AK8)
+void FourB_functions::match_genbs_to_genfatjets(NanoAODTree &nat, EventInfo &ei, bool ensure_unique)
+{
+  const double dR_match = 0.8;
+  std::vector<GenPart*> bs_to_match = {
+    ei.gen_H1_b1.get_ptr(),
+    ei.gen_H1_b2.get_ptr(),
+    ei.gen_H2_b1.get_ptr(),
+    ei.gen_H2_b2.get_ptr()
+  };
+  
+  std::vector<GenJetAK8> genfatjets;
+  for (unsigned int igj = 0; igj < *(nat.nGenJetAK8); ++igj)
+    {
+      GenJetAK8 gj(igj, &nat);
+      genfatjets.push_back(gj);
+    }
+  
+  std::vector<GenPart*> matched_quarks;
+  std::vector<GenJetAK8> matched_genfatjets;
+  GetMatchedPairs(dR_match, bs_to_match, genfatjets, matched_quarks, matched_genfatjets);
+  
+  for (unsigned int im=0; im<matched_quarks.size(); im++)
+    {
+      GenPart* b  = matched_quarks.at(im);
+      GenJetAK8 j = matched_genfatjets.at(im);
+      
+      int bIdx = b->getIdx();
+      if (bIdx == ei.gen_H1_b1.get_ptr()->getIdx())
+        {
+          ei.gen_H1_b1_genfatjet = GenJetAK8(j.getIdx(), &nat);
+          if (0) std::cout << "H1_b1 ("<<ei.gen_H1_b1.get_ptr()->getIdx()<<") matched with gen fatjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_H1_b2.get_ptr()->getIdx())
+        {
+          ei.gen_H1_b2_genfatjet = GenJetAK8(j.getIdx(), &nat);
+          if (0) std::cout << "H1_b2 ("<<ei.gen_H1_b2.get_ptr()->getIdx()<<") matched with gen fatjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_H2_b1.get_ptr()->getIdx())
+        {
+          ei.gen_H2_b1_genfatjet = GenJetAK8(j.getIdx(), &nat);
+          if (0) std::cout << "H2_b1 ("<<ei.gen_H2_b1.get_ptr()->getIdx()<<") matched with gen fatjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_H2_b2.get_ptr()->getIdx())
+        {
+          ei.gen_H2_b2_genfatjet = GenJetAK8(j.getIdx(), &nat);
+          if (0) std::cout << "H2_b2 ("<<ei.gen_H2_b2.get_ptr()->getIdx()<<") matched with gen fatjet ="<<j.getIdx()<<std::endl;
+        }
+    } // Closes loop over matched quarks
+}
+
+// Match the selected gen b to gen jets (AK4)
+void FourB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique)
+{
+  const double dR_match = 0.4;
+  std::vector<GenPart*> bs_to_match = {
+    ei.gen_H1_b1.get_ptr(),
+    ei.gen_H1_b2.get_ptr(),
+    ei.gen_H2_b1.get_ptr(),
+    ei.gen_H2_b2.get_ptr()
+  };
+  
+  // For debugging 
+  if (0)
+    {
+      std::cout << "H1_b1 index: "<<ei.gen_H1_b1.get_ptr()->getIdx()<<std::endl;
+      std::cout << "H1_b2 index: "<<ei.gen_H1_b2.get_ptr()->getIdx()<<std::endl;
+      std::cout << "H2_b1 index: "<<ei.gen_H2_b1.get_ptr()->getIdx()<<std::endl;
+      std::cout << "H2_b2 index: "<<ei.gen_H2_b2.get_ptr()->getIdx()<<std::endl;
+    }
+
+  std::vector<GenJet> genjets;
+  for (unsigned int igj = 0; igj < *(nat.nGenJet); ++igj)
+    {
+      GenJet gj (igj, &nat);
+      genjets.push_back(gj);
+    }
+
+  std::vector<GenPart*> matched_quarks;
+  std::vector<GenJet> matched_genjets;
+  GetMatchedPairs(dR_match, bs_to_match, genjets, matched_quarks, matched_genjets);
+
+  for (unsigned int im=0; im<matched_quarks.size(); im++)
+    {
+      GenPart* b = matched_quarks.at(im);
+      GenJet   j = matched_genjets.at(im);
+
+      int bIdx = b->getIdx();
+      if (bIdx == ei.gen_H1_b1.get_ptr()->getIdx())
+        {
+          ei.gen_H1_b1_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "H1_b1 ("<<ei.gen_H1_b1.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_H1_b2.get_ptr()->getIdx())
+        {
+          ei.gen_H1_b2_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "H1_b2 ("<<ei.gen_H1_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_H2_b1.get_ptr()->getIdx())
+        {
+          ei.gen_H2_b1_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "H2_b1 ("<<ei.gen_H2_b1.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+      else if (bIdx == ei.gen_H2_b2.get_ptr()->getIdx())
+        {
+          ei.gen_H2_b2_genjet = GenJet(j.getIdx(), &nat);
+          if (0) std::cout << "H2_b2 ("<<ei.gen_H2_b2.get_ptr()->getIdx()<<") matched with genjet ="<<j.getIdx()<<std::endl;
+        }
+    }
+  return;
+}
+
+void FourB_functions::match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei)
+{
+  int ij_gen_H1_b1_genjet = (ei.gen_H1_b1_genjet ? find_jet_from_genjet(nat, *ei.gen_H1_b1_genjet) : -1);
+  int ij_gen_H1_b2_genjet = (ei.gen_H1_b2_genjet ? find_jet_from_genjet(nat, *ei.gen_H1_b2_genjet) : -1);
+  int ij_gen_H2_b1_genjet = (ei.gen_H2_b1_genjet ? find_jet_from_genjet(nat, *ei.gen_H2_b1_genjet) : -1);
+  int ij_gen_H2_b2_genjet = (ei.gen_H2_b2_genjet ? find_jet_from_genjet(nat, *ei.gen_H2_b2_genjet) : -1);
+  
+  if (ij_gen_H1_b1_genjet >= 0) ei.gen_H1_b1_recojet = Jet(ij_gen_H1_b1_genjet, &nat);
+  if (ij_gen_H1_b2_genjet >= 0) ei.gen_H1_b2_recojet = Jet(ij_gen_H1_b2_genjet, &nat);
+  if (ij_gen_H2_b1_genjet >= 0) ei.gen_H2_b1_recojet = Jet(ij_gen_H2_b1_genjet, &nat);
+  if (ij_gen_H2_b2_genjet >= 0) ei.gen_H2_b2_recojet = Jet(ij_gen_H2_b2_genjet, &nat);
+  return;
+}
+
+void FourB_functions::match_genbs_genfatjets_to_reco(NanoAODTree& nat, EventInfo& ei)
+{
+  int ij_gen_H1_b1_genfatjet = (ei.gen_H1_b1_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H1_b1_genfatjet) : -1);
+  int ij_gen_H1_b2_genfatjet = (ei.gen_H1_b2_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H1_b2_genfatjet) : -1);
+  int ij_gen_H2_b1_genfatjet = (ei.gen_H2_b1_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H2_b1_genfatjet) : -1);
+  int ij_gen_H2_b2_genfatjet = (ei.gen_H2_b2_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H2_b2_genfatjet) : -1);
+  
+  if (ij_gen_H1_b1_genfatjet >= 0) ei.gen_H1_b1_recofatjet = FatJet(ij_gen_H1_b1_genfatjet, &nat);
+  if (ij_gen_H1_b2_genfatjet >= 0) ei.gen_H1_b2_recofatjet = FatJet(ij_gen_H1_b2_genfatjet, &nat);
+  if (ij_gen_H2_b1_genfatjet >= 0) ei.gen_H2_b1_recofatjet = FatJet(ij_gen_H2_b1_genfatjet, &nat);
+  if (ij_gen_H2_b2_genfatjet >= 0) ei.gen_H2_b2_recofatjet = FatJet(ij_gen_H2_b2_genfatjet, &nat);
   return;
 }

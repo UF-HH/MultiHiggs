@@ -51,6 +51,14 @@ struct EventInfo{
 
   boost::optional<GenPart>  gen_H1_fc;
   boost::optional<GenPart>  gen_H2_fc;
+  boost::optional<GenJetAK8> gen_H1_b1_genfatjet;
+  boost::optional<GenJetAK8> gen_H1_b2_genfatjet;
+  boost::optional<GenJetAK8> gen_H2_b1_genfatjet;
+  boost::optional<GenJetAK8> gen_H2_b2_genfatjet;
+  boost::optional<FatJet> gen_H1_b1_recofatjet;
+  boost::optional<FatJet> gen_H1_b2_recofatjet;
+  boost::optional<FatJet> gen_H2_b1_recofatjet;
+  boost::optional<FatJet> gen_H2_b2_recofatjet;
   
   boost::optional<GenPart>  gen_X_fc; // first copy at LHE
   boost::optional<GenPart>  gen_X;

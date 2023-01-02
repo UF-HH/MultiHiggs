@@ -11,6 +11,8 @@
 #include "Jet.h"
 #include "FatJet.h"
 #include "GenJet.h"
+#include "GenJetAK8.h"
+#include "SubGenJetAK8.h"
 #include "GenPart.h"
 #include "CompositeCandidate.h"
 #include "DiJet.h"
@@ -96,9 +98,11 @@ public:
   void GetMatchedPairs(const double dR_match, std::vector<GenPart*>& quarks, std::vector<GenJet>& genjets,
                        std::vector<GenPart*>& matched_quarks, std::vector<GenJet>& matched_genjets);
   
+  void GetMatchedPairs(const double dR_match, std::vector<GenPart*>& quarks, std::vector<GenJetAK8>& genfatjets,
+		       std::vector<GenPart*>& matched_quarks, std::vector<GenJetAK8>& matched_genfatjets);
+  
   void match_genjets_to_reco(NanoAODTree &nat, EventInfo& ei,std::vector<GenJet>& in_gen,std::vector<Jet>& in_reco);
-
-
+  
   ////////////////////////////////////////////////////
   /// non-jet functions
   ////////////////////////////////////////////////////
@@ -163,7 +167,17 @@ public:
   // otherwise it will match to the closest parton found
    */
   virtual void match_genbs_to_genjets(NanoAODTree &nat, EventInfo &ei, bool ensure_unique = true) {};
-
+  
+  /**
+   * @brief Match selected gen bs to gen fatjets
+   * This method should be overriden
+   * @param nat NanoAODTree being processed 
+   * @param ei EventInfo class to store values 
+   * @param ensure_unique if true, ensures that a gen fatjet is not matched to two different partons
+   // otherwise it will match to the closest parton found 
+   */
+  virtual void match_genbs_to_genfatjets(NanoAODTree &nat, EventInfo &ei, bool ensure_unique = true) {};
+  
   /**
    * @brief Match genjets associacted to a gen b quark to a reco jet
    * This method should be overriden 
@@ -171,6 +185,14 @@ public:
    * @param ei EventInfo class to store values
    */
   virtual void match_genbs_genjets_to_reco(NanoAODTree &nat, EventInfo &ei) {};
+  
+  /**
+   * @brief Match genfatjets associated to a gen b quark to a reco fatjet
+   * This method should be overriden
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   */
+  virtual void match_genbs_genfatjets_to_reco(NanoAODTree &nat, EventInfo &ei) {};
 
   /**
    * @brief Match signal objects to reco in_jets collection and saving ID to signalId
@@ -287,7 +309,10 @@ protected:
     T unit = 1;
     return value & (unit << bitpos);
   }
-
+  
+  // finds the index of the fatjet that was matched in NanoAOD to the input gen fatjet
+  int find_fatjet_from_genfatjet(NanoAODTree &nat, const GenJetAK8 &gj);
+  
   // finds the index of the jet that was matched in nanoAOD to the input genjet
   int find_jet_from_genjet(NanoAODTree &nat, const GenJet &gj);
 };

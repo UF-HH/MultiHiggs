@@ -376,6 +376,26 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 	  BRANCH_m_pt_eta_phi_p4(gen_H1_b2);
 	  BRANCH_m_pt_eta_phi_p4(gen_H2_b1);
 	  BRANCH_m_pt_eta_phi_p4(gen_H2_b2);
+	  
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b1_genjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b2_genjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b1_genjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b2_genjet);
+
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b1_genfatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b2_genfatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b1_genfatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b2_genfatjet);
+	  
+	  BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1_b1_recojet);
+	  BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1_b2_recojet);
+	  BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2_b1_recojet);
+	  BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2_b2_recojet);
+	  
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b1_recofatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b2_recofatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b1_recofatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b2_recofatjet);
 	}
     } // 4b final state
 
@@ -735,7 +755,15 @@ void OutputTree::clear()
   // Start Gen 4b Objects
   CLEAR_m_pt_eta_phi_p4(gen_H1_fc);
   CLEAR_m_pt_eta_phi_p4(gen_H2_fc);
-    
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b1_genfatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b2_genfatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b1_genfatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b2_genfatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b1_recofatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b2_recofatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b1_recofatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b2_recofatjet);
+
   CLEAR_m_pt_eta_phi_p4(gen_X_fc);
   CLEAR_m_pt_eta_phi_p4(gen_X);
 

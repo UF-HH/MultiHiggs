@@ -305,6 +305,14 @@ public:
 
   DECLARE_m_pt_eta_phi_p4(gen_H1_fc);
   DECLARE_m_pt_eta_phi_p4(gen_H2_fc);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b1_genfatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b2_genfatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b1_genfatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b2_genfatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b1_recofatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b2_recofatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b1_recofatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b2_recofatjet);
   
   DECLARE_m_pt_eta_phi_p4(gen_X_fc);
   DECLARE_m_pt_eta_phi_p4(gen_X);

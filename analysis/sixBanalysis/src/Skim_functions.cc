@@ -53,6 +53,23 @@ void Skim_functions::copy_event_info(NanoAODTree &nat, EventInfo &ei, bool is_mc
   }
 }
 
+int Skim_functions::find_fatjet_from_genfatjet(NanoAODTree &nat, const GenJetAK8 &gj)
+{
+  /**
+   * @brief Returns the index of the reco fatjet this gen fatjet is matched to
+   *
+   */
+  const int gjidx = gj.getIdx();
+  for (unsigned int ij = 0; ij < *(nat.nFatJet); ++ij)
+    {
+      FatJet fatjet(ij, &nat);
+      int igj = get_property(fatjet, FatJet_genJetAK8Idx);
+      if (0) std::cout << "Fat-jet with index="<<ij<<"  is related to gen-jet AK8 with index ="<<igj<<"    ("<<gjidx<<")"<<std::endl;
+      if (igj == gjidx) return ij;
+    }
+  return -1;
+}
+
 int Skim_functions::find_jet_from_genjet(NanoAODTree &nat, const GenJet &gj)
 {
   /**
@@ -335,6 +352,64 @@ std::vector<int> Skim_functions::match_local_idx(std::vector<Jet>& subset,std::v
       local_idxs.push_back(local_idx);
     }
   return local_idxs;
+}
+
+void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*>& quarks, std::vector<GenJetAK8>& genfatjets,
+				     std::vector<GenPart*>& matched_quarks, std::vector<GenJetAK8>& matched_genfatjets)
+{
+  /*
+   * @brief Recursively search for the quark-genfatjet pairs based on the minimum dR
+   * dR_match: the dR cut to be used in the matching, typically 0.8 for AK8 gen-jets
+   * quarks: the vector of quarks you want to match
+   * genfatjets: the vector of gen-fatjets to be used in the matching.
+   * matched_quarks: the (initially empty) vector of matched quarks
+   * matched_genfatjets: the (initially empty) vector of matched gen-fatjets
+   */
+  unsigned int counter = -1;
+  double minDR = 9999.9;
+  unsigned int minDR_jetIndex = -1;
+  unsigned int minDR_particleIndex = -1;
+  for (auto& p: quarks)
+    {
+      counter++;
+      for (unsigned int igj=0; igj<genfatjets.size(); ++igj)
+	{
+	  double dR = ROOT::Math::VectorUtil::DeltaR(p->P4(), genfatjets.at(igj).P4());
+	  if (dR > dR_match) continue;
+	  if (dR < minDR)
+	    {
+	      minDR = dR;
+              minDR_jetIndex = igj;
+              minDR_particleIndex = counter;
+            }
+        }
+    }
+  
+  if (minDR < dR_match)
+    {
+      // For debugging
+      if (0)
+        {
+          unsigned int quark_uniqueIdx = quarks.at(minDR_particleIndex)->getIdx();
+          unsigned int genfatjet_uniqueIdx = genfatjets.at(minDR_jetIndex).getIdx();
+	  std::cout << "  DR(quark="<<quark_uniqueIdx<<", gen-fatjet="<<genfatjet_uniqueIdx<<") = "<<minDR<<std::endl;
+        }
+      matched_genfatjets.push_back(genfatjets.at(minDR_jetIndex));
+      matched_quarks.push_back(quarks.at(minDR_particleIndex));
+      
+      // Temporary quarks vector:
+      std::vector<GenPart*> quarks_to_match_temp;
+      unsigned int counter = -1;
+      for (auto& p: quarks)
+        {
+          counter++;
+          if (counter == minDR_particleIndex) continue;
+          quarks_to_match_temp.push_back(p);
+        }
+      
+      GetMatchedPairs(dR_match, quarks_to_match_temp, genfatjets, matched_quarks, matched_genfatjets);
+    }
+  else return;
 }
 
 void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*>& quarks, std::vector<GenJet>& genjets,
