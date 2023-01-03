@@ -93,6 +93,9 @@ def GetOpts(hname):
     if "nsubjets" in hname:
         opts["ymaxfactor"] = 1.3
 
+    if "subjet1_m" in hname or "subjet2_m" in hname:
+        opts["xmax"] = 200
+
     return opts
 
 def AddPreliminaryText():
@@ -213,7 +216,7 @@ def main(args):
                 "OR"]
 
     categories = ["hPassed_",
-                  "hResolvedPassed_",
+                  "hResolvedExclPassed_",
                   "hSemiresolvedPassed_",
                   "hBoostedPassed_"]
 
@@ -347,9 +350,9 @@ def main(args):
             opts = GetOpts(h)
             maxY = -1.0
             
-            print(sample+"/hResolved_"+h)
+            print(sample+"/hResolvedExcl_"+h)
 
-            hResolved = f.Get(sample+"/hResolved_"+h)
+            hResolved = f.Get(sample+"/hResolvedExcl_"+h)
             hResolved.Scale(1.0/hResolved.Integral())
             if hResolved.GetMaximum() > maxY:
                 maxY = hResolved.GetMaximum()
@@ -474,6 +477,95 @@ def main(args):
               "hResolved_RecoJet_DeltaPhi_H1_H2",
               "hResolved_RecoJet_NJets",
               "hResolved_RecoJet_NFatJets",
+              "hResolved_RecoJet_PFHT",
+              "hResolved_RecoJet_NLooseBJets",
+              "hResolved_RecoJet_NMediumBJets",
+              "hResolved_RecoJet_NTightBJets",
+              "hResolved_RecoJet_Jet1Pt",
+              "hResolved_RecoJet_Jet2Pt",
+              "hResolved_RecoJet_Jet3Pt",
+              "hResolved_RecoJet_Jet4Pt",
+              "hResolved_RecoJet_Jet1Eta",
+              "hResolved_RecoJet_Jet2Eta",
+              "hResolved_RecoJet_Jet3Eta",
+              "hResolved_RecoJet_Jet4Eta",
+              "hResolved_RecoJet_AK8Jet1Pt",
+
+              "hResolvedExcl_GenJet_H1_b1_pt",
+              "hResolvedExcl_GenJet_H1_b2_pt",
+              "hResolvedExcl_GenJet_H2_b1_pt",
+              "hResolvedExcl_GenJet_H2_b2_pt",
+              "hResolvedExcl_GenJet_H1_b1_eta",
+              "hResolvedExcl_GenJet_H1_b2_eta",
+              "hResolvedExcl_GenJet_H2_b1_eta",
+              "hResolvedExcl_GenJet_H2_b2_eta",
+              "hResolvedExcl_GenJet_H1_b1_phi",
+              "hResolvedExcl_GenJet_H1_b2_phi",
+              "hResolvedExcl_GenJet_H2_b1_phi",
+              "hResolvedExcl_GenJet_H2_b2_phi",
+              "hResolvedExcl_RecoJet_H1_b1_pt",
+              "hResolvedExcl_RecoJet_H1_b2_pt",
+              "hResolvedExcl_RecoJet_H2_b1_pt",
+              "hResolvedExcl_RecoJet_H2_b2_pt",
+              "hResolvedExcl_RecoJet_H1_b1_eta",
+              "hResolvedExcl_RecoJet_H1_b2_eta",
+              "hResolvedExcl_RecoJet_H2_b1_eta",
+              "hResolvedExcl_RecoJet_H2_b2_eta",
+              "hResolvedExcl_RecoJet_H1_b1_phi",
+              "hResolvedExcl_RecoJet_H1_b2_phi",
+              "hResolvedExcl_RecoJet_H2_b1_phi",
+              "hResolvedExcl_RecoJet_H2_b2_phi",
+              "hResolvedExcl_RecoJet_H1_b1_btag",
+              "hResolvedExcl_RecoJet_H1_b2_btag",
+              "hResolvedExcl_RecoJet_H2_b1_btag",
+              "hResolvedExcl_RecoJet_H2_b2_btag",
+              "hResolvedExcl_RecoJet_DeltaR_H1b1_H1b2",
+              "hResolvedExcl_RecoJet_DeltaR_H1b1_H2b1",
+              "hResolvedExcl_RecoJet_DeltaR_H1b1_H2b2",
+              "hResolvedExcl_RecoJet_DeltaR_H1b2_H2b1",
+              "hResolvedExcl_RecoJet_DeltaR_H1b2_H2b2",
+              "hResolvedExcl_RecoJet_DeltaR_H2b1_H2b2",
+              "hResolvedExcl_RecoJet_DeltaEta_H1b1_H1b2",
+              "hResolvedExcl_RecoJet_DeltaEta_H1b1_H2b1",
+              "hResolvedExcl_RecoJet_DeltaEta_H1b1_H2b2",
+              "hResolvedExcl_RecoJet_DeltaEta_H1b2_H2b1",
+              "hResolvedExcl_RecoJet_DeltaEta_H1b2_H2b2",
+              "hResolvedExcl_RecoJet_DeltaEta_H2b1_H2b2",
+              "hResolvedExcl_RecoJet_DeltaPhi_H1b1_H1b2",
+              "hResolvedExcl_RecoJet_DeltaPhi_H1b1_H2b1",
+              "hResolvedExcl_RecoJet_DeltaPhi_H1b1_H2b2",
+              "hResolvedExcl_RecoJet_DeltaPhi_H1b2_H2b1",
+              "hResolvedExcl_RecoJet_DeltaPhi_H1b2_H2b2",
+              "hResolvedExcl_RecoJet_DeltaPhi_H2b1_H2b2",
+              "hResolvedExcl_RecoJet_H1_pt",
+              "hResolvedExcl_RecoJet_H2_pt",
+              "hResolvedExcl_RecoJet_H1_eta",
+              "hResolvedExcl_RecoJet_H2_eta",
+              "hResolvedExcl_RecoJet_H1_phi",
+              "hResolvedExcl_RecoJet_H2_phi",
+              "hResolvedExcl_RecoJet_InvMass_H1",
+              "hResolvedExcl_RecoJet_InvMass_H2",
+              "hResolvedExcl_RecoJet_InvMassRegressed_H1",
+              "hResolvedExcl_RecoJet_InvMassRegressed_H2",
+              "hResolvedExcl_RecoJet_DeltaR_H1_H2",
+              "hResolvedExcl_RecoJet_DeltaEta_H1_H2",
+              "hResolvedExcl_RecoJet_DeltaPhi_H1_H2",
+              "hResolvedExcl_RecoJet_NJets",
+              "hResolvedExcl_RecoJet_NFatJets",
+              "hResolvedExcl_RecoJet_PFHT",
+              "hResolvedExcl_RecoJet_NLooseBJets",
+              "hResolvedExcl_RecoJet_NMediumBJets",
+              "hResolvedExcl_RecoJet_NTightBJets",
+              "hResolvedExcl_RecoJet_Jet1Pt",
+              "hResolvedExcl_RecoJet_Jet2Pt",
+              "hResolvedExcl_RecoJet_Jet3Pt",
+              "hResolvedExcl_RecoJet_Jet4Pt",
+              "hResolvedExcl_RecoJet_Jet1Eta",
+              "hResolvedExcl_RecoJet_Jet2Eta",
+              "hResolvedExcl_RecoJet_Jet3Eta",
+              "hResolvedExcl_RecoJet_Jet4Eta",
+              "hResolvedExcl_RecoJet_AK8Jet1Pt",
+              
               # Boosted
               "hBoosted_GenFatJet_H1_pt",
               "hBoosted_GenFatJet_H2_pt",
@@ -573,6 +665,19 @@ def main(args):
               "hSemiresolved_H1Boosted_H2resolved_H2_phi",
               "hSemiresolved_H1Boosted_H2resolved_NJets",
               "hSemiresolved_H1Boosted_H2resolved_NFatJets",
+              "hSemiresolved_H1Boosted_H2resolved_PFHT",
+              "hSemiresolved_H1Boosted_H2resolved_NLooseBJets",
+              "hSemiresolved_H1Boosted_H2resolved_NMediumBJets",
+              "hSemiresolved_H1Boosted_H2resolved_NTightBJets",
+              "hSemiresolved_H1Boosted_H2resolved_Jet1Pt",
+              "hSemiresolved_H1Boosted_H2resolved_Jet2Pt",
+              "hSemiresolved_H1Boosted_H2resolved_Jet3Pt",
+              "hSemiresolved_H1Boosted_H2resolved_Jet4Pt",
+              "hSemiresolved_H1Boosted_H2resolved_Jet1Eta",
+              "hSemiresolved_H1Boosted_H2resolved_Jet2Eta",
+              "hSemiresolved_H1Boosted_H2resolved_Jet3Eta",
+              "hSemiresolved_H1Boosted_H2resolved_Jet4Eta",
+              "hSemiresolved_H1Boosted_H2resolved_AK8Jet1Pt",
               "hSemiresolved_H1Boosted_H2resolved_DeltaR_H1_H2",
               "hSemiresolved_H1Boosted_H2resolved_DeltaEta_H1_H2",
               "hSemiresolved_H1Boosted_H2resolved_DeltaPhi_H1_H2",
@@ -654,7 +759,7 @@ def main(args):
         maxY = -1.0
         
         h0 = f.Get("GluGluToHHTo4B_node_cHHH0/"+h) 
-        if "NJets" in h or "NFatJets" in h:
+        if "NJets" in h or "NFatJets" in h or "NLoose" in h or "NMedium" in h or "NTight" in h:
             h0.GetYaxis().SetTitle("Events")
         else:
             h0.GetYaxis().SetTitle("Arbitrary Units")
@@ -671,7 +776,7 @@ def main(args):
         #h0.SetFillStyle(3001)
         
         h1 = f.Get("GluGluToHHTo4B_node_cHHH1/"+h)
-        if "NJets" in h or "NFatJets" in h:
+        if "NJets" in h or "NFatJets" in h or "NLoose" in h or "NMedium" in h or "NTight" in h:
             h1.GetYaxis().SetTitle("Events")
         else:
             h1.GetYaxis().SetTitle("Arbitrary Units")
@@ -687,7 +792,7 @@ def main(args):
         h1.SetFillStyle(3001)
 
         h2 = f.Get("GluGluToHHTo4B_node_cHHH2p45/"+h)
-        if "NJets" in h or "NFatJets" in h:
+        if "NJets" in h or "NFatJets" in h or "NLoose" in h or "NMedium" in h or "NTight" in h:
             h2.GetYaxis().SetTitle("Events")
         else:
             h2.GetYaxis().SetTitle("Arbitrary Units")

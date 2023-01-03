@@ -1281,8 +1281,8 @@ def main(args):
                         isTight = btag > 0.7100
                         
                         if (isLoose): nLoose += 1
-                        if (nMedium): nMedium += 1
-                        if (nTight): nTight += 1
+                        if (isMedium): nMedium += 1
+                        if (isTight): nTight += 1
                         
                         if (pt > 30.0 and abs(eta) < 2.4):
                             reco_PFHT += pt
@@ -1644,8 +1644,8 @@ def main(args):
                     isTight = btag > 0.7100
 
                     if (isLoose): nLoose += 1
-                    if (nMedium): nMedium += 1
-                    if (nTight): nTight += 1
+                    if (isMedium): nMedium += 1
+                    if (isTight): nTight += 1
 
                     if (pt > 30.0 and abs(eta) < 2.4):
                         reco_PFHT += pt
@@ -1825,8 +1825,8 @@ def main(args):
                     isTight = btag > 0.7100
 
                     if (isLoose): nLoose += 1
-                    if (nMedium): nMedium += 1
-                    if (nTight): nTight += 1
+                    if (isMedium): nMedium += 1
+                    if (isTight): nTight += 1
 
                     if (pt > 30.0 and abs(eta) < 2.4):
                         reco_PFHT += pt
