@@ -23,6 +23,7 @@ namespace su = SkimUtils;
 #include "jsonLumiFilter.h"
 
 #include "Skim_functions.h"
+#include "FourB_functions.h"
 #include "SixB_functions.h"
 #include "EightB_functions.h"
 #include "TTBar_functions.h"
@@ -373,6 +374,7 @@ void initializeTriggerRequirements(CfgParser& config, OutputTree& ot, std::vecto
 
 enum SkimTypes
   {
+    kfourb,
     ksixb,
     keightb,
     kpass,
@@ -461,6 +463,7 @@ int main(int argc, char** argv)
   const string skim_type_name = config.readStringOpt("configurations::skimType");
   std::cout << "\033[1;34m Skimming        : \033[0m"<<skim_type_name<<std::endl;
   const SkimTypes skim_type = (skim_type_name == "sixb"    ? ksixb    :
+			       skim_type_name == "fourb"   ? kfourb   :
                                skim_type_name == "eightb"  ? keightb  :
 			       skim_type_name == "pass"    ? kpass    :
                                skim_type_name == "presel"  ? kpresel  :
@@ -485,8 +488,10 @@ int main(int argc, char** argv)
 		  {"muon_coll",   readCfgOptWithDefault<bool>(config, "configurations::saveMuonColl", false)},
 		  {"ele_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveEleColl", false)},  
 		  {"jet_coll",    readCfgOptWithDefault<bool>(config, "configurations::saveJetColl", false)},
+		  {"fatjet_coll", readCfgOptWithDefault<bool>(config, "configurations::saveFatJetColl", false)},
 		  {"shape_brs",   readCfgOptWithDefault<bool>(config, "configurations::saveShapes", false)},
 		  {"dijets_coll", readCfgOptWithDefault<bool>(config, "configurations::saveDiJets", false)},
+		  {"fourb_brs", (skim_type == kfourb)},
 		  {"sixb_brs", (skim_type == ksixb)},
 		  {"eightb_brs", (skim_type == keightb)},
 		  {"sig_gen_brs", (is_signal)},
@@ -591,6 +596,9 @@ int main(int argc, char** argv)
   Skim_functions* skf;
   switch (skim_type)
     {
+    case kfourb:
+      skf = new FourB_functions();
+      break;
     case ksixb:
       skf = new SixB_functions();
       break;
@@ -706,7 +714,7 @@ int main(int argc, char** argv)
     loop_timer.start_lap();
     
     if (!nat.Next()) break;
-    if (iEv % 10000 == 0 || debug) {
+    if (iEv % 1000 == 0 || debug) {
       cout << "... processing event " << iEv << endl;
       // auto bsize  = ot.getTree()->GetBranch("Run")->GetBasketSize();
       // cout << "... tree basket size (branch Run) : " << bsize  << endl;
@@ -842,14 +850,25 @@ int main(int argc, char** argv)
 	loop_timer.click("e selection");
       }
     
+    bool saveFatJets = config.readBoolOpt("configurations::saveFatJetColl");
+
     //======================================
     // Save signal specific GEN info
     //======================================
     if (is_signal)
       {
 	skf->select_gen_particles(nat, ei);        // find gen level X, Y, H, b
+	
+	std::cout << "\n Match b-quarks to gen-jets"<<std::endl;
 	skf->match_genbs_to_genjets(nat, ei);      // match the b quarks found above to the genjets
 	skf->match_genbs_genjets_to_reco(nat, ei); // match the genjets found above to the reco jets
+	
+	if (saveFatJets)
+	  {
+	    std::cout << "\n Match b-quarks to gen fatjets"<<std::endl;
+	    skf->match_genbs_to_genfatjets(nat, ei); // match the b quarks found above to the gen fatjets
+	    skf->match_genbs_genfatjets_to_reco(nat, ei); // match the gen fatjets found above to the reco fatjets
+	  }
 	loop_timer.click("Signal gen level");
       }
     
@@ -869,15 +888,16 @@ int main(int argc, char** argv)
 	loop_timer.click("JEC + JER");
       }
     
+    
     // Apply preselections to jets (min pT / max eta / PU ID / PF ID)
     std::vector<Jet> presel_jets = skf->preselect_jets(nat, ei, all_jets);
     histograms.get("n_presel_jet", ";N Preselected Jets;Events", 20, 0, 20).Fill(presel_jets.size(), nwt);
-
+    
     if (is_signal) 
       {
 	skf->match_signal_recojets(nat,ei,presel_jets);
 	std::vector<GenJet> all_genjets = skf->get_all_genjets(nat);
-	skf->match_genjets_to_reco(nat,ei,all_genjets,presel_jets);
+	skf->match_genjets_to_reco(nat,ei,all_genjets,presel_jets);	  
 	skf->match_signal_genjets(nat,ei,all_genjets);
 	ei.genjet_list = all_genjets;
       }
@@ -893,6 +913,22 @@ int main(int argc, char** argv)
     loop_timer.click("Jet selection");
     if (debug) dumpObjColl(presel_jets, "==== PRESELECTED JETS ===");
     
+    //=================================
+    // Fatjet selection
+    //=================================
+    if (saveFatJets)
+      {
+	std::vector<FatJet> all_fatjets = skf->get_all_fatjets(nat);
+	ei.n_fatjet = all_fatjets.size();
+	ei.fatjet_list = all_fatjets;
+	loop_timer.click("FatJet selection");
+	if (is_signal)
+	  {
+	    std::vector<GenJetAK8> all_genfatjets = skf->get_all_genfatjets(nat);
+	    ei.n_genfatjet = all_genfatjets.size();
+	    ei.genfatjet_list = all_genfatjets;
+	  }
+      }
     
     //=================================
     // Apply analysis-specific skims
@@ -966,6 +1002,10 @@ int main(int argc, char** argv)
 	}
 	skf->compute_event_shapes(nat, ei, selected_jets);
 	loop_timer.click("Event shapes calculation");
+      }
+    else if (skim_type == kfourb)
+      {
+	std::cout << ""<<std::endl;      
       }
     else if (skim_type == ksixb)
       {
