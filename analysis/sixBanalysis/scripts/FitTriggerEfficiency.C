@@ -164,6 +164,99 @@ void doFit(TFile &outputRootFile, TVirtualPad *theCanvas, TFile &theInputFile, s
   return;
 }
 
+
+void doAllFit2022(std::string inputFileName)
+{
+  gROOT->SetBatch(true);
+  gStyle->SetOptFit();
+  gStyle->SetStatY(0.5);
+  TFile theInputFile(inputFileName.data());
+  std::vector<double> initialParameters;
+  
+  std::string outputFileName = "FitTriggerEfficiency_2022_wMatching.root";
+  TFile outputRootFile(outputFileName.data(), "RECREATE");
+  
+  outputFile << "#include \"TFile.h\""                                  << std::endl;
+  outputFile << "#include \"TF1.h\""                                    << std::endl;
+  outputFile << "#include \"TFitResult.h\""                             << std::endl;
+  outputFile << "#include \"TGraphAsymmErrors.h\""                           << std::endl;
+  outputFile << "#include \"Math/WrappedMultiTF1.h\""                   << std::endl;
+  outputFile                                                            << std::endl;
+  outputFile << "namespace TriggerFitCurves2022\n{"                     << std::endl;
+  outputFile << "    TFile triggerFitFile(\""<< outputFileName <<"\");" << std::endl;
+  outputFile << "    class KFitResult : public TFitResult"                                                                                                        << std::endl;
+  outputFile << "    {"                                                                                                                                           << std::endl;
+  outputFile << "    public:"                                                                                                                                     << std::endl;
+  outputFile << "        using TFitResult::TFitResult;"                                                                                                           << std::endl;
+  outputFile << "        KFitResult* ResetModelFunction(TF1* func){"                                                                                              << std::endl;
+  outputFile << "            this->SetModelFunction(std::shared_ptr<IModelFunction>(dynamic_cast<IModelFunction*>(ROOT::Math::WrappedMultiTF1(*func).Clone())));" << std::endl;
+  outputFile << "            return this;"                                                                                                                        << std::endl;
+  outputFile << "        }"                                                                                                                                       << std::endl;
+  outputFile << "    };"                                                                                                                                          << std::endl;
+  outputFile << "    std::pair<TF1*,KFitResult*> createPair(TF1* theFunction, KFitResult* theFitResult )" << std::endl;
+  outputFile << "    {"                                                                                   << std::endl;
+  outputFile << "        theFitResult->ResetModelFunction(theFunction);"                                  << std::endl;
+  outputFile << "        return {theFunction, theFitResult};"                                             << std::endl;
+  outputFile << "    }"                                                                                   << std::endl;
+  outputFile << std::endl;
+
+  //====================================
+  // Fit trigger curves for Data
+  //====================================
+  TCanvas *theCanvasSingleMuonRatio1 = new TCanvas("SingleMuon_2022_1", "SingleMuon_2022_1", 1400, 800);
+  theCanvasSingleMuonRatio1->DivideSquare(6,0.005,0.005);
+  
+  initialParameters = {299, 94, 0.0, 1.0};
+  doFit(outputRootFile, theCanvasSingleMuonRatio1->cd(1),theInputFile, "SingleMuon__Efficiency_L1filterHT", crystalBallAndErrorFunction, initialParameters, 160., 1500.);
+  
+  initialParameters = { 25., 16.9, 0.11, 1.0, 1.01, 2.85, 12. };
+  doFit(outputRootFile, theCanvasSingleMuonRatio1->cd(2),theInputFile, "SingleMuon__Efficiency_QuadCentralJet30", crystalBallAndErrorFunction, initialParameters,  25., 300.);
+  
+  initialParameters = { 336.3, 66.3, 0.0, 0.99, 1.01, 1.4, 45. };
+  doFit(outputRootFile, theCanvasSingleMuonRatio1->cd(3),theInputFile, "SingleMuon__Efficiency_CaloQuadJet30HT320", crystalBallAndErrorFunction, initialParameters, 200.,1200.);
+  
+  initialParameters = { 0.0, 5.8, 0.0, 1.0};
+  doFit(outputRootFile, theCanvasSingleMuonRatio1->cd(4),theInputFile, "SingleMuon__Efficiency_BTagCaloDeepCSVp17Double", "pol5", initialParameters, 0.0, 1.0);
+  
+  initialParameters = { 29, 11.5, 0.0, 1.00, 1.0, 0.12, 10.0};
+  doFit(outputRootFile, theCanvasSingleMuonRatio1->cd(5),theInputFile, "SingleMuon__Efficiency_PFCentralJetLooseIDQuad30", crystalBallFunction, initialParameters, 25., 250.);
+  
+  initialParameters = { 84, 10.97, 0.0, 1.0, 1.0, 4.23, 3.0};
+  doFit(outputRootFile, theCanvasSingleMuonRatio1->cd(6),theInputFile, "SingleMuon__Efficiency_1PFCentralJetLooseID75", crystalBallFunction, initialParameters, 40., 500.);
+  
+  theCanvasSingleMuonRatio1->SaveAs((std::string(inputFileName.substr(0,inputFileName.length()-5) + "_" + theCanvasSingleMuonRatio1->GetName()) + "_Fit" + ".png").data());
+  outputRootFile.WriteObject(theCanvasSingleMuonRatio1, theCanvasSingleMuonRatio1->GetName());
+  delete theCanvasSingleMuonRatio1;
+    
+  TCanvas *theCanvasSingleMuonRatio2 = new TCanvas("SingleMuon_2022_2", "SingleMuon_2022_2", 1400, 800);
+  theCanvasSingleMuonRatio2->DivideSquare(6,0.005,0.005);
+  
+  initialParameters = {66.87, 2.4, 0.05, 1.0, 1.0, 2.4, 14};
+  doFit(outputRootFile, theCanvasSingleMuonRatio2->cd(1),theInputFile, "SingleMuon__Efficiency_2PFCentralJetLooseID60", crystalBallAndErrorFunction, initialParameters,  30., 300.);
+  
+  initialParameters = {39.54, 8.7, 0.0, 1.0, 9.81, 7.492, 21.};
+  doFit(outputRootFile, theCanvasSingleMuonRatio2->cd(2),theInputFile, "SingleMuon__Efficiency_3PFCentralJetLooseID45", crystalBallAndErrorFunction, initialParameters, 25., 300.);
+  
+  initialParameters = {42.86, 13.07, 0.09,0.98, 1.0, 1.98, 10};
+  doFit(outputRootFile, theCanvasSingleMuonRatio2->cd(3),theInputFile, "SingleMuon__Efficiency_4PFCentralJetLooseID40", crystalBallFunction, initialParameters, 25., 200.);
+  
+  initialParameters = { 340., 73.7, 0.81, 1., 1., 2.3, 50.4 };
+  doFit(outputRootFile, theCanvasSingleMuonRatio2->cd(4),theInputFile, "SingleMuon__Efficiency_PFCentralJetsLooseIDQuad30HT330", crystalBallFunction, initialParameters, 300., 1500.);
+  
+  
+  initialParameters = {0.482, 0.3657, 0.489, 1.0, 1.01, 3.022};
+  doFit(outputRootFile, theCanvasSingleMuonRatio2->cd(5),theInputFile, "SingleMuon__Efficiency_BTagPFDeepCSV4p5Triple", crystalBallFunction, initialParameters, 0.0, 1.0);
+  
+  theCanvasSingleMuonRatio2->SaveAs((std::string(inputFileName.substr(0,inputFileName.length()-5) + "_" + theCanvasSingleMuonRatio2->GetName()) + "_Fit" + ".png").data());
+  outputRootFile.WriteObject(theCanvasSingleMuonRatio2, theCanvasSingleMuonRatio2->GetName());
+  delete theCanvasSingleMuonRatio2;
+
+  outputFile << std::endl;
+  outputFile << "};" << std::endl;
+  outputRootFile.Close();
+  gROOT->SetBatch(false);
+}
+
 void doAllFit2018(std::string inputFileName)
 {
   gROOT->SetBatch(true);
@@ -452,6 +545,7 @@ void doAllFit2017(std::string inputFileName)
 
 void FitTriggerEfficiency()
 {
-  doAllFit2018("TriggerEfficiencyByFilter_2018_wMatching.root");
-  doAllFit2017("TriggerEfficiencyByFilter_2017_wTrgMatching.root");
+  doAllFit2022("TriggerEfficiencyByFilter_2022_wMatching.root");
+  //doAllFit2018("TriggerEfficiencyByFilter_2018_wMatching.root");
+  //doAllFit2017("TriggerEfficiencyByFilter_2017_wTrgMatching.root");
 }
