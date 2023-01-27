@@ -107,6 +107,57 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   std::vector<bool> OBJ##_mediumId;        \
   std::vector<bool> OBJ##_tightId;
 
+#define DECLARE_fatjet_list(OBJ)           \
+  std::vector<float> OBJ##_pt;		   \
+  std::vector<float> OBJ##_eta;            \
+  std::vector<float> OBJ##_phi;            \
+  std::vector<float> OBJ##_m;              \
+  std::vector<float> OBJ##_mSD_UnCorrected;\
+  std::vector<float> OBJ##_area;	   \
+  std::vector<float> OBJ##_n2b1;           \
+  std::vector<float> OBJ##_n3b1;           \
+  std::vector<float> OBJ##_rawFactor;      \
+  std::vector<float> OBJ##_tau1;           \
+  std::vector<float> OBJ##_tau2;           \
+  std::vector<float> OBJ##_tau3;           \
+  std::vector<float> OBJ##_tau4;           \
+  std::vector<int>   OBJ##_jetId;          \
+  std::vector<int>   OBJ##_genJetAK8Idx;   \
+  std::vector<int>   OBJ##_hadronFlavour;  \
+  std::vector<int>   OBJ##_nBHadrons;      \
+  std::vector<int>   OBJ##_nCHadrons;      \
+  std::vector<int>   OBJ##_nPFCand;        \
+  std::vector<float> OBJ##_PNetQCDb;       \
+  std::vector<float> OBJ##_PNetQCDbb;      \
+  std::vector<float> OBJ##_PNetQCDc;       \
+  std::vector<float> OBJ##_PNetQCDcc;      \
+  std::vector<float> OBJ##_PNetQCDothers;  \
+  std::vector<float> OBJ##_PNetXbb;        \
+  std::vector<float> OBJ##_PNetXcc;        \
+  std::vector<float> OBJ##_PNetXqq;        \
+  std::vector<float> OBJ##_deepTagMD_H4q;  \
+  std::vector<float> OBJ##_deepTagMD_Hbb;  \
+  std::vector<float> OBJ##_deepTagMD_T;    \
+  std::vector<float> OBJ##_deepTagMD_W;    \
+  std::vector<float> OBJ##_deepTagMD_Z;    \
+  std::vector<float> OBJ##_deepTagMD_bbvsL;   \
+  std::vector<float> OBJ##_deepTagMD_ccvsL;   \
+  std::vector<float> OBJ##_deepTag_QCD;       \
+  std::vector<float> OBJ##_deepTag_QCDothers; \
+  std::vector<float> OBJ##_deepTag_W;         \
+  std::vector<float> OBJ##_deepTag_Z;         \
+  std::vector<int>   OBJ##_nsubjets;          \
+  std::vector<float> OBJ##_subjet1_pt;        \
+  std::vector<float> OBJ##_subjet1_eta;       \
+  std::vector<float> OBJ##_subjet1_phi;       \
+  std::vector<float> OBJ##_subjet1_m;         \
+  std::vector<float> OBJ##_subjet1_btagDeepB; \
+  std::vector<float> OBJ##_subjet2_pt;        \
+  std::vector<float> OBJ##_subjet2_eta;       \
+  std::vector<float> OBJ##_subjet2_phi;       \
+  std::vector<float> OBJ##_subjet2_m;         \
+  std::vector<float> OBJ##_subjet2_btagDeepB;
+
 #define DECLARE_jet_list(OBJ)           \
   std::vector<float> OBJ##_E;           \
   std::vector<float> OBJ##_m;           \
@@ -194,7 +245,9 @@ public:
   int n_total_jet;
   int n_jet;
   int n_higgs;
-
+  int n_fatjet;
+  int n_genfatjet;
+  
   int n_ele;
   int n_muon;
   
@@ -211,10 +264,30 @@ public:
   std::vector<int> genjet_signalId;
   std::vector<int> genjet_recoIdx;
   
+  std::vector<float> genfatjet_E;
+  std::vector<float> genfatjet_m;
+  std::vector<float> genfatjet_pt;
+  std::vector<float> genfatjet_eta;
+  std::vector<float> genfatjet_phi;
+  std::vector<int>   genfatjet_signalId;
+  std::vector<int>   genfatjet_recoIdx;
+  std::vector<int>   genfatjet_partonFlav;
+  std::vector<int>   genfatjet_hadronFlav;
+  std::vector<int>   genfatjet_nsubjets;
+  std::vector<float> genfatjet_subjet1_pt;
+  std::vector<float> genfatjet_subjet1_m;
+  std::vector<float> genfatjet_subjet1_phi;
+  std::vector<float> genfatjet_subjet1_eta;
+  std::vector<float> genfatjet_subjet2_pt;
+  std::vector<float> genfatjet_subjet2_m;
+  std::vector<float> genfatjet_subjet2_eta;
+  std::vector<float> genfatjet_subjet2_phi;
+  
   DECLARE_ele_list(ele);
   DECLARE_muon_list(muon);
   DECLARE_jet_list(jet);
-
+  DECLARE_fatjet_list(fatjet);
+  
   int n_dijet;
   std::vector<float> dijet_m;
   std::vector<float> dijet_pt;
@@ -230,6 +303,17 @@ public:
   float sphericity_t;
   float aplanarity;
 
+  DECLARE_m_pt_eta_phi_p4(gen_H1_fc);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_fc);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b1_genfatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b2_genfatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b1_genfatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b2_genfatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b1_recofatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H1_b2_recofatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b1_recofatjet);
+  DECLARE_m_pt_eta_phi_p4(gen_H2_b2_recofatjet);
+  
   DECLARE_m_pt_eta_phi_p4(gen_X_fc);
   DECLARE_m_pt_eta_phi_p4(gen_X);
   // Start Gen 6B Objects

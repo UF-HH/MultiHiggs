@@ -4,12 +4,19 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 2022 Samples for trigger studies
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-DATA_files=$(ls input/Run3_PromptReco/SingleMuon*)
-
-ODIR="/store/user/mkolosov/MultiHiggs/DiHiggs/"
+DATA_files=$(ls input/Run3/*)
+ODIR="/store/user/mkolosov/MultiHiggs/DiHiggs/2022/TriggerEfficiency/"
 CFG="config/skim_trigger_2022_NanoAODv10.cfg"
 
-TAG="Run3_SingleMuon2022C_TriggerStudies_04Jan2023"
+TAG="Run3_2022_TriggerEfficiency_27Jan2023"
+
+make exe -j || exit -1
+echo "... tag       : ", $TAG
+echo "... saving to : ", $ODIR
+
+for input in ${DATA_files[@]}; do
+    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
+done
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 2017 Samples for trigger studies
@@ -23,13 +30,13 @@ TAG="Run3_SingleMuon2022C_TriggerStudies_04Jan2023"
 # Submit Trigger skimming with matching
 #TAG="Summer2017UL_TRGcurves_wTrgMatching_15Dec2022"
 
-make exe -j || exit -1
-echo "... tag       : ", $TAG
-echo "... saving to : ", $ODIR
+#make exe -j || exit -1
+#echo "... tag       : ", $TAG
+#echo "... saving to : ", $ODIR
 
-for input in ${DATA_files[@]}; do
-    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
-done
+#for input in ${DATA_files[@]}; do
+#    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
+#done
 #for input in ${TT_files[@]}; do
 #    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match
 #done

@@ -158,6 +158,108 @@ using namespace std;
   OBJ##_mediumId.clear();       \
   OBJ##_tightId.clear();
   
+#define BRANCH_fatjet_list(OBJ)            \
+  tree_->Branch(#OBJ "_pt", &OBJ##_pt);    \
+  tree_->Branch(#OBJ "_eta", &OBJ##_eta);  \
+  tree_->Branch(#OBJ "_phi", &OBJ##_phi);  \
+  tree_->Branch(#OBJ "_m", &OBJ##_m);	   \
+  tree_->Branch(#OBJ "_mSD_UnCorrected", &OBJ##_mSD_UnCorrected);	\
+  tree_->Branch(#OBJ "_area", &OBJ##_area);		\
+  tree_->Branch(#OBJ "_n2b1", &OBJ##_n2b1);		\
+  tree_->Branch(#OBJ "_n3b1", &OBJ##_n3b1);		\
+  tree_->Branch(#OBJ "_rawFactor", &OBJ##_rawFactor);	\
+  tree_->Branch(#OBJ "_tau1", &OBJ##_tau1);		\
+  tree_->Branch(#OBJ "_tau2", &OBJ##_tau2);		\
+  tree_->Branch(#OBJ "_tau3", &OBJ##_tau3);		\
+  tree_->Branch(#OBJ "_tau4", &OBJ##_tau4);		\
+  tree_->Branch(#OBJ "_jetId", &OBJ##_jetId);		\
+  tree_->Branch(#OBJ "_genJetAK8Idx", &OBJ##_genJetAK8Idx); \
+  tree_->Branch(#OBJ "_hadronFlavour", &OBJ##_hadronFlavour); \
+  tree_->Branch(#OBJ "_nBHadrons", &OBJ##_nBHadrons); \
+  tree_->Branch(#OBJ "_nCHadrons", &OBJ##_nCHadrons); \
+  tree_->Branch(#OBJ "_nPFCand", &OBJ##_nPFCand);	\
+  tree_->Branch(#OBJ "_PNetQCDb", &OBJ##_PNetQCDb);	\
+  tree_->Branch(#OBJ "_PNetQCDbb", &OBJ##_PNetQCDbb);	\
+  tree_->Branch(#OBJ "_PNetQCDc", &OBJ##_PNetQCDc);	\
+  tree_->Branch(#OBJ "_PNetQCDcc", &OBJ##_PNetQCDcc);	\
+  tree_->Branch(#OBJ "_PNetQCDothers", &OBJ##_PNetQCDothers);	\
+  tree_->Branch(#OBJ "_PNetXbb", &OBJ##_PNetXbb);		\
+  tree_->Branch(#OBJ "_PNetXcc", &OBJ##_PNetXcc);		\
+  tree_->Branch(#OBJ "_PNetXqq", &OBJ##_PNetXqq);		\
+  tree_->Branch(#OBJ "_deepTagMD_H4q", &OBJ##_deepTagMD_H4q);	\
+  tree_->Branch(#OBJ "_deepTagMD_Hbb", &OBJ##_deepTagMD_Hbb);	\
+  tree_->Branch(#OBJ "_deepTagMD_T", &OBJ##_deepTagMD_T);	\
+  tree_->Branch(#OBJ "_deepTagMD_W", &OBJ##_deepTagMD_W);	\
+  tree_->Branch(#OBJ "_deepTagMD_Z", &OBJ##_deepTagMD_Z);	\
+  tree_->Branch(#OBJ "_deepTagMD_bbvsL", &OBJ##_deepTagMD_bbvsL);	\
+  tree_->Branch(#OBJ "_deepTagMD_ccvsL", &OBJ##_deepTagMD_ccvsL);	\
+  tree_->Branch(#OBJ "_deepTag_QCD", &OBJ##_deepTag_QCD);		\
+  tree_->Branch(#OBJ "_deepTag_QCDothers", &OBJ##_deepTag_QCDothers);	\
+  tree_->Branch(#OBJ "_deepTag_W", &OBJ##_deepTag_W);			\
+  tree_->Branch(#OBJ "_deepTag_Z", &OBJ##_deepTag_Z);			\
+  tree_->Branch(#OBJ "_nsubjets",  &OBJ##_nsubjets);			\
+  tree_->Branch(#OBJ "_subjet1_pt",  &OBJ##_subjet1_pt);		\
+  tree_->Branch(#OBJ "_subjet1_eta", &OBJ##_subjet1_eta);		\
+  tree_->Branch(#OBJ "_subjet1_phi", &OBJ##_subjet1_phi);               \
+  tree_->Branch(#OBJ "_subjet1_m",   &OBJ##_subjet1_m);			\
+  tree_->Branch(#OBJ "_subjet1_btagDeepB", &OBJ##_subjet2_btagDeepB);   \
+  tree_->Branch(#OBJ "_subjet2_pt",  &OBJ##_subjet2_pt);                \
+  tree_->Branch(#OBJ "_subjet2_eta", &OBJ##_subjet2_eta);               \
+  tree_->Branch(#OBJ "_subjet2_phi", &OBJ##_subjet2_phi);		\
+  tree_->Branch(#OBJ "_subjet2_m",   &OBJ##_subjet2_m);			\
+  tree_->Branch(#OBJ "_subjet2_btagDeepB", &OBJ##_subjet2_btagDeepB);
+  
+
+#define CLEAR_fatjet_list(OBJ) \
+  OBJ##_pt.clear();            \
+  OBJ##_eta.clear();           \
+  OBJ##_phi.clear();	       \
+  OBJ##_m.clear();	       \
+  OBJ##_mSD_UnCorrected.clear();     \
+  OBJ##_area.clear();	       \
+  OBJ##_n2b1.clear();	       \
+  OBJ##_n3b1.clear();	       \
+  OBJ##_rawFactor.clear();     \
+  OBJ##_tau1.clear();	       \
+  OBJ##_tau2.clear();	       \
+  OBJ##_tau3.clear();	       \
+  OBJ##_tau4.clear();	       \
+  OBJ##_jetId.clear();	       \
+  OBJ##_genJetAK8Idx.clear();  \
+  OBJ##_hadronFlavour.clear(); \
+  OBJ##_nBHadrons.clear();     \
+  OBJ##_nCHadrons.clear();     \
+  OBJ##_nPFCand.clear();       \
+  OBJ##_PNetQCDb.clear();      \
+  OBJ##_PNetQCDbb.clear();     \
+  OBJ##_PNetQCDc.clear();      \
+  OBJ##_PNetQCDcc.clear();     \
+  OBJ##_PNetQCDothers.clear(); \
+  OBJ##_PNetXbb.clear();       \
+  OBJ##_PNetXcc.clear();       \
+  OBJ##_PNetXqq.clear();       \
+  OBJ##_deepTagMD_H4q.clear(); \
+  OBJ##_deepTagMD_Hbb.clear(); \
+  OBJ##_deepTagMD_T.clear();   \
+  OBJ##_deepTagMD_W.clear();   \
+  OBJ##_deepTagMD_Z.clear();   \
+  OBJ##_deepTagMD_bbvsL.clear();		\
+  OBJ##_deepTagMD_ccvsL.clear();		\
+  OBJ##_deepTag_QCD.clear();			\
+  OBJ##_deepTag_QCDothers.clear();		\
+  OBJ##_deepTag_W.clear();			\
+  OBJ##_deepTag_Z.clear();			\
+  OBJ##_nsubjets.clear();			\
+  OBJ##_subjet1_pt.clear();			\
+  OBJ##_subjet1_eta.clear();			\
+  OBJ##_subjet1_phi.clear();			\
+  OBJ##_subjet1_m.clear();			\
+  OBJ##_subjet1_btagDeepB.clear();		\
+  OBJ##_subjet2_pt.clear();			\
+  OBJ##_subjet2_eta.clear();			\
+  OBJ##_subjet2_phi.clear();			\
+  OBJ##_subjet2_m.clear();			\
+  OBJ##_subjet2_btagDeepB.clear();
 
 #define BRANCH_jet_list(OBJ)                                  \
   tree_->Branch(#OBJ "_E", &OBJ##_E);                         \
@@ -262,6 +364,42 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("triggerMcEfficiencyDown", &triggerMcEfficiencyDown);
     }
   
+  if (is_enabled("fourb_brs"))
+    {
+      if (is_enabled("sig_gen_brs"))
+	{
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_fc);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_fc);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b1);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b2);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b1);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b2);
+	  
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b1_genjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b2_genjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b1_genjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b2_genjet);
+
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b1_genfatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b2_genfatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b1_genfatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b2_genfatjet);
+	  
+	  BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1_b1_recojet);
+	  BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H1_b2_recojet);
+	  BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2_b1_recojet);
+	  BRANCH_m_pt_ptRegressed_eta_phi_p4(gen_H2_b2_recojet);
+	  
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b1_recofatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H1_b2_recofatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b1_recofatjet);
+	  BRANCH_m_pt_eta_phi_p4(gen_H2_b2_recofatjet);
+	}
+    } // 4b final state
+
+
   if (is_enabled("sixb_brs"))
   {
     if (is_enabled("sig_gen_brs"))
@@ -448,7 +586,6 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
   
   tree_->Branch("n_total_jet",&n_total_jet);
   tree_->Branch("n_jet", &n_jet);
-
   if (is_enabled("jet_coll"))
     {
       std::cout << "[INFO] OutputTree : enabling jet collection branches" << std::endl;
@@ -457,6 +594,13 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("b_6j_score",    &b_6j_score);
     }
 
+  if (is_enabled("fatjet_coll"))
+    {
+      std::cout << "[INFO] OutputTree : enabling fatjet collection branches" << std::endl;
+      tree_->Branch("n_fatjet", &n_fatjet);
+      BRANCH_fatjet_list(fatjet);
+    }
+  
   if (is_enabled("dijets_coll"))
   {
     std::cout << "[INFO] OutputTree : enabling dijet collection branches" << std::endl;
@@ -495,6 +639,29 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
         tree_->Branch("genjet_signalId", &genjet_signalId);
         tree_->Branch("genjet_recoIdx", &genjet_recoIdx);
       }
+      
+      if (is_enabled("fatjet_coll"))
+	{
+	  tree_->Branch("n_genfatjet", &n_genfatjet);
+	  tree_->Branch("genfatjet_E", &genfatjet_E);
+	  tree_->Branch("genfatjet_m", &genfatjet_m);
+	  tree_->Branch("genfatjet_pt", &genfatjet_pt);
+	  tree_->Branch("genfatjet_eta", &genfatjet_eta);
+	  tree_->Branch("genfatjet_phi", &genfatjet_phi);
+	  tree_->Branch("genfatjet_signalId", &genfatjet_signalId);
+	  tree_->Branch("genfatjet_recoIdx", &genfatjet_recoIdx);
+	  tree_->Branch("genfatjet_hadronFlav", &genfatjet_hadronFlav);
+	  tree_->Branch("genfatjet_partonFlav", &genfatjet_partonFlav);
+	  tree_->Branch("genfatjet_nsubjets", &genfatjet_nsubjets);
+	  tree_->Branch("genfatjet_subjet1_pt", &genfatjet_subjet1_pt);
+	  tree_->Branch("genfatjet_subjet1_m", &genfatjet_subjet1_m);
+	  tree_->Branch("genfatjet_subjet1_eta", &genfatjet_subjet1_eta);
+	  tree_->Branch("genfatjet_subjet1_phi", &genfatjet_subjet1_phi);
+	  tree_->Branch("genfatjet_subjet2_pt", &genfatjet_subjet2_pt);
+	  tree_->Branch("genfatjet_subjet2_m", &genfatjet_subjet2_m);
+	  tree_->Branch("genfatjet_subjet2_eta", &genfatjet_subjet2_eta);
+	  tree_->Branch("genfatjet_subjet2_phi", &genfatjet_subjet2_phi);
+	}
     }
 
   if (is_enabled("shape_brs"))
@@ -504,9 +671,6 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("sphericity_t",&sphericity_t);
       tree_->Branch("aplanarity",  &aplanarity);
     }
-
-	
-
   // note that the initialization of the user branches is made separately when calling declareUser*Branch
 }
 
@@ -534,7 +698,8 @@ void OutputTree::clear()
   n_jet = 0;
   n_genjet = 0;
   n_higgs = 0;
-
+  n_genfatjet = 0;
+  n_fatjet = 0;
   n_ele = 0;
   n_muon = 0;
   
@@ -552,10 +717,30 @@ void OutputTree::clear()
   genjet_signalId.clear();
   genjet_recoIdx.clear();
 
+  genfatjet_E.clear();
+  genfatjet_m.clear();
+  genfatjet_pt.clear();
+  genfatjet_eta.clear();
+  genfatjet_phi.clear();
+  genfatjet_signalId.clear();
+  genfatjet_recoIdx.clear();
+  genfatjet_partonFlav.clear();
+  genfatjet_hadronFlav.clear();
+  genfatjet_nsubjets.clear();
+  genfatjet_subjet1_pt.clear();
+  genfatjet_subjet1_m.clear();
+  genfatjet_subjet1_eta.clear();
+  genfatjet_subjet1_phi.clear();
+  genfatjet_subjet2_pt.clear();
+  genfatjet_subjet2_m.clear();
+  genfatjet_subjet2_eta.clear();
+  genfatjet_subjet2_phi.clear();
+  
   CLEAR_ele_list(ele);
   CLEAR_muon_list(muon);
   CLEAR_jet_list(jet);
-
+  CLEAR_fatjet_list(fatjet);
+  
   n_dijet = 0;
   dijet_m.clear();
   dijet_pt.clear();
@@ -566,6 +751,18 @@ void OutputTree::clear()
   dijet_signalId.clear();
   dijet_j1Idx.clear();
   dijet_j2Idx.clear();
+
+  // Start Gen 4b Objects
+  CLEAR_m_pt_eta_phi_p4(gen_H1_fc);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_fc);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b1_genfatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b2_genfatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b1_genfatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b2_genfatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b1_recofatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H1_b2_recofatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b1_recofatjet);
+  CLEAR_m_pt_eta_phi_p4(gen_H2_b2_recofatjet);
 
   CLEAR_m_pt_eta_phi_p4(gen_X_fc);
   CLEAR_m_pt_eta_phi_p4(gen_X);

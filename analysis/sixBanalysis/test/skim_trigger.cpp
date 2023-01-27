@@ -15,6 +15,7 @@ namespace po = boost::program_options;
 #include "CfgParser.h"
 #include "NanoAODTree.h"
 #include "EventInfo.h"
+#include "JetTools.h"
 
 #include "SkimUtils.h"
 namespace su = SkimUtils;
@@ -25,7 +26,35 @@ namespace su = SkimUtils;
 #include "TFile.h"
 #include "TROOT.h"
 #include "TH1F.h"
+#include "TH2D.h"
+
 using namespace std;
+
+std::vector<std::string> split_by_delimiter(std::string input, std::string delimiter)
+{
+  std::vector<std::string> tokens;
+  if(input == "")
+    return tokens;
+  size_t pos = 0;
+  while ((pos = input.find(delimiter)) != std::string::npos)
+    {
+      tokens.push_back(input.substr(0, pos));
+      input.erase(0, pos + delimiter.length());
+    }
+  tokens.push_back(input); // last part splitted
+  return tokens;
+}
+
+Variation string_to_jer_variation (std::string s)
+{
+  if (s == "nominal")
+    return Variation::NOMINAL;
+  if (s == "up")
+    return Variation::UP;
+  if (s == "down")
+    return Variation::DOWN;
+  throw std::runtime_error(string("Cannot parse the variation ") + s);
+}
 
 bool checkBit(int number, int bitpos)
 {
@@ -52,9 +81,7 @@ std::tuple<int,float,float> getClosestJetIndexToTriggerObject(float triggerObjec
   float minDeltaRjetPt = -1;
   for(const auto & theJet : theJetList)
     {
-      
       float tmpDeltaR = deltaPhi(theJet.P4().Phi(),triggerObjectPhi)*deltaPhi(theJet.P4().Phi(),triggerObjectPhi) + (theJet.P4().Eta()-triggerObjectEta)*(theJet.P4().Eta()-triggerObjectEta);
-      
       if( tmpDeltaR<minDeltaR)
 	{
 	  minDeltaR = tmpDeltaR;
@@ -70,14 +97,41 @@ std::tuple<int,float,float> getClosestJetIndexToTriggerObject(float triggerObjec
   return {closestJetIndex, minDeltaR, minDeltaRjetPt};
 }
 
+std::vector<std::vector<float> > getJetVetoMap(std::string filename, std::string histoname)
+{
+  TFile* f  = TFile::Open(filename.c_str());
+  if (!f->IsOpen())
+    {
+      std::cout << "Veto map file not open!"<<std::endl;
+    }
+  TH2D* h2D = (TH2D*) f->Get(histoname.c_str());
+  std::vector<std::vector<float> > map(4);
+  for (int i=1; i < h2D->GetNbinsX()+1; ++i)
+    {
+      for (int j=1; j < h2D->GetNbinsY()+1; ++j)
+	{
+	  if (h2D->GetBinContent(i, j) > 0.0)
+	    {
+	      map[0].push_back(h2D->GetXaxis()->GetBinLowEdge(i)); 
+	      map[1].push_back(h2D->GetXaxis()->GetBinLowEdge(i) + h2D->GetXaxis()->GetBinWidth(i));
+	      map[2].push_back(h2D->GetYaxis()->GetBinLowEdge(j));
+	      map[3].push_back(h2D->GetYaxis()->GetBinLowEdge(j) + h2D->GetYaxis()->GetBinWidth(j));
+	    }
+	}
+    }
+  f->Close();
+  return map;
+}
+
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// MAIN
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 int main(int argc, char** argv)
 {
-  cout << "[INFO] ... starting program" << endl;
+  std::cout << "\n\033[1;33m skim_trigger: \033[0m"<<std::endl;
   
-  ////////////////////////////////////////////////////////////////////////
-  // Decalre command line options
-  ////////////////////////////////////////////////////////////////////////
-  
+  // Declare command line options
   po::options_description desc("Skim options");
   desc.add_options()
     ("help", "produce help message")
@@ -88,6 +142,10 @@ int main(int argc, char** argv)
     // optional
     ("maxEvts"  , po::value<int>()->default_value(-1), "max number of events to process")
     ("puWeight" , po::value<string>()->default_value(""), "PU weight file name")
+    ("seed"      , po::value<int>()->default_value(12345), "seed to be used in systematic uncertainties such as JEC, JER, etc")
+    ("jes-shift-syst",  po::value<string>()->default_value("nominal"), "Name of the JES (scale) source uncertainty to be shifted. Usage as <name>:<up/down>. Pass -nominal- to not shift the jets")
+    ("jer-shift-syst",  po::value<string>()->default_value("nominal"), "Name of the JER (resolution) source uncertainty to be shifted. Usage as <up/down>. Pass -nominal- to not shift the jets")
+    ("bjer-shift-syst",po::value<string>()->default_value("nominal"),"Name of the b regressed JER (resolution) source uncertainty to be shifted. Usage as <up/down>. Pass -nominal- to not shift the jets")
     // flags
     ("is-data",    po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false), "mark as a data sample (default is false)")
     ("match",      po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false), "match with four highest b-Jets")
@@ -112,16 +170,26 @@ int main(int argc, char** argv)
   ////////////////////////////////////////////////////////////////////////
   // Read config and other cmd line options for skims
   ////////////////////////////////////////////////////////////////////////
-  
-  const bool is_data = opts["is-data"].as<bool>();
-  cout << "[INFO] ... is a data sample? " << std::boolalpha << is_data << std::noboolalpha << endl;
-  
-  const bool matchWithFourHighestBjets =  opts["match"].as<bool>();
-  const bool isSignal =  opts["is-signal"].as<bool>();
-  
   CfgParser config;
   if (!config.init(opts["cfg"].as<string>())) return 1;
-  cout << "[INFO] ... using config file " << opts["cfg"].as<string>() << endl;
+  std::cout << "\n\033[1;34m Config          : \033[0m" << opts["cfg"].as<string>() <<std::endl;
+  
+  const string year  = config.readStringOpt("parameters::year");
+  const bool is_data   = opts["is-data"].as<bool>();
+  const bool is_signal = opts["is-signal"].as<bool>();
+  
+  std::cout << "\033[1;34m Year            : \033[0m"<< year <<std::endl;
+  std::cout << "\033[1;34m Sample type     : \033[0m";
+  if (is_data) std::cout<<"Data"<<std::endl;
+  else
+    {
+      std::cout << "Simulated";
+      if (is_signal) std::cout<<" signal"<<std::endl;
+      else std::cout<<" background"<<std::endl;
+    }
+  
+  const bool matchWithFourHighestBjets =  opts["match"].as<bool>();
+  
   
   ////////////////////////////////////////////////////////////////////////
   // Prepare event loop
@@ -136,14 +204,13 @@ int main(int argc, char** argv)
   // Joining all the NANOAD input file in a TChain in order to be used like an unique three
   TChain ch("Events");
   int nfiles = su::appendFromFileList(&ch, opts["input"].as<string>());
-  
   if (nfiles == 0){
     cerr << "** [ERROR] The input file list contains no files, aborting" << endl;
     return 1;
   }
   cout << "[INFO] ... file list contains " << nfiles << " files" << endl;
-  
   cout << "[INFO] ... creating tree reader" << endl;
+  
   
   // The TChain is passed to the NanoAODTree_SetBranchImpl to parse all the brances
   NanoAODTree nat (&ch);
@@ -163,9 +230,29 @@ int main(int argc, char** argv)
     }
   
   jsonLumiFilter jlf;
-  if (is_data)
-    jlf.loadJSON(config.readStringOpt("data::lumimask")); // just read the info for data, so if I just skim MC I'm not forced to parse a JSON
+  if (is_data) jlf.loadJSON(config.readStringOpt("data::lumimask")); // just read the info for data, so if I just skim MC I'm not forced to parse a JSON
   
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // Jet veto maps
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  std::string jetVetoMapEraE  = config.readStringOpt("parameters::JetVetoMapsEraE");
+  std::string jetVetoMapEraCD = config.readStringOpt("parameters::JetVetoMapsEraCD");
+  
+  std::cout << "\033[1;34m Jet-veto map for Era E : \033[0m" << jetVetoMapEraE << std::endl;
+  std::cout << "\033[1;34m Jet-veto map for Era CD: \033[0m" << jetVetoMapEraCD << std::endl;
+  std::vector<std::vector<float> > vetoMap_EraE(4);
+  std::vector<std::vector<float> > vetoMap_EraCD(4);
+  std::vector<std::vector<float> > vetoMapEEP_EraE(4);
+  std::vector<std::vector<float> > vetoMapEEP_EraCD(4);
+  
+  vetoMap_EraE  = getJetVetoMap(jetVetoMapEraE, "jetvetomap");
+  vetoMap_EraCD = getJetVetoMap(jetVetoMapEraCD, "jetvetomap");
+  vetoMapEEP_EraE  = getJetVetoMap(jetVetoMapEraE, "jetvetomap_eep");
+  vetoMapEEP_EraCD = getJetVetoMap(jetVetoMapEraCD, "jetvetomap_eep");
+  
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // PU
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   std::string pufName = config.readStringOpt("parameters::PUweightFile");
   std::cout << "pufName = "<<pufName<<std::endl;
   
@@ -176,14 +263,11 @@ int main(int argc, char** argv)
   std::string pu_weight_file;
   pu_weight_file = opts["puWeight"].as<string>();
   
-  
-  
-  ////////////////////////////////////////////////////////////////////////
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // Prepare the output
-  ////////////////////////////////////////////////////////////////////////
-  
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
   string outputFileName = opts["output"].as<string>();
-  cout << "[INFO] ... saving output to file : " << outputFileName << endl;
+  std::cout << "\033[1;34m Output file is  : \033[0m" << outputFileName << "\n"<<std::endl;
   TFile outputFile(outputFileName.c_str(), "recreate");
   
   // TTree with a custom format
@@ -224,7 +308,6 @@ int main(int argc, char** argv)
   tOut->Branch("event",            &event_);
   
   tOut->Branch("btag_SF",           &btag_SF_);
-  
   tOut->Branch("weight",            &weight_);
   
   tOut->Branch("highestIsoElecton_pt"    , &highestIsoElecton_pt_ );
@@ -245,7 +328,7 @@ int main(int argc, char** argv)
   tOut->Branch("jetFirstHighestDeepFlavB_pt" , &jetFirstHighestDeepFlavB_pt_ );
   tOut->Branch("jetFirstHighestDeepFlavB_eta" , &jetFirstHighestDeepFlavB_eta_ );
   tOut->Branch("jetFirstHighestDeepFlavB_hadronFlavour" , &jetFirstHighestDeepFlavB_hadronFlavour_ );
-    
+  
   //enable trigger filters
   std::map<std::pair<int,int>, std::string > triggerObjectsForStudies        ; // <<objectId, FilterId> , filterName>
   std::map<std::pair<int,int>, float >       HTFilterHt                      ; // <<objectId, FilterId> , HTthreshold>
@@ -340,6 +423,51 @@ int main(int argc, char** argv)
 	}
     }
   
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // JetTools
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  JetTools jt;
+  string jes_shift = opts["jes-shift-syst"].as<string>();
+  bool do_jes_shift = (jes_shift != "nominal");
+  std::cout << "[INFO] ... shifting jet energy scale? " << std::boolalpha << do_jes_shift << std::noboolalpha << std::endl;
+  bool dir_jes_shift_is_up;
+  if (do_jes_shift && !is_data)
+    {
+      string JECFileName = config.readStringOpt("parameters::JECFileName");
+      auto tokens = split_by_delimiter(opts["jes-shift-syst"].as<string>(), ":");
+      if (tokens.size() != 2)
+	throw std::runtime_error(string("Cannot parse the jes shift name : ") + opts["jes-shift-syst"].as<string>());
+      string jes_syst_name = tokens.at(0);
+      dir_jes_shift_is_up   = (tokens.at(1) == "up"   ? true  :
+			       tokens.at(1) == "down" ? false :
+			       throw std::runtime_error(string("Could not parse jes direction ") + tokens.at(1)));
+      cout << "       ... jec file name           : " << JECFileName << endl;
+      cout << "       ... jet energy scale syst   : " << jes_syst_name << endl;
+      cout << "       ... jet energy scale is up? : " << std::boolalpha << dir_jes_shift_is_up << std::noboolalpha << endl;
+      jt.init_jec_shift(JECFileName, jes_syst_name);
+    }
+  
+  string JERScaleFactorFile = config.readStringOpt("parameters::JERScaleFactorFile");
+  string JERResolutionFile  = config.readStringOpt("parameters::JERResolutionFile");
+  const int rndm_seed = opts["seed"].as<int>();
+  cout << "[INFO] ... initialising JER corrector with the following parameters" << endl;
+  cout << "       ... SF file         : " << JERScaleFactorFile << endl;
+  cout << "       ... resolution file : " << JERResolutionFile << endl;
+  cout << "       ... rndm seed       : " << rndm_seed << endl;
+  jt.init_smear(JERScaleFactorFile, JERResolutionFile, rndm_seed);
+  
+  std::cout << "[INFO] ... jet resolution syst is    : " << opts["jer-shift-syst"].as<string>() << std::endl;
+  const Variation jer_var  = string_to_jer_variation(opts["jer-shift-syst"].as<string>());
+  const Variation bjer_var = string_to_jer_variation(opts["bjer-shift-syst"].as<string>());
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+
+
+
+
+
+
+
   ////////////////////////////////////////////////////////////////////////
   // Execute event loop
   ////////////////////////////////////////////////////////////////////////
@@ -368,24 +496,49 @@ int main(int argc, char** argv)
       event_           = *(nat.event);
       
       float w_PU = 1.0;
-      if (!is_data)
+      if (year != "2022")
 	{
-	  w_PU = computePUweight(histo_pileup, *(nat.Pileup_nTrueInt));
+	  if (!is_data)
+	    {
+	      w_PU = computePUweight(histo_pileup, *(nat.Pileup_nTrueInt));
+	    }
 	}
       
       float genWeight = (is_data ? 1 : *(nat.genWeight));
       weight_ = w_PU * genWeight;
       // std::cout << w_PU << " " << genWeight << " " << weight_ << std::endl;
       
-      // check the trigger
-      if(!isSignal) if( !nat.getTrgOr() ) continue;
+      //====================================
+      // Apply MET Filters
+      //====================================
+      bool bMETFilters = *nat.Flag_goodVertices && *nat.Flag_globalSuperTightHalo2016Filter && *nat.Flag_HBHENoiseFilter && *nat.Flag_HBHENoiseIsoFilter && *nat.Flag_EcalDeadCellTriggerPrimitiveFilter && *nat.Flag_BadPFMuonFilter && *nat.Flag_eeBadScFilter && (*nat.Flag_ecalBadCalibFilter || (year == "2016"));
+      bool applyMETFilters = config.readBoolOpt("configurations::applyMETFilters");
+      if (applyMETFilters)
+	{
+	  if (!bMETFilters) continue;
+	}
+      //====================================
+      // Apply trigger
+      //====================================
+      if(!is_signal) if( !nat.getTrgOr() ) continue;
       
-      //Check if there is and iso muon with Pt>30 GeV
+      //====================================
+      // Muon Selection
+      //====================================
       int numberOfIsoMuon01 = 0;
       int numberOfIsoMuon03 = 0;
       int isoMuonJetId      = -1;
       electronTimesMuoncharge_ = 1;
-      float muonPtCut = 29; // 26 GeV for 2018, 29 GeV for 2017
+      float muonPtCut;
+      if (year == "2016" or year == "2018" or year == "2022")
+	{
+	  muonPtCut = 26;
+	}
+      else if (year == "2017")
+	{
+	  muonPtCut = 29;
+	}
+      
       for (uint candIt = 0; candIt < *(nat.nMuon); ++candIt)
         {
 	  Muon theMuon (candIt, &nat);
@@ -403,23 +556,101 @@ int main(int argc, char** argv)
             }
 	  
         }
-      if(!isSignal) if(numberOfIsoMuon01!=1 || numberOfIsoMuon03>1) continue;
+      if(!is_signal) if(numberOfIsoMuon01!=1 || numberOfIsoMuon03>1) continue;
       
-      // find the four most b tagged jets and save them in the output
-      
+      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      // Jets
+      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       std::vector<Jet> all_jets;
-      all_jets.reserve(*(nat.nJet));
-      caloJetSum_ = 0.;
+      for (unsigned int j=0; j<*(nat.nJet); ++j)
+	{
+	  Jet jet(j, &nat);
+	  all_jets.push_back(jet);
+	}
+      
+      std::vector<Jet> nonvetoed_jets;
+      if (!is_data)
+	{
+	  // Apply JEC scale shift to jets
+	  if (do_jes_shift)
+	    {
+	      nonvetoed_jets = jt.jec_shift_jets(nat, all_jets, dir_jes_shift_is_up);
+	    }
+	  // Apply JER smearing to jets
+	  nonvetoed_jets = jt.smear_jets(nat, all_jets, jer_var, bjer_var);
+	}
+      else
+	{
+	  // Apply jet veto maps
+	  if (year == "2022")
+	    {
+	      bool vetoEvent = false;
+	      unsigned int FirstRun_2022C = 355794;
+	      unsigned int LastRun_2022D  = 359021;
+	      unsigned int FirstRun_2022E = 359022;
+	      for (unsigned int j=0; j<all_jets.size(); ++j)
+		{
+		  Jet jet = all_jets.at(j);
+		  bool vetoJet = false;
+		  
+		  float pt = jet.P4().Pt();
+		  float eta = jet.P4().Eta();
+		  float phi = jet.P4().Phi();
+		  if (run_ >= FirstRun_2022C && run_ <= LastRun_2022D)
+		    {
+		      for (int k=0; k<vetoMap_EraCD[0].size(); ++k)
+			{
+			  if ((eta >= vetoMap_EraCD[0][k]) && (eta <= vetoMap_EraCD[1][k]) && (phi >= vetoMap_EraCD[2][k]) && (phi <= vetoMap_EraCD[3][k])) vetoJet = true;
+			}
+		      if (pt > 30)
+			{
+			  for (int k=0; k<vetoMapEEP_EraCD[0].size(); ++k)
+			    {
+			      if ((eta >= vetoMapEEP_EraCD[0][k]) && (eta <= vetoMapEEP_EraCD[1][k]) && (phi >= vetoMapEEP_EraCD[2][k]) && (phi <= vetoMapEEP_EraCD[3][k])) vetoEvent = true;
+			    }
+			}
+		    } // Run is C-D
+		  else if (run_ >= FirstRun_2022E)
+		    {
+		      for (int k=0; k<vetoMap_EraE[0].size(); ++k)
+			{
+			  if ((eta >= vetoMap_EraE[0][k]) && (eta <= vetoMap_EraE[1][k]) && (phi >= vetoMap_EraE[2][k]) && (phi <= vetoMap_EraE[3][k])) vetoJet = true;
+			}
+		      if (pt > 30.0)
+			{
+			  for (int k=0; k<vetoMapEEP_EraE[0].size(); ++k)
+			    {
+			      if ((eta >= vetoMapEEP_EraE[0][k]) && (eta <= vetoMapEEP_EraE[1][k]) && (phi >= vetoMapEEP_EraE[2][k]) && (phi <= vetoMapEEP_EraE[3][k])) vetoEvent = true;
+			    }
+			}
+		    } // Run is E
+		  
+		  if (vetoJet) continue;
+		  nonvetoed_jets.push_back(jet);
+		}// Loop over jets
+	      
+	      if (vetoEvent) continue;
+	    } // Year is 2022
+	} // is-data
+      
+      // Skip event if there are no jets at all
+      if (nonvetoed_jets.size() == 0) continue;
+      
+      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      // Initialize variables
+      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      caloJetSum_         = 0.;
+      pfJetSum_           = 0.;
+      onlyJetSum_         = 0.;
+      
       numberOfJetsCaloHT_ = 0;
-      pfJetSum_ = 0.;
-      numberOfJetsPfHT_ = 0;
-      onlyJetSum_ = 0.;
+      numberOfJetsPfHT_   = 0;
       numberOfJetsOnlyHT_ = 0;
       
-      for (uint ij = 0; ij < *(nat.nJet); ++ij)
-        {
-	  // here preselect jets
-	  Jet jet (ij, &nat);
+      std::vector<Jet> jets;
+      for (unsigned int ij=0; ij<nonvetoed_jets.size(); ij++)
+	{
+	  Jet jet = nonvetoed_jets.at(ij);
 	  
 	  if (jet.P4().Pt() >= 30. && std::abs(jet.P4().Eta()) < 2.5) 
             {
@@ -479,13 +710,17 @@ int main(int argc, char** argv)
 	    continue;
 	  
 	  if(jet.get_btag() < 0.) continue; 
-	  if (!checkBit(get_property( jet,Jet_puId), 1) && jet.P4().Pt() <= 50) // medium PU Id - NOTE : not to be applied beyond 50 GeV: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-	    continue;
 	  
-	  all_jets.emplace_back(jet);
+	  if (year != "2022")
+	    {
+	      if (!checkBit(get_property( jet,Jet_puId), 1) && jet.P4().Pt() <= 50) // medium PU Id - NOTE : not to be applied beyond 50 GeV: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+		continue;
+	    }
+	  
+	  jets.emplace_back(jet);
         }
       
-      if (all_jets.size() < 4) // I don't have 4 preselected jets
+      if (jets.size() < 4) // I don't have 4 preselected jets
 	continue;
       
       highestIsoElecton_pt_ = -999.;
@@ -501,47 +736,47 @@ int main(int argc, char** argv)
       
       if(matchWithFourHighestBjets)
         {
-	  stable_sort(all_jets.begin(), all_jets.end(), [](const Jet & a, const Jet & b) -> bool
+	  stable_sort(jets.begin(), jets.end(), [](const Jet & a, const Jet & b) -> bool
 		      {
 			return ( a.get_btag() > b.get_btag() );
 		      });
-	  all_jets.erase(all_jets.begin()+4, all_jets.end());
+	  jets.erase(jets.begin()+4, jets.end());
         }
       
-      stable_sort(all_jets.begin(), all_jets.end(), [](const Jet & a, const Jet & b) -> bool
+      stable_sort(jets.begin(), jets.end(), [](const Jet & a, const Jet & b) -> bool
 		  {
 		    return ( a.P4().Pt() > b.P4().Pt() );
 		  });
       
-      jetFirstHighestPt_pt_  = all_jets.at(0).P4().Pt();
-      jetSecondHighestPt_pt_ = all_jets.at(1).P4().Pt();
-      jetThirdHighestPt_pt_  = all_jets.at(2).P4().Pt();
-      jetForthHighestPt_pt_  = all_jets.at(3).P4().Pt();
+      jetFirstHighestPt_pt_  = jets.at(0).P4().Pt();
+      jetSecondHighestPt_pt_ = jets.at(1).P4().Pt();
+      jetThirdHighestPt_pt_  = jets.at(2).P4().Pt();
+      jetForthHighestPt_pt_  = jets.at(3).P4().Pt();
       fourHighestJetPt_sum_  = jetFirstHighestPt_pt_ + jetSecondHighestPt_pt_ + jetThirdHighestPt_pt_ + jetForthHighestPt_pt_;
       
       // NOTE that this sorts from small to large, with A < B implemented as btagA > btagB, so the first element in the vector has the largest btag score
-      stable_sort(all_jets.begin(), all_jets.end(), [](const Jet & a, const Jet & b) -> bool
+      stable_sort(jets.begin(), jets.end(), [](const Jet & a, const Jet & b) -> bool
 		  {
 		    return ( a.get_btag() > b.get_btag() );
 		  });
       
-      jetFirstHighestDeepFlavB_deepFlavB_ = all_jets.at(0).get_btag();
-      if(!is_data) jetFirstHighestDeepFlavB_hadronFlavour_ = get_property(all_jets.at(0),Jet_hadronFlavour);
+      jetFirstHighestDeepFlavB_deepFlavB_ = jets.at(0).get_btag();
+      if(!is_data) jetFirstHighestDeepFlavB_hadronFlavour_ = get_property(jets.at(0),Jet_hadronFlavour);
       else jetFirstHighestDeepFlavB_hadronFlavour_ = -999;
-      jetFirstHighestDeepFlavB_pt_ = all_jets.at(0).P4().Pt();
-      jetFirstHighestDeepFlavB_eta_ = all_jets.at(0).P4().Eta();
-      int highestDeepFlavBjetID = all_jets.at(0).getIdx();
+      jetFirstHighestDeepFlavB_pt_ = jets.at(0).P4().Pt();
+      jetFirstHighestDeepFlavB_eta_ = jets.at(0).P4().Eta();
+      int highestDeepFlavBjetID = jets.at(0).getIdx();
       
       // reorder by jet pt
-      stable_sort(all_jets.begin(), all_jets.end(), [](const Jet & a, const Jet & b) -> bool
+      stable_sort(jets.begin(), jets.end(), [](const Jet & a, const Jet & b) -> bool
 		  {
 		    return ( a.P4().Pt() > b.P4().Pt() );
 		  });
       
       int highestDeepFlavBjetPosition = -1;
-      for(uint pos=0; pos<all_jets.size(); ++pos)
+      for(uint pos=0; pos<jets.size(); ++pos)
         {
-	  if(all_jets.at(pos).getIdx() == highestDeepFlavBjetID)
+	  if(jets.at(pos).getIdx() == highestDeepFlavBjetID)
             {
 	      highestDeepFlavBjetPosition = pos;
             }
@@ -566,7 +801,7 @@ int main(int argc, char** argv)
 	  for(auto& jetAndFilterDeltaPt : triggerObjectPerJetDeltaPt) for(auto& filterDeltaPt : jetAndFilterDeltaPt) filterDeltaPt.second = -999.;
 	  
 	  int jetCounter=0;
-	  for(const auto & jet : all_jets)
+	  for(const auto & jet : jets)
             {
 	      selectedJetPtEtaPhiVector.at(jetCounter) = {jet.P4().Pt(), jet.P4().Eta(), jet.P4().Phi()};
 	      jetCounter++;
@@ -587,7 +822,7 @@ int main(int argc, char** argv)
                 {
 		  if(matchWithFourHighestBjets)
                     {
-		      auto jetIdAndMinDeltaRandPt = getClosestJetIndexToTriggerObject(nat.TrigObj_eta.At(trigObjIt), nat.TrigObj_phi.At(trigObjIt), all_jets, 0.5);
+		      auto jetIdAndMinDeltaRandPt = getClosestJetIndexToTriggerObject(nat.TrigObj_eta.At(trigObjIt), nat.TrigObj_phi.At(trigObjIt), jets, 0.5);
 		      int bestMatchingIndex = std::get<0>( jetIdAndMinDeltaRandPt );
 		      if(bestMatchingIndex>=0)
                         {
@@ -645,13 +880,13 @@ int main(int argc, char** argv)
       if (!is_data)
 	{
 	  std::vector<Jet> preselected_jets = {
-	    all_jets.at(0),
-	    all_jets.at(1),
-	    all_jets.at(2),
-	    all_jets.at(3)
+	    jets.at(0),
+	    jets.at(1),
+	    jets.at(2),
+	    jets.at(3)
 	  };
 	}
-      btag_SF_            = 1.0;
+      btag_SF_ = 1.0;
       tOut->Fill();
     }
   

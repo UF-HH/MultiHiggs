@@ -3,13 +3,13 @@
 exe=bin/skim_trigger.exe
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# 2017
+# 2022
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-cfg="config/skim_trigger_2017_106X_NanoAODv9.cfg"
+cfg="config/skim_trigger_2022_NanoAODv10.cfg"
 
-# Run 2017 Data
-output="SingleMuonB_2017_TrgStudies.root"
-input="input/Run2_UL/RunIISummer20UL17NanoAODv9/SingleMuon_Run2017B.txt"
+# Run 2022 Data
+output="Run3_SingleMuonD_2022_TrgStudies.root"
+input="input/Run3/Muon_Run2022D_v1-v1.txt"
 make exe -j && \
     $exe \
     --input $input \
@@ -19,6 +19,36 @@ make exe -j && \
     --match \
     --maxEvts 200000 \
     $@
+
+# Run 2022 TT
+#output="Run3_TT_TrgStudies.root"
+#input="input/Run3/TT_TuneCP5_13p6TeV_powheg-pythia8.txt"
+#make exe -j && \
+#    $exe \
+#    --input $input \
+#    --cfg  $cfg \
+#    --output $output \
+#    --match \
+#    --maxEvts 20000 \
+#    $@
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# 2017
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#cfg="config/skim_trigger_2017_106X_NanoAODv9.cfg"
+
+# Run 2017 Data
+#output="SingleMuonB_2017_TrgStudies.root"
+#input="input/Run2_UL/RunIISummer20UL17NanoAODv9/SingleMuon_Run2017B.txt"
+#make exe -j && \
+#    $exe \
+#    --input $input \
+#    --cfg  $cfg \
+#    --output $output \
+#    --is-data \
+#    --match \
+#    --maxEvts 200000 \
+#    $@
 
 # Run 2017 TTTo2L2Nu
 #output="TTTo2L2Nu_2017_TrgStudies.root"
