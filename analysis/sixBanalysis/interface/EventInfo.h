@@ -14,10 +14,14 @@
 
 #include "CompositeCandidate.h"
 #include "Jet.h"
+#include "FatJet.h"
+#include "SubJet.h"
 #include "Muon.h"
 #include "Electron.h"
 #include "GenPart.h"
 #include "GenJet.h"
+#include "GenJetAK8.h"
+#include "SubGenJetAK8.h"
 #include "DiJet.h"
 #include "EventShapeCalculator.h"
 
@@ -37,13 +41,25 @@ struct EventInfo{
   boost::optional<int>    n_jet;
   boost::optional<int>    n_genjet;
   boost::optional<int>    n_higgs;
-
+  boost::optional<int>    n_genfatjet;
+  boost::optional<int>    n_fatjet;
   boost::optional<int>    n_ele;
   boost::optional<int>    n_muon;
   
   boost::optional<float>  b_6j_score;
   boost::optional<float>  b_3d_score;
 
+  boost::optional<GenPart>  gen_H1_fc;
+  boost::optional<GenPart>  gen_H2_fc;
+  boost::optional<GenJetAK8> gen_H1_b1_genfatjet;
+  boost::optional<GenJetAK8> gen_H1_b2_genfatjet;
+  boost::optional<GenJetAK8> gen_H2_b1_genfatjet;
+  boost::optional<GenJetAK8> gen_H2_b2_genfatjet;
+  boost::optional<FatJet> gen_H1_b1_recofatjet;
+  boost::optional<FatJet> gen_H1_b2_recofatjet;
+  boost::optional<FatJet> gen_H2_b1_recofatjet;
+  boost::optional<FatJet> gen_H2_b2_recofatjet;
+  
   boost::optional<GenPart>  gen_X_fc; // first copy at LHE
   boost::optional<GenPart>  gen_X;
 
@@ -192,6 +208,8 @@ struct EventInfo{
   boost::optional< std::vector<Muon> > muon_list;
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
+  boost::optional< std::vector<GenJetAK8> > genfatjet_list;
+  boost::optional< std::vector<FatJet> > fatjet_list;
   boost::optional<std::vector<DiJet>> dijet_list;
 
   boost::optional<EventShapes> event_shapes;

@@ -2,16 +2,13 @@
 # Script to submit CONDOR jobs to get the TT dilepton sample for the trigger studies
 #
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# 2017 Samples for trigger studies
+# 2022 Samples for trigger studies
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-DATA_files=$(ls input/Run2_UL/RunIISummer20UL17NanoAODv9/SingleMuon*)
-TT_files=$(ls input/Run2_UL/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV*)
+DATA_files=$(ls input/Run3/*)
+ODIR="/store/user/mkolosov/MultiHiggs/DiHiggs/2022/TriggerEfficiency/"
+CFG="config/skim_trigger_2022_NanoAODv10.cfg"
 
-ODIR="/store/user/mkolosov/HHHTo6B/TriggerStudies/"
-CFG="config/skim_trigger_2017_106X_NanoAODv9.cfg"
-
-# Submit Trigger skimming with matching
-TAG="Summer2017UL_TRGcurves_wTrgMatching_15Dec2022"
+TAG="Run3_2022_TriggerEfficiency_27Jan2023"
 
 make exe -j || exit -1
 echo "... tag       : ", $TAG
@@ -20,9 +17,29 @@ echo "... saving to : ", $ODIR
 for input in ${DATA_files[@]}; do
     python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
 done
-for input in ${TT_files[@]}; do
-    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match
-done
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# 2017 Samples for trigger studies
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#DATA_files=$(ls input/Run2_UL/RunIISummer20UL17NanoAODv9/SingleMuon*)
+#TT_files=$(ls input/Run2_UL/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV*)
+
+#ODIR="/store/user/mkolosov/HHHTo6B/TriggerStudies/"
+#CFG="config/skim_trigger_2017_106X_NanoAODv9.cfg"
+
+# Submit Trigger skimming with matching
+#TAG="Summer2017UL_TRGcurves_wTrgMatching_15Dec2022"
+
+#make exe -j || exit -1
+#echo "... tag       : ", $TAG
+#echo "... saving to : ", $ODIR
+
+#for input in ${DATA_files[@]}; do
+#    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
+#done
+#for input in ${TT_files[@]}; do
+#    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match
+#done
 
 # Submit Trigger skimming without matching
 #TAG="Summer2017UL_TRGcurves_woTrgMatching_28Nov2022"

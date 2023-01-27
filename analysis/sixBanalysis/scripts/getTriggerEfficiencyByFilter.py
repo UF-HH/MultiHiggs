@@ -4,7 +4,7 @@
 
 ./getTriggerEfficiencyByFilter.py --year 2017 -d Summer2017UL_TRGcurves_wTrgMatching_15Dec2022
 ./getTriggerEfficiencyByFilter.py --year 2018 -d Summer2018UL_TRGcurves_wTrgMatching_14Dec2022_4bCode
-
+./getTriggerEfficiencyByFilter.py --year 2022 -d Run3_SingleMuon2022C_TriggerStudies_04Jan2023
 '''
 #===================================
 # Import modules
@@ -725,8 +725,12 @@ def GetEfficiencies18(f, sampleName):
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 def main(args):
     
-    fData   = ROOT.TFile.Open(args.dirName+"/SingleMuon/ntuple.root")
-    fTTbar  = ROOT.TFile.Open(args.dirName+"/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/ntuple.root") 
+    if args.year == "2022":
+        fData = ROOT.TFile.Open(args.dirName+"/SingleMuon_Run2022C_v1/ntuple.root")
+        fTTbar = None
+    else:
+        fData   = ROOT.TFile.Open(args.dirName+"/SingleMuon/ntuple.root")
+        fTTbar  = ROOT.TFile.Open(args.dirName+"/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/ntuple.root") 
     
     hDataList = []
     hTTList   = []
@@ -742,7 +746,9 @@ def main(args):
         hTTList     = GetEfficiencies17(fTTbar, "TTbar")
     elif args.year == "2016":
         print("No development for 2016 yet")
-    
+    elif args.year == "2022":
+        hDataList = GetEfficiencies18(fData, "SingleMuon")
+        
     # Save into the output file
     fOutput = ROOT.TFile.Open(args.output, "RECREATE")
     for h in hDataList+hTTList+hSignalList:
