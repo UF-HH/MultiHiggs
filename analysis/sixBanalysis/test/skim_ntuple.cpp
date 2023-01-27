@@ -858,14 +858,11 @@ int main(int argc, char** argv)
     if (is_signal)
       {
 	skf->select_gen_particles(nat, ei);        // find gen level X, Y, H, b
-	
-	std::cout << "\n Match b-quarks to gen-jets"<<std::endl;
 	skf->match_genbs_to_genjets(nat, ei);      // match the b quarks found above to the genjets
 	skf->match_genbs_genjets_to_reco(nat, ei); // match the genjets found above to the reco jets
 	
 	if (saveFatJets)
 	  {
-	    std::cout << "\n Match b-quarks to gen fatjets"<<std::endl;
 	    skf->match_genbs_to_genfatjets(nat, ei); // match the b quarks found above to the gen fatjets
 	    skf->match_genbs_genfatjets_to_reco(nat, ei); // match the gen fatjets found above to the reco fatjets
 	  }
@@ -1005,7 +1002,8 @@ int main(int argc, char** argv)
       }
     else if (skim_type == kfourb)
       {
-	std::cout << ""<<std::endl;      
+	// Marina
+	std::cout<<""<<std::endl;
       }
     else if (skim_type == ksixb)
       {
