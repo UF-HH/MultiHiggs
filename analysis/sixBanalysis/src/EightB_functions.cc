@@ -80,10 +80,10 @@ void EightB_functions::initialize_functions(TFile& outputFile)
 bool EightB_functions::is_blinded(NanoAODTree& nat, EventInfo& ei, bool is_data) 
 {
   bool blind = true;
-  if (ei.n_medium_btag)
-    blind = blind & ei.n_medium_btag.get() >= pmap.get_param<int>("blind","n_medium_btag");
-  if (ei.quadh_score)
-    blind = blind & ei.quadh_score.get() >= pmap.get_param<double>("blind","quadh_score");
+  //  if (ei.n_medium_btag)
+  //  blind = blind & ei.n_medium_btag.get() >= pmap.get_param<int>("blind","n_medium_btag");
+  //  if (ei.quadh_score)
+  //  blind = blind & ei.quadh_score.get() >= pmap.get_param<double>("blind","quadh_score");
   return blind;
 }
 
