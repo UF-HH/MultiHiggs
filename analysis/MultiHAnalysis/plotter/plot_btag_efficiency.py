@@ -140,6 +140,41 @@ def plot_wp_efficiency(tfile, wp, variable, output='.', analysis=None, year=None
 
   canvas.Draw()
   canvas.SaveAs(f'{output}/{wp}_btageff_{variable}.png')
+
+def plot_wp_efficiency_2d(tfile, wp, variable, output='.', analysis=None, year=None, **kwargs):
+  hf5 = format_hf(
+    tfile.Get(f"eff/{wp}_hf5_{variable}"),
+    color=ROOT.kBlue,
+    name='b #rightarrow b',
+  )
+
+  hf4 = format_hf(
+    tfile.Get(f"eff/{wp}_hf4_{variable}"),
+    color=ROOT.kRed,
+    name='c #rightarrow b',
+  )
+
+  hf0 = format_hf(
+    tfile.Get(f"eff/{wp}_hf0_{variable}"),
+    color=ROOT.kGreen+2,
+    name='guds #rightarrow b',
+  )
+
+  hfMap = {
+    0:'hf0', 1:'hf4', 2:'hf5'
+  }
+  for i, hf in enumerate((hf0, hf4, hf5)):
+
+    canvas = ROOT.TCanvas("", "", 800, 700)
+    canvas.SetLeftMargin(0.15)
+    hf.SetTitle(f"DeepJet - {wp.capitalize()} | " + hf.GetName())
+    hf.Draw("COLZ")
+    canvas.Update()
+    axis = hf.GetPaintedHistogram()
+    axis.GetZaxis().SetRangeUser(0.,1.0)
+
+    canvas.Draw()
+    canvas.SaveAs(f'{output}/{wp}_{hfMap[i]}_btageff_{variable}.png')
   
 
 def plot_all_efficiency(input, output, **kwargs):
@@ -149,6 +184,7 @@ def plot_all_efficiency(input, output, **kwargs):
   tfile = ROOT.TFile.Open(input, 'read')
 
   for wp in ('loose','medium','tight'):
+    plot_wp_efficiency_2d(tfile, wp, 'jet_pt_eta', output, **kwargs)
     for variable in ('jet_pt','jet_eta'):
       plot_wp_efficiency(tfile, wp, variable, output, **kwargs)
 
