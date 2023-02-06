@@ -144,6 +144,11 @@ struct Efficiency {
   }
 };
 
+/**
+ * @brief  Class for reading TFiles produced by the skim_ntuple.cpp script
+ * 
+ * 
+ */
 struct SkimFile {
   string name;
   string filepath;
@@ -172,6 +177,12 @@ struct SkimFile {
     norm = xsec / total_events;
   }
 
+  /**
+   * @brief Loop through events in TTrees and fill histograms for efficiency measurements
+   * 
+   * @param btag_wps vector of DeepJet btag working points to use for efficiency
+   * @param histos map of histograms to fill for each working point and hadron flavor
+   */
   void process(const std::vector<float> btag_wps, std::map<string, Histos>& histos) {
     TTreeReader reader(ch);
 
@@ -233,6 +244,14 @@ struct SkimFile {
   }
 };
 
+/**
+ * @brief run the SkimFile::process method on all files provided. Initializes all needed histograms and places them in the provided TDirectory
+ * 
+ * @param files vector of SkimFiles to process into histograms
+ * @param tdir TDirectory to place histograms into 
+ * @param btag_wps vector of DeepJet btag working points
+ * @param histos map of histograms to save processed histograms to
+ */
 void process(std::vector<SkimFile>& files, TDirectory* tdir, std::vector<float> btag_wps, std::map<string, Histos>& histos) {
   tdir->cd(); 
 
@@ -260,6 +279,13 @@ void process(std::vector<SkimFile>& files, TDirectory* tdir, std::vector<float> 
   }
 }
 
+/**
+ * @brief Calculate efficiency for the working point and hadronFlav 
+ * 
+ * @param histos map containing histograms for calculating efficiency
+ * @param wp loose, medium, or, tight working point
+ * @param hadronFlav hf0 -> guds, hf4 -> c, hf5 -> b
+ */
 void calculate_efficiency(std::map<string, Histos>& histos, string wp, string hadronFlav) {
   std::cout << "[INFO] ... calculating efficiency " << wp << " for " << hadronFlav << std::endl;
 
