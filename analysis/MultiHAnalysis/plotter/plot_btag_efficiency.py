@@ -17,29 +17,68 @@ def format_hf(histo, linewidth=2, color=ROOT.kBlack, name=None, **kwargs):
   return histo
 
 def AddPreliminaryText():
-    # Setting up preliminary text
-    tex = ROOT.TLatex(0.,0., 'Simulation Preliminary');
-    tex.SetNDC();
-    tex.SetX(0.21);
-    tex.SetY(0.935);
-    tex.SetTextFont(53);
-    tex.SetTextSize(28);
-    tex.SetLineWidth(2)
-    return tex
+  # Setting up preliminary text
+  tex = ROOT.TLatex(0.,0., 'Simulation Preliminary');
+  tex.SetNDC();
+  tex.SetX(0.21);
+  tex.SetY(0.935);
+  tex.SetTextFont(53);
+  tex.SetTextSize(28);
+  tex.SetLineWidth(2)
+  return tex
 
 def AddCMSText():
-    # Settign up cms text
-    texcms = ROOT.TLatex(0.,0., 'CMS');
-    texcms.SetNDC();
-    texcms.SetTextAlign(31);
-    texcms.SetX(0.20);
-    texcms.SetY(0.935);
-    texcms.SetTextFont(63);
-    texcms.SetLineWidth(2);
-    texcms.SetTextSize(30);
-    return texcms
+  # Settign up cms text
+  texcms = ROOT.TLatex(0.,0., 'CMS');
+  texcms.SetNDC();
+  texcms.SetTextAlign(31);
+  texcms.SetX(0.20);
+  texcms.SetY(0.935);
+  texcms.SetTextFont(63);
+  texcms.SetLineWidth(2);
+  texcms.SetTextSize(30);
+  return texcms
 
-def plot_wp_efficiency(tfile, wp, variable, output='.'):
+def AddLumiText(year):
+  yearDict = {
+    '2018':'2018 (13 TeV, 59.7 fb^{-1})'
+  }
+
+  lumi = yearDict.get(year, None)
+  if lumi is None: return
+
+  tex = ROOT.TLatex(0.,0., lumi);
+  tex.SetNDC();
+  tex.SetTextAlign(31);
+  tex.SetX(0.90);
+  tex.SetY(0.91);
+  tex.SetTextFont(63);
+  tex.SetLineWidth(2);
+  tex.SetTextSize(15);
+  return tex
+
+def AddAnalysisText(analysis):
+  analysisDict = dict(
+    NMSSM_XYY_YToHH_8b='X#rightarrow YY#rightarrow 4H#rightarrow 8b',
+    NMSSM_XYH_YToHH_6b='X#rightarrow YH#rightarrow 3H#rightarrow 6b'
+  )
+
+  tag = analysisDict.get(analysis, None)
+  if tag is None: return 
+
+    # Settign up cms text
+  tex = ROOT.TLatex(0.,0., tag);
+  tex.SetNDC();
+  tex.SetTextAlign(31);
+  tex.SetX(0.3);
+  tex.SetY(0.91);
+  tex.SetTextFont(63);
+  tex.SetLineWidth(2);
+  tex.SetTextSize(15);
+  return tex
+
+
+def plot_wp_efficiency(tfile, wp, variable, output='.', analysis=None, year=None, **kwargs):
   hf5 = format_hf(
     tfile.Get(f"eff/{wp}_hf5_{variable}"),
     color=ROOT.kBlue,
@@ -91,25 +130,42 @@ def plot_wp_efficiency(tfile, wp, variable, output='.'):
   cms_txt = AddCMSText()
   cms_txt.Draw()
 
+  analysis_txt = AddAnalysisText(analysis)
+  if analysis_txt is not None:
+    analysis_txt.Draw()
+
+  lumi_txt = AddLumiText(year)
+  if lumi_txt is not None:
+    lumi_txt.Draw()
+
   canvas.Draw()
   canvas.SaveAs(f'{output}/{wp}_btageff_{variable}.png')
   
 
-def plot_all_efficiency(fname, output):
+def plot_all_efficiency(input, output, **kwargs):
   if not os.path.exists(output):
     os.mkdir(output)
 
-  tfile = ROOT.TFile.Open(fname, 'read')
+  tfile = ROOT.TFile.Open(input, 'read')
 
   for wp in ('loose','medium','tight'):
     for variable in ('jet_pt','jet_eta'):
-      plot_wp_efficiency(tfile, wp, variable, output)
+      plot_wp_efficiency(tfile, wp, variable, output, **kwargs)
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
+
+  defaults = dict(
+    analysis="NMSSM_XYY_YToHH_8b",
+    year    ="2018"
+  )
+
   parser = ArgumentParser()
   parser.add_argument('--input', help='input root file to plot efficiency. input file produced by skim_btageff.cpp')
   parser.add_argument('--output', help='output directory to store images', default='plots_btageff')
 
+  for key, default in defaults.items():
+    parser.add_argument(f'--{key}', default=default)
+
   args = parser.parse_args()
-  plot_all_efficiency(args.input, args.output)
+  plot_all_efficiency(**vars(args))
