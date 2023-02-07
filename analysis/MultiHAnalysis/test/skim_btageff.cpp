@@ -2,6 +2,8 @@
 #include <string>
 #include <iomanip>
 #include <any>
+#include <numeric>
+#include <algorithm>
 
 #include <glob.h>
 
@@ -144,6 +146,40 @@ struct Efficiency {
   }
 };
 
+struct SelectConfig {
+  int maxjets = -1;
+  string jet_value = "none";
+
+  SelectConfig(CfgParser& config) {
+    if ( !config.hasOpt("select::maxjets") )
+      return;
+
+    maxjets = config.readIntOpt("select", "maxjets");
+    std::cout << "\033[1;34m Selecting max jets   : \033[0m" << maxjets << std::endl;
+
+    if ( config.hasOpt("select", "value") )
+      jet_value = config.readStringOpt("select", "value");
+      std::cout << "\033[1;34m Selecting top jets : \033[0m" << jet_value << std::endl;
+  }
+};
+
+std::vector<int> get_selected_jets(const int njets)
+{
+  std::vector<int> jets(njets);
+  iota(jets.begin(), jets.end(), 0);
+  return jets;
+}
+
+std::vector<int> get_selected_jets_max(const int njets, const TTreeReaderArray<float>& jet_value)
+{
+  std::vector<int> jets = get_selected_jets( jet_value.GetSize() );
+
+  stable_sort(jets.begin(), jets.end(), [&jet_value](int i1, int i2) { return jet_value[i1] < jet_value[i2]; });
+  jets.resize(njets);
+
+  return jets;
+}
+
 /**
  * @brief  Class for reading TFiles produced by the skim_ntuple.cpp script
  * 
@@ -159,19 +195,38 @@ struct SkimFile {
   TChain* ch;
 
   SkimFile(string name_, string filepath_, float xsec_) : name(name_), filepath(filepath_), xsec(xsec_) {
-    std::vector<string> filelist = glob(filepath);
-    std::cout << "[INFO] ... loading " << name << " with " << filelist.size() << " file(s) at " << xsec << " pb" << std::endl;
+      std::cout << "[INFO] ... loading " << name << " with ";
+      std::vector<string> filelist = glob(filepath);
+      std::cout << filelist.size() << " file(s) at " << xsec << " pb" << std::endl;
 
-    float total_events = 0;
-    ch = new TChain("sixBtree");
-    for (string file : filelist) {
+      TString treename = "sixBtree";
+
+      int n_files_openned = 0;
+      float total_events = 0;
+      ch = new TChain(treename);
+      for (string file : filelist) {
       TString tfname(file);
 
-      ch->AddFile(tfname);
-
       TFile* tf = TFile::Open(tfname);
+
+      if (tf->IsZombie())
+        continue;
+
+      if ( !tf->GetListOfKeys()->Contains("h_cutflow") )
+        continue;
+
       TH1D* cutflow = (TH1D*)tf->Get("h_cutflow");
       total_events += cutflow->GetBinContent(1);
+
+      if ( !tf->GetListOfKeys()->Contains(treename) )
+        continue;
+
+      ch->AddFile(tfname);
+      n_files_openned++;
+    }
+
+    if (n_files_openned != filelist.size()) {
+    std::cout << "[WARNING] ...  only able to open " << name << " with " << n_files_openned << " of " << filelist.size() << " file(s)" << std::endl;
     }
 
     norm = xsec / total_events;
@@ -183,7 +238,7 @@ struct SkimFile {
    * @param btag_wps vector of DeepJet btag working points to use for efficiency
    * @param histos map of histograms to fill for each working point and hadron flavor
    */
-  void process(const std::vector<float> btag_wps, std::map<string, Histos>& histos) {
+  void process(const std::vector<float> btag_wps, const SelectConfig& select_cfg, std::map<string, Histos>& histos) {
     TTreeReader reader(ch);
 
     TTreeReaderValue<float> genWeight(reader,      "genWeight");
@@ -210,7 +265,19 @@ struct SkimFile {
       int njets = jet_pt.GetSize();
       float weight = norm*(*genWeight);
 
-      for (int ijet = 0; ijet < njets; ijet++) {
+      // Set the maximum number of jets to use ( -1 uses all available )
+      int maxjets = select_cfg.maxjets;
+      if (maxjets == -1)
+        maxjets = njets;
+
+      // Restrict the jets to the top in a specified value
+      std::vector<int> jets;
+      if (select_cfg.jet_value == "btag")
+        jets = get_selected_jets_max(maxjets, jet_btag);
+      else
+        jets = get_selected_jets(maxjets);
+
+      for (int ijet : jets) {
         float btag = jet_btag[ijet];
         float pt = jet_pt[ijet];
         float eta = jet_eta[ijet];
@@ -252,7 +319,7 @@ struct SkimFile {
  * @param btag_wps vector of DeepJet btag working points
  * @param histos map of histograms to save processed histograms to
  */
-void process(std::vector<SkimFile>& files, TDirectory* tdir, std::vector<float> btag_wps, std::map<string, Histos>& histos) {
+void process(std::vector<SkimFile>& files, TDirectory* tdir, std::vector<float> btag_wps, const SelectConfig& select_cfg, std::map<string, Histos>& histos) {
   tdir->cd(); 
 
   histos["loose"] = Histos("loose");
@@ -271,7 +338,7 @@ void process(std::vector<SkimFile>& files, TDirectory* tdir, std::vector<float> 
   histos["tight_hf5"] = Histos("tight_hf5");
 
   for ( SkimFile& f : files ) {
-    f.process(btag_wps, histos);
+    f.process(btag_wps, select_cfg, histos);
   }
 
   for (auto [key, histo] : histos) {
@@ -346,7 +413,8 @@ int main(int argc, char** argv) {
   const string basepath = config.readStringOpt("parameters::path");
   std::cout << "\033[1;34m File Base Path   : \033[0m" << basepath << std::endl;
 
-  
+  SelectConfig select_cfg(config);
+
   ////////////////////////////////////////////////////////////////////////
   // Loading MC files from skim_ntuple.cpp
   ////////////////////////////////////////////////////////////////////////
@@ -373,12 +441,12 @@ int main(int argc, char** argv) {
   output.cd();
   auto qcd_dir = output.mkdir("qcd/");
   std::map<string, Histos> qcd_histos;
-  process(qcd_files, qcd_dir, btag_wps, qcd_histos);
+  process(qcd_files, qcd_dir, btag_wps, select_cfg, qcd_histos);
 
   output.cd();
   auto ttbar_dir = output.mkdir("ttbar/");
   std::map<string, Histos> ttbar_histos;
-  process(ttbar_files, ttbar_dir, btag_wps, ttbar_histos);
+  process(ttbar_files, ttbar_dir, btag_wps, select_cfg, ttbar_histos);
 
   ////////////////////////////////////////////////////////////////////////
   // Calculate Efficiencies 
