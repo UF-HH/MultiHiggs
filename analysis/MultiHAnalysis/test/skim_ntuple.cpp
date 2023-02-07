@@ -850,7 +850,7 @@ int main(int argc, char** argv)
 	loop_timer.click("e selection");
       }
     
-    bool saveFatJets = config.readBoolOpt("configurations::saveFatJetColl");
+    bool saveFatJets = readCfgOptWithDefault<bool>(config, "configurations::saveFatJetColl", false);
 
     //======================================
     // Save signal specific GEN info
