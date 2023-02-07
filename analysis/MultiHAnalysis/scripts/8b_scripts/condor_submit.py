@@ -31,6 +31,12 @@ sample_defaults = dict(
         njobs=150,
         forceOverwrite=True,
     ),
+    ttjet=dict(
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/TTJets*.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
+        njobs=150,
+        forceOverwrite=True,
+    ),
     data=dict(
         files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/JetHT_Run2018*.txt"],
         tag="Run2_UL/RunIISummer20UL18NanoAODv9/JetHT_Data",
