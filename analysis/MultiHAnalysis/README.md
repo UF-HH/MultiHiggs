@@ -36,3 +36,49 @@ Scripts to submit jobs to condor are in `scripts/` directory. Options are includ
 ```
 sh scripts/submit_all_signal.sh
 ```
+
+### Calculating B-Tag Efficiency
+
+The [skim_btageff.cpp](test/skim_btageff.cpp) script can be used to calculate the efficiencies using the output from [skim_ntuple.cpp](test/skim_ntuple.cpp). A config needs to be used that defines 
+
+```yaml
+[parameters]
+# year used to fetch the correct cross sections
+year = 2018
+
+# Cuts for WP : Loose, Medium, Tight WPs
+bTagWPDef = 0.0490, 0.2783, 0.7100  
+
+# Path to a cross section config
+xsec = data/xsec/mc_2018.cfg
+
+# Base path used for each sample 
+path = /eos/uscms/store/user/ekoenig/8BAnalysis/NTuples/2018/preselection/t8btag_minmass/Run2_UL/RunIISummer20UL18NanoAODv9/
+
+# !! OPTIONAL: to disable and use all jets available just comment out
+[select]
+# Will restrict to using only the first maxjets jets in each event
+maxjets = 8
+
+# Specifies a variable to use to order the jets before selecting 
+value = btag
+
+# List of qcd samples to use for efficiencies
+[qcd]
+# Each sample should match a sample in the cross section config
+QCD_bEnriched_HT1500to2000 = /QCD/QCD_bEnriched_HT1500to2000_TuneCP5_13TeV-madgraph-pythia8/ntuple.root
+QCD_bEnriched_HT2000toInf  = /QCD/QCD_bEnriched_HT2000toInf_TuneCP5_13TeV-madgraph-pythia8/ntuple.root
+
+# List of ttbar samples to use for efficiencies
+[ttbar]
+TTJets = /TTJets/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/ntuple_*.root
+```
+
+More QCD and TTbar samples can be added in the proper sections. The filenames support glob. With a config, the script can be run as
+
+```bash
+make exe -j
+./bin/skim_btageff.cpp --cfg /path/to/config.cfg --out /path/to/output.root
+```
+
+In the output.root file, there will be a qcd, ttbar, and eff folder. The eff folder has the final efficiencies in pt, eta, and 2D pt eta. Hadron flavors are labeled as: hf0 = guds, hf4 = c, and hf5 = b. The qcd and ttbar folders have the histograms used to calculate the efficiencies. Only QCD is used to calculate guds and TTbar is used to calculate c and b, although all hadron flavour histograms are saved in the qcd and ttbar folder.
