@@ -82,3 +82,13 @@ make exe -j
 ```
 
 In the output.root file, there will be a qcd, ttbar, and eff folder. The eff folder has the final efficiencies in pt, eta, and 2D pt eta. Hadron flavors are labeled as: hf0 = guds, hf4 = c, and hf5 = b. The qcd and ttbar folders have the histograms used to calculate the efficiencies. Only QCD is used to calculate guds and TTbar is used to calculate c and b, although all hadron flavour histograms are saved in the qcd and ttbar folder.
+
+A plotter is provided in [plotter/plot_btag_efficiency.py](plotter/plot_btag_efficiency.py). This script needs to be run in a fresh shell, and can be ran using
+
+```bash
+cd plotter 
+source setup.sh
+./plot_btag_efficiency.py --input /path/to/btageff_output.root --output /path/to/save/plots/to/ --analysis NMSSM_XYY_YToHH_8b --year 2018
+```
+
+The analysis and year options are optional, but they are default to 8b and 2018. 
