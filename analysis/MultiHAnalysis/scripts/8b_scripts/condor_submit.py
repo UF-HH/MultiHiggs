@@ -19,14 +19,21 @@ sample_defaults = dict(
         njobs=100,
         forceOverwrite=True,
     ),
-    qcd=dict(
+    qcdb=dict(
         files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*BGenFilter*.txt", "input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*bEnriched*.txt"],
         tag="Run2_UL/RunIISummer20UL18NanoAODv9/QCD",
         njobs=100,
         forceOverwrite=True,
     ),
+    qcdht=dict(
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*PSWeight*.txt"],
+        # files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*700to1000*PSWeight*.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/QCD",
+        njobs=100,
+        forceOverwrite=True,
+    ),
     ttbar=dict(
-        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/TT*.txt"],
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/TTTo*.txt"],
         tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
         njobs=150,
         forceOverwrite=True,
