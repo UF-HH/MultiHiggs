@@ -33,7 +33,7 @@ namespace su = SkimUtils;
 using namespace std;
 
 
-std::vector<string> wplabels = {"loose", "medium", "tight"};
+std::vector<string> wplabels = {"total","loose", "medium", "tight"};
 
 std::vector<std::string> split_by_delimiter(std::string input, std::string delimiter) {
   std::vector<std::string> tokens;
@@ -76,59 +76,66 @@ std::vector<std::string> glob(const std::string& pattern) {
 }
 
 struct Histos {
-  TH1D* h_jet_pt;
-  TH1D* h_jet_eta;
-  TH2D* h_jet_pt_eta;
+    TH1D* h_n_jet;
+    TH1D* h_ht_jet;
+    TH1D* h_jet_btag;
+    TH1D* h_jet_pt;
+    TH1D* h_jet_eta;
+    TH2D* h_jet_pt_eta;
 
-  Histos() {};
-  Histos(TString tag) {
-      h_jet_pt = new TH1D(tag + "_jet_pt", tag + " jet pt;jet pt [GeV];", 30, 20.0, 500.0);
-      h_jet_eta = new TH1D(tag + "_jet_eta", tag + " jet #eta;jet #eta;", 30, -2.5, 2.5);
-      h_jet_pt_eta = new TH2D(tag + "_jet_pt_eta", tag + " jet pt;jet pt [GeV];jet #eta", 30, 20.0, 500.0, 30, -2.5, 2.5);
+    Histos(){};
+    Histos(TString tag) {
+        h_n_jet = new TH1D(tag + "_n_jet", tag + " N jet;N jet;", 15, 0, 15);
+        h_ht_jet = new TH1D(tag + "_ht_jet", tag + " Ht jet;Ht jet [GeV];", 30, 100, 1500.0);
+        h_jet_btag = new TH1D(tag + "_jet_btag", tag + " jet deepJet;jet deepJet;", 30, 0.0, 1.0);
+        h_jet_pt = new TH1D(tag + "_jet_pt", tag + " jet pt;jet pt [GeV];", 30, 20.0, 500.0);
+        h_jet_eta = new TH1D(tag + "_jet_eta", tag + " jet #eta;jet #eta;", 30, -2.5, 2.5);
+        h_jet_pt_eta =
+            new TH2D(tag + "_jet_pt_eta", tag + " jet pt;jet pt [GeV];jet #eta", 30, 20.0, 500.0, 30, -2.5, 2.5);
 
-      h_jet_pt->Sumw2();
-      h_jet_eta->Sumw2();
-      h_jet_pt_eta->Sumw2();
-  }
+        h_n_jet->Sumw2();
+        h_ht_jet->Sumw2();
+        h_jet_btag->Sumw2();
+        h_jet_pt->Sumw2();
+        h_jet_eta->Sumw2();
+        h_jet_pt_eta->Sumw2();
+    }
 
-  void Fill(float pt, float eta, float weight=1) {
-    h_jet_pt->Fill(pt, weight);
-    h_jet_eta->Fill(eta, weight);
-    h_jet_pt_eta->Fill(pt, eta, weight);
-  }
+    void Fill(float pt, float eta, float btag, float weight = 1) {
+        h_jet_btag->Fill(btag, weight);
+        h_jet_pt->Fill(pt, weight);
+        h_jet_eta->Fill(eta, weight);
+        h_jet_pt_eta->Fill(pt, eta, weight);
+    }
 
-  void Write() {
-    h_jet_pt->Write();
-    h_jet_eta->Write();
-    h_jet_pt_eta->Write();
-  }
+    void Write() {
+        h_n_jet->Write();
+        h_ht_jet->Write();
+        h_jet_btag->Write();
+        h_jet_pt->Write();
+        h_jet_eta->Write();
+        h_jet_pt_eta->Write();
+    }
 };
 
 struct Efficiency {
+  TEfficiency* eff_jet_btag;
   TEfficiency* eff_jet_pt;
   TEfficiency* eff_jet_eta;
   TEfficiency* eff_jet_pt_eta;
 
   Efficiency() {};
   Efficiency(TString tag) {
+    eff_jet_btag =   new TEfficiency(tag + "_jet_btag", tag + " jet deepJet;jet deepJet;", 30, 0., 1.0);
     eff_jet_pt =     new TEfficiency(tag + "_jet_pt", tag + " jet pt;jet pt [GeV];", 30, 20.0, 500.0);
     eff_jet_eta =    new TEfficiency(tag + "_jet_eta", tag + " jet #eta;jet #eta;", 30, -2.5, 2.5);
     eff_jet_pt_eta = new TEfficiency(tag + "_jet_pt_eta", tag + " jet pt;jet pt [GeV];jet #eta", 30, 20.0, 500.0, 30, -2.5, 2.5);
-
-    eff_jet_pt->SetConfidenceLevel(0.90);
-    eff_jet_eta->SetConfidenceLevel(0.90);
-    eff_jet_pt_eta->SetConfidenceLevel(0.90);
-
-    eff_jet_pt->SetStatisticOption(TEfficiency::kFNormal);
-    eff_jet_eta->SetStatisticOption(TEfficiency::kFNormal);
-    eff_jet_pt_eta->SetStatisticOption(TEfficiency::kFNormal);
-
-    eff_jet_pt->SetUseWeightedEvents(true);
-    eff_jet_eta->SetUseWeightedEvents(true);
-    eff_jet_pt_eta->SetUseWeightedEvents(true);
   }
 
   void Fill(Histos& passed, Histos& total) {
+    eff_jet_btag->SetPassedHistogram( *passed.h_jet_btag, "f" );
+    eff_jet_btag->SetTotalHistogram( *total.h_jet_btag, "f" );
+
     eff_jet_pt->SetPassedHistogram( *passed.h_jet_pt, "f" );
     eff_jet_pt->SetTotalHistogram( *total.h_jet_pt, "f" );
     
@@ -140,6 +147,7 @@ struct Efficiency {
   }
 
   void Write() {
+    eff_jet_btag->Write();
     eff_jet_pt->Write();
     eff_jet_eta->Write();
     eff_jet_pt_eta->Write();
@@ -149,6 +157,7 @@ struct Efficiency {
 struct SelectConfig {
   int maxjets = -1;
   string jet_value = "none";
+  std::vector<float> ptcuts;
 
   SelectConfig(CfgParser& config) {
     if ( !config.hasOpt("select::maxjets") )
@@ -157,9 +166,20 @@ struct SelectConfig {
     maxjets = config.readIntOpt("select", "maxjets");
     std::cout << "\033[1;34m Selecting max jets   : \033[0m" << maxjets << std::endl;
 
-    if ( config.hasOpt("select", "value") )
+    if ( config.hasOpt("select", "value") ) {
       jet_value = config.readStringOpt("select", "value");
-      std::cout << "\033[1;34m Selecting top jets : \033[0m" << jet_value << std::endl;
+    std::cout << "\033[1;34m Selecting top jets : \033[0m" << jet_value << std::endl;
+    }
+    
+    if (config.hasOpt("select", "ptcuts")) {
+      ptcuts = config.readFloatListOpt("select", "ptcuts");
+    std::cout << "\033[1;34m Selecting jet pt cuts : \033[0m";
+    for (float pt : ptcuts)
+    {
+    std::cout << " " << pt;
+    }
+    std::cout << std::endl;
+    }
   }
 };
 
@@ -174,10 +194,28 @@ std::vector<int> get_selected_jets_max(const int njets, const TTreeReaderArray<f
 {
   std::vector<int> jets = get_selected_jets( jet_value.GetSize() );
 
-  stable_sort(jets.begin(), jets.end(), [&jet_value](int i1, int i2) { return jet_value[i1] < jet_value[i2]; });
+  stable_sort(jets.begin(), jets.end(), [&jet_value](int i1, int i2) { return jet_value[i1] > jet_value[i2]; });
   jets.resize(njets);
 
   return jets;
+}
+
+bool pass_pt_cut(std::vector<int> jets, std::vector<float> ptcuts, const TTreeReaderArray<float>& jet_pt)
+{
+  if (ptcuts.size() == 0)
+    return true;
+
+  stable_sort(jets.begin(), jets.end(), [&jet_pt](int i1, int i2) { return jet_pt[i1] > jet_pt[i2]; });
+
+  int njets = min(jets.size(), ptcuts.size());
+  for (int i = 0; i < njets; i++)
+  {
+    int ijet = jets[i];
+    if ( jet_pt[ijet] < ptcuts[i] ) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
@@ -246,6 +284,7 @@ struct SkimFile {
     TTreeReaderArray<float> jet_eta(reader,        "jet_eta");
     TTreeReaderArray<float> jet_btag(reader,       "jet_btag");
     TTreeReaderArray<int>   jet_hadronFlav(reader, "jet_hadronFlav");
+    TTreeReaderArray<int>   jet_partonFlav(reader, "jet_partonFlav");
 
     int ievent = 0;
     int total_events = ch->GetEntries();
@@ -262,6 +301,20 @@ struct SkimFile {
       }
       ievent++;
 
+      std::map<string, int> njetMap;
+      std::map<string, float> htjetMap;
+      for (string wp : wplabels) {
+        njetMap[wp] = 0;
+        njetMap[wp + "_hf0"] = 0;
+        njetMap[wp + "_hf4"] = 0;
+        njetMap[wp + "_hf5"] = 0;
+
+        htjetMap[wp] = 0;
+        htjetMap[wp + "_hf0"] = 0;
+        htjetMap[wp + "_hf4"] = 0;
+        htjetMap[wp + "_hf5"] = 0;
+      }
+
       int njets = jet_pt.GetSize();
       float weight = norm*(*genWeight);
 
@@ -274,35 +327,61 @@ struct SkimFile {
       std::vector<int> jets;
       if (select_cfg.jet_value == "btag")
         jets = get_selected_jets_max(maxjets, jet_btag);
+      if (select_cfg.jet_value == "pt")
+        jets = get_selected_jets_max(maxjets, jet_pt);
       else
         jets = get_selected_jets(maxjets);
+
+      if (! pass_pt_cut(jets, select_cfg.ptcuts, jet_pt) )
+        continue;
 
       for (int ijet : jets) {
         float btag = jet_btag[ijet];
         float pt = jet_pt[ijet];
         float eta = jet_eta[ijet];
         int hf = jet_hadronFlav[ijet];
+        int pf = abs(jet_partonFlav[ijet]);
 
-        for (int wp = 0; wp < 3; wp++) {
-          if (!(btag > btag_wps[wp]))
-            break;
+        for (int wp = 0; wp < 4; wp++) {
+          bool passed = btag > btag_wps[wp];
+          if (!passed)
+            continue;
 
           string label = wplabels[wp];
 
-          histos[label].Fill(pt, eta, weight);
+          htjetMap[label] += pt;
+          histos[label].Fill(pt, eta, btag, weight);
+          njetMap[label]++;
 
-          if ( hf == 0 ) { // udcs
-            histos[label + "_hf0"].Fill(pt, eta, weight);
+          if (hf == 5) {  // b
+            histos[label + "_hf5"].Fill(pt, eta, btag, weight);
+            njetMap[label + "_hf5"]++;
+            htjetMap[label + "_hf5"] += pt;
+          } else if (hf == 4) {  // c
+            histos[label + "_hf4"].Fill(pt, eta, btag, weight);
+            njetMap[label + "_hf4"]++;
+            htjetMap[label + "_hf4"] += pt;
+          } else {  // guds
+            histos[label + "_hf0"].Fill(pt, eta, btag, weight);
+            njetMap[label + "_hf0"]++;
+            htjetMap[label + "_hf0"] += pt;
           }
-          
-          if ( hf == 4 ) { // c
-            histos[label + "_hf4"].Fill(pt, eta, weight);
-          }
-          
-          if ( hf == 5 ) { // b
-            histos[label + "_hf5"].Fill(pt, eta, weight);
-          }
+
+          // if (pf == 5) {  // b
+          //   histos[label + "_pf5"].Fill(pt, eta, weight);
+          // } else if (pf == 4) {  // c
+          //   histos[label + "_pf4"].Fill(pt, eta, weight);
+          // } else if (pf == 21) {  // g
+          //   histos[label + "_pf21"].Fill(pt, eta, weight);
+          // } else {  // uds
+          //   histos[label + "_pf0"].Fill(pt, eta, weight);
+          // }
         }
+      }
+
+      for (auto [key, n] : njetMap) {
+        histos[key].h_ht_jet->Fill(htjetMap[key], weight);
+        histos[key].h_n_jet->Fill(n, weight);
       }
     }
     std::cout << "\r[DONE] ... processesing " << name << " :  100%";
@@ -320,22 +399,39 @@ struct SkimFile {
  * @param histos map of histograms to save processed histograms to
  */
 void process(std::vector<SkimFile>& files, TDirectory* tdir, std::vector<float> btag_wps, const SelectConfig& select_cfg, std::map<string, Histos>& histos) {
-  tdir->cd(); 
+  tdir->cd();
+
+  histos["total"] = Histos("total");
+  histos["total_hf0"] = Histos("total_hf0");
+  histos["total_hf4"] = Histos("total_hf4");
+  histos["total_hf5"] = Histos("total_hf5");
 
   histos["loose"] = Histos("loose");
   histos["loose_hf0"] = Histos("loose_hf0");
   histos["loose_hf4"] = Histos("loose_hf4");
   histos["loose_hf5"] = Histos("loose_hf5");
+  // histos["loose_pf21"]= Histos("loose_pf21");
+  // histos["loose_pf0"] = Histos("loose_pf0");
+  // histos["loose_pf4"] = Histos("loose_pf4");
+  // histos["loose_pf5"] = Histos("loose_pf5");
   
   histos["medium"] = Histos("medium");
   histos["medium_hf0"] = Histos("medium_hf0");
   histos["medium_hf4"] = Histos("medium_hf4");
   histos["medium_hf5"] = Histos("medium_hf5");
+  // histos["medium_pf21"]= Histos("medium_pf21");
+  // histos["medium_pf0"] = Histos("medium_pf0");
+  // histos["medium_pf4"] = Histos("medium_pf4");
+  // histos["medium_pf5"] = Histos("medium_pf5");
   
   histos["tight"] = Histos("tight");
   histos["tight_hf0"] = Histos("tight_hf0");
   histos["tight_hf4"] = Histos("tight_hf4");
   histos["tight_hf5"] = Histos("tight_hf5");
+  // histos["tight_pf21"]= Histos("tight_pf21");
+  // histos["tight_pf0"] = Histos("tight_pf0");
+  // histos["tight_pf4"] = Histos("tight_pf4");
+  // histos["tight_pf5"] = Histos("tight_pf5");
 
   for ( SkimFile& f : files ) {
     f.process(btag_wps, select_cfg, histos);
@@ -357,7 +453,7 @@ void calculate_efficiency(std::map<string, Histos>& histos, string wp, string ha
   std::cout << "[INFO] ... calculating efficiency " << wp << " for " << hadronFlav << std::endl;
 
   Histos passed = histos[wp + "_" + hadronFlav];
-  Histos total  = histos[wp];
+  Histos total  = histos["total_" + hadronFlav];
   Efficiency eff(wp + "_" + hadronFlav);
   eff.Fill(passed, total);
   eff.Write();
@@ -458,6 +554,11 @@ int main(int argc, char** argv) {
     calculate_efficiency(qcd_histos, wp, "hf0");
     calculate_efficiency(ttbar_histos, wp, "hf4");
     calculate_efficiency(ttbar_histos, wp, "hf5");
+
+    // calculate_efficiency(qcd_histos, wp, "pf21");
+    // calculate_efficiency(qcd_histos, wp, "pf0");
+    // calculate_efficiency(ttbar_histos, wp, "pf4");
+    // calculate_efficiency(ttbar_histos, wp, "pf5");
   }
 
 }

@@ -140,6 +140,71 @@ def plot_wp_efficiency(tfile, wp, variable, output='.', analysis=None, year=None
 
   canvas.Draw()
   canvas.SaveAs(f'{output}/{wp}_btageff_{variable}.png')
+  
+def plot_hf_efficiency(tfile, hf, variable, output='.', analysis=None, year=None, **kwargs):
+  loose = format_hf(
+    tfile.Get(f"eff/loose_{hf}_{variable}"),
+    color=ROOT.kBlue,
+    name='loose',
+  )
+
+  medium = format_hf(
+    tfile.Get(f"eff/medium_{hf}_{variable}"),
+    color=ROOT.kRed,
+    name='medium',
+  )
+
+  tight = format_hf(
+    tfile.Get(f"eff/tight_{hf}_{variable}"),
+    color=ROOT.kGreen+2,
+    name='tight',
+  )
+
+  canvas = ROOT.TCanvas("", "", 800, 700)
+  canvas.SetLeftMargin(0.15)
+
+  hfMap = dict(
+    hf0='guds #rightarrow b',
+    hf4='c #rightarrow b',
+    hf5='b #rightarrow b',
+  )
+
+  legend = ROOT.TLegend(0.60, 0.12, 0.85, 0.3)
+  legend.SetHeader(f'Hadron Flavour - {hfMap[hf]}')
+  legend.SetFillColor(0)
+  legend.SetFillStyle(0)
+  legend.SetBorderSize(0)
+  legend.SetTextSize(0.04)
+
+  for i, wp in enumerate([loose, medium, tight]):
+    fmt = "ACP" if i == 0 else "CP SAME"
+    wp.Draw(fmt)
+    legend.AddEntry(wp, wp.GetName())
+
+  legend.Draw()
+
+  canvas.Update()
+  axis = loose.GetPaintedGraph()
+  axis.SetMaximum(1.2e0)
+  axis.SetMinimum(0.5e-3)
+  canvas.SetLogy()
+
+  prelim_txt = AddPreliminaryText()
+  prelim_txt.Draw()
+
+  cms_txt = AddCMSText()
+  cms_txt.Draw()
+
+  analysis_txt = AddAnalysisText(analysis)
+  if analysis_txt is not None:
+    analysis_txt.Draw()
+
+  lumi_txt = AddLumiText(year)
+  if lumi_txt is not None:
+    lumi_txt.Draw()
+
+  canvas.Draw()
+  canvas.SaveAs(f'{output}/{hf}_btageff_{variable}.png')
 
 def plot_wp_efficiency_2d(tfile, wp, variable, output='.', analysis=None, year=None, **kwargs):
   hf5 = format_hf(
@@ -183,10 +248,13 @@ def plot_all_efficiency(input, output, **kwargs):
 
   tfile = ROOT.TFile.Open(input, 'read')
 
-  for wp in ('loose','medium','tight'):
+  for wp in ('total','loose','medium','tight'):
     plot_wp_efficiency_2d(tfile, wp, 'jet_pt_eta', output, **kwargs)
-    for variable in ('jet_pt','jet_eta'):
+    for variable in ('jet_pt','jet_eta','jet_btag'):
       plot_wp_efficiency(tfile, wp, variable, output, **kwargs)
+  for hf in ('hf0','hf4', 'hf5'):
+    for variable in ('jet_pt','jet_eta','jet_btag'):
+      plot_hf_efficiency(tfile, hf, variable, output, **kwargs)
 
 if __name__ == '__main__':
   from argparse import ArgumentParser
