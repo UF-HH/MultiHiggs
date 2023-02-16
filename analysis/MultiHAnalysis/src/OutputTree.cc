@@ -272,6 +272,8 @@ using namespace std;
   tree_->Branch(#OBJ "_signalId", &OBJ##_signalId);           \
   tree_->Branch(#OBJ "_higgsIdx", &OBJ##_higgsIdx);           \
   tree_->Branch(#OBJ "_genIdx", &OBJ##_genIdx);               \
+  tree_->Branch(#OBJ "_partonFlav", &OBJ##_partonFlav);       \
+  tree_->Branch(#OBJ "_hadronFlav", &OBJ##_hadronFlav);       \
   tree_->Branch(#OBJ "_btag", &OBJ##_btag);                   \
   tree_->Branch(#OBJ "_qgl", &OBJ##_qgl);                     \
   tree_->Branch(#OBJ "_chEmEF", &OBJ##_chEmEF);               \
