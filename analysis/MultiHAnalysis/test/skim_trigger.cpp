@@ -123,7 +123,6 @@ std::vector<std::vector<float> > getJetVetoMap(std::string filename, std::string
   return map;
 }
 
-
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // MAIN
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -194,7 +193,6 @@ int main(int argc, char** argv)
   ////////////////////////////////////////////////////////////////////////
   // Prepare event loop
   ////////////////////////////////////////////////////////////////////////
-  
   cout << "[INFO] ... opening file list : " << opts["input"].as<string>().c_str() << endl;
   if ( access( opts["input"].as<string>().c_str(), F_OK ) == -1 ){
     cerr << "** [ERROR] The input file list does not exist, aborting" << endl;
@@ -219,7 +217,7 @@ int main(int argc, char** argv)
   for (auto trg : config.readStringListOpt("triggers::makeORof"))
     cout << "   - " << trg << endl;
   nat.triggerReader().setTriggers(config.readStringListOpt("triggers::makeORof"));
-    
+  
   bool skipTriggerCheck = opts["skip-trigger"].as<bool>();
   if(!skipTriggerCheck) 
     {
@@ -279,10 +277,9 @@ int main(int argc, char** argv)
   long long    event_;
   
   float btag_SF_;
-  
   float weight_;
   
-  //leptons
+  // leptons
   float highestIsoElecton_pt_;
   float electronTimesMuoncharge_;
   
@@ -292,17 +289,21 @@ int main(int argc, char** argv)
   float jetThirdHighestPt_pt_;
   float jetForthHighestPt_pt_;
   float fourHighestJetPt_sum_;
-  float caloJetSum_;
-  int numberOfJetsCaloHT_;
-  float pfJetSum_;
-  int numberOfJetsPfHT_;
-  float onlyJetSum_;
-  int numberOfJetsOnlyHT_;
+  
   float jetFirstHighestDeepFlavB_deepFlavB_;
   float jetFirstHighestDeepFlavB_pt_;
   float jetFirstHighestDeepFlavB_eta_;
   int jetFirstHighestDeepFlavB_hadronFlavour_;
   
+  // HT
+  float caloJetSum_;
+  float pfJetSum_;
+  float onlyJetSum_;
+  
+  int numberOfJetsCaloHT_;
+  int numberOfJetsPfHT_;
+  int numberOfJetsOnlyHT_;
+    
   tOut->Branch("run",              &run_);
   tOut->Branch("luminosityBlock",  &luminosityBlock_);
   tOut->Branch("event",            &event_);
@@ -318,18 +319,28 @@ int main(int argc, char** argv)
   tOut->Branch("jetThirdHighestPt_pt" , &jetThirdHighestPt_pt_ );
   tOut->Branch("jetForthHighestPt_pt" , &jetForthHighestPt_pt_ );
   tOut->Branch("fourHighestJetPt_sum" , &fourHighestJetPt_sum_ );
-  tOut->Branch("caloJetSum"  , &caloJetSum_  );
-  tOut->Branch("numberOfJetsCaloHT"    , &numberOfJetsCaloHT_    );
-  tOut->Branch("pfJetSum"  , &pfJetSum_  );
-  tOut->Branch("numberOfJetsPfHT"    , &numberOfJetsPfHT_    );
-  tOut->Branch("onlyJetSum"  , &onlyJetSum_  );
-  tOut->Branch("numberOfJetsOnlyHT"    , &numberOfJetsOnlyHT_    );
+  
   tOut->Branch("jetFirstHighestDeepFlavB_deepFlavB" , &jetFirstHighestDeepFlavB_deepFlavB_ );
   tOut->Branch("jetFirstHighestDeepFlavB_pt" , &jetFirstHighestDeepFlavB_pt_ );
   tOut->Branch("jetFirstHighestDeepFlavB_eta" , &jetFirstHighestDeepFlavB_eta_ );
   tOut->Branch("jetFirstHighestDeepFlavB_hadronFlavour" , &jetFirstHighestDeepFlavB_hadronFlavour_ );
   
-  //enable trigger filters
+  tOut->Branch("caloJetSum", &caloJetSum_);
+  tOut->Branch("pfJetSum",   &pfJetSum_);
+  tOut->Branch("onlyJetSum", &onlyJetSum_);
+  
+  tOut->Branch("numberOfJetsCaloHT"    , &numberOfJetsCaloHT_    );
+  tOut->Branch("numberOfJetsPfHT"    , &numberOfJetsPfHT_    );
+  tOut->Branch("numberOfJetsOnlyHT"    , &numberOfJetsOnlyHT_    );
+  
+  bool bPassedL1Seeds_ = false;
+  if (year == "2022")
+    {
+      const string L1SeedEDFilter = config.readStringOpt("l1seeds::EDFilter");
+      tOut->Branch(std::string("Passed_" + L1SeedEDFilter).data(), &bPassedL1Seeds_);
+    }
+  
+  // Enable trigger filters
   std::map<std::pair<int,int>, std::string > triggerObjectsForStudies        ; // <<objectId, FilterId> , filterName>
   std::map<std::pair<int,int>, float >       HTFilterHt                      ; // <<objectId, FilterId> , HTthreshold>
   std::map<std::pair<int,int>, int > triggerObjectsForStudiesCount           ; // <<objectId, FilterId> , numberOfObjects>
@@ -346,7 +357,6 @@ int main(int argc, char** argv)
   for(uint i=0; i<4; ++i)
     {
       selectedJetPtEtaPhiVector.at(i) = {-999,-999,-999};
-      
       tOut->Branch(std::string( "Jet" + to_string(i) + "_pt" ).data(), &std::get<0>(selectedJetPtEtaPhiVector[i]));
       tOut->Branch(std::string( "Jet" + to_string(i) + "_eta").data(), &std::get<1>(selectedJetPtEtaPhiVector[i]));
       tOut->Branch(std::string( "Jet" + to_string(i) + "_phi").data(), &std::get<2>(selectedJetPtEtaPhiVector[i]));
@@ -362,6 +372,8 @@ int main(int argc, char** argv)
       
       for (auto & triggerObject : triggerObjectMatchingVector)
 	{
+	  std::cout << "Trigger Object = "<<triggerObject<<std::endl;
+	  
 	  std::vector<std::string> triggerObjectTokens;
 	  while ((pos = triggerObject.find(delimiter)) != std::string::npos)
             {
@@ -400,9 +412,7 @@ int main(int argc, char** argv)
         }
       
       std::vector<std::string> btagTriggerObject = config.readStringListOpt("parameters::ListOfBtagTrigger");
-      
       pos = 0;
-      
       for (auto & triggerObject : btagTriggerObject)
         {
 	  std::vector<std::string> triggerObjectTokens;
@@ -490,7 +500,6 @@ int main(int argc, char** argv)
       }
       
       EventInfo ei;
-      
       run_             = *(nat.run);
       luminosityBlock_ = *(nat.luminosityBlock);
       event_           = *(nat.event);
@@ -517,17 +526,23 @@ int main(int argc, char** argv)
 	{
 	  if (!bMETFilters) continue;
 	}
+      
       //====================================
       // Apply trigger
       //====================================
       if(!is_signal) if( !nat.getTrgOr() ) continue;
       
+      if (year == "2022")
+	{
+	  bPassedL1Seeds_ = *nat.L1_QuadJet60er2p5 || *nat.L1_HTT280er || *nat.L1_HTT320er || *nat.L1_HTT360er || *nat.L1_HTT400er || *nat.L1_HTT450er || *nat.L1_HTT280er_QuadJet_70_55_40_35_er2p5 || *nat.L1_HTT320er_QuadJet_70_55_40_40_er2p5 || *nat.L1_HTT320er_QuadJet_80_60_er2p1_45_40_er2p3 || *nat.L1_HTT320er_QuadJet_80_60_er2p1_50_45_er2p3 || *nat.L1_Mu6_HTT240er;
+	}
+
       //====================================
       // Muon Selection
       //====================================
-      int numberOfIsoMuon01 = 0;
-      int numberOfIsoMuon03 = 0;
-      int isoMuonJetId      = -1;
+      int numberOfIsoMuon01    = 0;
+      int numberOfIsoMuon03    = 0;
+      int isoMuonJetId         = -1;
       electronTimesMuoncharge_ = 1;
       float muonPtCut;
       if (year == "2016" or year == "2018" or year == "2022")
@@ -539,23 +554,29 @@ int main(int argc, char** argv)
 	  muonPtCut = 29;
 	}
       
+      // Loop over muons
       for (uint candIt = 0; candIt < *(nat.nMuon); ++candIt)
         {
-	  Muon theMuon (candIt, &nat);
-	  float muonIsolation = get_property(theMuon, Muon_pfRelIso04_all);
-	  if(muonIsolation<0.3 && get_property(theMuon, Muon_mediumId) && theMuon.P4().Pt() >= muonPtCut)
+	  Muon muon(candIt, &nat);
+	  
+	  float pt      = muon.P4().Pt();
+	  float iso     = get_property(muon, Muon_pfRelIso04_all);
+	  bool mediumID = get_property(muon, Muon_mediumId);
+	  bool charge   = get_property(muon, Muon_charge);
+	  
+	  if(iso<0.3 && mediumID && pt >= muonPtCut)
             {
-	      if(muonIsolation<0.1 ) 
+	      if(iso < 0.1) 
                 {
 		  ++numberOfIsoMuon01;
-		  isoMuonJetId = get_property(theMuon, Muon_jetIdx);
-		  electronTimesMuoncharge_ = get_property(theMuon, Muon_charge);
+		  isoMuonJetId = get_property(muon, Muon_jetIdx);
+		  electronTimesMuoncharge_ = charge;
                 }
 	      ++numberOfIsoMuon03;
 	      if(numberOfIsoMuon03>1) break;
             }
-	  
-        }
+	} // Closes loop over muons
+      
       if(!is_signal) if(numberOfIsoMuon01!=1 || numberOfIsoMuon03>1) continue;
       
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -651,38 +672,44 @@ int main(int argc, char** argv)
       for (unsigned int ij=0; ij<nonvetoed_jets.size(); ij++)
 	{
 	  Jet jet = nonvetoed_jets.at(ij);
+	  float jet_pt = jet.P4().Pt();
+	  float jet_eta= jet.P4().Eta();
 	  
-	  if (jet.P4().Pt() >= 30. && std::abs(jet.P4().Eta()) < 2.5) 
+	  // PF HT calculated from all jets (including muons/electrons)
+	  if (jet_pt >= 30. && std::abs(jet_eta) < 2.5) 
             {
-	      pfJetSum_ += jet.P4().Pt();
+	      pfJetSum_ += jet_pt;
 	      numberOfJetsPfHT_++;
             }
 	  
+	  // No overlap between jet-muon
 	  bool isMuon = false;
 	  for (uint candIt = 0; candIt < *(nat.nMuon); ++candIt)
             {
-	      Muon theMuon (candIt, &nat);
-	      if(get_property(theMuon, Muon_pfRelIso04_all) > 0.3) continue;
-	      if(jet.getIdx() == get_property(theMuon, Muon_jetIdx))
+	      Muon muon(candIt, &nat);
+	      if (get_property(muon, Muon_pfRelIso04_all) > 0.3) continue;
+	      if (jet.getIdx() == get_property(muon, Muon_jetIdx))
                 {
 		  isMuon = true;
 		  break;
                 }
-            }
+	    } 
 	  if(isMuon) continue;
 	  
-	  if (jet.P4().Pt() >= 30. && std::abs(jet.P4().Eta()) < 2.5) 
+	  // Calo jets calculated from all jets except muons
+	  if (jet_pt >= 30. && std::abs(jet_eta) < 2.5) 
             {
-	      caloJetSum_ += jet.P4().Pt();
+	      caloJetSum_ += jet_pt;
 	      numberOfJetsCaloHT_++;
             }
 	  
+	  // No overlap between jet-electrons
 	  bool isElectron = false;
 	  for (uint candIt = 0; candIt < *(nat.nElectron); ++candIt)
             {
-	      Electron theElectron (candIt, &nat);
-	      if(get_property(theElectron, Electron_pfRelIso03_all) > 0.3) continue;
-	      if(jet.getIdx() == get_property(theElectron, Electron_jetIdx))
+	      Electron ele(candIt, &nat);
+	      if(get_property(ele, Electron_pfRelIso03_all) > 0.3) continue;
+	      if(jet.getIdx() == get_property(ele, Electron_jetIdx))
                 {
 		  isElectron = true;
 		  break;
@@ -690,51 +717,48 @@ int main(int argc, char** argv)
             }
 	  if(isElectron) continue;
 	  
-	  if (jet.P4().Pt() >= 30. && std::abs(jet.P4().Eta()) < 2.5) 
+	  // PF Jet-only calculated from all jets except muons/electrons
+	  if (jet_pt >= 30. && std::abs(jet_eta) < 2.5) 
             {
-	      onlyJetSum_ += jet.P4().Pt();
+	      onlyJetSum_ += jet_pt;
 	      numberOfJetsOnlyHT_++;
             }
 	  
+	  // Select jets with pT > 25 GeV, |eta|<2.4, Tight-ID 
 	  // Jet ID flags bit1 is loose (always false in 2017 since it does not exist), bit2 is tight, bit3 is tightLepVeto
 	  // but note that bit1 means idx 0 and so on
 	  int jetid = get_property(jet, Jet_jetId); 
-	  
-	  if (!checkBit(jetid, 1)) // tight jet Id
-	    continue;
-	  
-	  if (jet.P4().Pt() <= 25)
-	    continue;
-	  
-	  if (std::abs(jet.P4().Eta()) > 2.4)
-	    continue;
-	  
-	  if(jet.get_btag() < 0.) continue; 
-	  
+	  if (!checkBit(jetid, 1)) continue;
+	  if (jet_pt < 25) continue;
+	  if (std::abs(jet_eta) > 2.4) continue;
+	  if (jet.get_btag() < 0.0) continue; 
+	  // Skip PUID for 2022 (not included in NanoAOD yet)
 	  if (year != "2022")
 	    {
 	      if (!checkBit(get_property( jet,Jet_puId), 1) && jet.P4().Pt() <= 50) // medium PU Id - NOTE : not to be applied beyond 50 GeV: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
 		continue;
 	    }
-	  
 	  jets.emplace_back(jet);
-        }
+        } // Loop over jets
       
-      if (jets.size() < 4) // I don't have 4 preselected jets
+      // Skim events to have 4 jets with pT > 25 GeV, |eta|<2.4, Tight-ID, PUID
+      if (jets.size() < 4)
 	continue;
       
+      // Loop over electrons
       highestIsoElecton_pt_ = -999.;
-      
       for (uint candIt = 0; candIt < *(nat.nElectron); ++candIt)
         {
-	  Electron theElectron (candIt, &nat);
-	  if(get_property(theElectron, Electron_pfRelIso03_all) > 0.1) continue;
-	  highestIsoElecton_pt_ = theElectron.P4().Pt();
-	  electronTimesMuoncharge_ *= get_property(theElectron, Electron_charge);
+	  Electron ele(candIt, &nat);
+	  if (get_property(ele, Electron_pfRelIso03_all) > 0.1) continue;
+	  
+	  highestIsoElecton_pt_ = ele.P4().Pt();
+	  electronTimesMuoncharge_ *= get_property(ele, Electron_charge);
 	  break;
         }
       
-      if(matchWithFourHighestBjets)
+      // Use the four leading-in-btagging score jets for matching
+      if (matchWithFourHighestBjets)
         {
 	  stable_sort(jets.begin(), jets.end(), [](const Jet & a, const Jet & b) -> bool
 		      {
@@ -743,6 +767,7 @@ int main(int argc, char** argv)
 	  jets.erase(jets.begin()+4, jets.end());
         }
       
+      // Sort them in pT
       stable_sort(jets.begin(), jets.end(), [](const Jet & a, const Jet & b) -> bool
 		  {
 		    return ( a.P4().Pt() > b.P4().Pt() );
@@ -754,14 +779,14 @@ int main(int argc, char** argv)
       jetForthHighestPt_pt_  = jets.at(3).P4().Pt();
       fourHighestJetPt_sum_  = jetFirstHighestPt_pt_ + jetSecondHighestPt_pt_ + jetThirdHighestPt_pt_ + jetForthHighestPt_pt_;
       
-      // NOTE that this sorts from small to large, with A < B implemented as btagA > btagB, so the first element in the vector has the largest btag score
+      // Sort them again in b-tagging score
       stable_sort(jets.begin(), jets.end(), [](const Jet & a, const Jet & b) -> bool
 		  {
 		    return ( a.get_btag() > b.get_btag() );
 		  });
       
       jetFirstHighestDeepFlavB_deepFlavB_ = jets.at(0).get_btag();
-      if(!is_data) jetFirstHighestDeepFlavB_hadronFlavour_ = get_property(jets.at(0),Jet_hadronFlavour);
+      if (!is_data) jetFirstHighestDeepFlavB_hadronFlavour_ = get_property(jets.at(0),Jet_hadronFlavour);
       else jetFirstHighestDeepFlavB_hadronFlavour_ = -999;
       jetFirstHighestDeepFlavB_pt_ = jets.at(0).P4().Pt();
       jetFirstHighestDeepFlavB_eta_ = jets.at(0).P4().Eta();
@@ -783,9 +808,10 @@ int main(int argc, char** argv)
         }
       assert(highestDeepFlavBjetPosition != -1);
       
+      //=======================================================================================================
       // get number of trigger filters
-      
-      // reset map
+      //=======================================================================================================
+      // reset maps
       for(auto &triggerFilter : triggerObjectsForStudiesCount) triggerFilter.second = 0;
       for(auto &btagFlag : jetFirstHighestDeepFlavB_triggerFlag_) btagFlag.second = 0;
       for(auto &triggerHT : HTFilterHt) triggerHT.second = -1.;
@@ -806,18 +832,19 @@ int main(int argc, char** argv)
 	      selectedJetPtEtaPhiVector.at(jetCounter) = {jet.P4().Pt(), jet.P4().Eta(), jet.P4().Phi()};
 	      jetCounter++;
             }
-	  
-        }
+	}
       
-      // loop over all trigger objects
-      for (uint trigObjIt = 0; trigObjIt < *(nat.nTrigObj); ++trigObjIt) //for over all trigger objects
+      // Loop over all trigger objects
+      for (uint trigObjIt = 0; trigObjIt < *(nat.nTrigObj); ++trigObjIt)
         {
-	  int triggerObjectId = nat.TrigObj_id.At(trigObjIt);
+	  int triggerObjectId     = nat.TrigObj_id.At(trigObjIt);
 	  int triggerFilterBitSum = nat.TrigObj_filterBits.At(trigObjIt);
 	  
 	  for(auto &triggerFilter : triggerObjectsForStudiesCount)
             {
+	      // Keep only the the ones mentioned in the config file
 	      if(triggerObjectId != triggerFilter.first.first) continue;
+	      
 	      if( (triggerFilterBitSum >> triggerFilter.first.second) & 0x1 ) //check object passes the filter
                 {
 		  if(matchWithFourHighestBjets)
@@ -844,7 +871,7 @@ int main(int argc, char** argv)
 			  // }
                         }
 		      
-                    }
+		    } // match with four highest b-tagging jets
 		  else
                     {
 		      ++triggerFilter.second;
@@ -856,9 +883,9 @@ int main(int argc, char** argv)
 		      HTFilterHt.at(triggerFilter.first) = nat.TrigObj_pt.At(trigObjIt);
                     }
 		  
-                }
-            }
-        }
+		} // Closes if checking which object passes the filter
+            } // Closes loop over all trigger filters to study
+        } // Closes loop over all trigger objects
       
       
       if(matchWithFourHighestBjets)

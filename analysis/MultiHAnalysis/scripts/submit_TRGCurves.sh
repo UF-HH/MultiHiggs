@@ -4,19 +4,36 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 2022 Samples for trigger studies
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-DATA_files=$(ls input/Run3/*)
+DATA_files=$(ls input/Run3/*Muon_Run*)
 ODIR="/store/user/mkolosov/MultiHiggs/DiHiggs/2022/TriggerEfficiency/"
-CFG="config/skim_trigger_2022_NanoAODv10.cfg"
-
-TAG="Run3_2022_TriggerEfficiency_27Jan2023"
+CFG="config/skim_PNetHLT_2022_NanoAODv10.cfg"
+TAG="Run3_TrgEff_ResolvedPNetPath_07Feb2023_SingleMuonPD"
 
 make exe -j || exit -1
 echo "... tag       : ", $TAG
 echo "... saving to : ", $ODIR
 
 for input in ${DATA_files[@]}; do
-    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
+    python scripts/submitPNetTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
 done
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+# TripleBTag path efficiencies
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+#DATA_files=$(ls input/Run3/*)
+#ODIR="/store/user/mkolosov/MultiHiggs/DiHiggs/2022/TriggerEfficiency/"
+#CFG="config/skim_trigger_2022_NanoAODv10.cfg"
+
+#TAG="Run3_2022_TriggerEfficiency_30Jan2023"
+
+#make exe -j || exit -1
+#echo "... tag       : ", $TAG
+#echo "... saving to : ", $ODIR
+
+#for input in ${DATA_files[@]}; do
+#    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
+#done
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 2017 Samples for trigger studies

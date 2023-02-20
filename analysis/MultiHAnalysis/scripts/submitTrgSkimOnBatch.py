@@ -55,7 +55,7 @@ if None in [cmssw_version, cmssw_base, scram_arch, cpp_boost_path]:
 ## -----------------------------------------------------
 ## check that I am in the base folder for submission
 here = os.getcwd()
-exp_here = '/'.join([cmssw_base, 'src/sixB/analysis/sixBanalysis'])
+exp_here = '/'.join([cmssw_base, 'src/sixB/analysis/MultiHAnalysis'])
 if here != exp_here:
     print "[ERROR] please launch this code from the base sixBanalysis directory that is:"
     print exp_here
