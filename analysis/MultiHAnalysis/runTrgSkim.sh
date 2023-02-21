@@ -5,11 +5,13 @@ exe=bin/skim_trigger.exe
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 2022
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-cfg="config/skim_trigger_2022_NanoAODv10.cfg"
+#cfg="config/skim_trigger_2022_NanoAODv10.cfg"
+cfg="config/skim_PNetHLT_2022_NanoAODv10.cfg"
 
 # Run 2022 Data
 output="Run3_SingleMuonD_2022_TrgStudies.root"
-input="input/Run3/Muon_Run2022D_v1-v1.txt"
+input="input/Run3/Muon_Run2022G_v1-v2.txt"
+
 make exe -j && \
     $exe \
     --input $input \

@@ -1,0 +1,5 @@
+root://cmsxrootd.fnal.gov//store/data/Run2022D/MuonEG/NANOAOD/PromptNanoAODv10_v2-v1/50000/68f42f42-3274-46ec-b23d-bfadc13012c2.root
+root://cmsxrootd.fnal.gov//store/data/Run2022D/MuonEG/NANOAOD/PromptNanoAODv10_v2-v1/50000/e23ae019-544a-480a-a402-86db7a936f76.root
+root://cmsxrootd.fnal.gov//store/data/Run2022D/MuonEG/NANOAOD/PromptNanoAODv10_v2-v1/60000/cbc8079f-5f9a-4df9-9329-6e3e5cd4f044.root
+root://cmsxrootd.fnal.gov//store/data/Run2022D/MuonEG/NANOAOD/PromptNanoAODv10_v2-v1/60000/f07ed16d-eabd-4d5b-af03-162cde74ef8f.root
+root://cmsxrootd.fnal.gov//store/data/Run2022D/MuonEG/NANOAOD/PromptNanoAODv10_v2-v1/60000/fc30c23f-5456-4bf9-ada4-a46c18ecd96b.root

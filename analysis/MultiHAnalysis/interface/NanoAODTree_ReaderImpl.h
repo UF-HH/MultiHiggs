@@ -49,6 +49,7 @@ public:
   // bool Next() {return fReader.Next();}
   bool Next();
   bool getTrgOr() {return trg_reader_.getTrgOr();};
+  bool getTrgResult(std::string path){return trg_reader_.getTrgResult(path); };
   std::vector<std::string> getTrgPassed() {return trg_reader_.getTrgPassed();};
   
   // the chain and TTreeReader
@@ -171,7 +172,18 @@ public:
 
   // Triggers
   NanoReaderValue<Bool_t> HLT_IsoMu24 {fReader, "HLT_IsoMu24"};
-
+  NanoReaderValue<Bool_t> L1_QuadJet60er2p5{fReader, "L1_QuadJet60er2p5"};
+  NanoReaderValue<Bool_t> L1_HTT280er{fReader, "L1_HTT280er"};
+  NanoReaderValue<Bool_t> L1_HTT320er{fReader, "L1_HTT320er"};
+  NanoReaderValue<Bool_t> L1_HTT360er{fReader, "L1_HTT360er"};
+  NanoReaderValue<Bool_t> L1_HTT400er{fReader, "L1_HTT400er"};
+  NanoReaderValue<Bool_t> L1_HTT450er{fReader, "L1_HTT450er"};
+  NanoReaderValue<Bool_t> L1_HTT280er_QuadJet_70_55_40_35_er2p5{fReader, "L1_HTT280er_QuadJet_70_55_40_35_er2p5"};
+  NanoReaderValue<Bool_t> L1_HTT320er_QuadJet_70_55_40_40_er2p5{fReader, "L1_HTT320er_QuadJet_70_55_40_40_er2p5"};
+  NanoReaderValue<Bool_t> L1_HTT320er_QuadJet_80_60_er2p1_45_40_er2p3{fReader, "L1_HTT320er_QuadJet_80_60_er2p1_45_40_er2p3"};
+  NanoReaderValue<Bool_t> L1_HTT320er_QuadJet_80_60_er2p1_50_45_er2p3{fReader, "L1_HTT320er_QuadJet_80_60_er2p1_50_45_er2p3"};
+  NanoReaderValue<Bool_t> L1_Mu6_HTT240er{fReader, "L1_Mu6_HTT240er"};
+  
   NanoReaderValue<UInt_t>    nFatJet                              {fReader, "nFatJet"};
   NanoReaderArray<Float_t>   FatJet_area                          {fReader, "FatJet_area"};
   NanoReaderArray<Float_t>   FatJet_pt                            {fReader, "FatJet_pt"};

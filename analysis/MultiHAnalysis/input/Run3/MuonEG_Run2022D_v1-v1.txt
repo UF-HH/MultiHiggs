@@ -1,0 +1,2 @@
+root://cmsxrootd.fnal.gov//store/data/Run2022D/MuonEG/NANOAOD/PromptNanoAODv10_v1-v1/50000/ba2f225b-2510-4141-8ca0-4db28fb451fa.root
+root://cmsxrootd.fnal.gov//store/data/Run2022D/MuonEG/NANOAOD/PromptNanoAODv10_v1-v1/50000/e572a7c7-59e2-4838-9ab7-099b5bb4b3b1.root
