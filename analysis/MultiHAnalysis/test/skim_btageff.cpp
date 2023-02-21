@@ -130,6 +130,11 @@ struct Efficiency {
     eff_jet_pt =     new TEfficiency(tag + "_jet_pt", tag + " jet pt;jet pt [GeV];", 30, 20.0, 500.0);
     eff_jet_eta =    new TEfficiency(tag + "_jet_eta", tag + " jet #eta;jet #eta;", 30, -2.5, 2.5);
     eff_jet_pt_eta = new TEfficiency(tag + "_jet_pt_eta", tag + " jet pt;jet pt [GeV];jet #eta", 30, 20.0, 500.0, 30, -2.5, 2.5);
+
+    eff_jet_btag->SetStatisticOption(TEfficiency::kFNormal);
+    eff_jet_pt->SetStatisticOption(TEfficiency::kFNormal);
+    eff_jet_eta->SetStatisticOption(TEfficiency::kFNormal);
+    eff_jet_pt_eta->SetStatisticOption(TEfficiency::kFNormal);
   }
 
   void Fill(Histos& passed, Histos& total) {
