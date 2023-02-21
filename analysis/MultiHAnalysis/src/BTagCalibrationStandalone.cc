@@ -71,27 +71,55 @@ BTagEntry::BTagEntry(const std::string &csvLine)
 	      << csvLine;
     throw std::exception();
   }
-
-  // make parameters
-  unsigned op = stoi(vec[0]);
-  if (op > 3) {
-    std::cerr << "ERROR in BTagCalibration: "
-	      << "Invalid csv line; OperatingPoint > 3: "
-	      << csvLine;
-    throw std::exception();
-  }
+    
+  // Get the operating point
+  std::string operating_point = vec[0];
+  BTagEntry::OperatingPoint op;
+  if (operating_point == "L")
+    {
+      op = OP_LOOSE;
+    }
+  else if (operating_point == "M")
+    {
+      op = OP_MEDIUM;
+    }
+  else if (operating_point == "T")
+    {
+      op = OP_TIGHT;
+    }
+  else
+    {
+      std::cerr << "ERROR in BTagCalibration: "
+		<< "Invalid operating point : "<<operating_point;
+      throw std::exception();
+    }
+  
+  // Get the jet-flavor
   unsigned jf = stoi(vec[3]);
-  if (jf > 2) {
-    std::cerr << "ERROR in BTagCalibration: "
-	      << "Invalid csv line; JetFlavor > 2: "
-	      << csvLine;
-    throw std::exception();
-  }
-  params = BTagEntry::Parameters(
-				 BTagEntry::OperatingPoint(op),
+  BTagEntry::JetFlavor jetFlavor;
+  if (jf == 5)
+    {
+      jetFlavor = FLAV_B;
+    }
+  else if (jf == 4)
+    {
+      jetFlavor = FLAV_C;
+    }
+  else if (jf == 0)
+    {
+      jetFlavor = FLAV_UDSG;
+    }
+  else
+    {
+      std::cerr << "ERROR in BTagCalibration: "
+		<< "Invalid jet flavor : "<<jf;
+      throw std::exception();
+    }
+  
+  params = BTagEntry::Parameters(op,
 				 vec[1],
 				 vec[2],
-				 BTagEntry::JetFlavor(jf),
+				 jetFlavor,
 				 stof(vec[4]),
 				 stof(vec[5]),
 				 stof(vec[6]),
@@ -449,7 +477,7 @@ void BTagCalibrationReader::BTagCalibrationReaderImpl::load(
 	      << jf;
     throw std::exception();
   }
-
+  
   BTagEntry::Parameters params(op_, measurementType, sysType_);
   const std::vector<BTagEntry> &entries = c.getEntries(params);
 
@@ -465,7 +493,7 @@ void BTagCalibrationReader::BTagCalibrationReaderImpl::load(
     te.ptMax = be.params.ptMax;
     te.discrMin = be.params.discrMin;
     te.discrMax = be.params.discrMax;
-
+    
     if (op_ == BTagEntry::OP_RESHAPING) {
       te.func = TF1("", be.formula.c_str(),
                     be.params.discrMin, be.params.discrMax);
