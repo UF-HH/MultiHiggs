@@ -9,7 +9,7 @@ PREREQUISITES:
 
 LAST USED:
 ./plotTriggerEfficiencyByFilter.py --rfile ../data/trigger/2018/TriggerEfficiency_BeforeFit_2018_wMatching.root --year 2018
-./plotTriggerEfficiencyByFilter.py --rfile ../data/trigger/2022/TriggerEfficiencyByFilter_2022_wMatching.root --year 2022 
+./plotTriggerEfficiencyByFilter.py --rfile ../data/trigger/2017/TriggerEfficiency_BeforeFit_2017_wMatching.root --year 2017
 ./plotTriggerEfficiencyByFilter.py --rfile TriggerEfficiencyByFilter_2022.root --year 2022
 '''
 #===================================
@@ -165,7 +165,11 @@ def plotComparison(hName, hRef, others):
     hRef.Draw()
     
     if args.year == "2022":
-        pass
+        for hOther in others:
+            hOther.SetLineColor(ROOT.kBlue)
+            hOther.SetMarkerColor(ROOT.kBlue)
+            hOther.Draw("same")
+            legend.AddEntry(hOther, "2018 (59.74 fb^{-1})")
     else:
         for hOther in others:
             hOther.Draw("same")
@@ -174,7 +178,7 @@ def plotComparison(hName, hRef, others):
             elif "NMSSM" in hOther.GetName():
                 legend.AddEntry(hOther, "NMSSM X#rightarrow YH#rightarrow H,HH #rightarrow 6b")
     
-    legend.AddEntry(hRef, "Single #mu data")
+    legend.AddEntry(hRef, "2022 (30.57 fb^{-1})")
     legend.Draw("same")
     
     tex_cms = AddCMSText(setx=0.20, sety=0.91)
@@ -185,10 +189,11 @@ def plotComparison(hName, hRef, others):
 
     header = ROOT.TLatex()
     header.SetTextSize(0.04)
-    if args.year == "2022":
-        header.DrawLatexNDC(0.62, 0.91, "30.57 fb^{-1} (13.6 TeV)")
-    elif args.year == "2018":
-        header.DrawLatexNDC(0.65, 0.91, "59.74 fb^{-1} (13 TeV)")
+    if (0):
+        if args.year == "2022":
+            header.DrawLatexNDC(0.62, 0.91, "30.57 fb^{-1} (13.6 TeV)")
+        elif args.year == "2018":
+            header.DrawLatexNDC(0.65, 0.91, "59.74 fb^{-1} (13 TeV)")
         
     # Update canvas
     d.Modified()
@@ -207,7 +212,10 @@ def plotComparison(hName, hRef, others):
 def main(args):
     
     f = ROOT.TFile.Open(args.rfile, "READ")
-
+    
+    f17 = ROOT.TFile.Open("../data/trigger/2017/TriggerEfficiency_BeforeFit_2017_wMatching.root", "READ")
+    f18 = ROOT.TFile.Open("../data/trigger/2018/TriggerEfficiency_BeforeFit_2018_wMatching.root", "READ")
+    
     Filters = {}
     Filters["2018"] = ["L1filterHT",
                        "QuadCentralJet30",
@@ -231,7 +239,7 @@ def main(args):
                        "3PFCentralJetLooseID45",
                        "4PFCentralJetLooseID40",
                        "PFCentralJetsLooseIDQuad30HT330",
-                       "BTagPFDeepCSV4p5Triple"]
+                       "BTagPFDeepJet4p5Triple"]
     
     Filters["2017"] = ["L1filterHT",
                        "QuadCentralJet30",
@@ -245,15 +253,19 @@ def main(args):
                        "PFCentralJetsLooseIDQuad30HT300",
                        "BTagPFCSVp070Triple"]
     
-    
-
-
     for filt in Filters[args.year]:
         hData_Eff   = f.Get("SingleMuon__Efficiency_%s" % (filt))
         hTT_Eff     = f.Get("TTbar__Efficiency_%s" %(filt))
         hSignal_Eff = f.Get("NMSSM__Efficiency_%s" %(filt))
+        
+        if filt == "BTagPFDeepJet4p5Triple":
+            hData18_Eff = f18.Get("SingleMuon__Efficiency_%s" % ("BTagPFDeepCSV4p5Triple"))
+        else:
+            hData18_Eff = f18.Get("SingleMuon__Efficiency_%s" % (filt))
 
-        if args.year == "2018" or args.year == "2022":
+        if args.year == "2022":
+            plotComparison("Efficiency_%s" % (filt), hData_Eff, [hData18_Eff])
+        elif args.year == "2018":
             plotComparison("Efficiency_%s" % (filt), hData_Eff, [hTT_Eff, hSignal_Eff])
         elif args.year == "2017":
             plotComparison("Efficiency_%s" % (filt), hData_Eff, [hTT_Eff])
