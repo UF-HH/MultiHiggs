@@ -10,22 +10,45 @@ sample_defaults = dict(
     signal=dict(
         files=["input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/*.txt"],
         tag="NMSSM_XYY_YToHH_8b",
-        njobs=100
+        njobs=100,
+        forceOverwrite=True,
     ),
     training=dict(
         files=["input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/training_5M/*.txt"],
         tag="NMSSM_XYY_YToHH_8b",
-        njobs=100
+        njobs=100,
+        forceOverwrite=True,
     ),
-    qcd=dict(
-        files=["input/Run2_Autumn18/QCD*BGenFilter*", "input/Run2_UL/2018/QCD*bEnriched*"],
-        tag="QCD",
-        njobs=100
+    qcdb=dict(
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*BGenFilter*.txt", "input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*bEnriched*.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/QCD",
+        njobs=100,
+        forceOverwrite=True,
+    ),
+    qcdht=dict(
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*PSWeight*.txt"],
+        # files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*700to1000*PSWeight*.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/QCD",
+        njobs=100,
+        forceOverwrite=True,
     ),
     ttbar=dict(
-        files=["input/Run2_UL/2018/TTJets.txt"],
-        tag="TTJets",
-        njobs=150
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/TTTo*.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
+        njobs=150,
+        forceOverwrite=True,
+    ),
+    ttjet=dict(
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/TTJets*.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
+        njobs=150,
+        forceOverwrite=True,
+    ),
+    data=dict(
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/JetHT_Run2018*.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/JetHT_Data",
+        njobs=200,
+        forceOverwrite=True,
     )
 )
 
@@ -33,8 +56,13 @@ sample_defaults = dict(
 parser = ArgumentParser()
 
 parser.add_argument("-p","--path", default="/store/user/ekoenig/8BAnalysis/NTuples/2018", help="master path to use for condor output")
-parser.add_argument("-o","--odir", default="test", help="output directory to cat onto path; path/odir")
-parser.add_argument("-c","--cfg", required=True, help="config to use in skim")
+parser.add_argument("-o","--odir", help="output directory to cat onto path; path/odir")
+parser.add_argument("-c","--cfg",  help="config to use in skim")
+
+parser.set_defaults(
+    odir="preselection/t8btag_minmass",
+    cfg="config/8b_config/skim_ntuple_2018_t8btag_minmass.cfg"
+)
 
 subparser = parser.add_subparsers(dest='sample')
 def add_parser(sample, defaults):
@@ -65,6 +93,11 @@ for key,value in vars(args).items():
         kwargs.append( str(value) )
 
 kwargs = kwargs + submit_args
+
+tar = "/eos/uscms/%s/%s/analysis_tar/sixBanalysis.tar.gz" % (outputDir, args.tag)
+if os.path.exists(tar):
+    print('... removing %s' % tar)
+    os.remove(tar)
 
 for sample in samplelist:
     command = ['python','scripts/submitSkimOnBatch.py', '--input', sample] + kwargs

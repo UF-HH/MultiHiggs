@@ -498,11 +498,12 @@ std::vector<Jet> EightB_functions::select_eightb_jets_maxbtag(NanoAODTree& nat, 
     int n_out = std::min<int>(jets.size(), 8);
     jets.resize(n_out);
 
+
+
     // for (auto& jet : jets)
     //     std::cout << jet.P4().Pt() << " " << get_property (jet, Jet_btagDeepFlavB) << std::endl;
     // std::cout << std::endl << std::endl;
-
-    return jets;
+    return pt_sort_jets(nat, ei, jets);
 }
 
 std::vector<Jet> EightB_functions::select_eightb_jets_gnn(NanoAODTree& nat,
