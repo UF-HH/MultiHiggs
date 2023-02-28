@@ -1,7 +1,47 @@
 import os
 
-# the prototype name of the production folder
-prod_proto = "NMSSM_XYH_YToHH_6b_MX_{0}_MY_{1}"
+from argparse import ArgumentParser
+
+process_kwargs = dict(
+    sixb = dict(
+        # the prototype name of the production folder
+        prod_proto = "NMSSM_XYH_YToHH_6b_MX_{0}_MY_{1}",
+        # 2 - the original files
+        template   = "Template/XYH_YToHH_6b",
+        ## mX, mY
+        points = [
+            (450, 300),
+            (500, 300),
+            (600, 300),
+            (600, 400),
+            (700, 300),
+            (700, 400),
+            (700, 500),
+            (1000, 300),
+            (1000, 700),
+            (1200, 300),
+            (1200, 700),
+            (1200, 1000)
+        ]
+    ),
+    eightb = dict(
+        # the prototype name of the production folder
+        prod_proto = "NMSSM_XYY_YToHH_8b_MX_{0}_MY_{1}",
+        # 2 - the original files
+        template   = "Template/XYY_YToHH_8b/",
+        ## mX, mY
+        points = [
+            (mx, my)
+            for mx in range(500, 4000 + 50, 50)
+            for my in range(250, mx//2 + 50, 50)
+        ]
+    )
+)
+
+parser = ArgumentParser()
+parser.add_argument('-proc','--process', choices=process_kwargs.keys())
+args = parser.parse_args()
+kwargs = process_kwargs[args.process]
 
 ### things to replace are
 ### TEMPLATEMH02 [mX]
@@ -29,7 +69,7 @@ def change_cards(cardname, replacements):
     os.system('rm %s' % bkpname)
 
 
-def do_point(mx, my):
+def do_point(mx, my, prod_proto=None, template=None, **kwargs):
     # 1 - create the folder
     folder = prod_proto.format(mx, my)
     if os.path.isdir(folder):
@@ -38,7 +78,7 @@ def do_point(mx, my):
     os.system('mkdir ' + folder)
     
     # 2 - copy the original files
-    template_flrd = 'Template'
+    template_flrd = template
     
     run_card      = 'run_card.dat'
     proc_card     = 'proc_card.dat'
@@ -65,22 +105,7 @@ def do_point(mx, my):
 
 ####################################################################################
 
-## mX, mY
-points = [
-    (450, 300),
-    (500, 300),
-    (600, 300),
-    (600, 400),
-    (700, 300),
-    (700, 400),
-    (700, 500),
-    (1000, 300),
-    (1000, 700),
-    (1200, 300),
-    (1200, 700),
-    (1200, 1000)
-]
 
-for p in points:
+for p in kwargs['points']:
     print '... generating', p
-    do_point(*p)
+    do_point(*p, **kwargs)
