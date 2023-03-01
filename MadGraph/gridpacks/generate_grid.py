@@ -31,9 +31,13 @@ process_kwargs = dict(
         template   = "Template/XYY_YToHH_8b/",
         ## mX, mY
         points = [
-            (mx, my)
-            for mx in range(500, 4000 + 50, 50)
-            for my in range(250, mx//2 + 50, 50)
+            (500,250),
+            (1000,500),
+            (1500,500),
+            (2000,1000),
+            # (mx, my)
+            # for mx in range(500, 4000 + 50, 50)
+            # for my in range(250, mx//2 + 50, 50)
         ]
     )
 )
