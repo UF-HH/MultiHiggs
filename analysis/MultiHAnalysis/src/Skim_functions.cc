@@ -38,6 +38,7 @@ void Skim_functions::copy_event_info(NanoAODTree &nat, EventInfo &ei, bool is_mc
   ei.Run = *(nat.run);
   ei.LumiSec = *(nat.luminosityBlock);
   ei.Event = *(nat.event);
+  ei.is_mc = is_mc;
 
   ei.n_other_pv = *(nat.nOtherPV);
   ei.rhofastjet_all = *(nat.fixedGridRhoFastjetAll);
