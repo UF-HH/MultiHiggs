@@ -383,7 +383,7 @@ void initializeTriggerRequirements(
 
 // -----------------------------------
 
-enum SkimTypes { kfourb, ksixb, keightb, kpass, kpresel, knull };
+enum SkimTypes { kfourb, ksixb, keightb, kpass, kpresel, kttbar, knull };
 
 int main(int argc, char** argv) {
   const auto start_prog_t = chrono::high_resolution_clock::now();
@@ -493,6 +493,7 @@ int main(int argc, char** argv) {
                                : skim_type_name == "eightb" ? keightb
                                : skim_type_name == "pass"   ? kpass
                                : skim_type_name == "presel" ? kpresel
+                               : skim_type_name == "ttbar" ?  kttbar
                                                             : knull);
   if (skim_type == knull)
     throw std::runtime_error("skim type not recognized");
@@ -521,6 +522,7 @@ int main(int argc, char** argv) {
                     {"fourb_brs", (skim_type == kfourb)},
                     {"sixb_brs", (skim_type == ksixb)},
                     {"eightb_brs", (skim_type == keightb)},
+                    {"ttbar_brs", (skim_type == kttbar)},
                     {"sig_gen_brs", (is_signal)},
                     {"gen_brs", (!is_data)},
                     {"saveTrgSF", (!is_data) && readCfgOptWithDefault<bool>(config, "triggers::saveTrgSF", false)},
@@ -628,6 +630,9 @@ int main(int argc, char** argv) {
       break;
     case kpresel:
       skf = new SixB_functions();
+      break;
+    case kttbar:
+      skf = new TTBar_functions();
       break;
     default:
       skf = new Skim_functions();
@@ -1122,7 +1127,25 @@ int main(int argc, char** argv) {
       skf->compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
     }  // Closes sixb skimming
+    else if ( skim_type == kttbar ) {
+      if (presel_jets.size() < 6)
+        continue;
+      cutflow.add("npresel_jets>=6", nwt);
+      cutflow_Unweighted.add("npresel_jets>=6");
+      
+      std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
+      ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
+      loop_timer.click("TT Bar Selection");
 
+      if (selected_jets.size() < 6)
+        continue;
+
+      if (readCfgOptWithDefault<bool>(config, "configurations::saveSelected", false))
+        ei.jet_list = selected_jets;
+
+      cutflow.add("nselect_jets>=6", nwt);
+      cutflow_Unweighted.add("nselect_jets>=6");
+    }
     if (blind && is_data && skf->is_blinded(nat, ei, is_data))
       continue;
 

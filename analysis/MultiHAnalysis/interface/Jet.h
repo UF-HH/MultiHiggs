@@ -47,8 +47,14 @@ public:
   float get_ptRegressed() const { return this->P4Regressed().Pt(); }
   float get_eta() const { return this->P4().Eta(); }
   float get_phi() const { return this->P4().Phi(); }
-  int get_partonFlav() const { return get_property((*this), Jet_partonFlavour); }
-  int get_hadronFlav() const { return get_property((*this), Jet_hadronFlavour); }
+  int get_partonFlav() const {
+    // return 0;
+    return get_property((*this), Jet_partonFlavour);
+  }
+  int get_hadronFlav() const {
+    // return 0;
+    return get_property((*this), Jet_hadronFlavour);
+  }
   int get_signalId() const { return signalId; }
   int get_higgsIdx() const { return higgsIdx; }
   int get_genIdx() const { return genIdx; }

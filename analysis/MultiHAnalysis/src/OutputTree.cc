@@ -574,17 +574,15 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       BRANCH_ele_list(ele);
     }
   
-  /*
   if (is_enabled("ttbar_brs"))
     {
       std::cout << "[INFO] OutputTree : enabling ttbar branches" << std::endl;
-      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet1);
-      if (is_enabled("gen_brs")) tree_->Branch("bjet1_hadflav", &bjet1_hadflav);
-
-      BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(bjet2);
-      if (is_enabled("gen_brs")) tree_->Branch("bjet2_hadflav", &bjet2_hadflav);
+      if (is_enabled("sig_gen_brs")) {
+        tree_->Branch("nfound_all", &nfound_all);
+        tree_->Branch("nfound_presel", &nfound_presel);
+        tree_->Branch("nfound_select", &nfound_select);
+      }
     }
-  */
   
   tree_->Branch("n_total_jet",&n_total_jet);
   tree_->Branch("n_jet", &n_jet);

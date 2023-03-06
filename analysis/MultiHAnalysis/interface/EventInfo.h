@@ -225,6 +225,35 @@ struct EventInfo{
   boost::optional<int> nfound_paired_y;
 
   // for ttbar skims
+  boost::optional<GenPart> gen_t1;
+  boost::optional<GenPart> gen_t1_b;
+  boost::optional<GenPart> gen_t1_w;
+  boost::optional<GenPart> gen_t1_w_j1;
+  boost::optional<GenPart> gen_t1_w_j2;
+
+
+  boost::optional<GenPart> gen_t2;
+  boost::optional<GenPart> gen_t2_b;
+  boost::optional<GenPart> gen_t2_w;
+  boost::optional<GenPart> gen_t2_w_j1;
+  boost::optional<GenPart> gen_t2_w_j2;
+
+  boost::optional<GenJet> gen_t1_b_genjet;
+  boost::optional<GenJet> gen_t1_w_j1_genjet;
+  boost::optional<GenJet> gen_t1_w_j2_genjet;
+
+  boost::optional<GenJet> gen_t2_b_genjet;
+  boost::optional<GenJet> gen_t2_w_j1_genjet;
+  boost::optional<GenJet> gen_t2_w_j2_genjet;
+
+  boost::optional<Jet> gen_t1_b_recojet;
+  boost::optional<Jet> gen_t1_w_j1_recojet;
+  boost::optional<Jet> gen_t1_w_j2_recojet;
+
+  boost::optional<Jet> gen_t2_b_recojet;
+  boost::optional<Jet> gen_t2_w_j1_recojet;
+  boost::optional<Jet> gen_t2_w_j2_recojet;
+
   boost::optional<Jet> bjet1;
   boost::optional<Jet> bjet2;
 
