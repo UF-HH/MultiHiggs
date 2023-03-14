@@ -192,8 +192,10 @@ using namespace std;
       ot.OBJ##_signalId.push_back(jet.get_signalId());           \
       ot.OBJ##_higgsIdx.push_back(jet.get_higgsIdx());           \
       ot.OBJ##_genIdx.push_back(jet.get_genIdx());               \
+      if (ei.is_mc){\
       ot.OBJ##_partonFlav.push_back(jet.get_partonFlav());       \
       ot.OBJ##_hadronFlav.push_back(jet.get_hadronFlav());       \
+      }\
       ot.OBJ##_btag.push_back(jet.get_btag());                   \
       ot.OBJ##_qgl.push_back(jet.get_qgl());                     \
       ot.OBJ##_chEmEF.push_back(jet.get_chEmEF());               \

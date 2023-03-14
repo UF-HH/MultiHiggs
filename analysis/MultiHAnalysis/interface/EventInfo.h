@@ -31,6 +31,8 @@ struct EventInfo{
   boost::optional<unsigned int>           LumiSec;
   boost::optional<unsigned long long int> Event;
 
+  bool is_mc;
+
   boost::optional<int>    n_other_pv;
   boost::optional<int>    n_pu;
   boost::optional<double> n_true_int;
