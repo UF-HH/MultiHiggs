@@ -2,6 +2,7 @@
 #define JET_H
 
 #include "Candidate.h"
+#include "BranchCollection.h"
 
 class Jet : public Candidate
 {
@@ -72,6 +73,62 @@ public:
 private:
   void buildP4() override; 
 
+};
+
+struct JetListCollection : public BranchCollection<std::vector<Jet>> {
+  std::vector<float> E;           
+  std::vector<float> m;           
+  std::vector<float> mRegressed;  
+  std::vector<float> pt;          
+  std::vector<float> ptRegressed; 
+  std::vector<float> eta;         
+  std::vector<float> phi;         
+  std::vector<int> partonFlav;    
+  std::vector<int> hadronFlav;    
+  std::vector<int> signalId;      
+  std::vector<int> higgsIdx;      
+  std::vector<int> genIdx;        
+  std::vector<float> btag;        
+  std::vector<float> qgl;         
+  std::vector<float> chEmEF;      
+  std::vector<float> chHEF;       
+  std::vector<float> neEmEF;      
+  std::vector<float> neHEF;       
+  std::vector<int> nConstituents; 
+  std::vector<int> id;            
+  std::vector<int> puid;
+
+  DEF_BRANCH_COLLECTION(JetListCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const std::vector<Jet>& jets) override;
+};
+
+struct JetCollection : public BranchCollection<Jet> {
+  float E;           
+  float m;           
+  float mRegressed;  
+  float pt;          
+  float ptRegressed; 
+  float eta;         
+  float phi;         
+  int partonFlav;    
+  int hadronFlav;    
+  int signalId;      
+  float btag;        
+  float qgl;         
+  float chEmEF;      
+  float chHEF;       
+  float neEmEF;      
+  float neHEF;       
+  int nConstituents; 
+  int id;            
+  int puid;
+
+  DEF_BRANCH_COLLECTION(JetCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const Jet& jet) override;
 };
 
 #endif

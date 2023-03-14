@@ -2,6 +2,7 @@
 #define ELECTRON_H
 
 #include "Candidate.h"
+#include "BranchCollection.h"
 
 class Electron : public Candidate
 {
@@ -30,6 +31,26 @@ public:
   
 private:
   void buildP4() override; 
+};
+
+struct ElectronListCollection : public BranchCollection<std::vector<Electron>> {
+  std::vector<float> E;               
+  std::vector<float> m;               
+  std::vector<float> pt;              
+  std::vector<float> eta;             
+  std::vector<float> phi;             
+  std::vector<float> dxy;             
+  std::vector<float> dz;              
+  std::vector<float> charge;          
+  std::vector<float> pfRelIso03_all;     
+  std::vector<bool> mvaFall17V2Iso_WPL;  
+  std::vector<bool> mvaFall17V2Iso_WP90; 
+  std::vector<bool> mvaFall17V2Iso_WP80;
+
+  DEF_BRANCH_COLLECTION(ElectronListCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const std::vector<Electron>& electrons) override;
 };
 
 #endif

@@ -24,6 +24,15 @@
 typedef ROOT::Math::PtEtaPhiMVector p4_t;
 
 #include "UserValCollection.h"
+
+#include "Jet.h"
+#include "GenJet.h"
+#include "GenPart.h"
+#include "Muon.h"
+#include "Electron.h"
+#include "FatJet.h"
+#include "GenJetAK8.h"
+
 #include <string>
 #include <memory>
 #include <map>
@@ -78,118 +87,6 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
   float OBJ##_btag;                                            \
   float OBJ##_score;                                           \
   p4_t OBJ##_p4;
-
-#define DECLARE_ele_list(OBJ)               \
-  std::vector<float> OBJ##_E;               \
-  std::vector<float> OBJ##_m;               \
-  std::vector<float> OBJ##_pt;              \
-  std::vector<float> OBJ##_eta;             \
-  std::vector<float> OBJ##_phi;             \
-  std::vector<float> OBJ##_dxy;             \
-  std::vector<float> OBJ##_dz;              \
-  std::vector<float> OBJ##_charge;          \
-  std::vector<float> OBJ##_pfRelIso03_all;     \
-  std::vector<bool> OBJ##_mvaFall17V2Iso_WPL;  \
-  std::vector<bool> OBJ##_mvaFall17V2Iso_WP90; \
-  std::vector<bool> OBJ##_mvaFall17V2Iso_WP80;
-
-#define DECLARE_muon_list(OBJ)             \
-  std::vector<float> OBJ##_E;              \
-  std::vector<float> OBJ##_m;              \
-  std::vector<float> OBJ##_pt;             \
-  std::vector<float> OBJ##_eta;            \
-  std::vector<float> OBJ##_phi;            \
-  std::vector<float> OBJ##_dxy;            \
-  std::vector<float> OBJ##_dz;             \
-  std::vector<float> OBJ##_charge;         \
-  std::vector<float> OBJ##_pfRelIso04_all; \
-  std::vector<bool> OBJ##_looseId;         \
-  std::vector<bool> OBJ##_mediumId;        \
-  std::vector<bool> OBJ##_tightId;
-
-#define DECLARE_fatjet_list(OBJ)           \
-  std::vector<float> OBJ##_pt;		   \
-  std::vector<float> OBJ##_eta;            \
-  std::vector<float> OBJ##_phi;            \
-  std::vector<float> OBJ##_m;              \
-  std::vector<float> OBJ##_mSD_UnCorrected;\
-  std::vector<float> OBJ##_area;	   \
-  std::vector<float> OBJ##_n2b1;           \
-  std::vector<float> OBJ##_n3b1;           \
-  std::vector<float> OBJ##_rawFactor;      \
-  std::vector<float> OBJ##_tau1;           \
-  std::vector<float> OBJ##_tau2;           \
-  std::vector<float> OBJ##_tau3;           \
-  std::vector<float> OBJ##_tau4;           \
-  std::vector<int>   OBJ##_jetId;          \
-  std::vector<int>   OBJ##_genJetAK8Idx;   \
-  std::vector<int>   OBJ##_hadronFlavour;  \
-  std::vector<int>   OBJ##_nBHadrons;      \
-  std::vector<int>   OBJ##_nCHadrons;      \
-  std::vector<int>   OBJ##_nPFCand;        \
-  std::vector<float> OBJ##_PNetQCDb;       \
-  std::vector<float> OBJ##_PNetQCDbb;      \
-  std::vector<float> OBJ##_PNetQCDc;       \
-  std::vector<float> OBJ##_PNetQCDcc;      \
-  std::vector<float> OBJ##_PNetQCDothers;  \
-  std::vector<float> OBJ##_PNetXbb;        \
-  std::vector<float> OBJ##_PNetXcc;        \
-  std::vector<float> OBJ##_PNetXqq;        \
-  std::vector<float> OBJ##_deepTagMD_H4q;  \
-  std::vector<float> OBJ##_deepTagMD_Hbb;  \
-  std::vector<float> OBJ##_deepTagMD_T;    \
-  std::vector<float> OBJ##_deepTagMD_W;    \
-  std::vector<float> OBJ##_deepTagMD_Z;    \
-  std::vector<float> OBJ##_deepTagMD_bbvsL;   \
-  std::vector<float> OBJ##_deepTagMD_ccvsL;   \
-  std::vector<float> OBJ##_deepTag_QCD;       \
-  std::vector<float> OBJ##_deepTag_QCDothers; \
-  std::vector<float> OBJ##_deepTag_W;         \
-  std::vector<float> OBJ##_deepTag_Z;         \
-  std::vector<int>   OBJ##_nsubjets;          \
-  std::vector<float> OBJ##_subjet1_pt;        \
-  std::vector<float> OBJ##_subjet1_eta;       \
-  std::vector<float> OBJ##_subjet1_phi;       \
-  std::vector<float> OBJ##_subjet1_m;         \
-  std::vector<float> OBJ##_subjet1_btagDeepB; \
-  std::vector<float> OBJ##_subjet2_pt;        \
-  std::vector<float> OBJ##_subjet2_eta;       \
-  std::vector<float> OBJ##_subjet2_phi;       \
-  std::vector<float> OBJ##_subjet2_m;         \
-  std::vector<float> OBJ##_subjet2_btagDeepB;
-
-#define DECLARE_jet_list(OBJ)           \
-  std::vector<float> OBJ##_E;           \
-  std::vector<float> OBJ##_m;           \
-  std::vector<float> OBJ##_mRegressed;  \
-  std::vector<float> OBJ##_pt;          \
-  std::vector<float> OBJ##_ptRegressed; \
-  std::vector<float> OBJ##_eta;         \
-  std::vector<float> OBJ##_phi;         \
-  std::vector<int> OBJ##_partonFlav;    \
-  std::vector<int> OBJ##_hadronFlav;    \
-  std::vector<int> OBJ##_signalId;      \
-  std::vector<int> OBJ##_higgsIdx;      \
-  std::vector<int> OBJ##_genIdx;        \
-  std::vector<float> OBJ##_btag;        \
-  std::vector<float> OBJ##_qgl;         \
-  std::vector<float> OBJ##_chEmEF;      \
-  std::vector<float> OBJ##_chHEF;       \
-  std::vector<float> OBJ##_neEmEF;      \
-  std::vector<float> OBJ##_neHEF;       \
-  std::vector<int> OBJ##_nConstituents; \
-  std::vector<int> OBJ##_id;            \
-  std::vector<int> OBJ##_puid;
-
-#define DECLARE_dijet_list(OBJ)    \
-  std::vector<float> OBJ##_pt;     \
-  std::vector<float> OBJ##_eta;    \
-  std::vector<float> OBJ##_phi;    \
-  std::vector<float> OBJ##_m;      \
-  std::vector<float> OBJ##_E;      \
-  std::vector<float> OBJ##_dr;     \
-  std::vector<int> OBJ##_signalId; \
-  std::vector<float> OBJ##_2j_score;
 
 class OutputTree : public BaseOutTree {
     
@@ -254,131 +151,95 @@ public:
   float b_6j_score;
   float b_3d_score;
 
-  std::vector<float> genjet_E;	    
-  std::vector<float> genjet_m;		
-  std::vector<float> genjet_pt;		
-  std::vector<float> genjet_eta;		
-  std::vector<float> genjet_phi;		
-  std::vector<int> genjet_partonFlav;
-  std::vector<int> genjet_hadronFlav;
-  std::vector<int> genjet_signalId;
-  std::vector<int> genjet_recoIdx;
+  GenJetListCollection genjet;
+  GenJetAK8ListCollection genfatjet;
   
-  std::vector<float> genfatjet_E;
-  std::vector<float> genfatjet_m;
-  std::vector<float> genfatjet_pt;
-  std::vector<float> genfatjet_eta;
-  std::vector<float> genfatjet_phi;
-  std::vector<int>   genfatjet_signalId;
-  std::vector<int>   genfatjet_recoIdx;
-  std::vector<int>   genfatjet_partonFlav;
-  std::vector<int>   genfatjet_hadronFlav;
-  std::vector<int>   genfatjet_nsubjets;
-  std::vector<float> genfatjet_subjet1_pt;
-  std::vector<float> genfatjet_subjet1_m;
-  std::vector<float> genfatjet_subjet1_phi;
-  std::vector<float> genfatjet_subjet1_eta;
-  std::vector<float> genfatjet_subjet2_pt;
-  std::vector<float> genfatjet_subjet2_m;
-  std::vector<float> genfatjet_subjet2_eta;
-  std::vector<float> genfatjet_subjet2_phi;
-  
-  DECLARE_ele_list(ele);
-  DECLARE_muon_list(muon);
-  DECLARE_jet_list(jet);
-  DECLARE_fatjet_list(fatjet);
-  
-  int n_dijet;
-  std::vector<float> dijet_m;
-  std::vector<float> dijet_pt;
-  std::vector<float> dijet_eta;
-  std::vector<float> dijet_phi;
-  std::vector<float> dijet_dr;
-  std::vector<float> dijet_score;
-  std::vector<int> dijet_signalId;
-  std::vector<int> dijet_j1Idx;
-  std::vector<int> dijet_j2Idx;
+  ElectronListCollection ele;
+  MuonListCollection muon;
 
+  JetListCollection jet;
+  FatJetListCollection fatjet;
+  
   float sphericity;
   float sphericity_t;
   float aplanarity;
 
-  DECLARE_m_pt_eta_phi_p4(gen_H1_fc);
-  DECLARE_m_pt_eta_phi_p4(gen_H2_fc);
-  DECLARE_m_pt_eta_phi_p4(gen_H1_b1_genfatjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H1_b2_genfatjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2_b1_genfatjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2_b2_genfatjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H1_b1_recofatjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H1_b2_recofatjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2_b1_recofatjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2_b2_recofatjet);
+  GenPartCollection gen_H1_fc;
+  GenPartCollection gen_H2_fc;
+  GenJetAK8Collection gen_H1_b1_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H1_b2_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H2_b1_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H2_b2_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  FatJetCollection gen_H1_b1_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H1_b2_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H2_b1_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H2_b2_recofatjet = FatJetCollection({"pt","m","eta","phi"});
   
-  DECLARE_m_pt_eta_phi_p4(gen_X_fc);
-  DECLARE_m_pt_eta_phi_p4(gen_X);
+  GenPartCollection gen_X_fc;
+  GenPartCollection gen_X;
   // Start Gen 6B Objects
-  DECLARE_m_pt_eta_phi_p4(gen_Y);
-  DECLARE_m_pt_eta_phi_p4(gen_HX);
-  DECLARE_m_pt_eta_phi_p4(gen_H1);
-  DECLARE_m_pt_eta_phi_p4(gen_H2);
+  GenPartCollection gen_Y;
+  GenPartCollection gen_HX;
+  GenPartCollection gen_H1;
+  GenPartCollection gen_H2;
 
-  DECLARE_m_pt_eta_phi_p4(gen_HX_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_HX_b2);
-  DECLARE_m_pt_eta_phi_p4(gen_H1_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_H1_b2);
-  DECLARE_m_pt_eta_phi_p4(gen_H2_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_H2_b2);
+  GenPartCollection gen_HX_b1;
+  GenPartCollection gen_HX_b2;
+  GenPartCollection gen_H1_b1;
+  GenPartCollection gen_H1_b2;
+  GenPartCollection gen_H2_b1;
+  GenPartCollection gen_H2_b2;
 
-  DECLARE_m_pt_eta_phi_p4(gen_HX_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_HX_b2_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H1_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H1_b2_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2_b2_genjet);
+  GenJetCollection gen_HX_b1_genjet = GenJetCollection({"pt","m","eta","phi"});
+  GenJetCollection gen_HX_b2_genjet = GenJetCollection({"pt","m","eta","phi"});
+  GenJetCollection gen_H1_b1_genjet = GenJetCollection({"pt","m","eta","phi"});
+  GenJetCollection gen_H1_b2_genjet = GenJetCollection({"pt","m","eta","phi"});
+  GenJetCollection gen_H2_b1_genjet = GenJetCollection({"pt","m","eta","phi"});
+  GenJetCollection gen_H2_b2_genjet = GenJetCollection({"pt","m","eta","phi"});
 
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H1_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_p4(gen_H2_b2_recojet);
+  JetCollection gen_HX_b1_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
+  JetCollection gen_HX_b2_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
+  JetCollection gen_H1_b1_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
+  JetCollection gen_H1_b2_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
+  JetCollection gen_H2_b1_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
+  JetCollection gen_H2_b2_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
   // End Gen 6B Objects
 
   
   // Gen 8B Objects
-  DECLARE_m_pt_eta_phi_p4(gen_Y1);
-  DECLARE_m_pt_eta_phi_p4(gen_Y2);
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y1);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y1);
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y2);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y2);
+  GenPartCollection gen_Y1;
+  GenPartCollection gen_Y2;
+  GenPartCollection gen_H1Y1;
+  GenPartCollection gen_H2Y1;
+  GenPartCollection gen_H1Y2;
+  GenPartCollection gen_H2Y2;
 
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y1_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y1_b2);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y1_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y1_b2);
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y2_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y2_b2);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b1);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b2);
+  GenPartCollection gen_H1Y1_b1;
+  GenPartCollection gen_H1Y1_b2;
+  GenPartCollection gen_H2Y1_b1;
+  GenPartCollection gen_H2Y1_b2;
+  GenPartCollection gen_H1Y2_b1;
+  GenPartCollection gen_H1Y2_b2;
+  GenPartCollection gen_H2Y2_b1;
+  GenPartCollection gen_H2Y2_b2;
   
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y1_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y1_b2_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y1_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y1_b2_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y2_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H1Y2_b2_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b1_genjet);
-  DECLARE_m_pt_eta_phi_p4(gen_H2Y2_b2_genjet);
+  GenJetCollection gen_H1Y1_b1_genjet;
+  GenJetCollection gen_H1Y1_b2_genjet;
+  GenJetCollection gen_H2Y1_b1_genjet;
+  GenJetCollection gen_H2Y1_b2_genjet;
+  GenJetCollection gen_H1Y2_b1_genjet;
+  GenJetCollection gen_H1Y2_b2_genjet;
+  GenJetCollection gen_H2Y2_b1_genjet;
+  GenJetCollection gen_H2Y2_b2_genjet;
   
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b2_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b1_recojet);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b2_recojet);
+  JetCollection gen_H1Y1_b1_recojet = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection gen_H1Y1_b2_recojet = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection gen_H2Y1_b1_recojet = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection gen_H2Y1_b2_recojet = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection gen_H1Y2_b1_recojet = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection gen_H1Y2_b2_recojet = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection gen_H2Y2_b1_recojet = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection gen_H2Y2_b2_recojet = JetCollection({"pt","eta","phi","m","btag"});
   // End Gen 8B Objects
   
   int gen_bs_N_reco_match;
@@ -393,12 +254,12 @@ public:
   DECLARE_m_pt_eta_phi_p4(H1);
   DECLARE_m_pt_eta_phi_p4(H2);
 
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b2);
+  JetCollection HX_b1 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection HX_b2 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H1_b1 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H1_b2 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H2_b1 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H2_b2 = JetCollection({"pt","eta","phi","m","btag"});
 
   int HX_b1_genHflag;
   int HX_b2_genHflag;
@@ -416,25 +277,14 @@ public:
   DECLARE_m_pt_eta_phi_score_p4(H1Y2);
   DECLARE_m_pt_eta_phi_score_p4(H2Y2);
 
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b2);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b1);
-  DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b2);
-
-  int H1Y1_b1_genHflag;
-  int H1Y1_b2_genHflag;
-  int H2Y1_b1_genHflag;
-  int H2Y1_b2_genHflag;
-  int H1Y2_b1_genHflag;
-  int H1Y2_b2_genHflag;
-  int H2Y2_b1_genHflag;
-  int H2Y2_b2_genHflag;
-
-  float quadh_score;
+  JetCollection H1Y1_b1 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H1Y1_b2 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H2Y1_b1 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H2Y1_b2 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H1Y2_b1 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H1Y2_b2 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H2Y2_b1 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection H2Y2_b2 = JetCollection({"pt","eta","phi","m","btag"});
 
   int n_loose_btag;
   int n_medium_btag;

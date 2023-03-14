@@ -3,6 +3,7 @@
 
 #include "Candidate.h"
 #include "SubJet.h"
+#include "BranchCollection.h"
 
 class FatJet : public Candidate
 {
@@ -177,8 +178,122 @@ public:
   
 private:
   void buildP4() override; 
-  
-  
 };
+
+
+struct FatJetListCollection : public BranchCollection<std::vector<FatJet>> {
+  std::vector<float> pt;		   
+  std::vector<float> eta;            
+  std::vector<float> phi;            
+  std::vector<float> m;              
+  std::vector<float> mSD_UnCorrected;
+  std::vector<float> area;	   
+  std::vector<float> n2b1;           
+  std::vector<float> n3b1;           
+  std::vector<float> rawFactor;      
+  std::vector<float> tau1;           
+  std::vector<float> tau2;           
+  std::vector<float> tau3;           
+  std::vector<float> tau4;           
+  std::vector<int>   jetId;          
+  std::vector<int>   genJetAK8Idx;   
+  std::vector<int>   hadronFlavour;  
+  std::vector<int>   nBHadrons;      
+  std::vector<int>   nCHadrons;      
+  std::vector<int>   nPFCand;        
+  std::vector<float> PNetQCDb;       
+  std::vector<float> PNetQCDbb;      
+  std::vector<float> PNetQCDc;       
+  std::vector<float> PNetQCDcc;      
+  std::vector<float> PNetQCDothers;  
+  std::vector<float> PNetXbb;        
+  std::vector<float> PNetXcc;        
+  std::vector<float> PNetXqq;        
+  std::vector<float> deepTagMD_H4q;  
+  std::vector<float> deepTagMD_Hbb;  
+  std::vector<float> deepTagMD_T;    
+  std::vector<float> deepTagMD_W;    
+  std::vector<float> deepTagMD_Z;    
+  std::vector<float> deepTagMD_bbvsL;   
+  std::vector<float> deepTagMD_ccvsL;   
+  std::vector<float> deepTag_QCD;       
+  std::vector<float> deepTag_QCDothers; 
+  std::vector<float> deepTag_W;         
+  std::vector<float> deepTag_Z;         
+  std::vector<int>   nsubjets;          
+  std::vector<float> subjet1_pt;        
+  std::vector<float> subjet1_eta;       
+  std::vector<float> subjet1_phi;       
+  std::vector<float> subjet1_m;         
+  std::vector<float> subjet1_btagDeepB; 
+  std::vector<float> subjet2_pt;        
+  std::vector<float> subjet2_eta;       
+  std::vector<float> subjet2_phi;       
+  std::vector<float> subjet2_m;         
+  std::vector<float> subjet2_btagDeepB;
+
+  DEF_BRANCH_COLLECTION(FatJetListCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const std::vector<FatJet>& fatjets) override;
+};
+
+struct FatJetCollection : public BranchCollection<FatJet> {
+  float pt;		   
+  float eta;            
+  float phi;            
+  float m;              
+  float mSD_UnCorrected;
+  float area;	   
+  float n2b1;           
+  float n3b1;           
+  float rawFactor;      
+  float tau1;           
+  float tau2;           
+  float tau3;           
+  float tau4;           
+  int   jetId;          
+  int   genJetAK8Idx;   
+  int   hadronFlavour;  
+  int   nBHadrons;      
+  int   nCHadrons;      
+  int   nPFCand;        
+  float PNetQCDb;       
+  float PNetQCDbb;      
+  float PNetQCDc;       
+  float PNetQCDcc;      
+  float PNetQCDothers;  
+  float PNetXbb;        
+  float PNetXcc;        
+  float PNetXqq;        
+  float deepTagMD_H4q;  
+  float deepTagMD_Hbb;  
+  float deepTagMD_T;    
+  float deepTagMD_W;    
+  float deepTagMD_Z;    
+  float deepTagMD_bbvsL;   
+  float deepTagMD_ccvsL;   
+  float deepTag_QCD;       
+  float deepTag_QCDothers; 
+  float deepTag_W;         
+  float deepTag_Z;         
+  int   nsubjets;          
+  float subjet1_pt;        
+  float subjet1_eta;       
+  float subjet1_phi;       
+  float subjet1_m;         
+  float subjet1_btagDeepB; 
+  float subjet2_pt;        
+  float subjet2_eta;       
+  float subjet2_phi;       
+  float subjet2_m;         
+  float subjet2_btagDeepB;
+
+  DEF_BRANCH_COLLECTION(FatJetCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const FatJet& fatjet) override;
+};
+
 
 #endif

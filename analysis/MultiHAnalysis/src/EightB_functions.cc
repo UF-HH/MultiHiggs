@@ -19,12 +19,7 @@ using namespace std;
 
 void EightB_functions::initialize_params_from_cfg(CfgParser& config)
 {
-  // blinded
-  if (config.hasOpt("configurations::blinded"))
-  {
-    pmap.insert_param<int>("blind", "n_medium_btag", config.readIntOpt("blind::n_medium_btag"));
-    pmap.insert_param<double>("blind", "quadh_score", config.readDoubleOpt("blind::quadh_score"));
-  }
+  
 
   // preselections
   pmap.insert_param<bool>("presel","apply", config.readBoolOpt("presel::apply"));

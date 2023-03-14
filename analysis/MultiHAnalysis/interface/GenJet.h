@@ -2,6 +2,7 @@
 #define GENJET_H
 
 #include "Candidate.h"
+#include "BranchCollection.h"
 
 class GenJet : public Candidate
 {
@@ -33,5 +34,39 @@ public:
 private:
   void buildP4(); 
 };
+
+struct GenJetListCollection : public BranchCollection<std::vector<GenJet>> {
+  std::vector<float> E;           
+  std::vector<float> m;           
+  std::vector<float> pt;          
+  std::vector<float> eta;         
+  std::vector<float> phi;      
+  std::vector<int> partonFlav;
+  std::vector<int> hadronFlav;
+  std::vector<int> recoIdx;   
+  std::vector<int> signalId;
+
+  DEF_BRANCH_COLLECTION(GenJetListCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const std::vector<GenJet>& genjets) override;
+};
+
+struct GenJetCollection : public BranchCollection<GenJet> {
+  float E;           
+  float m;           
+  float pt;          
+  float eta;         
+  float phi;      
+  int partonFlav;
+  int hadronFlav;
+  int signalId;
+
+  DEF_BRANCH_COLLECTION(GenJetCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const GenJet& genjet) override;
+};
+
 
 #endif
