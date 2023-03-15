@@ -9,85 +9,6 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 
 using namespace std;
 
-// helper: copies the pt/eta/phi/p4 branches from a candidate OBJ to the output tree
-// NOTE: requires the matching of the names (and enforces it)
-#define COPY_m_pt_eta_phi_p4(OBJ)    \
-  ot.OBJ##_m = ei.OBJ->P4().M();     \
-  ot.OBJ##_pt = ei.OBJ->P4().Pt();   \
-  ot.OBJ##_eta = ei.OBJ->P4().Eta(); \
-  ot.OBJ##_phi = ei.OBJ->P4().Phi(); \
-  ot.OBJ##_p4 = ei.OBJ->P4();
-
-#define COPY_m_pt_ptRegressed_eta_phi_p4(OBJ)        \
-  ot.OBJ##_m = ei.OBJ->P4().M();                     \
-  ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();   \
-  ot.OBJ##_pt = ei.OBJ->P4().Pt();                   \
-  ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt(); \
-  ot.OBJ##_eta = ei.OBJ->P4().Eta();                 \
-  ot.OBJ##_phi = ei.OBJ->P4().Phi();                 \
-  ot.OBJ##_p4 = ei.OBJ->P4();
-
-// helperM same as above, but encloses the obj (a boost::optional is expected) in a if clause to check whether it is initialized
-#define COPY_OPTIONAL_m_pt_eta_phi_p4(OBJ) \
-  if (ei.OBJ)                              \
-  {                                        \
-    ot.OBJ##_m = ei.OBJ->P4().M();         \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();       \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();     \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();     \
-    ot.OBJ##_p4 = ei.OBJ->P4();            \
-  }
-
-#define COPY_OPTIONAL_m_pt_eta_phi_score_p4(OBJ) \
-  if (ei.OBJ)                                    \
-  {                                              \
-    ot.OBJ##_m = ei.OBJ->P4().M();               \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();             \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();           \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();           \
-    ot.OBJ##_score = ei.OBJ->get_param("score", 0); \
-    ot.OBJ##_p4 = ei.OBJ->P4();                  \
-  }
-
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(OBJ) \
-  if (ei.OBJ)                                          \
-  {                                                    \
-    ot.OBJ##_m = ei.OBJ->P4().M();                     \
-    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();   \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();                   \
-    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt(); \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();                 \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();                 \
-    ot.OBJ##_p4 = ei.OBJ->P4();                        \
-  }
-
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)     \
-  if (ei.OBJ)                                                      \
-  {                                                                \
-    ot.OBJ##_m = ei.OBJ->P4().M();                                 \
-    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();               \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();                               \
-    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();             \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();                             \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();                             \
-    ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB); \
-    ot.OBJ##_p4 = ei.OBJ->P4();                                    \
-  }
-
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
-  if (ei.OBJ)                                                        \
-  {                                                                  \
-    ot.OBJ##_m = ei.OBJ->P4().M();                                   \
-    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();                 \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();                                 \
-    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();               \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();                               \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();                               \
-    ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB);   \
-    ot.OBJ##_score = ei.OBJ->get_param("score", 0);                     \
-    ot.OBJ##_p4 = ei.OBJ->P4();                                      \
-  }
-
 // --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - 
 
 int SkimUtils::appendFromFileList (TChain* chain, string filename)
@@ -236,12 +157,12 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.gen_bs_match_recojet_minv)        ot.gen_bs_match_recojet_minv        = *ei.gen_bs_match_recojet_minv;
   if (ei.gen_bs_match_in_acc_recojet_minv) ot.gen_bs_match_in_acc_recojet_minv = *ei.gen_bs_match_in_acc_recojet_minv;
 
-  COPY_OPTIONAL_m_pt_eta_phi_p4(X);
+  ot.X.FillOptional(ei.X);
   // Start Reco 6B Objects
-  COPY_OPTIONAL_m_pt_eta_phi_p4(Y);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(HX);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H2);
+  ot.Y.FillOptional(ei.Y);
+  ot.HX.FillOptional(ei.HX);
+  ot.H1.FillOptional(ei.H1);
+  ot.H2.FillOptional(ei.H2);
 
    ot.HX_b1.FillOptional(ei.HX_b1);
    ot.HX_b2.FillOptional(ei.HX_b2);
@@ -259,12 +180,12 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   // End Reco 6B Objects
 
   // Start Reco 8B Objects
-  COPY_OPTIONAL_m_pt_eta_phi_p4(Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H1Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H2Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H1Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H2Y2);
+  ot.Y1.FillOptional(ei.Y1);
+  ot.Y2.FillOptional(ei.Y2);
+  ot.H1Y1.FillOptional(ei.H1Y1);
+  ot.H2Y1.FillOptional(ei.H2Y1);
+  ot.H1Y2.FillOptional(ei.H1Y2);
+  ot.H2Y2.FillOptional(ei.H2Y2);
 
   ot.H1Y1_b1.FillOptional(ei.H1Y1_b1);
   ot.H1Y1_b2.FillOptional(ei.H1Y1_b2);

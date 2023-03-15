@@ -523,6 +523,7 @@ int main(int argc, char** argv) {
                     {"sixb_brs", (skim_type == ksixb)},
                     {"eightb_brs", (skim_type == keightb)},
                     {"ttbar_brs", (skim_type == kttbar)},
+                    {"run3_brs", (skim_type == kfourb)}, // fourb is running on run3 nanoAOD 
                     {"sig_gen_brs", (is_signal)},
                     {"gen_brs", (!is_data)},
                     {"saveTrgSF", (!is_data) && readCfgOptWithDefault<bool>(config, "triggers::saveTrgSF", false)},

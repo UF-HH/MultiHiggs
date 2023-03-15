@@ -4,104 +4,6 @@
 
 using namespace std;
 
-// helper: creates the pt/eta/phi/p4 branches of a variable OBJ
-#define BRANCH_m_pt_eta_phi_p4(OBJ)       \
-  tree_->Branch(#OBJ "_m", &OBJ##_m);     \
-  tree_->Branch(#OBJ "_pt", &OBJ##_pt);   \
-  tree_->Branch(#OBJ "_eta", &OBJ##_eta); \
-  tree_->Branch(#OBJ "_phi", &OBJ##_phi); \
-  if (savetlv_)                           \
-    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
-
-#define CLEAR_m_pt_eta_phi_p4(OBJ) \
-  OBJ##_m = -999.;                 \
-  OBJ##_pt = -999.;                \
-  OBJ##_eta = -999.;               \
-  OBJ##_phi = -999.;               \
-  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
-
-  
-// helper: creates the pt/eta/phi/p4 branches of a variable OBJ
-#define BRANCH_m_pt_eta_phi_score_p4(OBJ)     \
-  tree_->Branch(#OBJ "_m", &OBJ##_m);         \
-  tree_->Branch(#OBJ "_pt", &OBJ##_pt);       \
-  tree_->Branch(#OBJ "_eta", &OBJ##_eta);     \
-  tree_->Branch(#OBJ "_phi", &OBJ##_phi);     \
-  tree_->Branch(#OBJ "_score", &OBJ##_score); \
-  if (savetlv_)                               \
-    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
-
-#define CLEAR_m_pt_eta_phi_score_p4(OBJ) \
-  OBJ##_m = -999.;                       \
-  OBJ##_pt = -999.;                      \
-  OBJ##_eta = -999.;                     \
-  OBJ##_phi = -999.;                     \
-  OBJ##_score = -999.;                   \
-  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
-
-#define BRANCH_m_pt_ptRegressed_eta_phi_p4(OBJ)           \
-  tree_->Branch(#OBJ "_m", &OBJ##_m);                     \
-  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);   \
-  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                   \
-  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed); \
-  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                 \
-  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                 \
-  if (savetlv_)                                           \
-    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
-
-#define CLEAR_m_pt_ptRegressed_eta_phi_p4(OBJ) \
-  OBJ##_m = -999.;                             \
-  OBJ##_mRegressed = -999.;                    \
-  OBJ##_pt = -999.;                            \
-  OBJ##_ptRegressed = -999.;                   \
-  OBJ##_eta = -999.;                           \
-  OBJ##_phi = -999.;                           \
-  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
-
-#define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)   \
-  tree_->Branch(#OBJ "_m", &OBJ##_m);                     \
-  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);   \
-  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                   \
-  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed); \
-  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                 \
-  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                 \
-  tree_->Branch(#OBJ "_btag", &OBJ##_btag);               \
-  if (savetlv_)                                           \
-    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
-
-#define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
-  OBJ##_m = -999.;                                     \
-  OBJ##_mRegressed = -999.;                            \
-  OBJ##_pt = -999.;                                    \
-  OBJ##_ptRegressed = -999.;                           \
-  OBJ##_eta = -999.;                                   \
-  OBJ##_phi = -999.;                                   \
-  OBJ##_btag = -999.;                                  \
-  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
-
-#define BRANCH_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
-  tree_->Branch(#OBJ "_m", &OBJ##_m);                         \
-  tree_->Branch(#OBJ "_mRegressed", &OBJ##_mRegressed);       \
-  tree_->Branch(#OBJ "_pt", &OBJ##_pt);                       \
-  tree_->Branch(#OBJ "_ptRegressed", &OBJ##_ptRegressed);     \
-  tree_->Branch(#OBJ "_eta", &OBJ##_eta);                     \
-  tree_->Branch(#OBJ "_phi", &OBJ##_phi);                     \
-  tree_->Branch(#OBJ "_btag", &OBJ##_btag);                   \
-  tree_->Branch(#OBJ "_score", &OBJ##_score);                 \
-  if (savetlv_)                                               \
-    tree_->Branch(#OBJ "_p4", &OBJ##_p4);
-
-#define CLEAR_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
-  OBJ##_m = -999.;                                           \
-  OBJ##_mRegressed = -999.;                                  \
-  OBJ##_pt = -999.;                                          \
-  OBJ##_ptRegressed = -999.;                                 \
-  OBJ##_eta = -999.;                                         \
-  OBJ##_phi = -999.;                                         \
-  OBJ##_btag = -999.;                                        \
-  OBJ##_score = -999.;                                       \
-  OBJ##_p4.SetCoordinates(0, 0, 0, 0);
-
 OutputTree::OutputTree(bool savetlv, std::map<std::string, bool> branch_switches, string name, string title) :
 BaseOutTree(name, title, "OutputTree"),
   savetlv_(savetlv)
@@ -230,11 +132,11 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("nfound_paired_h", &nfound_paired_h);
     }
 
-    BRANCH_m_pt_eta_phi_p4(X);
-    BRANCH_m_pt_eta_phi_p4(Y);
-    BRANCH_m_pt_eta_phi_p4(HX);
-    BRANCH_m_pt_eta_phi_p4(H1);
-    BRANCH_m_pt_eta_phi_p4(H2);
+    REGISTER_BRANCH_COLLECTION(X);
+    REGISTER_BRANCH_COLLECTION(Y);
+    REGISTER_BRANCH_COLLECTION(HX);
+    REGISTER_BRANCH_COLLECTION(H1);
+    REGISTER_BRANCH_COLLECTION(H2);
 
     REGISTER_BRANCH_COLLECTION(HX_b1);
     REGISTER_BRANCH_COLLECTION(HX_b2);
@@ -301,13 +203,13 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("nfound_paired_y", &nfound_paired_y);
     }
 
-    BRANCH_m_pt_eta_phi_p4(X);
-    BRANCH_m_pt_eta_phi_p4(Y1);
-    BRANCH_m_pt_eta_phi_p4(Y2);
-    BRANCH_m_pt_eta_phi_score_p4(H1Y1);
-    BRANCH_m_pt_eta_phi_score_p4(H2Y1);
-    BRANCH_m_pt_eta_phi_score_p4(H1Y2);
-    BRANCH_m_pt_eta_phi_score_p4(H2Y2);
+    REGISTER_BRANCH_COLLECTION(X);
+    REGISTER_BRANCH_COLLECTION(Y1);
+    REGISTER_BRANCH_COLLECTION(Y2);
+    REGISTER_BRANCH_COLLECTION(H1Y1);
+    REGISTER_BRANCH_COLLECTION(H2Y1);
+    REGISTER_BRANCH_COLLECTION(H1Y2);
+    REGISTER_BRANCH_COLLECTION(H2Y2);
 
     REGISTER_BRANCH_COLLECTION(H1Y1_b1);
     REGISTER_BRANCH_COLLECTION(H1Y1_b2);
@@ -528,12 +430,12 @@ void OutputTree::clear()
   nfound_select_h = -999;
   nfound_paired_h = -999;
 
-  CLEAR_m_pt_eta_phi_p4(X);
+  X.Clear();
   // Start Reco 6B Objects
-  CLEAR_m_pt_eta_phi_p4(Y);
-  CLEAR_m_pt_eta_phi_p4(HX);
-  CLEAR_m_pt_eta_phi_p4(H1);
-  CLEAR_m_pt_eta_phi_p4(H2);
+  Y.Clear();
+  HX.Clear();
+  H1.Clear();
+  H2.Clear();
 
   HX_b1.Clear();
   HX_b2.Clear();
@@ -551,10 +453,10 @@ void OutputTree::clear()
   // End Reco 6B Objects
 
   // Start Reco 8B Objects
-  CLEAR_m_pt_eta_phi_p4(Y);
-  CLEAR_m_pt_eta_phi_p4(HX);
-  CLEAR_m_pt_eta_phi_p4(H1);
-  CLEAR_m_pt_eta_phi_p4(H2);
+  Y.Clear();
+  HX.Clear();
+  H1.Clear();
+  H2.Clear();
 
   H1Y1_b1.Clear();
   H1Y1_b2.Clear();

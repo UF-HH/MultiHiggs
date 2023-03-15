@@ -25,6 +25,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 
 #include "UserValCollection.h"
 
+#include "CompositeCandidate.h"
 #include "Jet.h"
 #include "GenJet.h"
 #include "GenPart.h"
@@ -36,57 +37,6 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 #include <string>
 #include <memory>
 #include <map>
-
-// helper: declares the m/pt/eta/phi/p4 of a variable OBJ
-#define DECLARE_m_pt_eta_phi_p4(OBJ) \
-  float OBJ##_m;                     \
-  float OBJ##_pt;                    \
-  float OBJ##_eta;                   \
-  float OBJ##_phi;                   \
-  p4_t OBJ##_p4;
-
-// helper: declares the m/pt/eta/phi/p4 of a variable OBJ
-#define DECLARE_m_pt_eta_phi_score_p4(OBJ) \
-  float OBJ##_m;                           \
-  float OBJ##_pt;                          \
-  float OBJ##_eta;                         \
-  float OBJ##_phi;                         \
-  float OBJ##_score;                       \
-  p4_t OBJ##_p4;
-
-// helper: declares the m/pt/eta/phi/p4 of a variable OBJ
-#define DECLARE_m_pt_ptRegressed_eta_phi_p4(OBJ) \
-  float OBJ##_m;                                 \
-  float OBJ##_mRegressed;                        \
-  float OBJ##_pt;                                \
-  float OBJ##_ptRegressed;                       \
-  float OBJ##_eta;                               \
-  float OBJ##_phi;                               \
-  p4_t OBJ##_p4;
-
-// helper: declares the m/pt/eta/phi/p4/DeepJet of a variable OBJ
-#define DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ) \
-  float OBJ##_m;                                         \
-  float OBJ##_mRegressed;                                \
-  float OBJ##_pt;                                        \
-  float OBJ##_ptRegressed;                               \
-  float OBJ##_eta;                                       \
-  float OBJ##_phi;                                       \
-  float OBJ##_btag;                                      \
-  p4_t OBJ##_p4;
-
-
-// helper: declares the m/pt/eta/phi/p4/DeepJet of a variable OBJ
-#define DECLARE_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
-  float OBJ##_m;                                               \
-  float OBJ##_mRegressed;                                      \
-  float OBJ##_pt;                                              \
-  float OBJ##_ptRegressed;                                     \
-  float OBJ##_eta;                                             \
-  float OBJ##_phi;                                             \
-  float OBJ##_btag;                                            \
-  float OBJ##_score;                                           \
-  p4_t OBJ##_p4;
 
 class OutputTree : public BaseOutTree {
     
@@ -247,12 +197,12 @@ public:
   double gen_bs_match_recojet_minv;
   double gen_bs_match_in_acc_recojet_minv;
 
-  DECLARE_m_pt_eta_phi_p4(X);
+  CompositeCandidateCollection X;
   // Start Reco 6B Objects
-  DECLARE_m_pt_eta_phi_p4(Y);
-  DECLARE_m_pt_eta_phi_p4(HX);
-  DECLARE_m_pt_eta_phi_p4(H1);
-  DECLARE_m_pt_eta_phi_p4(H2);
+  CompositeCandidateCollection Y;
+  CompositeCandidateCollection HX;
+  CompositeCandidateCollection H1;
+  CompositeCandidateCollection H2;
 
   JetCollection HX_b1 = JetCollection({"pt","eta","phi","m","btag"});
   JetCollection HX_b2 = JetCollection({"pt","eta","phi","m","btag"});
@@ -270,12 +220,12 @@ public:
   // End Reco 6B Objects
 
   // Start Reco 8B Objects
-  DECLARE_m_pt_eta_phi_p4(Y1);
-  DECLARE_m_pt_eta_phi_p4(Y2);
-  DECLARE_m_pt_eta_phi_score_p4(H1Y1);
-  DECLARE_m_pt_eta_phi_score_p4(H2Y1);
-  DECLARE_m_pt_eta_phi_score_p4(H1Y2);
-  DECLARE_m_pt_eta_phi_score_p4(H2Y2);
+  CompositeCandidateCollection Y1;
+  CompositeCandidateCollection Y2;
+  CompositeCandidateCollection H1Y1;
+  CompositeCandidateCollection H2Y1;
+  CompositeCandidateCollection H1Y2;
+  CompositeCandidateCollection H2Y2;
 
   JetCollection H1Y1_b1 = JetCollection({"pt","eta","phi","m","btag"});
   JetCollection H1Y1_b2 = JetCollection({"pt","eta","phi","m","btag"});

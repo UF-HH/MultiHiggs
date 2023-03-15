@@ -19,6 +19,7 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 #include <memory>
 #include <iostream>
 #include "TLorentzVector.h"
+#include "BranchCollection.h"
 
 #define get_property(OBJ, NAME) (OBJ.isValid() ?  OBJ.getNanoAODTree() -> NAME .At(OBJ.getIdx()) : throw std::runtime_error("get property " #NAME " from invalid object"))
 
@@ -70,6 +71,35 @@ protected:
   bool isComposite_;
   int typeId_; //11 = Electron , 22 = Photon , 13 = Muon, 15 = Tau, 1 = Jet, 6 = FatJet, 2 = MET, -1 = GenParticle, -10 = CompositeCandidate
   std::map<std::string, float> params;
+};
+
+struct CandidateCollection : public BranchCollection<Candidate> {
+  float m;           
+  float pt;          
+  float eta;         
+  float phi;         
+
+  DEF_BRANCH_COLLECTION(CandidateCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override {
+    branch_switches = branch_switches_;
+
+    CHECK_BRANCH(m);
+    CHECK_BRANCH(pt);
+    CHECK_BRANCH(eta);
+    CHECK_BRANCH(phi);
+  }
+  void Clear() override {
+    m = -999;
+    pt = -999;
+    eta = -999;
+    phi = -999;
+  }
+  void Fill(const Candidate& cand) override {
+    m = cand.P4().M();
+    pt = cand.P4().Pt();
+    eta = cand.P4().Eta();
+    phi = cand.P4().Phi();
+  }
 };
 
 #endif
