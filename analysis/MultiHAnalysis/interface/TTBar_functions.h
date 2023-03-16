@@ -24,6 +24,11 @@ public:
    */
   std::vector<Jet> select_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
 
-
+  void select_gen_particles(NanoAODTree &nat, EventInfo &ei) override;
+  void match_genbs_to_genjets(NanoAODTree &nat, EventInfo &ei, bool ensure_unique = true) override;
+  void match_genbs_genjets_to_reco(NanoAODTree &nat, EventInfo &ei) override;
+  void match_signal_recojets(NanoAODTree &nat, EventInfo &ei, std::vector<Jet> &in_jets) override;
+  void match_signal_genjets(NanoAODTree &nat, EventInfo &ei, std::vector<GenJet> &in_jets) override;
+  int n_gjmatched_in_jetcoll(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
 };
 #endif //TTBar_FUNCTIONS_H

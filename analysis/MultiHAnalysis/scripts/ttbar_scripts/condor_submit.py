@@ -8,15 +8,9 @@ from glob import glob
 
 sample_defaults = dict(
     signal=dict(
-        files=["input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/*.txt"],
-        tag="NMSSM_XYY_YToHH_8b",
-        njobs=100,
-        forceOverwrite=True,
-    ),
-    training=dict(
-        files=["input/PrivateMC_2018/NMSSM_XYY_YToHH_8b/training_5M/*.txt"],
-        tag="NMSSM_XYY_YToHH_8b",
-        njobs=100,
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/TTToHadronic_TuneCP5_13TeV-powheg-pythia8.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
+        njobs=150,
         forceOverwrite=True,
     ),
     qcdb=dict(
@@ -25,35 +19,11 @@ sample_defaults = dict(
         njobs=100,
         forceOverwrite=True,
     ),
-    qcdb_2017=dict(
-        files=["input/Run2_UL/RunIISummer20UL17NanoAODv9/QCD*BGenFilter*.txt", "input/Run2_UL/RunIISummer20UL17NanoAODv9/QCD*bEnriched*.txt"],
-        tag="Run2_UL/RunIISummer20UL17NanoAODv9/QCD",
-        njobs=100,
-        forceOverwrite=True,
-    ),
     qcdht=dict(
         files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*PSWeight*.txt"],
         # files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*700to1000*PSWeight*.txt"],
         tag="Run2_UL/RunIISummer20UL18NanoAODv9/QCD",
         njobs=100,
-        forceOverwrite=True,
-    ),
-    ttbar=dict(
-        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/TTTo*.txt"],
-        tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
-        njobs=150,
-        forceOverwrite=True,
-    ),
-    ttjet=dict(
-        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/TTJets*.txt"],
-        tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
-        njobs=150,
-        forceOverwrite=True,
-    ),
-    ttjet_2017=dict(
-        files=["input/Run2_UL/RunIISummer20UL17NanoAODv9/TTJets*.txt"],
-        tag="Run2_UL/RunIISummer20UL17NanoAODv9/TTJets",
-        njobs=150,
         forceOverwrite=True,
     ),
     data=dict(
@@ -67,13 +37,13 @@ sample_defaults = dict(
 
 parser = ArgumentParser()
 
-parser.add_argument("-p","--path", default="/store/user/ekoenig/8BAnalysis/NTuples/2018", help="master path to use for condor output")
+parser.add_argument("-p","--path", default="/store/user/ekoenig/TTAnalysis/NTuples/2018", help="master path to use for condor output")
 parser.add_argument("-o","--odir", help="output directory to cat onto path; path/odir")
 parser.add_argument("-c","--cfg",  help="config to use in skim")
 
 parser.set_defaults(
-    odir="preselection/t8btag_minmass",
-    cfg="config/8b_config/skim_ntuple_2017_t8btag_minmass.cfg"
+    odir="preselection/",
+    cfg="config/ttbar_config/skim_ntuple_2018.cfg"
 )
 
 subparser = parser.add_subparsers(dest='sample')

@@ -2,6 +2,7 @@
 #define MUON_H
 
 #include "Candidate.h"
+#include "BranchCollection.h"
 
 class Muon : public Candidate
 {
@@ -30,6 +31,26 @@ public:
   
 private:
   void buildP4() override; 
+};
+
+struct MuonListCollection : public BranchCollection<std::vector<Muon>> {
+  std::vector<float> E;              
+  std::vector<float> m;              
+  std::vector<float> pt;             
+  std::vector<float> eta;            
+  std::vector<float> phi;            
+  std::vector<float> dxy;            
+  std::vector<float> dz;             
+  std::vector<float> charge;         
+  std::vector<float> pfRelIso04_all; 
+  std::vector<bool> looseId;         
+  std::vector<bool> mediumId;        
+  std::vector<bool> tightId;
+
+  DEF_BRANCH_COLLECTION(MuonListCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const std::vector<Muon>& muons) override;
 };
 
 #endif

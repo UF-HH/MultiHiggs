@@ -58,4 +58,33 @@ protected:
   std::unique_ptr<Candidate> cand2_;
 };
 
+struct CompositeCandidateCollection : public BranchCollection<CompositeCandidate> {
+  float m;           
+  float pt;          
+  float eta;         
+  float phi;         
+
+  DEF_BRANCH_COLLECTION(CompositeCandidateCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override {
+    branch_switches = branch_switches_;
+
+    CHECK_BRANCH(m);
+    CHECK_BRANCH(pt);
+    CHECK_BRANCH(eta);
+    CHECK_BRANCH(phi);
+  }
+  void Clear() override {
+    m = -999;
+    pt = -999;
+    eta = -999;
+    phi = -999;
+  }
+  void Fill(const CompositeCandidate& cand) override {
+    m = cand.P4().M();
+    pt = cand.P4().Pt();
+    eta = cand.P4().Eta();
+    phi = cand.P4().Phi();
+  }
+};
+
 #endif
