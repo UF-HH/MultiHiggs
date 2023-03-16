@@ -3,6 +3,7 @@
 
 #include "Candidate.h"
 #include "SubGenJetAK8.h"
+#include "BranchCollection.h"
 
 class GenJetAK8 : public Candidate
 {
@@ -102,6 +103,58 @@ public:
     
  private:
   void buildP4(); 
+};
+
+struct GenJetAK8ListCollection : public BranchCollection<std::vector<GenJetAK8>> {
+  std::vector<float> E;
+  std::vector<float> m;
+  std::vector<float> pt;
+  std::vector<float> eta;
+  std::vector<float> phi;
+  std::vector<int>   signalId;
+  std::vector<int>   recoIdx;
+  std::vector<int>   partonFlav;
+  std::vector<int>   hadronFlav;
+  std::vector<int>   nsubjets;
+  std::vector<float> subjet1_pt;
+  std::vector<float> subjet1_m;
+  std::vector<float> subjet1_phi;
+  std::vector<float> subjet1_eta;
+  std::vector<float> subjet2_pt;
+  std::vector<float> subjet2_m;
+  std::vector<float> subjet2_eta;
+  std::vector<float> subjet2_phi;
+
+  DEF_BRANCH_COLLECTION(GenJetAK8ListCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const std::vector<GenJetAK8>& genjetak8s) override;
+};
+
+struct GenJetAK8Collection : public BranchCollection<GenJetAK8> {
+  float E;
+  float m;
+  float pt;
+  float eta;
+  float phi;
+  int   signalId;
+  int   recoIdx;
+  int   partonFlav;
+  int   hadronFlav;
+  int   nsubjets;
+  float subjet1_pt;
+  float subjet1_m;
+  float subjet1_phi;
+  float subjet1_eta;
+  float subjet2_pt;
+  float subjet2_m;
+  float subjet2_eta;
+  float subjet2_phi;
+
+  DEF_BRANCH_COLLECTION(GenJetAK8Collection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const GenJetAK8& genjetak8) override;
 };
 
 #endif

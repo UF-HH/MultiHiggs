@@ -9,221 +9,6 @@ typedef ROOT::Math::PtEtaPhiMVector p4_t;
 
 using namespace std;
 
-// helper: copies the pt/eta/phi/p4 branches from a candidate OBJ to the output tree
-// NOTE: requires the matching of the names (and enforces it)
-#define COPY_m_pt_eta_phi_p4(OBJ)    \
-  ot.OBJ##_m = ei.OBJ->P4().M();     \
-  ot.OBJ##_pt = ei.OBJ->P4().Pt();   \
-  ot.OBJ##_eta = ei.OBJ->P4().Eta(); \
-  ot.OBJ##_phi = ei.OBJ->P4().Phi(); \
-  ot.OBJ##_p4 = ei.OBJ->P4();
-
-#define COPY_m_pt_ptRegressed_eta_phi_p4(OBJ)        \
-  ot.OBJ##_m = ei.OBJ->P4().M();                     \
-  ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();   \
-  ot.OBJ##_pt = ei.OBJ->P4().Pt();                   \
-  ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt(); \
-  ot.OBJ##_eta = ei.OBJ->P4().Eta();                 \
-  ot.OBJ##_phi = ei.OBJ->P4().Phi();                 \
-  ot.OBJ##_p4 = ei.OBJ->P4();
-
-// helperM same as above, but encloses the obj (a boost::optional is expected) in a if clause to check whether it is initialized
-#define COPY_OPTIONAL_m_pt_eta_phi_p4(OBJ) \
-  if (ei.OBJ)                              \
-  {                                        \
-    ot.OBJ##_m = ei.OBJ->P4().M();         \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();       \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();     \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();     \
-    ot.OBJ##_p4 = ei.OBJ->P4();            \
-  }
-
-#define COPY_OPTIONAL_m_pt_eta_phi_score_p4(OBJ) \
-  if (ei.OBJ)                                    \
-  {                                              \
-    ot.OBJ##_m = ei.OBJ->P4().M();               \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();             \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();           \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();           \
-    ot.OBJ##_score = ei.OBJ->get_param("score", 0); \
-    ot.OBJ##_p4 = ei.OBJ->P4();                  \
-  }
-
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(OBJ) \
-  if (ei.OBJ)                                          \
-  {                                                    \
-    ot.OBJ##_m = ei.OBJ->P4().M();                     \
-    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();   \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();                   \
-    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt(); \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();                 \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();                 \
-    ot.OBJ##_p4 = ei.OBJ->P4();                        \
-  }
-
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(OBJ)     \
-  if (ei.OBJ)                                                      \
-  {                                                                \
-    ot.OBJ##_m = ei.OBJ->P4().M();                                 \
-    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();               \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();                               \
-    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();             \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();                             \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();                             \
-    ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB); \
-    ot.OBJ##_p4 = ei.OBJ->P4();                                    \
-  }
-
-#define COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(OBJ) \
-  if (ei.OBJ)                                                        \
-  {                                                                  \
-    ot.OBJ##_m = ei.OBJ->P4().M();                                   \
-    ot.OBJ##_mRegressed = ei.OBJ->P4Regressed().M();                 \
-    ot.OBJ##_pt = ei.OBJ->P4().Pt();                                 \
-    ot.OBJ##_ptRegressed = ei.OBJ->P4Regressed().Pt();               \
-    ot.OBJ##_eta = ei.OBJ->P4().Eta();                               \
-    ot.OBJ##_phi = ei.OBJ->P4().Phi();                               \
-    ot.OBJ##_btag = get_property(ei.OBJ.get(), Jet_btagDeepFlavB);   \
-    ot.OBJ##_score = ei.OBJ->get_param("score", 0);                     \
-    ot.OBJ##_p4 = ei.OBJ->P4();                                      \
-  }
-
-#define COPY_OPTIONAL_ele_list(OBJ)                                  \
-  if (ei.OBJ##_list) {                                               \
-      for (Electron & ele : ei.OBJ##_list.get()) {		     \
-        ot.OBJ##_E.push_back(ele.get_E());                          \
-	ot.OBJ##_m.push_back(ele.get_m());			     \
-	ot.OBJ##_pt.push_back(ele.get_pt());			     \
-        ot.OBJ##_eta.push_back(ele.get_eta());                       \
-        ot.OBJ##_phi.push_back(ele.get_phi());                       \
-        ot.OBJ##_dxy.push_back(ele.get_dxy());                       \
-        ot.OBJ##_dz.push_back(ele.get_dz());                         \
-        ot.OBJ##_charge.push_back(ele.get_charge());                 \
-        ot.OBJ##_pfRelIso03_all.push_back(ele.get_pfRelIso03_all());            \
-        ot.OBJ##_mvaFall17V2Iso_WPL.push_back(ele.get_mvaFall17V2Iso_WPL());    \
-        ot.OBJ##_mvaFall17V2Iso_WP90.push_back(ele.get_mvaFall17V2Iso_WP90());  \
-        ot.OBJ##_mvaFall17V2Iso_WP80.push_back(ele.get_mvaFall17V2Iso_WP80());  \
-      }								        	\
-  }
-
-#define COPY_OPTIONAL_muon_list(OBJ)                                \
-  if (ei.OBJ##_list) {                                              \
-    for (Muon & muon : ei.OBJ##_list.get()) {			    \
-      ot.OBJ##_E.push_back(muon.get_E());                           \
-      ot.OBJ##_m.push_back(muon.get_m());		            \
-      ot.OBJ##_pt.push_back(muon.get_pt());	                    \
-      ot.OBJ##_eta.push_back(muon.get_eta());		            \
-      ot.OBJ##_phi.push_back(muon.get_phi());			    \
-      ot.OBJ##_dxy.push_back(muon.get_dxy());			    \
-      ot.OBJ##_dz.push_back(muon.get_dz());			    \
-      ot.OBJ##_charge.push_back(muon.get_charge());	            \
-      ot.OBJ##_pfRelIso04_all.push_back(muon.get_pfRelIso04_all()); \
-      ot.OBJ##_looseId.push_back(muon.get_looseId());		    \
-      ot.OBJ##_mediumId.push_back(muon.get_mediumId());             \
-      ot.OBJ##_tightId.push_back(muon.get_tightId());               \
-    }                                                               \
-}
-
-#define COPY_OPTIONAL_fatjet_list(OBJ)		                    \
-  if (ei.OBJ##_list) {				                    \
-    for (FatJet & fatjet : ei.OBJ##_list.get()) {		    \
-      ot.OBJ##_pt.push_back(fatjet.get_pt());			    \
-      ot.OBJ##_eta.push_back(fatjet.get_eta());		            \
-      ot.OBJ##_phi.push_back(fatjet.get_phi());		            \
-      ot.OBJ##_m.push_back(fatjet.get_mass());		            \
-      ot.OBJ##_mSD_UnCorrected.push_back(fatjet.get_massSD_UnCorrected());	\
-      ot.OBJ##_area.push_back(fatjet.get_area());		    \
-      ot.OBJ##_n2b1.push_back(fatjet.get_n2b1());		    \
-      ot.OBJ##_n3b1.push_back(fatjet.get_n3b1());		    \
-      ot.OBJ##_rawFactor.push_back(fatjet.get_rawFactor());	    \
-      ot.OBJ##_tau1.push_back(fatjet.get_tau1());		    \
-      ot.OBJ##_tau2.push_back(fatjet.get_tau2());		    \
-      ot.OBJ##_tau3.push_back(fatjet.get_tau3());		    \
-      ot.OBJ##_tau4.push_back(fatjet.get_tau4());		    \
-      ot.OBJ##_jetId.push_back(fatjet.get_jetId());		    \
-      ot.OBJ##_genJetAK8Idx.push_back(fatjet.get_genJetAK8Idx());  \
-      ot.OBJ##_hadronFlavour.push_back(fatjet.get_hadronFlavour());  \
-      ot.OBJ##_nBHadrons.push_back(fatjet.get_nBHadrons());	       \
-      ot.OBJ##_nCHadrons.push_back(fatjet.get_nCHadrons());	       \
-      ot.OBJ##_nPFCand.push_back(fatjet.get_nPFCand());	       \
-      ot.OBJ##_PNetQCDb.push_back(fatjet.get_PNetQCDb());	    \
-      ot.OBJ##_PNetQCDbb.push_back(fatjet.get_PNetQCDbb());	    \
-      ot.OBJ##_PNetQCDc.push_back(fatjet.get_PNetQCDc());	    \
-      ot.OBJ##_PNetQCDcc.push_back(fatjet.get_PNetQCDcc());	    \
-      ot.OBJ##_PNetQCDothers.push_back(fatjet.get_PNetQCDothers()); \
-      ot.OBJ##_PNetXbb.push_back(fatjet.get_PNetXbb());		    \
-      ot.OBJ##_PNetXcc.push_back(fatjet.get_PNetXcc());		    \
-      ot.OBJ##_PNetXqq.push_back(fatjet.get_PNetXqq());		    \
-      ot.OBJ##_deepTagMD_H4q.push_back(fatjet.get_deepTagMD_H4q()); \
-      ot.OBJ##_deepTagMD_Hbb.push_back(fatjet.get_deepTagMD_Hbb()); \
-      ot.OBJ##_deepTagMD_T.push_back(fatjet.get_deepTagMD_T());	    \
-      ot.OBJ##_deepTagMD_W.push_back(fatjet.get_deepTagMD_W());	    \
-      ot.OBJ##_deepTagMD_Z.push_back(fatjet.get_deepTagMD_Z());	    \
-      ot.OBJ##_deepTagMD_bbvsL.push_back(fatjet.get_deepTagMD_bbvsL());     \
-      ot.OBJ##_deepTagMD_ccvsL.push_back(fatjet.get_deepTagMD_ccvsL());     \
-      ot.OBJ##_deepTag_QCD.push_back(fatjet.get_deepTag_QCD());	            \
-      ot.OBJ##_deepTag_QCDothers.push_back(fatjet.get_deepTag_QCDothers()); \
-      ot.OBJ##_deepTag_W.push_back(fatjet.get_deepTag_W());	            \
-      ot.OBJ##_deepTag_Z.push_back(fatjet.get_deepTag_Z());		    \
-      ot.OBJ##_nsubjets.push_back(fatjet.get_subjets().size());	\
-      ot.OBJ##_subjet1_pt.push_back(fatjet.get_subjet1_pt());	\
-      ot.OBJ##_subjet1_eta.push_back(fatjet.get_subjet1_eta());             \
-      ot.OBJ##_subjet1_phi.push_back(fatjet.get_subjet1_phi());	            \
-      ot.OBJ##_subjet1_m.push_back(fatjet.get_subjet1_mass());              \
-      ot.OBJ##_subjet1_btagDeepB.push_back(fatjet.get_subjet1_btagDeepB()); \
-      ot.OBJ##_subjet2_pt.push_back(fatjet.get_subjet2_pt());		    \
-      ot.OBJ##_subjet2_eta.push_back(fatjet.get_subjet2_eta());             \
-      ot.OBJ##_subjet2_phi.push_back(fatjet.get_subjet2_phi());             \
-      ot.OBJ##_subjet2_m.push_back(fatjet.get_subjet2_mass());              \
-      ot.OBJ##_subjet2_btagDeepB.push_back(fatjet.get_subjet2_btagDeepB()); \
-    }									    \
-  }
-
-#define COPY_OPTIONAL_jet_list(OBJ)                              \
-  if (ei.OBJ##_list) {                                           \
-    for (Jet & jet : ei.OBJ##_list.get()) {                      \
-      ot.OBJ##_E.push_back(jet.get_E());                         \
-      ot.OBJ##_m.push_back(jet.get_m());                         \
-      ot.OBJ##_mRegressed.push_back(jet.get_mRegressed());       \
-      ot.OBJ##_pt.push_back(jet.get_pt());                       \
-      ot.OBJ##_ptRegressed.push_back(jet.get_ptRegressed());     \
-      ot.OBJ##_eta.push_back(jet.get_eta());                     \
-      ot.OBJ##_phi.push_back(jet.get_phi());                     \
-      ot.OBJ##_signalId.push_back(jet.get_signalId());           \
-      ot.OBJ##_higgsIdx.push_back(jet.get_higgsIdx());           \
-      ot.OBJ##_genIdx.push_back(jet.get_genIdx());               \
-      if (ei.is_mc){\
-      ot.OBJ##_partonFlav.push_back(jet.get_partonFlav());       \
-      ot.OBJ##_hadronFlav.push_back(jet.get_hadronFlav());       \
-      }\
-      ot.OBJ##_btag.push_back(jet.get_btag());                   \
-      ot.OBJ##_qgl.push_back(jet.get_qgl());                     \
-      ot.OBJ##_chEmEF.push_back(jet.get_chEmEF());               \
-      ot.OBJ##_chHEF.push_back(jet.get_chHEF());                 \
-      ot.OBJ##_neEmEF.push_back(jet.get_neEmEF());               \
-      ot.OBJ##_neHEF.push_back(jet.get_neHEF());                 \
-      ot.OBJ##_nConstituents.push_back(jet.get_nConstituents()); \
-      ot.OBJ##_id.push_back(jet.get_id());                       \
-      ot.OBJ##_puid.push_back(jet.get_puid());                   \
-    }                                                            \
-  }
-
-#define COPY_OPTIONAL_dijet_list(OBJ)                    \
-  if (ei.OBJ##_list)                                     \
-  {                                                      \
-    for (DiJet & dijet : ei.OBJ##_list.get())            \
-    {                                                    \
-      ot.OBJ##_E.push_back(dijet.E());                   \
-      ot.OBJ##_m.push_back(dijet.M());                   \
-      ot.OBJ##_pt.push_back(dijet.Pt());                 \
-      ot.OBJ##_eta.push_back(dijet.Eta());               \
-      ot.OBJ##_phi.push_back(dijet.Phi());               \
-      ot.OBJ##_dr.push_back(dijet.dR());                 \
-      ot.OBJ##_signalId.push_back(dijet.get_signalId()); \
-      ot.OBJ##_2j_score.push_back(dijet.get_2j_score()); \
-    }                                                    \
-  }
-
 // --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - --- - 
 
 int SkimUtils::appendFromFileList (TChain* chain, string filename)
@@ -273,47 +58,15 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if(ei.b_6j_score)     ot.b_6j_score      = *ei.b_6j_score;
   if(ei.b_3d_score)     ot.b_3d_score      = *ei.b_3d_score;
 
-  COPY_OPTIONAL_ele_list(ele);
-  COPY_OPTIONAL_muon_list(muon);
-  COPY_OPTIONAL_jet_list(jet);
-  COPY_OPTIONAL_fatjet_list(fatjet);
+  ot.ele.FillOptional(ei.ele_list);
+  ot.muon.FillOptional(ei.muon_list);
 
-  if (ei.genjet_list) {
-    for (GenJet& jet : ei.genjet_list.get()) {
-      ot.genjet_E.push_back( jet.get_E() );	    
-      ot.genjet_m.push_back( jet.get_m() );		
-      ot.genjet_pt.push_back( jet.get_pt() );		
-      ot.genjet_eta.push_back( jet.get_eta() );		
-      ot.genjet_phi.push_back( jet.get_phi() );		
-      ot.genjet_partonFlav.push_back( jet.get_partonFlav() );
-      ot.genjet_hadronFlav.push_back( jet.get_hadronFlav() );
-      ot.genjet_signalId.push_back( jet.get_signalId() );
-      ot.genjet_recoIdx.push_back( jet.get_recoIdx() );
-    }
-  }
+  ot.jet.FillOptional(ei.jet_list);
+  ot.fatjet.FillOptional(ei.fatjet_list);
+
+  ot.genjet.FillOptional(ei.genjet_list);
   
-  if (ei.genfatjet_list) {
-    for (GenJetAK8& fatjet : ei.genfatjet_list.get()) {
-      ot.genfatjet_E.push_back( fatjet.get_E() );
-      ot.genfatjet_m.push_back( fatjet.get_m() );
-      ot.genfatjet_pt.push_back( fatjet.get_pt() );
-      ot.genfatjet_eta.push_back( fatjet.get_eta() );
-      ot.genfatjet_phi.push_back( fatjet.get_phi() );
-      ot.genfatjet_signalId.push_back( fatjet.get_signalId() );
-      ot.genfatjet_recoIdx.push_back( fatjet.get_recoIdx() );
-      ot.genfatjet_hadronFlav.push_back( fatjet.get_hadronFlav() );
-      ot.genfatjet_partonFlav.push_back( fatjet.get_partonFlav() );
-      ot.genfatjet_nsubjets.push_back( fatjet.get_nsubjets() );
-      ot.genfatjet_subjet1_pt.push_back( fatjet.get_subjet1_pt() );
-      ot.genfatjet_subjet1_eta.push_back( fatjet.get_subjet1_eta() );
-      ot.genfatjet_subjet1_phi.push_back( fatjet.get_subjet1_phi() );
-      ot.genfatjet_subjet1_m.push_back( fatjet.get_subjet1_mass() );
-      ot.genfatjet_subjet2_pt.push_back( fatjet.get_subjet2_pt() );
-      ot.genfatjet_subjet2_eta.push_back( fatjet.get_subjet2_eta() );
-      ot.genfatjet_subjet2_phi.push_back( fatjet.get_subjet2_phi() );
-      ot.genfatjet_subjet2_m.push_back(fatjet.get_subjet2_mass() );
-    }
-  }
+  ot.genfatjet.FillOptional(ei.genfatjet_list);
 
   if (ei.event_shapes) {
     ot.sphericity   = ei.event_shapes.get().sphericity;
@@ -321,99 +74,82 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     ot.aplanarity   = ei.event_shapes.get().aplanarity;
   }
 
-  if (ei.dijet_list) {
-
-    ot.n_dijet = ei.dijet_list.get().size();
-    for (DiJet &dijet : ei.dijet_list.get())
-    {
-      ot.dijet_m.push_back(dijet.M());                   
-      ot.dijet_pt.push_back(dijet.Pt());                 
-      ot.dijet_eta.push_back(dijet.Eta());               
-      ot.dijet_phi.push_back(dijet.Phi());               
-      ot.dijet_dr.push_back(dijet.dR());
-      ot.dijet_score.push_back(dijet.get_param("score", 0));
-      ot.dijet_signalId.push_back(dijet.get_signalId());
-      ot.dijet_j1Idx.push_back(dijet.get_j1Idx());
-      ot.dijet_j2Idx.push_back(dijet.get_j2Idx());
-    }
-  }
-
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_fc);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_fc);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_b1_genfatjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_b2_genfatjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_b1_genfatjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_b2_genfatjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_b1_recofatjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_b2_recofatjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_b1_recofatjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_b2_recofatjet);
+  ot.gen_H1_fc.FillOptional(ei.gen_H1_fc);
+  ot.gen_H2_fc.FillOptional(ei.gen_H2_fc);
+  ot.gen_H1_b1_genfatjet.FillOptional(ei.gen_H1_b1_genfatjet);
+  ot.gen_H1_b2_genfatjet.FillOptional(ei.gen_H1_b2_genfatjet);
+  ot.gen_H2_b1_genfatjet.FillOptional(ei.gen_H2_b1_genfatjet);
+  ot.gen_H2_b2_genfatjet.FillOptional(ei.gen_H2_b2_genfatjet);
+  ot.gen_H1_b1_recofatjet.FillOptional(ei.gen_H1_b1_recofatjet);
+  ot.gen_H1_b2_recofatjet.FillOptional(ei.gen_H1_b2_recofatjet);
+  ot.gen_H2_b1_recofatjet.FillOptional(ei.gen_H2_b1_recofatjet);
+  ot.gen_H2_b2_recofatjet.FillOptional(ei.gen_H2_b2_recofatjet);
   
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X_fc);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_X);
+  ot.gen_X_fc.FillOptional(ei.gen_X_fc);
+  ot.gen_X.FillOptional(ei.gen_X);
   
   // Start Gen 6B Objects
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_Y);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_HX);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2);
+  ot.gen_Y.FillOptional(ei.gen_Y);
+  ot.gen_HX.FillOptional(ei.gen_HX);
+  ot.gen_H1.FillOptional(ei.gen_H1);
+  ot.gen_H2.FillOptional(ei.gen_H2);
 
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_HX_b1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_HX_b2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_b1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_b2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_b1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_b2);
+  ot.gen_HX_b1.FillOptional(ei.gen_HX_b1);
+  ot.gen_HX_b2.FillOptional(ei.gen_HX_b2);
+  ot.gen_H1_b1.FillOptional(ei.gen_H1_b1);
+  ot.gen_H1_b2.FillOptional(ei.gen_H1_b2);
+  ot.gen_H2_b1.FillOptional(ei.gen_H2_b1);
+  ot.gen_H2_b2.FillOptional(ei.gen_H2_b2);
 
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_HX_b1_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_HX_b2_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_b1_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1_b2_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_b1_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2_b2_genjet);
+   ot.gen_HX_b1_genjet.FillOptional(ei.gen_HX_b1_genjet);
+   ot.gen_HX_b2_genjet.FillOptional(ei.gen_HX_b2_genjet);
+   ot.gen_H1_b1_genjet.FillOptional(ei.gen_H1_b1_genjet);
+   ot.gen_H1_b2_genjet.FillOptional(ei.gen_H1_b2_genjet);
+   ot.gen_H2_b1_genjet.FillOptional(ei.gen_H2_b1_genjet);
+   ot.gen_H2_b2_genjet.FillOptional(ei.gen_H2_b2_genjet);
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HX_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_HX_b2_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H1_b2_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_p4(gen_H2_b2_recojet);
+   ot.gen_HX_b1_recojet.FillOptional(ei.gen_HX_b1_recojet);
+   ot.gen_HX_b2_recojet.FillOptional(ei.gen_HX_b2_recojet);
+   ot.gen_H1_b1_recojet.FillOptional(ei.gen_H1_b1_recojet);
+   ot.gen_H1_b2_recojet.FillOptional(ei.gen_H1_b2_recojet);
+   ot.gen_H2_b1_recojet.FillOptional(ei.gen_H2_b1_recojet);
+   ot.gen_H2_b2_recojet.FillOptional(ei.gen_H2_b2_recojet);
   // End Gen 6B Objects
 
   // Start Gen 8B Objects
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2);
+  ot.gen_Y1.FillOptional(ei.gen_Y1);
+  ot.gen_Y2.FillOptional(ei.gen_Y2);
+  ot.gen_H1Y1.FillOptional(ei.gen_H1Y1);
+  ot.gen_H2Y1.FillOptional(ei.gen_H2Y1);
+  ot.gen_H1Y2.FillOptional(ei.gen_H1Y2);
+  ot.gen_H2Y2.FillOptional(ei.gen_H2Y2);
 
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1_b1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1_b2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1_b1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1_b2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2_b1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2_b2);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b2);
+  ot.gen_H1Y1_b1.FillOptional(ei.gen_H1Y1_b1);
+  ot.gen_H1Y1_b2.FillOptional(ei.gen_H1Y1_b2);
+  ot.gen_H2Y1_b1.FillOptional(ei.gen_H2Y1_b1);
+  ot.gen_H2Y1_b2.FillOptional(ei.gen_H2Y1_b2);
+  ot.gen_H1Y2_b1.FillOptional(ei.gen_H1Y2_b1);
+  ot.gen_H1Y2_b2.FillOptional(ei.gen_H1Y2_b2);
+  ot.gen_H2Y2_b1.FillOptional(ei.gen_H2Y2_b1);
+  ot.gen_H2Y2_b2.FillOptional(ei.gen_H2Y2_b2);
   
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1_b1_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y1_b2_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1_b1_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y1_b2_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2_b1_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H1Y2_b2_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b1_genjet);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(gen_H2Y2_b2_genjet);
+  ot.gen_H1Y1_b1_genjet.FillOptional(ei.gen_H1Y1_b1_genjet);
+  ot.gen_H1Y1_b2_genjet.FillOptional(ei.gen_H1Y1_b2_genjet);
+  ot.gen_H2Y1_b1_genjet.FillOptional(ei.gen_H2Y1_b1_genjet);
+  ot.gen_H2Y1_b2_genjet.FillOptional(ei.gen_H2Y1_b2_genjet);
+  ot.gen_H1Y2_b1_genjet.FillOptional(ei.gen_H1Y2_b1_genjet);
+  ot.gen_H1Y2_b2_genjet.FillOptional(ei.gen_H1Y2_b2_genjet);
+  ot.gen_H2Y2_b1_genjet.FillOptional(ei.gen_H2Y2_b1_genjet);
+  ot.gen_H2Y2_b2_genjet.FillOptional(ei.gen_H2Y2_b2_genjet);
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y1_b2_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y1_b2_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H1Y2_b2_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b1_recojet);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(gen_H2Y2_b2_recojet);
+  ot.gen_H1Y1_b1_recojet.FillOptional(ei.gen_H1Y1_b1_recojet);
+  ot.gen_H1Y1_b2_recojet.FillOptional(ei.gen_H1Y1_b2_recojet);
+  ot.gen_H2Y1_b1_recojet.FillOptional(ei.gen_H2Y1_b1_recojet);
+  ot.gen_H2Y1_b2_recojet.FillOptional(ei.gen_H2Y1_b2_recojet);
+  ot.gen_H1Y2_b1_recojet.FillOptional(ei.gen_H1Y2_b1_recojet);
+  ot.gen_H1Y2_b2_recojet.FillOptional(ei.gen_H1Y2_b2_recojet);
+  ot.gen_H2Y2_b1_recojet.FillOptional(ei.gen_H2Y2_b1_recojet);
+  ot.gen_H2Y2_b2_recojet.FillOptional(ei.gen_H2Y2_b2_recojet);
   // End Gen 8B Objects
 
   if (ei.gen_bs_N_reco_match)        ot.gen_bs_N_reco_match        = *ei.gen_bs_N_reco_match;
@@ -421,19 +157,19 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.gen_bs_match_recojet_minv)        ot.gen_bs_match_recojet_minv        = *ei.gen_bs_match_recojet_minv;
   if (ei.gen_bs_match_in_acc_recojet_minv) ot.gen_bs_match_in_acc_recojet_minv = *ei.gen_bs_match_in_acc_recojet_minv;
 
-  COPY_OPTIONAL_m_pt_eta_phi_p4(X);
+  ot.X.FillOptional(ei.X);
   // Start Reco 6B Objects
-  COPY_OPTIONAL_m_pt_eta_phi_p4(Y);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(HX);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(H2);
+  ot.Y.FillOptional(ei.Y);
+  ot.HX.FillOptional(ei.HX);
+  ot.H1.FillOptional(ei.H1);
+  ot.H2.FillOptional(ei.H2);
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(HX_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H1_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_p4(H2_b2);
+   ot.HX_b1.FillOptional(ei.HX_b1);
+   ot.HX_b2.FillOptional(ei.HX_b2);
+   ot.H1_b1.FillOptional(ei.H1_b1);
+   ot.H1_b2.FillOptional(ei.H1_b2);
+   ot.H2_b1.FillOptional(ei.H2_b1);
+   ot.H2_b2.FillOptional(ei.H2_b2);
 
   if (ei.HX_b1_genHflag)  ot.HX_b1_genHflag  = *ei.HX_b1_genHflag;
   if (ei.HX_b2_genHflag)  ot.HX_b2_genHflag  = *ei.HX_b2_genHflag;
@@ -444,37 +180,26 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   // End Reco 6B Objects
 
   // Start Reco 8B Objects
-  COPY_OPTIONAL_m_pt_eta_phi_p4(Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_p4(Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H1Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H2Y1);
-  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H1Y2);
-  COPY_OPTIONAL_m_pt_eta_phi_score_p4(H2Y2);
+  ot.Y1.FillOptional(ei.Y1);
+  ot.Y2.FillOptional(ei.Y2);
+  ot.H1Y1.FillOptional(ei.H1Y1);
+  ot.H2Y1.FillOptional(ei.H2Y1);
+  ot.H1Y2.FillOptional(ei.H1Y2);
+  ot.H2Y2.FillOptional(ei.H2Y2);
 
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y1_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y1_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H1Y2_b2);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b1);
-  COPY_OPTIONAL_m_pt_ptRegressed_eta_phi_DeepJet_score_p4(H2Y2_b2);
-
-  if (ei.H1Y1_b1_genHflag)  ot.H1Y1_b1_genHflag  = *ei.H1Y1_b1_genHflag;
-  if (ei.H1Y1_b2_genHflag)  ot.H1Y1_b2_genHflag  = *ei.H1Y1_b2_genHflag;
-  if (ei.H2Y1_b1_genHflag)  ot.H2Y1_b1_genHflag  = *ei.H2Y1_b1_genHflag;
-  if (ei.H2Y1_b2_genHflag)  ot.H2Y1_b2_genHflag  = *ei.H2Y1_b2_genHflag;
-  if (ei.H1Y2_b1_genHflag)  ot.H1Y2_b1_genHflag  = *ei.H1Y2_b1_genHflag;
-  if (ei.H1Y2_b2_genHflag)  ot.H1Y2_b2_genHflag  = *ei.H1Y2_b2_genHflag;
-  if (ei.H2Y2_b1_genHflag)  ot.H2Y2_b1_genHflag  = *ei.H2Y2_b1_genHflag;
-  if (ei.H2Y2_b2_genHflag)  ot.H2Y2_b2_genHflag  = *ei.H2Y2_b2_genHflag;
+  ot.H1Y1_b1.FillOptional(ei.H1Y1_b1);
+  ot.H1Y1_b2.FillOptional(ei.H1Y1_b2);
+  ot.H2Y1_b1.FillOptional(ei.H2Y1_b1);
+  ot.H2Y1_b2.FillOptional(ei.H2Y1_b2);
+  ot.H1Y2_b1.FillOptional(ei.H1Y2_b1);
+  ot.H1Y2_b2.FillOptional(ei.H1Y2_b2);
+  ot.H2Y2_b1.FillOptional(ei.H2Y2_b1);
+  ot.H2Y2_b2.FillOptional(ei.H2Y2_b2);
 
   if (ei.n_loose_btag) ot.n_loose_btag = *ei.n_loose_btag;
   if (ei.n_medium_btag) ot.n_medium_btag = *ei.n_medium_btag;
   if (ei.n_tight_btag) ot.n_tight_btag = *ei.n_tight_btag;
   if (ei.btagavg) ot.btagavg = *ei.btagavg;
-
-  if (ei.quadh_score) ot.quadh_score = *ei.quadh_score;
   // End Reco 8B Objects
 
   if (ei.nfound_all) ot.nfound_all = *ei.nfound_all;

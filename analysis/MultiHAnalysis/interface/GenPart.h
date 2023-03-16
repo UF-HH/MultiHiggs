@@ -3,6 +3,7 @@
 
 #include "Candidate.h"
 #include <map>
+#include "BranchCollection.h"
 
 class GenPart : public Candidate
 {
@@ -37,6 +38,18 @@ private:
   bool checkBit(int number, int bitpos) {return (number & (1 << bitpos));}
   void buildP4() override; 
   static const std::map<int, float> gen_mass_;
+};
+
+struct GenPartCollection : public BranchCollection<GenPart> {
+  float m;  
+  float pt; 
+  float eta;
+  float phi;
+
+  DEF_BRANCH_COLLECTION(GenPartCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const GenPart& part) override;
 };
 
 #endif
