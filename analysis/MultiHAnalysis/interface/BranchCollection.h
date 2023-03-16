@@ -49,7 +49,8 @@ public:
   virtual void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) = 0;
   virtual void Clear() = 0;
 
-  void FillOptional(boost::optional<T>& obj) {
+  template <typename R>
+  void FillOptional(boost::optional<R>& obj) {
     if (obj)
       this->Fill(obj.get());
   };

@@ -66,6 +66,16 @@ public:
   // otherwise it will match to the closest parton found
    */
   void match_genbs_to_genjets(NanoAODTree &nat, EventInfo &ei, bool ensure_unique = true) override;
+  
+  /**
+   * @brief Match selected gen bs to gen fatjets
+   * This method should be overriden
+   * @param nat NanoAODTree being processed 
+   * @param ei EventInfo class to store values 
+   * @param ensure_unique if true, ensures that a gen fatjet is not matched to two different partons
+   // otherwise it will match to the closest parton found 
+   */
+  void match_genbs_to_genfatjets(NanoAODTree &nat, EventInfo &ei, bool ensure_unique = true) override;
 
   /**
    * @brief Match genjets associacted to a gen b quark to a reco jet
@@ -74,6 +84,15 @@ public:
    * @param ei EventInfo class to store values
    */
   void match_genbs_genjets_to_reco(NanoAODTree &nat, EventInfo &ei) override;
+  
+  
+  /**
+   * @brief Match genfatjets associated to a gen b quark to a reco fatjet
+   * This method should be overriden
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   */
+  void match_genbs_genfatjets_to_reco(NanoAODTree &nat, EventInfo &ei) override;
 
   /**
    * @brief Match signal objects to reco in_jets collection and saving ID to signalId

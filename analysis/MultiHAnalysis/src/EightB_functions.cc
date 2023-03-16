@@ -249,6 +249,63 @@ void EightB_functions::match_genbs_to_genjets(NanoAODTree& nat, EventInfo& ei, b
   return;
 }
 
+void EightB_functions::match_genbs_to_genfatjets(NanoAODTree& nat, EventInfo& ei, bool ensure_unique) {
+  const double dR_match = 0.8;
+
+  std::vector<GenPart*> bs_to_match = {ei.gen_H1Y1_b1.get_ptr(),
+                                       ei.gen_H1Y1_b2.get_ptr(),
+
+                                       ei.gen_H2Y1_b1.get_ptr(),
+                                       ei.gen_H2Y1_b2.get_ptr(),
+
+                                       ei.gen_H1Y2_b1.get_ptr(),
+                                       ei.gen_H1Y2_b2.get_ptr(),
+
+                                       ei.gen_H2Y2_b1.get_ptr(),
+                                       ei.gen_H2Y2_b2.get_ptr()};
+
+  std::vector<GenJetAK8> genfatjets;
+  for (unsigned int igj = 0; igj < *(nat.nGenJetAK8); ++igj) {
+    GenJetAK8 gj(igj, &nat);
+    genfatjets.push_back(gj);
+  }
+
+  std::vector<GenPart*> matched_quarks;
+  std::vector<GenJetAK8> matched_genfatjets;
+  GetMatchedPairs(dR_match, bs_to_match, genfatjets, matched_quarks, matched_genfatjets);
+
+  for (unsigned int im = 0; im < matched_quarks.size(); im++) {
+    GenPart* b = matched_quarks.at(im);
+    GenJetAK8 j = matched_genfatjets.at(im);
+
+    int bIdx = b->getIdx();
+    if (bIdx == ei.gen_H1Y1_b1.get_ptr()->getIdx()) {
+      ei.gen_H1Y1_b1_genfatjet = GenJetAK8(j.getIdx(), &nat);
+    }
+    else if (bIdx == ei.gen_H1Y1_b2.get_ptr()->getIdx()) {
+      ei.gen_H1Y1_b2_genfatjet = GenJetAK8(j.getIdx(), &nat);
+    }
+    else if (bIdx == ei.gen_H2Y1_b1.get_ptr()->getIdx()) {
+      ei.gen_H2Y1_b1_genfatjet = GenJetAK8(j.getIdx(), &nat);
+    }
+    else if (bIdx == ei.gen_H2Y1_b2.get_ptr()->getIdx()) {
+      ei.gen_H2Y1_b2_genfatjet = GenJetAK8(j.getIdx(), &nat);
+    }
+    else if (bIdx == ei.gen_H1Y2_b1.get_ptr()->getIdx()) {
+      ei.gen_H1Y2_b1_genfatjet = GenJetAK8(j.getIdx(), &nat);
+    }
+    else if (bIdx == ei.gen_H1Y2_b2.get_ptr()->getIdx()) {
+      ei.gen_H1Y2_b2_genfatjet = GenJetAK8(j.getIdx(), &nat);
+    }
+    else if (bIdx == ei.gen_H2Y2_b1.get_ptr()->getIdx()) {
+      ei.gen_H2Y2_b1_genfatjet = GenJetAK8(j.getIdx(), &nat);
+    }
+    else if (bIdx == ei.gen_H2Y2_b2.get_ptr()->getIdx()) {
+      ei.gen_H2Y2_b2_genfatjet = GenJetAK8(j.getIdx(), &nat);
+    }
+  }  // Closes loop over matched quarks
+}
+
 void EightB_functions::match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& ei)
 {
   int ij_gen_H1Y1_b1_genjet  = (ei.gen_H1Y1_b1_genjet  ? find_jet_from_genjet(nat, *ei.gen_H1Y1_b1_genjet)  : -1); 
@@ -332,6 +389,35 @@ void EightB_functions::match_genbs_genjets_to_reco(NanoAODTree& nat, EventInfo& 
   if (ei.gen_H2Y2_b1_recojet  && ei.gen_H2Y2_b1_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y2_b1_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H2Y2_b1_recojet->P4();
   if (ei.gen_H2Y2_b2_recojet  && ei.gen_H2Y2_b2_recojet->P4().Pt()  > 20 && std::abs(ei.gen_H2Y2_b2_recojet->P4().Eta())  < 4.8) p4_sum_matched_acc += ei.gen_H2Y2_b2_recojet->P4();
   ei.gen_bs_match_in_acc_recojet_minv = p4_sum_matched_acc.M();
+}
+
+void EightB_functions::match_genbs_genfatjets_to_reco(NanoAODTree &nat, EventInfo &ei) {
+
+  int ij_gen_H1Y1_b1_genfatjet = (ei.gen_H1Y1_b1_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H1Y1_b1_genfatjet) : -1);
+  if (ij_gen_H1Y1_b1_genfatjet >= 0) ei.gen_H1Y1_b1_recofatjet = FatJet(ij_gen_H1Y1_b1_genfatjet, &nat);
+
+  int ij_gen_H1Y1_b2_genfatjet = (ei.gen_H1Y1_b2_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H1Y1_b2_genfatjet) : -1);
+  if (ij_gen_H1Y1_b2_genfatjet >= 0) ei.gen_H1Y1_b2_recofatjet = FatJet(ij_gen_H1Y1_b2_genfatjet, &nat);
+  
+  int ij_gen_H2Y1_b1_genfatjet = (ei.gen_H2Y1_b1_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H2Y1_b1_genfatjet) : -1);
+  if (ij_gen_H2Y1_b1_genfatjet >= 0) ei.gen_H2Y1_b1_recofatjet = FatJet(ij_gen_H2Y1_b1_genfatjet, &nat);
+
+  int ij_gen_H2Y1_b2_genfatjet = (ei.gen_H2Y1_b2_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H2Y1_b2_genfatjet) : -1);
+  if (ij_gen_H2Y1_b2_genfatjet >= 0) ei.gen_H2Y1_b2_recofatjet = FatJet(ij_gen_H2Y1_b2_genfatjet, &nat);
+
+  int ij_gen_H1Y2_b1_genfatjet = (ei.gen_H1Y2_b1_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H1Y2_b1_genfatjet) : -1);
+  if (ij_gen_H1Y2_b1_genfatjet >= 0) ei.gen_H1Y2_b1_recofatjet = FatJet(ij_gen_H1Y2_b1_genfatjet, &nat);
+
+  int ij_gen_H1Y2_b2_genfatjet = (ei.gen_H1Y2_b2_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H1Y2_b2_genfatjet) : -1);
+  if (ij_gen_H1Y2_b2_genfatjet >= 0) ei.gen_H1Y2_b2_recofatjet = FatJet(ij_gen_H1Y2_b2_genfatjet, &nat);
+  
+  int ij_gen_H2Y2_b1_genfatjet = (ei.gen_H2Y2_b1_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H2Y2_b1_genfatjet) : -1);
+  if (ij_gen_H2Y2_b1_genfatjet >= 0) ei.gen_H2Y2_b1_recofatjet = FatJet(ij_gen_H2Y2_b1_genfatjet, &nat);
+
+  int ij_gen_H2Y2_b2_genfatjet = (ei.gen_H2Y2_b2_genfatjet ? find_fatjet_from_genfatjet(nat, *ei.gen_H2Y2_b2_genfatjet) : -1);
+  if (ij_gen_H2Y2_b2_genfatjet >= 0) ei.gen_H2Y2_b2_recofatjet = FatJet(ij_gen_H2Y2_b2_genfatjet, &nat);
+
+  return;
 }
 
 int EightB_functions::get_jet_genmatch_flag (NanoAODTree& nat, EventInfo& ei, const Jet& jet)

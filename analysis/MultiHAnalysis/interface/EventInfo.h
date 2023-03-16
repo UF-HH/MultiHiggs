@@ -132,6 +132,24 @@ struct EventInfo{
   boost::optional<Jet>  gen_H1Y2_b2_recojet;
   boost::optional<Jet>  gen_H2Y2_b1_recojet;
   boost::optional<Jet>  gen_H2Y2_b2_recojet;
+  
+  boost::optional<GenJetAK8>  gen_H1Y1_b1_genfatjet; // genfatjets matched to the 8 b
+  boost::optional<GenJetAK8>  gen_H1Y1_b2_genfatjet;
+  boost::optional<GenJetAK8>  gen_H2Y1_b1_genfatjet;
+  boost::optional<GenJetAK8>  gen_H2Y1_b2_genfatjet;
+  boost::optional<GenJetAK8>  gen_H1Y2_b1_genfatjet;
+  boost::optional<GenJetAK8>  gen_H1Y2_b2_genfatjet;
+  boost::optional<GenJetAK8>  gen_H2Y2_b1_genfatjet;
+  boost::optional<GenJetAK8>  gen_H2Y2_b2_genfatjet;
+  
+  boost::optional<FatJet>  gen_H1Y1_b1_recofatjet; // genfatjets matched to the 8 b
+  boost::optional<FatJet>  gen_H1Y1_b2_recofatjet;
+  boost::optional<FatJet>  gen_H2Y1_b1_recofatjet;
+  boost::optional<FatJet>  gen_H2Y1_b2_recofatjet;
+  boost::optional<FatJet>  gen_H1Y2_b1_recofatjet;
+  boost::optional<FatJet>  gen_H1Y2_b2_recofatjet;
+  boost::optional<FatJet>  gen_H2Y2_b1_recofatjet;
+  boost::optional<FatJet>  gen_H2Y2_b2_recofatjet;
   // End Gen 8B Objects
 
   // Start Reco 6B Objects

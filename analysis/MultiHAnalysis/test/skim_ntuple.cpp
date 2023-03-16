@@ -945,8 +945,9 @@ int main(int argc, char** argv) {
     //=================================
     // Fatjet selection
     //=================================
+    std::vector<FatJet> all_fatjets;
     if (saveFatJets) {
-      std::vector<FatJet> all_fatjets = skf->get_all_fatjets(nat);
+      all_fatjets = skf->get_all_fatjets(nat);
       ei.n_fatjet = all_fatjets.size();
       ei.fatjet_list = all_fatjets;
       loop_timer.click("FatJet selection");
@@ -960,7 +961,8 @@ int main(int argc, char** argv) {
     //=================================
     // Apply analysis-specific skims
     //=================================
-    if (skim_type == keightb) {
+    bool eightb_boosted = readCfgOptWithDefault<bool>(config, "configurations::boosted", false);
+    if (skim_type == keightb && !eightb_boosted) {
       if (presel_jets.size() < 8)
         continue;
       cutflow.add("npresel_jets>=8", nwt);
@@ -1128,7 +1130,7 @@ int main(int argc, char** argv) {
       skf->compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
     }  // Closes sixb skimming
-    else if ( skim_type == kttbar ) {
+    else if (skim_type == kttbar) {
       if (presel_jets.size() < 6)
         continue;
       cutflow.add("npresel_jets>=6", nwt);

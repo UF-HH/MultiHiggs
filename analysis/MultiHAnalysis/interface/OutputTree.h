@@ -190,6 +190,24 @@ public:
   JetCollection gen_H1Y2_b2_recojet = JetCollection({"pt","eta","phi","m","btag"});
   JetCollection gen_H2Y2_b1_recojet = JetCollection({"pt","eta","phi","m","btag"});
   JetCollection gen_H2Y2_b2_recojet = JetCollection({"pt","eta","phi","m","btag"});
+  
+  GenJetAK8Collection gen_H1Y1_b1_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H1Y1_b2_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H2Y1_b1_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H2Y1_b2_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H1Y2_b1_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H1Y2_b2_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H2Y2_b1_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  GenJetAK8Collection gen_H2Y2_b2_genfatjet = GenJetAK8Collection({"pt","m","eta","phi"});
+  
+  FatJetCollection gen_H1Y1_b1_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H1Y1_b2_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H2Y1_b1_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H2Y1_b2_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H1Y2_b1_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H1Y2_b2_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H2Y2_b1_recofatjet = FatJetCollection({"pt","m","eta","phi"});
+  FatJetCollection gen_H2Y2_b2_recofatjet = FatJetCollection({"pt","m","eta","phi"});
   // End Gen 8B Objects
   
   int gen_bs_N_reco_match;

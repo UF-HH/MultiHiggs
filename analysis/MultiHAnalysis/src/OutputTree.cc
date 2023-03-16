@@ -187,6 +187,26 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       REGISTER_BRANCH_COLLECTION(gen_H2Y2_b1_recojet);
       REGISTER_BRANCH_COLLECTION(gen_H2Y2_b2_recojet);
 
+      if (is_enabled("fatjet_coll")) {
+        REGISTER_BRANCH_COLLECTION(gen_H1Y1_b1_genfatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H1Y1_b2_genfatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H2Y1_b1_genfatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H2Y1_b2_genfatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H1Y2_b1_genfatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H1Y2_b2_genfatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H2Y2_b1_genfatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H2Y2_b2_genfatjet);
+        
+        REGISTER_BRANCH_COLLECTION(gen_H1Y1_b1_recofatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H1Y1_b2_recofatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H2Y1_b1_recofatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H2Y1_b2_recofatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H1Y2_b1_recofatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H1Y2_b2_recofatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H2Y2_b1_recofatjet);
+        REGISTER_BRANCH_COLLECTION(gen_H2Y2_b2_recofatjet);
+      }
+
       tree_->Branch("gen_bs_N_reco_match", &gen_bs_N_reco_match);
       tree_->Branch("gen_bs_N_reco_match_in_acc", &gen_bs_N_reco_match_in_acc);
       tree_->Branch("gen_bs_match_recojet_minv", &gen_bs_match_recojet_minv);
@@ -415,6 +435,24 @@ void OutputTree::clear()
   gen_H1Y2_b2_recojet.Clear();
   gen_H2Y2_b1_recojet.Clear();
   gen_H2Y2_b2_recojet.Clear();
+
+  gen_H1Y1_b1_genfatjet.Clear();
+  gen_H1Y1_b2_genfatjet.Clear();
+  gen_H2Y1_b1_genfatjet.Clear();
+  gen_H2Y1_b2_genfatjet.Clear();
+  gen_H1Y2_b1_genfatjet.Clear();
+  gen_H1Y2_b2_genfatjet.Clear();
+  gen_H2Y2_b1_genfatjet.Clear();
+  gen_H2Y2_b2_genfatjet.Clear();
+
+  gen_H1Y1_b1_recofatjet.Clear();
+  gen_H1Y1_b2_recofatjet.Clear();
+  gen_H2Y1_b1_recofatjet.Clear();
+  gen_H2Y1_b2_recofatjet.Clear();
+  gen_H1Y2_b1_recofatjet.Clear();
+  gen_H1Y2_b2_recofatjet.Clear();
+  gen_H2Y2_b1_recofatjet.Clear();
+  gen_H2Y2_b2_recofatjet.Clear();
   // End Gen 8B Objects
 
   gen_bs_N_reco_match        = -999;

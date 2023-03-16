@@ -32,7 +32,7 @@ int SkimUtils::appendFromFileList (TChain* chain, string filename)
   return nfiles;
 }
 
-
+#define FILL_OPTIONAL(COLL) ot.COLL.FillOptional(ei.COLL)
 void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei)
 {
 
@@ -74,82 +74,100 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
     ot.aplanarity   = ei.event_shapes.get().aplanarity;
   }
 
-  ot.gen_H1_fc.FillOptional(ei.gen_H1_fc);
-  ot.gen_H2_fc.FillOptional(ei.gen_H2_fc);
-  ot.gen_H1_b1_genfatjet.FillOptional(ei.gen_H1_b1_genfatjet);
-  ot.gen_H1_b2_genfatjet.FillOptional(ei.gen_H1_b2_genfatjet);
-  ot.gen_H2_b1_genfatjet.FillOptional(ei.gen_H2_b1_genfatjet);
-  ot.gen_H2_b2_genfatjet.FillOptional(ei.gen_H2_b2_genfatjet);
-  ot.gen_H1_b1_recofatjet.FillOptional(ei.gen_H1_b1_recofatjet);
-  ot.gen_H1_b2_recofatjet.FillOptional(ei.gen_H1_b2_recofatjet);
-  ot.gen_H2_b1_recofatjet.FillOptional(ei.gen_H2_b1_recofatjet);
-  ot.gen_H2_b2_recofatjet.FillOptional(ei.gen_H2_b2_recofatjet);
+  FILL_OPTIONAL(gen_H1_fc);
+  FILL_OPTIONAL(gen_H2_fc);
+  FILL_OPTIONAL(gen_H1_b1_genfatjet);
+  FILL_OPTIONAL(gen_H1_b2_genfatjet);
+  FILL_OPTIONAL(gen_H2_b1_genfatjet);
+  FILL_OPTIONAL(gen_H2_b2_genfatjet);
+  FILL_OPTIONAL(gen_H1_b1_recofatjet);
+  FILL_OPTIONAL(gen_H1_b2_recofatjet);
+  FILL_OPTIONAL(gen_H2_b1_recofatjet);
+  FILL_OPTIONAL(gen_H2_b2_recofatjet);
   
-  ot.gen_X_fc.FillOptional(ei.gen_X_fc);
-  ot.gen_X.FillOptional(ei.gen_X);
+  FILL_OPTIONAL(gen_X_fc);
+  FILL_OPTIONAL(gen_X);
   
   // Start Gen 6B Objects
-  ot.gen_Y.FillOptional(ei.gen_Y);
-  ot.gen_HX.FillOptional(ei.gen_HX);
-  ot.gen_H1.FillOptional(ei.gen_H1);
-  ot.gen_H2.FillOptional(ei.gen_H2);
+  FILL_OPTIONAL(gen_Y);
+  FILL_OPTIONAL(gen_HX);
+  FILL_OPTIONAL(gen_H1);
+  FILL_OPTIONAL(gen_H2);
 
-  ot.gen_HX_b1.FillOptional(ei.gen_HX_b1);
-  ot.gen_HX_b2.FillOptional(ei.gen_HX_b2);
-  ot.gen_H1_b1.FillOptional(ei.gen_H1_b1);
-  ot.gen_H1_b2.FillOptional(ei.gen_H1_b2);
-  ot.gen_H2_b1.FillOptional(ei.gen_H2_b1);
-  ot.gen_H2_b2.FillOptional(ei.gen_H2_b2);
+  FILL_OPTIONAL(gen_HX_b1);
+  FILL_OPTIONAL(gen_HX_b2);
+  FILL_OPTIONAL(gen_H1_b1);
+  FILL_OPTIONAL(gen_H1_b2);
+  FILL_OPTIONAL(gen_H2_b1);
+  FILL_OPTIONAL(gen_H2_b2);
 
-   ot.gen_HX_b1_genjet.FillOptional(ei.gen_HX_b1_genjet);
-   ot.gen_HX_b2_genjet.FillOptional(ei.gen_HX_b2_genjet);
-   ot.gen_H1_b1_genjet.FillOptional(ei.gen_H1_b1_genjet);
-   ot.gen_H1_b2_genjet.FillOptional(ei.gen_H1_b2_genjet);
-   ot.gen_H2_b1_genjet.FillOptional(ei.gen_H2_b1_genjet);
-   ot.gen_H2_b2_genjet.FillOptional(ei.gen_H2_b2_genjet);
+  FILL_OPTIONAL(gen_HX_b1_genjet);
+  FILL_OPTIONAL(gen_HX_b2_genjet);
+  FILL_OPTIONAL(gen_H1_b1_genjet);
+  FILL_OPTIONAL(gen_H1_b2_genjet);
+  FILL_OPTIONAL(gen_H2_b1_genjet);
+  FILL_OPTIONAL(gen_H2_b2_genjet);
 
-   ot.gen_HX_b1_recojet.FillOptional(ei.gen_HX_b1_recojet);
-   ot.gen_HX_b2_recojet.FillOptional(ei.gen_HX_b2_recojet);
-   ot.gen_H1_b1_recojet.FillOptional(ei.gen_H1_b1_recojet);
-   ot.gen_H1_b2_recojet.FillOptional(ei.gen_H1_b2_recojet);
-   ot.gen_H2_b1_recojet.FillOptional(ei.gen_H2_b1_recojet);
-   ot.gen_H2_b2_recojet.FillOptional(ei.gen_H2_b2_recojet);
+  FILL_OPTIONAL(gen_HX_b1_recojet);
+  FILL_OPTIONAL(gen_HX_b2_recojet);
+  FILL_OPTIONAL(gen_H1_b1_recojet);
+  FILL_OPTIONAL(gen_H1_b2_recojet);
+  FILL_OPTIONAL(gen_H2_b1_recojet);
+  FILL_OPTIONAL(gen_H2_b2_recojet);
   // End Gen 6B Objects
 
   // Start Gen 8B Objects
-  ot.gen_Y1.FillOptional(ei.gen_Y1);
-  ot.gen_Y2.FillOptional(ei.gen_Y2);
-  ot.gen_H1Y1.FillOptional(ei.gen_H1Y1);
-  ot.gen_H2Y1.FillOptional(ei.gen_H2Y1);
-  ot.gen_H1Y2.FillOptional(ei.gen_H1Y2);
-  ot.gen_H2Y2.FillOptional(ei.gen_H2Y2);
+  FILL_OPTIONAL(gen_Y1);
+  FILL_OPTIONAL(gen_Y2);
+  FILL_OPTIONAL(gen_H1Y1);
+  FILL_OPTIONAL(gen_H2Y1);
+  FILL_OPTIONAL(gen_H1Y2);
+  FILL_OPTIONAL(gen_H2Y2);
 
-  ot.gen_H1Y1_b1.FillOptional(ei.gen_H1Y1_b1);
-  ot.gen_H1Y1_b2.FillOptional(ei.gen_H1Y1_b2);
-  ot.gen_H2Y1_b1.FillOptional(ei.gen_H2Y1_b1);
-  ot.gen_H2Y1_b2.FillOptional(ei.gen_H2Y1_b2);
-  ot.gen_H1Y2_b1.FillOptional(ei.gen_H1Y2_b1);
-  ot.gen_H1Y2_b2.FillOptional(ei.gen_H1Y2_b2);
-  ot.gen_H2Y2_b1.FillOptional(ei.gen_H2Y2_b1);
-  ot.gen_H2Y2_b2.FillOptional(ei.gen_H2Y2_b2);
+  FILL_OPTIONAL(gen_H1Y1_b1);
+  FILL_OPTIONAL(gen_H1Y1_b2);
+  FILL_OPTIONAL(gen_H2Y1_b1);
+  FILL_OPTIONAL(gen_H2Y1_b2);
+  FILL_OPTIONAL(gen_H1Y2_b1);
+  FILL_OPTIONAL(gen_H1Y2_b2);
+  FILL_OPTIONAL(gen_H2Y2_b1);
+  FILL_OPTIONAL(gen_H2Y2_b2);
   
-  ot.gen_H1Y1_b1_genjet.FillOptional(ei.gen_H1Y1_b1_genjet);
-  ot.gen_H1Y1_b2_genjet.FillOptional(ei.gen_H1Y1_b2_genjet);
-  ot.gen_H2Y1_b1_genjet.FillOptional(ei.gen_H2Y1_b1_genjet);
-  ot.gen_H2Y1_b2_genjet.FillOptional(ei.gen_H2Y1_b2_genjet);
-  ot.gen_H1Y2_b1_genjet.FillOptional(ei.gen_H1Y2_b1_genjet);
-  ot.gen_H1Y2_b2_genjet.FillOptional(ei.gen_H1Y2_b2_genjet);
-  ot.gen_H2Y2_b1_genjet.FillOptional(ei.gen_H2Y2_b1_genjet);
-  ot.gen_H2Y2_b2_genjet.FillOptional(ei.gen_H2Y2_b2_genjet);
+  FILL_OPTIONAL(gen_H1Y1_b1_genjet);
+  FILL_OPTIONAL(gen_H1Y1_b2_genjet);
+  FILL_OPTIONAL(gen_H2Y1_b1_genjet);
+  FILL_OPTIONAL(gen_H2Y1_b2_genjet);
+  FILL_OPTIONAL(gen_H1Y2_b1_genjet);
+  FILL_OPTIONAL(gen_H1Y2_b2_genjet);
+  FILL_OPTIONAL(gen_H2Y2_b1_genjet);
+  FILL_OPTIONAL(gen_H2Y2_b2_genjet);
 
-  ot.gen_H1Y1_b1_recojet.FillOptional(ei.gen_H1Y1_b1_recojet);
-  ot.gen_H1Y1_b2_recojet.FillOptional(ei.gen_H1Y1_b2_recojet);
-  ot.gen_H2Y1_b1_recojet.FillOptional(ei.gen_H2Y1_b1_recojet);
-  ot.gen_H2Y1_b2_recojet.FillOptional(ei.gen_H2Y1_b2_recojet);
-  ot.gen_H1Y2_b1_recojet.FillOptional(ei.gen_H1Y2_b1_recojet);
-  ot.gen_H1Y2_b2_recojet.FillOptional(ei.gen_H1Y2_b2_recojet);
-  ot.gen_H2Y2_b1_recojet.FillOptional(ei.gen_H2Y2_b1_recojet);
-  ot.gen_H2Y2_b2_recojet.FillOptional(ei.gen_H2Y2_b2_recojet);
+  FILL_OPTIONAL(gen_H1Y1_b1_recojet);
+  FILL_OPTIONAL(gen_H1Y1_b2_recojet);
+  FILL_OPTIONAL(gen_H2Y1_b1_recojet);
+  FILL_OPTIONAL(gen_H2Y1_b2_recojet);
+  FILL_OPTIONAL(gen_H1Y2_b1_recojet);
+  FILL_OPTIONAL(gen_H1Y2_b2_recojet);
+  FILL_OPTIONAL(gen_H2Y2_b1_recojet);
+  FILL_OPTIONAL(gen_H2Y2_b2_recojet);
+  
+  FILL_OPTIONAL(gen_H1Y1_b1_genfatjet);
+  FILL_OPTIONAL(gen_H1Y1_b2_genfatjet);
+  FILL_OPTIONAL(gen_H2Y1_b1_genfatjet);
+  FILL_OPTIONAL(gen_H2Y1_b2_genfatjet);
+  FILL_OPTIONAL(gen_H1Y2_b1_genfatjet);
+  FILL_OPTIONAL(gen_H1Y2_b2_genfatjet);
+  FILL_OPTIONAL(gen_H2Y2_b1_genfatjet);
+  FILL_OPTIONAL(gen_H2Y2_b2_genfatjet);
+
+  FILL_OPTIONAL(gen_H1Y1_b1_recofatjet);
+  FILL_OPTIONAL(gen_H1Y1_b2_recofatjet);
+  FILL_OPTIONAL(gen_H2Y1_b1_recofatjet);
+  FILL_OPTIONAL(gen_H2Y1_b2_recofatjet);
+  FILL_OPTIONAL(gen_H1Y2_b1_recofatjet);
+  FILL_OPTIONAL(gen_H1Y2_b2_recofatjet);
+  FILL_OPTIONAL(gen_H2Y2_b1_recofatjet);
+  FILL_OPTIONAL(gen_H2Y2_b2_recofatjet);
   // End Gen 8B Objects
 
   if (ei.gen_bs_N_reco_match)        ot.gen_bs_N_reco_match        = *ei.gen_bs_N_reco_match;
@@ -157,19 +175,19 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if (ei.gen_bs_match_recojet_minv)        ot.gen_bs_match_recojet_minv        = *ei.gen_bs_match_recojet_minv;
   if (ei.gen_bs_match_in_acc_recojet_minv) ot.gen_bs_match_in_acc_recojet_minv = *ei.gen_bs_match_in_acc_recojet_minv;
 
-  ot.X.FillOptional(ei.X);
+  FILL_OPTIONAL(X);
   // Start Reco 6B Objects
-  ot.Y.FillOptional(ei.Y);
-  ot.HX.FillOptional(ei.HX);
-  ot.H1.FillOptional(ei.H1);
-  ot.H2.FillOptional(ei.H2);
+  FILL_OPTIONAL(Y);
+  FILL_OPTIONAL(HX);
+  FILL_OPTIONAL(H1);
+  FILL_OPTIONAL(H2);
 
-   ot.HX_b1.FillOptional(ei.HX_b1);
-   ot.HX_b2.FillOptional(ei.HX_b2);
-   ot.H1_b1.FillOptional(ei.H1_b1);
-   ot.H1_b2.FillOptional(ei.H1_b2);
-   ot.H2_b1.FillOptional(ei.H2_b1);
-   ot.H2_b2.FillOptional(ei.H2_b2);
+   FILL_OPTIONAL(HX_b1);
+   FILL_OPTIONAL(HX_b2);
+   FILL_OPTIONAL(H1_b1);
+   FILL_OPTIONAL(H1_b2);
+   FILL_OPTIONAL(H2_b1);
+   FILL_OPTIONAL(H2_b2);
 
   if (ei.HX_b1_genHflag)  ot.HX_b1_genHflag  = *ei.HX_b1_genHflag;
   if (ei.HX_b2_genHflag)  ot.HX_b2_genHflag  = *ei.HX_b2_genHflag;
@@ -180,21 +198,21 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   // End Reco 6B Objects
 
   // Start Reco 8B Objects
-  ot.Y1.FillOptional(ei.Y1);
-  ot.Y2.FillOptional(ei.Y2);
-  ot.H1Y1.FillOptional(ei.H1Y1);
-  ot.H2Y1.FillOptional(ei.H2Y1);
-  ot.H1Y2.FillOptional(ei.H1Y2);
-  ot.H2Y2.FillOptional(ei.H2Y2);
+  FILL_OPTIONAL(Y1);
+  FILL_OPTIONAL(Y2);
+  FILL_OPTIONAL(H1Y1);
+  FILL_OPTIONAL(H2Y1);
+  FILL_OPTIONAL(H1Y2);
+  FILL_OPTIONAL(H2Y2);
 
-  ot.H1Y1_b1.FillOptional(ei.H1Y1_b1);
-  ot.H1Y1_b2.FillOptional(ei.H1Y1_b2);
-  ot.H2Y1_b1.FillOptional(ei.H2Y1_b1);
-  ot.H2Y1_b2.FillOptional(ei.H2Y1_b2);
-  ot.H1Y2_b1.FillOptional(ei.H1Y2_b1);
-  ot.H1Y2_b2.FillOptional(ei.H1Y2_b2);
-  ot.H2Y2_b1.FillOptional(ei.H2Y2_b1);
-  ot.H2Y2_b2.FillOptional(ei.H2Y2_b2);
+  FILL_OPTIONAL(H1Y1_b1);
+  FILL_OPTIONAL(H1Y1_b2);
+  FILL_OPTIONAL(H2Y1_b1);
+  FILL_OPTIONAL(H2Y1_b2);
+  FILL_OPTIONAL(H1Y2_b1);
+  FILL_OPTIONAL(H1Y2_b2);
+  FILL_OPTIONAL(H2Y2_b1);
+  FILL_OPTIONAL(H2Y2_b2);
 
   if (ei.n_loose_btag) ot.n_loose_btag = *ei.n_loose_btag;
   if (ei.n_medium_btag) ot.n_medium_btag = *ei.n_medium_btag;
