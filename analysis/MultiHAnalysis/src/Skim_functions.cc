@@ -650,3 +650,16 @@ std::vector<Electron> Skim_functions::select_electrons(CfgParser &config, NanoAO
     }
   return selected_electrons;
 }
+
+double Skim_functions::getPFHT(NanoAODTree& nat, EventInfo& ei)
+{
+  double sumPFHT = 0.0;
+  for (unsigned int ij = 0; ij < *(nat.nJet); ++ij)
+    {
+      Jet jet(ij, &nat);
+      if (jet.P4().Pt() < 30) continue;
+      if (std::abs(jet.P4().Eta()) > 2.5) continue;
+      sumPFHT+=jet.P4().Pt();
+    }
+  return sumPFHT;
+}

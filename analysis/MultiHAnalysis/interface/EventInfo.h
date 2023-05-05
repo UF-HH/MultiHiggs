@@ -35,6 +35,7 @@ struct EventInfo{
   boost::optional<int>    n_pu;
   boost::optional<double> n_true_int;
   boost::optional<double> rhofastjet_all;
+  boost::optional<double> PFHT;
   boost::optional<double> lhe_ht;
 
   boost::optional<int>    n_total_jet;

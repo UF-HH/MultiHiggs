@@ -28,6 +28,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
 
   tree_->Branch("n_other_pv",     &n_other_pv);
   tree_->Branch("rhofastjet_all", &rhofastjet_all);
+  tree_->Branch("PFHT", &PFHT);
   
   if (is_enabled("saveTrgSF"))
     {
@@ -309,6 +310,8 @@ void OutputTree::clear()
   n_true_int     = 0;
   rhofastjet_all = 0;
   
+  PFHT = 0;
+
   triggerScaleFactor        = 1.;
   triggerDataEfficiency     = 1.;
   triggerMcEfficiency       = 1.;
