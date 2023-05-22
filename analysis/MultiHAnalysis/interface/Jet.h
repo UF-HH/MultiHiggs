@@ -60,6 +60,7 @@ public:
   int get_higgsIdx() const { return higgsIdx; }
   int get_genIdx() const { return genIdx; }
   float get_btag() const { return get_property((*this), Jet_btagDeepFlavB); }
+  float get_PNetBvsAll() const { return get_property((*this), Jet_btagPNetBvsAll); }
   float get_qgl() const { return get_property((*this), Jet_qgl); }
   float get_chEmEF() const { return get_property((*this), Jet_chEmEF); }      
   float get_chHEF() const { return get_property((*this), Jet_chHEF); }       

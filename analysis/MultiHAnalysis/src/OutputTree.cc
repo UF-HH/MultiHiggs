@@ -48,34 +48,36 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
     {
       if (is_enabled("sig_gen_brs"))
 	{
-    REGISTER_BRANCH_COLLECTION(gen_H1_fc);
-    REGISTER_BRANCH_COLLECTION(gen_H2_fc);
-    REGISTER_BRANCH_COLLECTION(gen_H1);
-    REGISTER_BRANCH_COLLECTION(gen_H2);
-    REGISTER_BRANCH_COLLECTION(gen_H1_b1);
-    REGISTER_BRANCH_COLLECTION(gen_H1_b2);
-    REGISTER_BRANCH_COLLECTION(gen_H2_b1);
-    REGISTER_BRANCH_COLLECTION(gen_H2_b2);
+	  REGISTER_BRANCH_COLLECTION(gen_H1_fc);
+	  REGISTER_BRANCH_COLLECTION(gen_H2_fc);
+	  REGISTER_BRANCH_COLLECTION(gen_H1);
+	  REGISTER_BRANCH_COLLECTION(gen_H2);
+	  REGISTER_BRANCH_COLLECTION(gen_H1_b1);
+	  REGISTER_BRANCH_COLLECTION(gen_H1_b2);
+	  REGISTER_BRANCH_COLLECTION(gen_H2_b1);
+	  REGISTER_BRANCH_COLLECTION(gen_H2_b2);
 	  
 	  REGISTER_BRANCH_COLLECTION(gen_H1_b1_genjet);
 	  REGISTER_BRANCH_COLLECTION(gen_H1_b2_genjet);
 	  REGISTER_BRANCH_COLLECTION(gen_H2_b1_genjet);
 	  REGISTER_BRANCH_COLLECTION(gen_H2_b2_genjet);
-
-	  REGISTER_BRANCH_COLLECTION(gen_H1_b1_genfatjet);
-	  REGISTER_BRANCH_COLLECTION(gen_H1_b2_genfatjet);
-	  REGISTER_BRANCH_COLLECTION(gen_H2_b1_genfatjet);
-	  REGISTER_BRANCH_COLLECTION(gen_H2_b2_genfatjet);
 	  
 	  REGISTER_BRANCH_COLLECTION(gen_H1_b1_recojet);
 	  REGISTER_BRANCH_COLLECTION(gen_H1_b2_recojet);
 	  REGISTER_BRANCH_COLLECTION(gen_H2_b1_recojet);
 	  REGISTER_BRANCH_COLLECTION(gen_H2_b2_recojet);
 	  
-	  REGISTER_BRANCH_COLLECTION(gen_H1_b1_recofatjet);
-	  REGISTER_BRANCH_COLLECTION(gen_H1_b2_recofatjet);
-	  REGISTER_BRANCH_COLLECTION(gen_H2_b1_recofatjet);
-	  REGISTER_BRANCH_COLLECTION(gen_H2_b2_recofatjet);
+	  if (is_enabled("fatjet_coll"))
+	    {
+	      REGISTER_BRANCH_COLLECTION(gen_H1_b1_genfatjet);
+	      REGISTER_BRANCH_COLLECTION(gen_H1_b2_genfatjet);
+	      REGISTER_BRANCH_COLLECTION(gen_H2_b1_genfatjet);
+	      REGISTER_BRANCH_COLLECTION(gen_H2_b2_genfatjet);
+	      REGISTER_BRANCH_COLLECTION(gen_H1_b1_recofatjet);
+	      REGISTER_BRANCH_COLLECTION(gen_H1_b2_recofatjet);
+	      REGISTER_BRANCH_COLLECTION(gen_H2_b1_recofatjet);
+	      REGISTER_BRANCH_COLLECTION(gen_H2_b2_recofatjet);
+	    }
 	}
     } // 4b final state
 
