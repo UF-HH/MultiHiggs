@@ -10,14 +10,16 @@ sample_defaults = dict(
     signal=dict(
         files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/TTToHadronic_TuneCP5_13TeV-powheg-pythia8.txt"],
         tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
-        njobs=150,
+        njobs=100,
         forceOverwrite=True,
+        no_genw_tree=True,
     ),
     qcdb=dict(
         files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*BGenFilter*.txt", "input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*bEnriched*.txt"],
         tag="Run2_UL/RunIISummer20UL18NanoAODv9/QCD",
         njobs=100,
         forceOverwrite=True,
+        no_genw_tree=True,
     ),
     qcdht=dict(
         files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD*PSWeight*.txt"],
@@ -25,6 +27,7 @@ sample_defaults = dict(
         tag="Run2_UL/RunIISummer20UL18NanoAODv9/QCD",
         njobs=100,
         forceOverwrite=True,
+        no_genw_tree=True,
     ),
     data=dict(
         files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/JetHT_Run2018*.txt"],
@@ -68,7 +71,7 @@ if sampleflag: kwargs.append(sampleflag)
 
 for key,value in vars(args).items():
     if key in ['files','path','odir','sample']: continue
-    kwargs.append("--"+key)
+    kwargs.append("--"+key.replace('_','-'))
     if isinstance(value, list):
         kwargs = kwargs + value
     elif not isinstance(value, bool):

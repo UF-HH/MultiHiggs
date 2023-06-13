@@ -525,7 +525,7 @@ int main(int argc, char** argv) {
                     {"ttbar_brs", (skim_type == kttbar)},
                     {"run3_brs", (skim_type == kfourb)}, // fourb is running on run3 nanoAOD 
                     {"sig_gen_brs", (is_signal)},
-                    {"gen_brs", (!is_data)},
+                    {"gen_brs", (!is_data) && readCfgOptWithDefault<bool>(config, "configurations::saveGen", true)},
                     {"saveTrgSF", (!is_data) && readCfgOptWithDefault<bool>(config, "triggers::saveTrgSF", false)},
                 });
   NormWeightTree nwt;
@@ -1062,6 +1062,12 @@ int main(int argc, char** argv) {
 
       ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
       ei.nfound_select_h = skf->n_ghmatched_in_jetcoll(nat, ei, selected_jets);
+      
+      if (readCfgOptWithDefault<bool>(config, "configurations::saveSelected", false))
+      {
+        selected_jets = skf->pt_sort_jets(nat, ei, selected_jets);
+        ei.jet_list = selected_jets;
+      }
 
       if (debug) {
         dumpObjColl(selected_jets, "==== SELECTED 6b JETS ===");
