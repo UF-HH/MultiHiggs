@@ -76,15 +76,13 @@ float computePUweight(TH1* histo_pileup, double npu)
   return histo_pileup->GetBinContent(nbin);
 }
 
-std::tuple<int,float,float> getClosestJetIndexToTriggerObject(float triggerObjectEta, float triggerObjectPhi, std::vector<Jet>& theJetList, float maxDeltaRaccepted)
+std::tuple<int,float,float> getClosestJetIndexToTriggerObject(float triggerObjectEta, float triggerObjectPhi, std::vector<Jet>& jets, float maxDeltaRaccepted)
 {
-  std::cout << "\n========== getClosestJetIndexToTriggerObject "<<std::endl;
-  
   int closestJetIndex = -1;
   int currentJetIndex = 0;
   float minDeltaR = 1024;
   float minDeltaRjetPt = -1;
-  for(const auto & theJet : theJetList)
+  for(const auto & theJet : jets)
     {
       float tmpDeltaR = deltaPhi(theJet.P4().Phi(),triggerObjectPhi)*deltaPhi(theJet.P4().Phi(),triggerObjectPhi) + (theJet.P4().Eta()-triggerObjectEta)*(theJet.P4().Eta()-triggerObjectEta);
       if( tmpDeltaR<minDeltaR)
@@ -99,7 +97,7 @@ std::tuple<int,float,float> getClosestJetIndexToTriggerObject(float triggerObjec
     {
       closestJetIndex = -1;
     }
-  std::cout << "Closest jet index = "<<closestJetIndex << "  minDR="<<minDeltaR<<"   jet pt="<<minDeltaRjetPt<<std::endl;
+  //std::cout << "   (Closest jet index = "<<closestJetIndex << "  minDR="<<minDeltaR<<"   jet pt="<<minDeltaRjetPt<<")"<<std::endl;
   return {closestJetIndex, minDeltaR, minDeltaRjetPt};
 }
 
@@ -289,6 +287,9 @@ int main(int argc, char** argv)
   int tagElectron_charge;
   float tagElectron_iso;
   
+  int NMediumPNetJets = 0;
+  float MeanPNetScore;
+  
   float LdgInBDiscJet_pt;
   float LdgInBDiscJet_eta;
   float LdgInBDiscJet_phi;
@@ -301,6 +302,18 @@ int main(int argc, char** argv)
   float SubldgInBDiscJet_mass;
   float SubldgInBDiscJet_bDisc;
   
+  float ThirdldgInBDiscJet_pt;
+  float ThirdldgInBDiscJet_eta;
+  float ThirdldgInBDiscJet_phi;
+  float ThirdldgInBDiscJet_mass;
+  float ThirdldgInBDiscJet_bDisc;
+  
+  float ForthldgInBDiscJet_pt;
+  float ForthldgInBDiscJet_eta;
+  float ForthldgInBDiscJet_phi;
+  float ForthldgInBDiscJet_mass;
+  float ForthldgInBDiscJet_bDisc;
+  //==================================
   float LdgInPtJet_pt;
   float LdgInPtJet_eta;
   float LdgInPtJet_phi;
@@ -325,12 +338,15 @@ int main(int argc, char** argv)
   float ForthldgInPtJet_mass;
   float ForthldgInPtJet_bDisc;
   
-  int NonVetoedJets;
-  int NSelectedJets;
-  int NSelectedBJets; 
-  int NJetsForPFHT;
-  float PFHT;
+  int NonVetoedJets = 0;
+  int NSelectedJets = 0;
+  int NSelectedBJets = 0; 
+  int NJetsForPFHT = 0;
+  float PFHT = 0;
   
+  bool b_HLT_IsoMu24;
+  bool b_HLT_IsoMu27;
+  bool b_HLT_Mu50;
   bool b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
   bool b_HLT_QuadPFJet70_50_40_30;
   bool b_HLT_QuadPFJet70_50_40_35_PFBTagParticleNet_2BTagSum0p65;
@@ -370,6 +386,8 @@ int main(int argc, char** argv)
   tOut->Branch("NJetsForPFHT", &NJetsForPFHT);
   tOut->Branch("PFHT",         &PFHT);
     
+  tOut->Branch("NMediumPNetJets", &NMediumPNetJets);
+  tOut->Branch("MeanPNetScore", &MeanPNetScore);
   tOut->Branch("LdgInBDiscJet_pt", &LdgInBDiscJet_pt);
   tOut->Branch("LdgInBDiscJet_eta", &LdgInBDiscJet_eta);
   tOut->Branch("LdgInBDiscJet_phi", &LdgInBDiscJet_phi);
@@ -381,6 +399,18 @@ int main(int argc, char** argv)
   tOut->Branch("SubldgInBDiscJet_phi", &SubldgInBDiscJet_phi);
   tOut->Branch("SubldgInBDiscJet_mass", &SubldgInBDiscJet_mass);
   tOut->Branch("SubldgInBDiscJet_bDisc", &SubldgInBDiscJet_bDisc);
+  
+  tOut->Branch("ThirdldgInBDiscJet_pt", &ThirdldgInBDiscJet_pt);
+  tOut->Branch("ThirdldgInBDiscJet_eta", &ThirdldgInBDiscJet_eta);
+  tOut->Branch("ThirdldgInBDiscJet_phi", &ThirdldgInBDiscJet_phi);
+  tOut->Branch("ThirdldgInBDiscJet_mass", &ThirdldgInBDiscJet_mass);
+  tOut->Branch("ThirdldgInBDiscJet_bDisc", &ThirdldgInBDiscJet_bDisc);
+  
+  tOut->Branch("ForthldgInBDiscJet_pt", &ForthldgInBDiscJet_pt);
+  tOut->Branch("ForthldgInBDiscJet_eta", &ForthldgInBDiscJet_eta);
+  tOut->Branch("ForthldgInBDiscJet_phi", &ForthldgInBDiscJet_phi);
+  tOut->Branch("ForthldgInBDiscJet_mass", &ForthldgInBDiscJet_mass);
+  tOut->Branch("ForthldgInBDiscJet_bDisc", &ForthldgInBDiscJet_bDisc);
   
   tOut->Branch("LdgInPtJet_pt", &LdgInPtJet_pt);
   tOut->Branch("LdgInPtJet_eta", &LdgInPtJet_eta);
@@ -406,6 +436,9 @@ int main(int argc, char** argv)
   tOut->Branch("ForthldgInPtJet_mass", &ForthldgInPtJet_mass);
   tOut->Branch("ForthldgInPtJet_bDisc", &ForthldgInPtJet_bDisc);
   
+  tOut->Branch("HLT_IsoMu24", &b_HLT_IsoMu24);
+  tOut->Branch("HLT_IsoMu27", &b_HLT_IsoMu27);
+  tOut->Branch("HLT_Mu50",    &b_HLT_Mu50);
   tOut->Branch("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ);
   tOut->Branch("HLT_QuadPFJet70_50_40_30", &b_HLT_QuadPFJet70_50_40_30);
   tOut->Branch("HLT_QuadPFJet70_50_40_35_PFBTagParticleNet_2BTagSum0p65", &b_HLT_QuadPFJet70_50_40_35_PFBTagParticleNet_2BTagSum0p65);
@@ -434,14 +467,16 @@ int main(int argc, char** argv)
   
   
   const string objectsForCut = config.readStringOpt("parameters::ObjectsForCut");
+  
   if (objectsForCut == "TriggerObjects")
     {
       std::vector<std::string> triggerObjectMatchingVector = config.readStringListOpt("parameters::ListOfTriggerObjectsAndBit");
+      
       std::string delimiter = ":";
       size_t pos = 0;
       for (auto & triggerObject : triggerObjectMatchingVector)
 	{
-	  //std::cout << "Trigger Object = "<<triggerObject<<std::endl;
+	  //std::cout << "Trigger object from my list = "<<triggerObject<<std::endl;
 	  
 	  std::vector<std::string> triggerObjectTokens;
 	  while ((pos = triggerObject.find(delimiter)) != std::string::npos)
@@ -455,16 +490,15 @@ int main(int argc, char** argv)
 	      throw std::runtime_error("** skim_ntuple : could not parse triggerObject for Cuts entry " + triggerObject + " , aborting");
             }
 
-	  //std::cout << "objectAndFilter [objectID, FilterID] = "<<atoi(triggerObjectTokens[0].data())<<", "<< atoi(triggerObjectTokens[1].data())<<"  Filter name ="<<triggerObjectTokens[2]<<std::endl;
+	  //std::cout << "objectAndFilter [objectID, FilterID] = "<<atoi(triggerObjectTokens[0].data())<<", "<< atoi(triggerObjectTokens[1].data())<<",  Filter name ="<<triggerObjectTokens[2]<<std::endl;
 	  //std::cout << "\n"<<std::endl;
 	  
 	  std::pair<int,int> objectAndFilter = std::make_pair(atoi(triggerObjectTokens[0].data()),atoi(triggerObjectTokens[1].data())); // <objectId, Filter Id>
-	  
 	  triggerObjectsForStudies[objectAndFilter] = triggerObjectTokens[2]; // filterName
 	  triggerObjectsForStudiesCount[objectAndFilter] = 0;
 	  
 	  // Save Filter Name
-	  //tOut->Branch(triggerObjectsForStudies[objectAndFilter].data(), &triggerObjectsForStudiesCount[objectAndFilter]);
+	  tOut->Branch(triggerObjectsForStudies[objectAndFilter].data(), &triggerObjectsForStudiesCount[objectAndFilter]);
 
 	  if (matchWithFourHighestBjets)
 	    {
@@ -472,7 +506,7 @@ int main(int argc, char** argv)
 		{
 		  triggerObjectPerJetCount.at(i)[objectAndFilter] = false; 
 		  
-		  //tOut->Branch(std::string( "Jet" + to_string(i) +  "_" + triggerObjectTokens[2]).data(), &triggerObjectPerJetCount  [i][objectAndFilter]);
+		  tOut->Branch(std::string( "Jet" + to_string(i) +  "_" + triggerObjectTokens[2]).data(), &triggerObjectPerJetCount  [i][objectAndFilter]);
 		}
 	      
 	    }
@@ -555,16 +589,22 @@ int main(int argc, char** argv)
       event_           = *(nat.event);
       
       // Keep only runs after 356426 where control paths were introduced
-      if (run_ < 356426){
-	std::cout << "Run = "<<run_<<std::endl;
-	continue;
-      }
+      if (is_data)
+	{
+	  if (run_ < 356426){
+	    std::cout << "Run = "<<run_<<std::endl;
+	    continue;
+	  }
+	}
       
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       // Get trigger bits
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       if (year == "2022")
 	{
+	  b_HLT_Mu50 = nat.getTrgResult("HLT_Mu50");
+	  b_HLT_IsoMu24 = nat.getTrgResult("HLT_IsoMu24");
+	  b_HLT_IsoMu27 = nat.getTrgResult("HLT_IsoMu27");
 	  b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ = nat.getTrgResult("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ");
 	  b_HLT_QuadPFJet70_50_40_30 = nat.getTrgResult("HLT_QuadPFJet70_50_40_30");
 	  b_HLT_QuadPFJet70_50_40_35_PFBTagParticleNet_2BTagSum0p65 = nat.getTrgResult("HLT_QuadPFJet70_50_40_35_PFBTagParticleNet_2BTagSum0p65");
@@ -591,10 +631,12 @@ int main(int argc, char** argv)
       //====================================
       // Apply trigger
       //====================================
-      if (!is_signal) if (!b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) continue;
+      bool bDenHLT = b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;
+      if (!is_signal) if (!bDenHLT) continue;
+      if (1) std::cout << "\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<std::endl;
+      if (1) std::cout << " Event number ="<<iEv<<std::endl;
+      if (1) std::cout << " Trigger HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ passed"<<std::endl;
       
-      if (0) std::cout << "Trigger HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ passed"<<std::endl;
-            
       //====================================
       // Apply MET Filters
       //====================================
@@ -610,7 +652,7 @@ int main(int argc, char** argv)
       //====================================
       std::vector<Muon> tagMuons;
       std::vector<Muon> additionalMuons;
-      
+
       for (uint candIt = 0; candIt < *(nat.nMuon); ++candIt)
 	{
 	  Muon mu(candIt, &nat);
@@ -627,12 +669,15 @@ int main(int argc, char** argv)
 	  float dxy     = get_property(mu, Muon_dxy);
 	  float iso     = get_property(mu, Muon_pfRelIso04_all);
 	  
+	  std::cout << " Muon "<<candIt<<"   pt="<<pt<<"   eta="<<eta<<"   mediumID="<<mediumID<<"   dz="<<dz<<"  dxy="<<dxy<<"  charge="<<charge<<"  iso="<<iso<<std::endl;
+	  
 	  if (abs(eta) > 2.4) continue;
-	  if (dz > 0.5) continue;
-	  if (dxy > 0.2) continue;
+	  if (pt < 10) continue;
+	  if (std::abs(dz) > 0.5) continue;
+	  if (std::abs(dxy) > 0.2) continue;
 	  
 	  // Tag muon
-	  if (pt > 15 && mediumID && iso < 0.20)
+	  if (mediumID && iso < 0.20)
 	    {
 	      if (0) std::cout << "Tag muon pt="<<pt<<" eta="<<eta<<"  mediumID="<<mediumID<<"   dz="<<dz<<"  dxy="<<dxy<<"  charge="<<charge<<"  iso="<<iso<<std::endl;
 	      tagMuons.push_back(mu);
@@ -648,15 +693,20 @@ int main(int argc, char** argv)
 	    }
 	} // Loop over muons
       
+      //std::cout << "Number of tag muons        : "<<tagMuons.size()<<std::endl;
+      //std::cout << "Number of additional muons : "<<additionalMuons.size()<<std::endl;
+      
       // Reject event if no muon is found
       if(!is_signal) if (tagMuons.size() != 1) continue;
-
       // Reject event if additional muons are found
       if(!is_signal) if (additionalMuons.size() != 0) continue;
+      
+      //std::cout << "Passed muon selection"<<std::endl;
       
       std::vector<Electron> tagElectrons;
       std::vector<Electron> additionalElectrons;
       
+      //std::cout << "==== Loop over electrons"<<std::endl;
       for (uint candIt = 0; candIt < *(nat.nElectron); ++candIt)
 	{
 	  Electron ele(candIt, &nat);
@@ -667,14 +717,16 @@ int main(int argc, char** argv)
 	  float dxy = get_property(ele, Electron_dxy);
 	  float dz  = get_property(ele, Electron_dz);
 	  
-	  float iso = get_property(ele, Electron_pfRelIso03_all);
-	  
+	  float iso     = get_property(ele, Electron_pfRelIso03_all);
 	  bool tightID  = get_property(ele, Electron_mvaIso_WP80);
 	  bool mediumID = get_property(ele, Electron_mvaIso_WP90);
-
+	  
 	  int charge   = get_property(ele, Electron_charge);
 	  
 	  if (std::abs(eta) > 2.5) continue;
+	  if (pt < 15) continue;
+	  
+	  std::cout << "Electron "<<candIt<<"   pt="<<pt<<"   eta="<<eta<<"   dxy="<<dxy<<"   dz="<<dz<<"    tightID="<<tightID<<"    mediumID="<<mediumID<<"   charge="<<charge<<std::endl;
 	  
 	  if (pt > 25 && tightID)
 	    {
@@ -697,12 +749,8 @@ int main(int argc, char** argv)
       // Reject event addtional loose electrons are present
       if(!is_signal) if (additionalElectrons.size() !=0) continue;
       
-      if (0)
-	{
-	  std::cout << "Tag muons available     : "<<tagMuons.size()<<std::endl;
-	  std::cout << "Tag electrons available : "<<tagElectrons.size()<<std::endl;
-	}
       
+      // Require the charge of e and mu to be OS (=enchance the fraction of ttbar events)
       if (!is_signal)
 	{
 	  int charge_ele_mu = get_property(tagElectrons.at(0), Electron_charge) * get_property(tagMuons.at(0), Muon_charge);
@@ -717,17 +765,33 @@ int main(int argc, char** argv)
 	  if (InvMass_ele_mu < 20) continue;
 	}
       
+      if (1)
+	{
+	  // Leptonic selection
+	  for (unsigned int mu=0; mu<tagMuons.size(); mu++)
+	    {
+	      std::cout << "Tag muon     :   pt="<<tagMuons.at(mu).P4().Pt()<<"  eta="<<tagMuons.at(mu).P4().Eta()<<"    phi="<<tagMuons.at(mu).P4().Phi()<<std::endl;
+	    }
+	  for (unsigned int ele=0; ele<tagElectrons.size(); ele++)
+	    {
+	      std::cout << "Tag electron :   pt="<<tagElectrons.at(ele).P4().Pt()<<"   eta="<<tagElectrons.at(ele).P4().Eta()<<"   phi="<<tagElectrons.at(ele).P4().Phi()<<std::endl;
+	    }
+	}
+      
+      if (1) std::cout << "Number of all jets saved in Nano= "<<*(nat.nJet)<<std::endl;
+      
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       // Jets (Clean overlap with electrons and muons)
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       std::vector<Jet> all_jets;
+      std::vector<Jet> nonvetoed_jets;
       for (unsigned int j=0; j<*(nat.nJet); ++j)
 	{
 	  Jet jet(j, &nat);
 	  all_jets.push_back(jet);
+	  if (!is_data) nonvetoed_jets.push_back(jet); // For the moment since missing variable in NanoAOD
 	} // Loop over jets
       
-      std::vector<Jet> nonvetoed_jets;
       if (!is_data)
 	{
 	  // Apply JEC scale shift to jets
@@ -736,7 +800,7 @@ int main(int argc, char** argv)
 	      nonvetoed_jets = jt.jec_shift_jets(nat, all_jets, dir_jes_shift_is_up);
 	    }
 	  // Apply JER smearing to jets
-	  nonvetoed_jets = jt.smear_jets(nat, all_jets, jer_var, bjer_var);
+	  //nonvetoed_jets = jt.smear_jets(nat, all_jets, jer_var, bjer_var);
 	}
       else
 	{
@@ -795,11 +859,12 @@ int main(int argc, char** argv)
       // Skip event if there are no jets at all
       if (nonvetoed_jets.size() == 0) continue;
       
+      if (1) std::cout << "Number of non-vetoed jets = "<<nonvetoed_jets.size()<<std::endl;
+
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       // Cross-clean and select jets
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       std::vector<Jet> selected_jets;
-      std::vector<Jet> selected_bjets;
       for (unsigned int j=0; j<nonvetoed_jets.size(); j++)
 	{
 	  Jet jet = nonvetoed_jets.at(j);
@@ -808,64 +873,89 @@ int main(int argc, char** argv)
 	  float eta= jet.P4().Eta();
 	  
 	  int jetid = get_property(jet, Jet_jetId);
-          if (!checkBit(jetid, 1)) continue;
+          float btagPNetBvsAll = get_property(jet, Jet_btagPNetBvsAll);
 	  
+	  if (!checkBit(jetid, 1)) continue;
 	  if (pt < 30) continue;
 	  if (std::abs(eta) > 2.5) continue;
-	  
+	  	  
 	  double dR_ele = ROOT::Math::VectorUtil::DeltaR(jet.P4(), tagElectrons.at(0).P4());
 	  double dR_mu  = ROOT::Math::VectorUtil::DeltaR(jet.P4(), tagMuons.at(0).P4());
 	  
 	  if (dR_ele < 0.4) continue;
 	  if (dR_mu  < 0.4) continue;
 	  
-	  selected_jets.push_back(jet);
+	  if (0) std::cout << "jet = "<<j<<"  pt="<<pt<<"  eta="<<eta<<"   DR(jet, electron)="<<dR_ele<<"   DR(jet, muon)="<<dR_mu<<"   PNet="<<btagPNetBvsAll<<std::endl;
 	  
-	  float btagDeepFlavB = get_property(jet, Jet_btagDeepFlavB);
-	  if (btagDeepFlavB > 0.0) // do not require any cut at the moment
-	    {
-	      selected_bjets.push_back(jet);
-	    }
+	  selected_jets.push_back(jet);
 	} // Loop over jets
+      if (1) std::cout << "Number of selected (non-leptonic) jets="<<selected_jets.size()<<std::endl;
       
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      // Select events with at least 2 jets
+      // Select events with at least 4 jets
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      if (selected_jets.size() < 2) continue;
-      if (selected_bjets.size() < 2) continue;
+      if (selected_jets.size()  < 4) continue;
       
-      if (0)
+      // Apply the trigger cuts
+      if (selected_jets.at(0).P4().Pt() < 70.0) continue;
+      if (selected_jets.at(1).P4().Pt() < 50.0) continue;
+      if (selected_jets.at(2).P4().Pt() < 40.0) continue;
+      if (selected_jets.at(3).P4().Pt() < 35.0) continue;
+      
+      std::vector<Jet> selected_bjets;
+      std::vector<Jet> LeadingFour_selected_bjets;
+      
+      if (0) std::cout << "\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<std::endl;
+      if (0) std::cout << " Event number ="<<iEv<<std::endl;
+      float MediumPNetWP  = 0.387;
+      
+      NMediumPNetJets = 0;
+      for (unsigned int j=0; j<selected_jets.size(); j++)
 	{
-	  std::cout << "\n Before sorting"<<std::endl;
-	  for (unsigned int j=0; j<selected_bjets.size(); j++)
-	    {
-	      Jet jet = selected_bjets.at(j);
-	      float btag = get_property(jet, Jet_btagDeepFlavB);
-	      std::cout << "btag = "<<btag<<std::endl;
-	    }
+	  Jet jet = selected_jets.at(j);
+	  float btagPNetBvsAll = get_property(jet, Jet_btagPNetBvsAll);
+	  if (btagPNetBvsAll > 0.0) selected_bjets.push_back(jet);
+	  if (btagPNetBvsAll > MediumPNetWP) NMediumPNetJets++;
 	}
       
+      // Require at least 2 jets with PNet > 0.0
+      if (selected_bjets.size() < 2) continue;
+            
       // Sort b-jets by b-tagging score
-      stable_sort(selected_bjets.begin(), selected_bjets.end(), [](const Jet & a, const Jet & b) -> bool{return(get_property(a, Jet_btagDeepFlavB) > get_property(b, Jet_btagDeepFlavB)); });
-      
+      stable_sort(selected_bjets.begin(), selected_bjets.end(), [](const Jet & a, const Jet & b) -> bool{return(get_property(a, Jet_btagPNetBvsAll) > get_property(b, Jet_btagPNetBvsAll)); });
       if (0)
 	{
 	  std::cout << "\n After sorting"<<std::endl;
 	  for (unsigned int j=0; j<selected_bjets.size(); j++)
 	    {
 	      Jet jet = selected_bjets.at(j);
-	      float btag = get_property(jet, Jet_btagDeepFlavB);
+	      float btag = get_property(jet, Jet_btagPNetBvsAll);
 	      std::cout << "btag = "<<btag<<std::endl;
 	    }
 	}
       
+      // Get the average of the two leading in b-tagging jets
+      float PNetMean = (get_property(selected_bjets.at(0), Jet_btagPNetBvsAll) + get_property(selected_bjets.at(1), Jet_btagPNetBvsAll))/2.0;
+      MeanPNetScore = PNetMean;
+      
+      //std::cout << "PNet average score of the two leading in b-tagging jets = "<<PNetMean<<std::endl;
+      // Store the 4 leading-in-b-tagging jets 
+      for (unsigned int j=0; j<selected_bjets.size(); j++)
+	{
+	  Jet jet = selected_bjets.at(j);
+	  if (j < 4) LeadingFour_selected_bjets.push_back(jet);
+	}
+      
+      //if (b_HLT_QuadPFJet70_50_40_35_PFBTagParticleNet_2BTagSum0p65) std::cout << "Passed signal trigger"<<std::endl;
+      //else std::cout << "Failed signal trigger"<<std::endl;
+            
       if (selected_bjets.size() >=1)
 	{
 	  LdgInBDiscJet_pt = selected_bjets.at(0).P4().Pt();
 	  LdgInBDiscJet_eta = selected_bjets.at(0).P4().Eta();
 	  LdgInBDiscJet_phi = selected_bjets.at(0).P4().Phi();
 	  LdgInBDiscJet_mass = selected_bjets.at(0).P4().M();
-	  LdgInBDiscJet_bDisc = get_property(selected_bjets.at(0), Jet_btagDeepFlavB);
+	  LdgInBDiscJet_bDisc = get_property(selected_bjets.at(0), Jet_btagPNetBvsAll);
 	  
 	  if (selected_bjets.size() >= 2)
 	    {
@@ -873,52 +963,63 @@ int main(int argc, char** argv)
 	      SubldgInBDiscJet_eta = selected_bjets.at(1).P4().Eta();
 	      SubldgInBDiscJet_phi = selected_bjets.at(1).P4().Phi();
 	      SubldgInBDiscJet_mass = selected_bjets.at(1).P4().M();
-	      SubldgInBDiscJet_bDisc = get_property(selected_bjets.at(1), Jet_btagDeepFlavB);
+	      SubldgInBDiscJet_bDisc = get_property(selected_bjets.at(1), Jet_btagPNetBvsAll);
+	      
+	      if (selected_bjets.size() >= 3)
+		{
+		  ThirdldgInBDiscJet_pt = selected_bjets.at(2).P4().Pt();
+		  ThirdldgInBDiscJet_eta = selected_bjets.at(2).P4().Eta();
+		  ThirdldgInBDiscJet_phi = selected_bjets.at(2).P4().Phi();
+		  ThirdldgInBDiscJet_mass = selected_bjets.at(2).P4().M();
+		  ThirdldgInBDiscJet_bDisc = get_property(selected_bjets.at(2), Jet_btagPNetBvsAll);
+		  
+		  if (selected_bjets.size() >= 4)
+		    {
+		      ForthldgInBDiscJet_pt  = selected_bjets.at(3).P4().Pt();
+		      ForthldgInBDiscJet_eta = selected_bjets.at(3).P4().Eta();
+		      ForthldgInBDiscJet_phi = selected_bjets.at(3).P4().Phi();
+		      ForthldgInBDiscJet_mass= selected_bjets.at(3).P4().M();
+		      ForthldgInBDiscJet_bDisc = get_property(selected_bjets.at(3), Jet_btagPNetBvsAll);
+		    }
+		}
 	    }
 	}
       
-      //std::cout << "Passed HLT_QuadPFJet70_50_40_30 ? "<<b_HLT_QuadPFJet70_50_40_30<<std::endl;
-      //std::cout << "Passed HLT_QuadPFJet70_50_40_35_PFBTagParticleNet_2BTagSum0p65 ? "<<b_HLT_QuadPFJet70_50_40_35_PFBTagParticleNet_2BTagSum0p65<<std::endl;
-      
       // Sort jets in pT and store the leading four
       stable_sort(selected_jets.begin(), selected_jets.end(), [](const Jet & a, const Jet & b) -> bool { return ( a.P4().Pt() > b.P4().Pt() ); });
-      
       if (selected_jets.size() >= 1)
 	{
 	  LdgInPtJet_pt  = selected_jets.at(0).P4().Pt();
 	  LdgInPtJet_eta = selected_jets.at(0).P4().Eta();
 	  LdgInPtJet_phi = selected_jets.at(0).P4().Phi();
 	  LdgInPtJet_mass = selected_jets.at(0).P4().M();
-	  LdgInPtJet_bDisc = get_property(selected_jets.at(0), Jet_btagDeepFlavB);
-	  
+	  LdgInPtJet_bDisc = get_property(selected_jets.at(0), Jet_btagPNetBvsAll);
 	  if (selected_jets.size() >= 2)
 	    {
 	      SubldgInPtJet_pt = selected_jets.at(1).P4().Pt();
 	      SubldgInPtJet_eta = selected_jets.at(1).P4().Eta();
 	      SubldgInPtJet_phi = selected_jets.at(1).P4().Phi();
 	      SubldgInPtJet_mass = selected_jets.at(1).P4().M();
-	      SubldgInPtJet_bDisc = get_property(selected_jets.at(1), Jet_btagDeepFlavB);
-	      
+	      SubldgInPtJet_bDisc = get_property(selected_jets.at(1), Jet_btagPNetBvsAll);
 	      if (selected_jets.size() >= 3)
 		{
 		  ThirdldgInPtJet_pt = selected_jets.at(2).P4().Pt();
 		  ThirdldgInPtJet_eta = selected_jets.at(2).P4().Eta();
 		  ThirdldgInPtJet_phi = selected_jets.at(2).P4().Phi();
 		  ThirdldgInPtJet_mass = selected_jets.at(2).P4().M();
-		  ThirdldgInPtJet_bDisc = get_property(selected_jets.at(2), Jet_btagDeepFlavB);
-		  
+		  ThirdldgInPtJet_bDisc = get_property(selected_jets.at(2), Jet_btagPNetBvsAll);
 		  if (selected_jets.size() >= 4)
 		    {
 		      ForthldgInPtJet_pt = selected_jets.at(3).P4().Pt();
 		      ForthldgInPtJet_eta = selected_jets.at(3).P4().Eta();
 		      ForthldgInPtJet_phi = selected_jets.at(3).P4().Phi();
 		      ForthldgInPtJet_mass = selected_jets.at(3).P4().M();
-		      ForthldgInPtJet_bDisc = get_property(selected_jets.at(3), Jet_btagDeepFlavB);
+		      ForthldgInPtJet_bDisc = get_property(selected_jets.at(3), Jet_btagPNetBvsAll);
 		    }
 		}
 	    }
 	}
-
+      
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       // End of selections: fill the treee
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -961,68 +1062,81 @@ int main(int argc, char** argv)
 	  PFHT+=pt;
 	}
       
-      
-      if (0)
+      // Trigger matching
+      for(auto &triggerFilter : triggerObjectsForStudiesCount) triggerFilter.second = 0;
+      if (matchWithFourHighestBjets)
 	{
-	  for(auto &triggerFilter : triggerObjectsForStudiesCount) triggerFilter.second = 0;
-	  if (matchWithFourHighestBjets)
-	    {
-	      for(auto& jetAndFilterCounts  : triggerObjectPerJetCount  ) for(auto& filterCount   : jetAndFilterCounts ) filterCount  .second = false;
-	    }
-	  
-	  // Loop over trigger objects in NanoAOD
-	  for (uint trigObjIt=0; trigObjIt < *(nat.nTrigObj); ++trigObjIt)
-	    {
-	      // Get the trigger object ID (1: Jets)
-	      int triggerObjectId = nat.TrigObj_id.At(trigObjIt);
-	      
-	      // Get the filter bits
-	      int triggerFilterBitSum = nat.TrigObj_filterBits.At(trigObjIt);
-	      
-	      for(auto &triggerFilter : triggerObjectsForStudiesCount)
-		{
-		  // Keep only the the ones mentioned in the config file 
-		  if(triggerObjectId != triggerFilter.first.first) continue;
-		  
-		  //std::cout << "triggerObjectId =" << triggerObjectId<<"   triggerFilterBitSum = "<<triggerFilterBitSum<<std::endl;
-		  //std::cout << "triggerFilter.first.second = "<<triggerFilter.first.second<<std::endl;
-		  
-		  if( (triggerFilterBitSum >> triggerFilter.first.second) & 0x1 )
-		    {
-		      std::cout << "Passed the filter!"<<std::endl;
-		      
-		      if (matchWithFourHighestBjets)
-			{
-			  auto jetIdAndMinDeltaRandPt = getClosestJetIndexToTriggerObject(nat.TrigObj_eta.At(trigObjIt), nat.TrigObj_phi.At(trigObjIt), selected_bjets, 0.5);
-			  int bestMatchingIndex = std::get<0>( jetIdAndMinDeltaRandPt );
-			  
-			  if (bestMatchingIndex >= 0)
-			    {
-			      triggerObjectPerJetCount.at(bestMatchingIndex).at(triggerFilter.first) = true;
-			    }
-			}
-		      else
-			{
-			  ++triggerFilter.second;
-			}
-		    }
-		  
-		}
-	    } // Closes Loop over trigger objects
-	  
-	  
-	  if(matchWithFourHighestBjets)
-	    {
-	      for(auto &triggerFilter : triggerObjectsForStudiesCount) // for all the trigger filters
-		{
-		  for(auto &jetFiltersMap : triggerObjectPerJetCount) //for all the 4 selected jets
-		    {
-		      if(jetFiltersMap.at(triggerFilter.first)) ++triggerFilter.second; //if selected jet was matched with the filter object I increment the count
-		    }
-		}
-	    }
-	} // Disable trigger object matching until NanoAODv11 is available
+	  for(auto& jetAndFilterCounts : triggerObjectPerJetCount) for(auto& filterCount : jetAndFilterCounts) filterCount.second = false;
+	}
       
+      // Loop over trigger objects in NanoAOD
+      for (uint trigObjIt=0; trigObjIt < *(nat.nTrigObj); ++trigObjIt)
+	{
+	  // Get the trigger object ID (1: Jets)
+	  int triggerObjectId = nat.TrigObj_id.At(trigObjIt);
+	  
+	  // Skip filters related to Electrons (11), Muons (13), Photons (22), Taus (15), Boosted taus (1515), Fatjets (6), MET (2)
+	  if (triggerObjectId == 11 || triggerObjectId == 13 || triggerObjectId == 22 || triggerObjectId == 15 || triggerObjectId == 1515 || triggerObjectId == 6 || triggerObjectId == 2) continue;
+	  
+	  // Keep only triggerObjectId == 1 (Jets)
+	  if (!(triggerObjectId == 1)) continue;
+	  
+	  // Get the filter bits
+	  int triggerFilterBitSum = nat.TrigObj_filterBits.At(trigObjIt);
+	  
+	  //std::cout << "\n Trigger object index = "<<trigObjIt<<std::endl;
+	  //std::cout << "triggerObjectID=1, triggerFilterBitSum = "<<triggerFilterBitSum<<std::endl;
+	  //std::cout <<" Loop over trigger filters that I am interested in"<<std::endl;
+	  
+	  for(auto &triggerFilter : triggerObjectsForStudiesCount)
+	    {
+	      // Keep only the the ones mentioned in the config file 
+	      if(triggerObjectId != triggerFilter.first.first) continue;
+	      
+	      //std::cout << "Checking if filter sum ("<<triggerFilterBitSum<<")"<<"  passes filter "<<triggerFilter.first.second;
+	      
+	      if( (triggerFilterBitSum >> triggerFilter.first.second) & 0x1 )
+		{
+		  //std::cout << " PASSED!";
+		  
+		  if (matchWithFourHighestBjets)
+		    {
+		      auto jetIdAndMinDeltaRandPt = getClosestJetIndexToTriggerObject(nat.TrigObj_eta.At(trigObjIt), nat.TrigObj_phi.At(trigObjIt), LeadingFour_selected_bjets, 0.5);
+		      int bestMatchingIndex = std::get<0>( jetIdAndMinDeltaRandPt );
+		      
+		      if (bestMatchingIndex >= 0)
+			{
+			  float matchedJet_minDR = std::get<1>(jetIdAndMinDeltaRandPt);
+			  float matchedJet_pt    = std::get<2>(jetIdAndMinDeltaRandPt);
+			  triggerObjectPerJetCount.at(bestMatchingIndex).at(triggerFilter.first) = true;
+			}
+		      //else
+		      //{
+		      //std::cout<<""<<std::endl;
+		      //}
+		    }
+		  else
+		    {
+		      ++triggerFilter.second;
+		    }
+		}
+	      //else
+	      //{
+	      //std::cout << " FAILED!"<<std::endl;
+	      //}
+	    }
+	} // Closes Loop over trigger objects
+      
+      if(matchWithFourHighestBjets)
+	{
+	  for(auto &triggerFilter : triggerObjectsForStudiesCount) // for all the trigger filters
+	    {
+	      for(auto &jetFiltersMap : triggerObjectPerJetCount) //for all the 4 selected jets
+		{
+		  if(jetFiltersMap.at(triggerFilter.first)) ++triggerFilter.second; //if selected jet was matched with the filter object I increment the count
+		}
+	    }
+	}
       
       // Fill the output tree
       tOut->Fill();
