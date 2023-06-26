@@ -24,11 +24,11 @@ exe=bin/skim_ntuple.exe
 cfg="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
 
 # Run signal
-#output="NTuple_NMSSM_XYH_YToHH_6b_MX_450_MY_300.root"
-#input="input/PrivateMC_2018/srosenzw_NMSSM_XYH_YToHH_6b_MX_450_MY_300_sl7_nano_100k.txt --is-signal"
+input="input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-850_MY-500_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal --maxEvts 10000"
+output="NTuple_NMSSM_XToYHTo6B_MX-850_MY-500.root"
 
-output="NTuple_TTJets.root"
-input="input/Run2_UL/RunIISummer20UL18NanoAODv9/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8.txt --maxEvts 2000"
+#output="NTuple_TTJets.root"
+#input="input/Run2_UL/RunIISummer20UL18NanoAODv9/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8.txt --maxEvts 2000"
 
 #output="NTuple_QCD_bEnriched_HT700to1000.root"
 #input="input/Run2_UL/RunIISummer20UL18NanoAODv9/QCD_bEnriched_HT700to1000_TuneCP5_13TeV-madgraph-pythia8.txt"

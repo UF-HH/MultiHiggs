@@ -1,14 +1,14 @@
 #ifndef BTagEntry_H
 #define BTagEntry_H
-
 /**
  *
  * BTagEntry
  *
  * Represents one pt- or discriminator-dependent calibration function.
  *
- * measurement_type:    e.g. comb, ttbar, di-mu, boosted, ...
- * sys_type:            e.g. central, plus, minus, plus_JEC, plus_JER, ...
+ * OperatingPoint:      e.g L, M, T
+ * measurementType:     e.g incl, comb, mujets,
+ * sysType:             e.g. central, down, down_uncorrelated, down_correlated, up, up_correlated, up_uncorrelated, up_jes, up_pileup, up_statistic, up_type3, etc
  *
  * Everything is converted into a function, as it is easiest to store it in a
  * txt or json file.
@@ -24,15 +24,15 @@ class BTagEntry
 {
 public:
   enum OperatingPoint {
-    OP_LOOSE=0,
-    OP_MEDIUM=1,
-    OP_TIGHT=2,
-    OP_RESHAPING=3,
+    OP_LOOSE     = 0,
+    OP_MEDIUM    = 1,
+    OP_TIGHT     = 2,
+    OP_RESHAPING = 3,
   };
   enum JetFlavor {
-    FLAV_B=0,
-    FLAV_C=1,
-    FLAV_UDSG=2,
+    FLAV_B       = 0,
+    FLAV_C       = 1,
+    FLAV_UDSG    = 2,
   };
   struct Parameters {
     OperatingPoint operatingPoint;
@@ -148,8 +148,6 @@ protected:
 #include <memory>
 #include <string>
 
-
-
 class BTagCalibrationReader
 {
 public:
@@ -184,4 +182,3 @@ protected:
 
 
 #endif  // BTagCalibrationReader_H
-

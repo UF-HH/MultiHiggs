@@ -13,7 +13,7 @@ ROOT.gInterpreter.ProcessLine('#include <cmath>')
 year = "2018"
 
 from modules.Samples_NMSSM_XYH_YToHH_6b import dsetGroups
-samples = dsetGroups["NMSSM_XYH_YToHH_6b"][year] + dsetGroups["TTJets"][year]
+samples = dsetGroups["NMSSM_XYH_YToHH_6b"][year] # + dsetGroups["TTJets"][year]
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #                  ROOT FUNCTIONS
@@ -85,7 +85,6 @@ new_columns['A_SRhs_mask']   = 'A_SR_mask && hs_mask'
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 selections_defs = {
     'baseline'            : 'n_jet > 0',
-    #'lepton_veto'         : 'leptonveto == 1',
     'A_SR_highbtag'       : 'A_SRhs_mask == 1',
     'A_CR_highbtag'       : 'A_CRhs_mask == 1',
     'A_SR_lowbtag'        : 'A_SRls_mask == 1',
@@ -138,6 +137,28 @@ histos_descs = [
     {'var': 'triggerDataEfficiencyDown', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
     {'var': 'triggerMcEfficiencyUp', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
     {'var': 'triggerMcEfficiencyDown', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_effL1', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_effQuad30CaloJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_effCaloHT', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_effQuad30PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_effSingle75PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_effDouble60PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_effTriple54PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_effQuad40PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_effPFHT', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_threeBtagEfficiency', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_Data_twoBtagEfficiency', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_effL1', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_effQuad30CaloJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_effCaloHT', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_effQuad30PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_effSingle75PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_effDouble60PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_effTriple54PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_effQuad40PFJet', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_effPFHT', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_threeBtagEfficiency', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
+    {'var': 'HLT_MC_twoBtagEfficiency', 'weightlist':["genWeight"], 'bins': (100, 0.0, 1.0),},
 ]
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

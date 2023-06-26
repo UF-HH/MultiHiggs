@@ -74,6 +74,54 @@ public:
    * @param ei EventInfo class to store values
    */
   void match_genbs_genfatjets_to_reco(NanoAODTree &nat, EventInfo &ei) override;
+  
+  /**
+   * @brief Count how many valid genjets in the ei are in the in_jets collection
+   * This method should be overriden
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets List of jets to to compare
+   * @return int Number of valid genjets in in_jets
+   */
+  int n_gjmatched_in_jetcoll(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
+  
+  /**
+   * @brief Count how many valid gen higgs in the ei are in the in_jets collection 
+   * This method should be overriden
+   * @param nat NanoAODTree being processed 
+   * @param ei EventInfo class to store values
+   * @param in_jets List of jets to to compare
+   * @return int Number of valid gen higgs in in_jets 
+   */
+  int n_ghmatched_in_jetcoll(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
+    
+  /**
+   * @brief Match signal objects to reco in_jets collection and saving ID to signalId
+   * This method should be overriden
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Reco Jet collection to match with
+   */
+  void match_signal_recojets(NanoAODTree &nat, EventInfo &ei, std::vector<Jet> &in_jets) override;
+  
+  /**
+   * @brief Match signal objects to gen in_jets collection and saving ID to signalId
+   * This method should be overriden
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets Gen Jet collection to match with
+   */
+  void match_signal_genjets(NanoAODTree &nat, EventInfo &ei, std::vector<GenJet> &in_jets) override;
+  
+  /**
+   * @brief Select four jet candidates - configureable to run various selection algos defined in config
+   * This method should be overriden 
+   * @param nat NanoAODTree being processed
+   * @param ei EventInfo class to store values
+   * @param in_jets List of jets to select from
+   * @return std::vector<Jet> of selected jets
+   */
+  std::vector<Jet> select_jets(NanoAODTree &nat, EventInfo &ei, const std::vector<Jet> &in_jets) override;
 
 private:
 

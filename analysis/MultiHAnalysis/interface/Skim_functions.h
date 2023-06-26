@@ -103,6 +103,8 @@ public:
   
   void match_genjets_to_reco(NanoAODTree &nat, EventInfo& ei,std::vector<GenJet>& in_gen,std::vector<Jet>& in_reco);
   
+  double getPFHT(NanoAODTree& nat, EventInfo& ei);
+
   ////////////////////////////////////////////////////
   /// non-jet functions
   ////////////////////////////////////////////////////

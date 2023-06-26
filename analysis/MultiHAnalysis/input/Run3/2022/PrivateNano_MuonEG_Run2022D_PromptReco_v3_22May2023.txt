@@ -1,0 +1,2 @@
+root://cmseos.fnal.gov//store/user/mkolosov/CRAB3_TransferData/PrivateNanoAOD/MuonEG/MuonEG_Run2022D_PromptReco_v3/230522_111559/0000/nano_data2022_1.root
+root://cmseos.fnal.gov//store/user/mkolosov/CRAB3_TransferData/PrivateNanoAOD/MuonEG/MuonEG_Run2022D_PromptReco_v3/230522_111559/0000/nano_data2022_2.root
