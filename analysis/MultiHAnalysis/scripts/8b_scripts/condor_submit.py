@@ -67,6 +67,18 @@ sample_defaults = dict(
         njobs=150,
         forceOverwrite=True,
     ),
+    ttjet_train=dict(
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/training/TTJets*.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
+        njobs=100,
+        forceOverwrite=True,
+    ),
+    ttjet_eval=dict(
+        files=["input/Run2_UL/RunIISummer20UL18NanoAODv9/evaluate/TTJets*.txt"],
+        tag="Run2_UL/RunIISummer20UL18NanoAODv9/TTJets",
+        njobs=100,
+        forceOverwrite=True,
+    ),
     ttjet_2017=dict(
         files=["input/Run2_UL/RunIISummer20UL17NanoAODv9/TTJets*.txt"],
         tag="Run2_UL/RunIISummer20UL17NanoAODv9/TTJets",
