@@ -65,8 +65,8 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   ot.jet.FillOptional(ei.jet_list);
   ot.fatjet.FillOptional(ei.fatjet_list);
 
+  ot.genpb.FillOptional(ei.genpb_list);
   ot.genjet.FillOptional(ei.genjet_list);
-  
   ot.genfatjet.FillOptional(ei.genfatjet_list);
 
   if (ei.event_shapes) {

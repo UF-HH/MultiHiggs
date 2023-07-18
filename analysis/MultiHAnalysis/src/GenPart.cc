@@ -45,6 +45,30 @@ void GenPart::buildP4()
   }
 }
 
+void GenPartListCollection::Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) {
+  branch_switches = branch_switches_;
+  CHECK_BRANCH(m);
+  CHECK_BRANCH(pt);
+  CHECK_BRANCH(eta);
+  CHECK_BRANCH(phi);
+}
+
+void GenPartListCollection::Clear() {
+  m.clear();
+  pt.clear();
+  eta.clear();
+  phi.clear();
+}
+
+void GenPartListCollection::Fill(const std::vector<GenPart>& genparts){
+  for (const GenPart& genp : genparts)
+    {
+      m.push_back(genp.P4().M());
+      pt.push_back(genp.P4().Pt());
+      eta.push_back(genp.P4().Eta());
+      phi.push_back(genp.P4().Phi());
+    }
+}
 
 void GenPartCollection::Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) {
   branch_switches = branch_switches_;

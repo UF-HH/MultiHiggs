@@ -268,29 +268,30 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
       tree_->Branch("n_fatjet", &n_fatjet);
       REGISTER_BRANCH_COLLECTION(fatjet);
     }
-  
+
   if (is_enabled("gen_brs"))
     {
       std::cout << "[INFO] OutputTree : enabling gen-only related branches" << std::endl;
       tree_->Branch("n_pu",        &n_pu);
       tree_->Branch("n_true_int",  &n_true_int);
       tree_->Branch("lhe_ht",         &lhe_ht);
-
       tree_->Branch("btagSF_WP_M", &btagSF_WP_M);
       tree_->Branch("n_genjet",    &n_genjet);
 
       if (is_enabled("jet_coll"))
-      {
-        REGISTER_BRANCH_COLLECTION(  genjet);
-      }
-      
+	{
+	  REGISTER_BRANCH_COLLECTION(genjet);
+	}
+      if (is_enabled("bquark_coll"))
+	{
+	  REGISTER_BRANCH_COLLECTION(genpb);
+	}
       if (is_enabled("fatjet_coll"))
 	{
 	  tree_->Branch("n_genfatjet", &n_genfatjet);
-    REGISTER_BRANCH_COLLECTION(genfatjet);
+	  REGISTER_BRANCH_COLLECTION(genfatjet);
 	}
     }
-
   if (is_enabled("shape_brs"))
     {
       std::cout << "[INFO] OutputTree : enabling event shape-only related branches" << std::endl;
@@ -335,9 +336,10 @@ void OutputTree::clear()
   b_6j_score = 0;
   b_3d_score = 0;
 
+  genpb.Clear();
   genjet.Clear();
-
   genfatjet.Clear();
+
   ele.Clear();
   muon.Clear();
   jet.Clear();

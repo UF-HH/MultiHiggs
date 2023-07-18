@@ -146,11 +146,13 @@ public:
    */
   virtual void initialize_functions(TFile &outputFile) {};
 
-
   ////////////////////////////////////////////////////
   /// gen objects functions
   ////////////////////////////////////////////////////
-
+  /**
+   * @brief Select all gen b-quarks
+   */
+  std::vector<GenPart> select_b_quarks(NanoAODTree &nat, EventInfo &ei);
 
   /**
    * @brief Select important gen particles and save them to ei
