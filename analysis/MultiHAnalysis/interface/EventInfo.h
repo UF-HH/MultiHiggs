@@ -207,6 +207,7 @@ struct EventInfo{
   // End Reco 8B Objects
   boost::optional< std::vector<Electron> > ele_list;
   boost::optional< std::vector<Muon> > muon_list;
+  boost::optional< std::vector<GenPart> > genpb_list;
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
   boost::optional< std::vector<GenJetAK8> > genfatjet_list;
