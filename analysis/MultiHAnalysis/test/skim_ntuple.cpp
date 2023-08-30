@@ -1059,6 +1059,10 @@ int main(int argc, char** argv) {
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
       if (selected_jets.size() < 6)
         continue;
+
+      if (readCfgOptWithDefault<bool>(config, "configurations::saveSelected", false))
+        ei.jet_list = selected_jets;
+
       cutflow.add("Jets for pairing selection", nwt);
       cutflow_Unweighted.add("Jets for pairing selection");
 
