@@ -658,7 +658,7 @@ int main(int argc, char** argv) {
   BtagSF btsf;
   if (!is_data) {
     string btsffile = config.readStringOpt("parameters::DeepJetScaleFactorFile");
-    btsf.init_reader("DeepJet", btsffile);
+    btsf.init_reader("DeepJet", btsffile, ot);
     btsf.set_WPs(btag_WPs.at(0), btag_WPs.at(1), btag_WPs.at(2));
   }
 
@@ -1059,6 +1059,8 @@ int main(int argc, char** argv) {
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
       if (selected_jets.size() < 6)
         continue;
+
+      btsf.compute_reshaping_sf(presel_jets, nat, ot);
 
       if (readCfgOptWithDefault<bool>(config, "configurations::saveSelected", false))
         ei.jet_list = selected_jets;
