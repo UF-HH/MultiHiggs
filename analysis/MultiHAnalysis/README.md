@@ -37,6 +37,32 @@ Scripts to submit jobs to condor are in `scripts/` directory. Options are includ
 sh scripts/submit_all_signal.sh
 ```
 
+### HPG Slurm Submission
+Support for HPG and SLURM can be enabled by merging with the `hpg` branch: https://github.com/UF-HH/MultiHiggs/tree/hpg
+
+#### NOTE: HPG uses EL8 and needs to be created in CMSSW_12_6_0 
+Replace `python scripts/submitSkimOnBatch.py` with `python2 scripts/submitSkimOnSlurm.py` in all submission scripts.
+
+A new job monitoring script is provided in `scripts/post.py`. This script will check the job status and merge the output files is the job is complete. It can be run as
+
+```
+python3 scripts/post.py /path/to/skim/job/
+```
+
+If all jobs are complete, this will merge the output files into a single file.
+If there are failed jobs, you can resubmit them using the `--resubmit` option.
+
+```
+python3 scripts/post.py /path/to/skim/job/ --resubmit
+```
+
+You can force merging of the output files using the `--force` option.
+
+```
+python3 scripts/post.py /path/to/skim/job/ --force
+```
+
+
 ### Calculating B-Tag Efficiency
 
 The [skim_btageff.cpp](test/skim_btageff.cpp) script can be used to calculate the efficiencies using the output from [skim_ntuple.cpp](test/skim_ntuple.cpp). A config needs to be used that defines 
