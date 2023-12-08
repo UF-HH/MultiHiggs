@@ -25,6 +25,9 @@ done
 if [ "$pathunset" = true ] ; then
     export THISDIR=`pwd`
 
+    
+    source /cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client/current/el8-x86_64/setup.sh
+
     ## note : the CPP_BOOST_PATH is also fed to the makefile to use the boost libraries under $(CPP_BOOST_PATH)/lib
     ## comment it to use system default libraries in compilation and linking 
     export CPP_BOOST_PATH=$(scram tool tag boost BOOST_BASE)
