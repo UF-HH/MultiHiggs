@@ -1,0 +1,1 @@
+root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/NMSSM_XToYHTo6B_MX-2800_MY-900_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2560000/76A3E2B0-4668-EB49-8D87-BE812858D66F.root
