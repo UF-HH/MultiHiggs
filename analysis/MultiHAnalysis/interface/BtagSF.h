@@ -27,10 +27,10 @@ public:
     N_FLAV  = 3,
   };
 
-  const std::vector<std::string> btag_sf_reshaping_unc_sources_ = {"jes", "hf", "lf", "lfstats1", "lfstats2", "hfstats1", "hfstats2", "cferr1", "cferr2"}; // x {up, down} in the code
+  const std::vector<std::string> btag_sf_reshaping_unc_sources_ = {"jes", "jesAbsolute", "jesBBEC1", "jesEC2", "jesFlavorQCD", "jesHF", "jesRelativeBal", "jesRelativeSample", "hf", "lf", "lfstats1", "lfstats2", "hfstats1", "hfstats2"}; // x {up, down} in the code
   std::vector<std::string> btag_sf_reshaping_full_list_;
   std::vector<double> btag_sf_reshaping_full_list_sumw_;
-  
+
   BtagSF(){};
   ~BtagSF(){};
 
@@ -44,6 +44,8 @@ public:
   // void get_SF_allJetsPassWP (const std::vector<Jet>& jets, btagWP WP, std::string syst = "", bool syst_up = true);
   double get_SF_allJetsPassWP (const std::vector<Jet>& jets, btagWP WP);
   void compute_reshaping_sf(const std::vector<Jet> &jets, NanoAODTree& nat, OutputTree &ot);
+
+  bool reshaping_found;
 
 private:
   // every WP must have its reader
