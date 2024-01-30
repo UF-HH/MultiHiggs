@@ -26,9 +26,17 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
   tree_->Branch("LumiSec", &LumiSec);
   tree_->Branch("Event",   &Event);
 
+  tree_->Branch("genEventSumw",   &genEventSumw);
+
   tree_->Branch("n_other_pv",     &n_other_pv);
   tree_->Branch("rhofastjet_all", &rhofastjet_all);
   tree_->Branch("PFHT", &PFHT);
+
+  tree_->Branch("HEMWeight", &HEMWeight);
+
+  tree_->Branch("PUIDWeight", &PUIDWeight);
+  tree_->Branch("PUIDWeight_up", &PUIDWeight_up);
+  tree_->Branch("PUIDWeight_down", &PUIDWeight_down);
   
   if (is_enabled("saveTrgSF"))
     {
@@ -307,6 +315,7 @@ void OutputTree::clear()
   Run     = 0;
   LumiSec = 0;
   Event   = 0;
+  genEventSumw = 0;
 
   n_other_pv     = 0;
   n_pu           = 0;
@@ -314,6 +323,12 @@ void OutputTree::clear()
   rhofastjet_all = 0;
   
   PFHT = 0;
+
+  HEMWeight = 1.;
+
+  PUIDWeight = 1.;
+  PUIDWeight_up = 1.;
+  PUIDWeight_down = 1.;
 
   triggerScaleFactor        = 1.;
   triggerDataEfficiency     = 1.;

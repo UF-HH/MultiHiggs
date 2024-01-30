@@ -12,6 +12,9 @@
 #include "Electron.h"
 #include "Muon.h"
 
+#include "TFile.h"
+#include "TH2F.h"
+
 using namespace std;
 
 void Skim_functions::initialize_params_from_cfg(CfgParser &config)
@@ -680,4 +683,89 @@ double Skim_functions::getPFHT(NanoAODTree& nat, EventInfo& ei)
       sumPFHT+=jet.P4().Pt();
     }
   return sumPFHT;
+}
+
+bool Skim_functions::checkHEMissue(EventInfo& ei, const std::vector<Jet> &jets)
+{
+  for (unsigned int ij=0; ij<jets.size(); ij++)
+    {
+      bool eta_check = (-3.0 < jets.at(ij).P4().Eta() && jets.at(ij).P4().Eta() < -1.3);
+      bool phi_check = (-1.57 < jets.at(ij).P4().Phi() && jets.at(ij).P4().Phi() < -0.78);
+      bool pt_check = jets.at(ij).P4().Pt() > 30;
+
+      if (eta_check && phi_check && pt_check)
+        {
+          // ei.HEMWeight = 0.352;
+          return true;
+        }
+    }
+  return false;
+}
+
+void Skim_functions::get_puid_sf(EventInfo& ei, const std::vector<Jet> &jets, string puid_sf_file, string year)
+{
+  // See https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetID#Efficiencies_and_data_MC_scale_f, which recommends using the method 1a in https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1a_Event_reweighting_using_scale
+
+  const int pu_id = pmap.get_param<int>("presel", "pu_id");
+  // double puid_weight = 1.0;
+  // double puid_weight_up = 1.0;
+  // double puid_weight_down = 1.0;
+
+  double mc_prob = 1.0;
+
+  double data_prob = 1.0;
+  double data_prob_up = 1.0;
+  double data_prob_down = 1.0;
+  
+  TFile f(puid_sf_file.c_str());
+  string puid_eff_title = "h2_eff_mcUL" + year + "_T";
+  TH2F *puid_eff = (TH2F*)f.Get(puid_eff_title.c_str());
+  string puid_sf_title = "h2_eff_sfUL" + year + "_T";
+  TH2F *puid_sf = (TH2F*)f.Get(puid_sf_title.c_str());
+  string puid_sf_unc_title = "h2_eff_sfUL" + year + "_T_Systuncty";
+  TH2F *puid_sf_unc = (TH2F*)f.Get(puid_sf_unc_title.c_str());
+  
+  for (unsigned int ij=0; ij<jets.size(); ij++)
+  {
+    Jet jet = jets.at(ij);
+
+    if (jet.P4().Pt() >= 50) {continue;}
+    if (get_property(jet, Jet_genJetIdx) == -1) {continue;}
+ 
+    double pt = jet.P4().Pt();
+    double eta = jet.P4().Eta();
+
+    if (abs(eta) >= 5.0) {eta = 4.9999;}
+    if (pt < 20) {pt = 20;}
+
+    int bin = puid_sf->FindBin(pt, eta);
+    float eff = puid_eff->GetBinContent(bin);
+    float sf = puid_sf->GetBinContent(bin);
+    float sf_up = sf + puid_sf_unc->GetBinContent(bin);
+    float sf_down = sf - puid_sf_unc->GetBinContent(bin);
+
+    if (checkBit(jet.get_puid(), pu_id))
+    {
+      mc_prob *= eff;
+      data_prob *= sf*eff;
+      data_prob_up *= sf_up*eff;
+      data_prob_down *= sf_down*eff;
+    }
+    else if (!checkBit(jet.get_puid(), pu_id)) {
+      mc_prob *= (1 - eff);
+      data_prob *= (1 - sf*eff);
+      data_prob_up *= (1 - sf_up*eff);
+      data_prob_down *= (1 - sf_down*eff);
+    }
+  }
+
+  double puid_weight = data_prob/mc_prob;
+  double puid_weight_up = data_prob_up/mc_prob;
+  double puid_weight_down = data_prob_down/mc_prob;
+
+  if (puid_weight_up > 5) {puid_weight_up = 5;}
+
+  ei.PUIDWeight = puid_weight;
+  ei.PUIDWeight_up = puid_weight_up;
+  ei.PUIDWeight_down = puid_weight_down;
 }
