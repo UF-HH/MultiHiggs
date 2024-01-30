@@ -4,60 +4,61 @@
 using namespace std;
 
 // void BtagSF::init_reader(std::string tagger, std::string SFfile, std::vector<std::string> udsg_c_b_meas)
-void BtagSF::init_reader(std::string tagger, std::string SFfile)
+void BtagSF::init_reader(std::string tagger, std::string SFfile, OutputTree& ot)
 {
   cout << "[INFO] ... BtagSF : loading for tagger " << tagger << " from " << SFfile << endl;
   BTagCalibration btagCalibration(tagger, SFfile);
 
   bool wp_found = SFfile.find("wp") != string::npos;
-  bool reshaping_found = SFfile.find("reshaping") != string::npos;
+  reshaping_found = SFfile.find("reshaping") != string::npos;
+
 
   if (wp_found)
   {
     cout << "[INFO] Using working point scale factor file" << endl;
 
-    btcr_[btagWP::loose]  = std::unique_ptr<BTagCalibrationReader> (new BTagCalibrationReader(BTagEntry::OP_LOOSE,  "central", {"up", "down"}));
-    btcr_[btagWP::medium] = std::unique_ptr<BTagCalibrationReader> (new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"}));
-    btcr_[btagWP::tight]  = std::unique_ptr<BTagCalibrationReader> (new BTagCalibrationReader(BTagEntry::OP_TIGHT,  "central", {"up", "down"}));
-    
-    btcr_[btagWP::loose]->load(btagCalibration, BTagEntry::FLAV_UDSG, "incl");
-    btcr_[btagWP::loose]->load(btagCalibration, BTagEntry::FLAV_C   , "comb");
-    btcr_[btagWP::loose]->load(btagCalibration, BTagEntry::FLAV_B   , "comb");
+  btcr_[btagWP::loose]  = std::unique_ptr<BTagCalibrationReader> (new BTagCalibrationReader(BTagEntry::OP_LOOSE,  "central", {"up", "down"}));
+  btcr_[btagWP::medium] = std::unique_ptr<BTagCalibrationReader> (new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"}));
+  btcr_[btagWP::tight]  = std::unique_ptr<BTagCalibrationReader> (new BTagCalibrationReader(BTagEntry::OP_TIGHT,  "central", {"up", "down"}));
 
-    btcr_[btagWP::medium]->load(btagCalibration, BTagEntry::FLAV_UDSG, "incl");
-    btcr_[btagWP::medium]->load(btagCalibration, BTagEntry::FLAV_C   , "comb");
-    btcr_[btagWP::medium]->load(btagCalibration, BTagEntry::FLAV_B   , "comb");
+  btcr_[btagWP::loose]->load(btagCalibration, BTagEntry::FLAV_UDSG, "incl");
+  btcr_[btagWP::loose]->load(btagCalibration, BTagEntry::FLAV_C   , "comb");
+  btcr_[btagWP::loose]->load(btagCalibration, BTagEntry::FLAV_B   , "comb");
 
-    btcr_[btagWP::tight]->load(btagCalibration, BTagEntry::FLAV_UDSG, "incl");
-    btcr_[btagWP::tight]->load(btagCalibration, BTagEntry::FLAV_C   , "comb");
-    btcr_[btagWP::tight]->load(btagCalibration, BTagEntry::FLAV_B   , "comb");
+  btcr_[btagWP::medium]->load(btagCalibration, BTagEntry::FLAV_UDSG, "incl");
+  btcr_[btagWP::medium]->load(btagCalibration, BTagEntry::FLAV_C   , "comb");
+  btcr_[btagWP::medium]->load(btagCalibration, BTagEntry::FLAV_B   , "comb");
+
+  btcr_[btagWP::tight]->load(btagCalibration, BTagEntry::FLAV_UDSG, "incl");
+  btcr_[btagWP::tight]->load(btagCalibration, BTagEntry::FLAV_C   , "comb");
+  btcr_[btagWP::tight]->load(btagCalibration, BTagEntry::FLAV_B   , "comb");
   }
   else if (reshaping_found)
   {
     cout << "[INFO] Using reshaping scale factor file" << endl;
 
-    // Added by Suzanne on 10/16/2023 for reshaping
-    btag_sf_reshaping_full_list_.push_back("central");
-    for (string sfunc : btag_sf_reshaping_unc_sources_)
-    {
-        for (string dir : {"up", "down"})
-        {
-            string uncname = dir;
-            uncname += string("_");
-            uncname += sfunc;
-            btag_sf_reshaping_full_list_.push_back(uncname);
-        }
-    }
-    for (string sfname : btag_sf_reshaping_full_list_)
-    {
+  // // Added by Suzanne on 10/16/2023 for reshaping
+  btag_sf_reshaping_full_list_.push_back("central");
+  for (string sfunc : btag_sf_reshaping_unc_sources_)
+  {
+      for (string dir : {"up", "down"})
+      {
+          string uncname = dir;
+          uncname += string("_");
+          uncname += sfunc;
+          btag_sf_reshaping_full_list_.push_back(uncname);
+      }
+  }
+  for (string sfname : btag_sf_reshaping_full_list_)
+  {
     string sfbrname = "bSFshape_";
     sfbrname += sfname;
     ot.declareUserFloatBranch(sfbrname, 1.0);
-    }
-    btcr_[btagWP::N_WP]  = std::unique_ptr<BTagCalibrationReader> (new BTagCalibrationReader(BTagEntry::OP_RESHAPING, "central", btag_sf_reshaping_full_list_));
-    btcr_[btagWP::N_WP]->load(btagCalibration,  BTagEntry::FLAV_B,    "iterativefit");
-    btcr_[btagWP::N_WP]->load(btagCalibration,  BTagEntry::FLAV_C,    "iterativefit");
-    btcr_[btagWP::N_WP]->load(btagCalibration,  BTagEntry::FLAV_UDSG, "iterativefit");
+  }
+  btcr_[btagWP::shape]  = std::unique_ptr<BTagCalibrationReader> (new BTagCalibrationReader(BTagEntry::OP_RESHAPING, "central", btag_sf_reshaping_full_list_));
+  btcr_[btagWP::shape]->load(btagCalibration,  BTagEntry::FLAV_B,    "iterativefit");
+  btcr_[btagWP::shape]->load(btagCalibration,  BTagEntry::FLAV_C,    "iterativefit");
+  btcr_[btagWP::shape]->load(btagCalibration,  BTagEntry::FLAV_UDSG, "iterativefit");
   }
   else {
     std::cerr << "ERROR in BtagSF: "
@@ -106,6 +107,7 @@ void BtagSF::compute_reshaping_sf(const std::vector<Jet> &jets, NanoAODTree& nat
 {
   for (uint isf = 0; isf < btag_sf_reshaping_full_list_.size(); ++isf)
     {
+        // cout << ".. btag_sf_reshaping_full_list_[" << isf << "]" << endl;
         string sfname = btag_sf_reshaping_full_list_.at(isf);
 
         double bSF = 1.0;
@@ -125,6 +127,9 @@ void BtagSF::compute_reshaping_sf(const std::vector<Jet> &jets, NanoAODTree& nat
             double pt   = jet.P4().Pt();
 
             double w = btcr_[btagWP::shape]->eval_auto_bounds(sfname, jf, aeta, pt, b_score);
+
+            // if (jetFlavour == 4)
+              // cout << "Hadron flavor is 4, " << sfname << " = " << w << endl;
             
             // 0 is the default value for a missing line in the .csv file (e.g., an uncertainty available only for one flavour but not the others)
             // but there is not a way to check if the value was available or the default was returned
@@ -139,7 +144,12 @@ void BtagSF::compute_reshaping_sf(const std::vector<Jet> &jets, NanoAODTree& nat
         // save in output
         string sfbrname = "bSFshape_";
         sfbrname += sfname;
+        // cout << "sfbrname = " << sfbrname << endl;
+        // cout << "bSF = " << bSF << endl;
         ot.userFloat(sfbrname) = bSF;
+
+        // cout << ".. branch saved to OT" << endl;
+        
         
         // ot.userFloat(sfbrname) = bSF; // the product of the 4 b tag SF (*before* cuts) is my weight
 
