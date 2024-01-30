@@ -4,36 +4,32 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 2022 Samples for trigger studies
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-DATA_files=$(ls input/Run3/*Muon_Run*)
-ODIR="/store/user/mkolosov/MultiHiggs/DiHiggs/2022/TriggerEfficiency/"
-CFG="config/skim_PNetHLT_2022_NanoAODv10.cfg"
-TAG="Run3_TrgEff_ResolvedPNetPath_07Feb2023_SingleMuonPD"
-
-make exe -j || exit -1
-echo "... tag       : ", $TAG
-echo "... saving to : ", $ODIR
-
-for input in ${DATA_files[@]}; do
-    python scripts/submitPNetTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
-done
-
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-# TripleBTag path efficiencies
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-#DATA_files=$(ls input/Run3/*)
+#DATA_files=$(ls input/Run3/2022/PrivateNano_MuonEG_Run2*)
 #ODIR="/store/user/mkolosov/MultiHiggs/DiHiggs/2022/TriggerEfficiency/"
-#CFG="config/skim_trigger_2022_NanoAODv10.cfg"
-
-#TAG="Run3_2022_TriggerEfficiency_30Jan2023"
+#TAG="Run3_MuonEG_2022_PromptNanoAOD_07June2023_v2"
+#CFG="config/skim_PNetHLT_2022_PromptNanoAODv11.cfg"
 
 #make exe -j || exit -1
 #echo "... tag       : ", $TAG
 #echo "... saving to : ", $ODIR
 
 #for input in ${DATA_files[@]}; do
-#    python scripts/submitTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --match --is-data
+#    python scripts/submitPNetTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-data
 #done
+
+TT_files=$(ls input/Run3/2022/postEE/PrivateNano_TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_08June2023*)
+ODIR="/store/user/mkolosov/MultiHiggs/DiHiggs/2022/TriggerEfficiency/"
+TAG="Run3_TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8_08June2023"
+CFG="config/skim_PNetHLT_2022_PromptNanoAODv11.cfg"
+
+make exe -j || exit -1
+echo "... tag       : ", $TAG
+echo "... saving to : ", $ODIR
+for input in ${TT_files[@]}; do
+    python scripts/submitPNetTrgSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input
+done
+
+
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # 2017 Samples for trigger studies

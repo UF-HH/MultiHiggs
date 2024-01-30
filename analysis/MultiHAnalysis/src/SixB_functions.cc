@@ -455,9 +455,9 @@ std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInf
     {
       std::cout << "SixB_functions::selectJetsForPairing:  jet collection after sorting by b-tagging score and then pT within each group:"<<std::endl;
       for (unsigned int ij=0; ij<jets.size(); ij++)
-	{
-	  std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
-	}
+        {
+          std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
+        }
     }
   
   // Select the first 6 jets for the pairing
@@ -517,7 +517,9 @@ std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInf
 	  jets.resize(0);
 	}
     }
-
+  stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
+          return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
+  ); // sort jet by deepjet score (highest to lowest)
   // The resulting jets collection is still sorted by b-tagging score and then by pT
   return jets;
 }

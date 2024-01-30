@@ -74,6 +74,7 @@ public:
   int    n_pu;
   double n_true_int;
   double rhofastjet_all;
+  double PFHT;
   
   // Trigger scale factor branches
   float triggerScaleFactor;
@@ -101,6 +102,7 @@ public:
   float b_6j_score;
   float b_3d_score;
 
+  GenPartListCollection genpb;
   GenJetListCollection genjet;
   GenJetAK8ListCollection genfatjet;
   

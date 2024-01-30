@@ -7,6 +7,7 @@
 #include <string>
 #include "BTagCalibrationStandalone.h"
 #include "Jet.h"
+#include "OutputTree.h"
 
 class BtagSF{
     
@@ -15,7 +16,8 @@ public:
     loose  = 0,
     medium = 1,
     tight  = 2,
-    N_WP   = 3,
+    shape  = 3,
+    N_WP   = 4,
   };
 
   enum btagFlav {
@@ -25,12 +27,15 @@ public:
     N_FLAV  = 3,
   };
 
+  const std::vector<std::string> btag_sf_reshaping_unc_sources_ = {"jes", "jesAbsolute", "jesBBEC1", "jesEC2", "jesFlavorQCD", "jesHF", "jesRelativeBal", "jesRelativeSample", "hf", "lf", "lfstats1", "lfstats2", "hfstats1", "hfstats2"}; // x {up, down} in the code
+  std::vector<std::string> btag_sf_reshaping_full_list_;
+  std::vector<double> btag_sf_reshaping_full_list_sumw_;
 
   BtagSF(){};
   ~BtagSF(){};
 
   // void init_reader(std::string tagger, std::string SFfile, std::vector<std::string> udsg_c_b_meas = {"incl", "comb", "comb"});
-  void init_reader(std::string tagger, std::string SFfile);
+  void init_reader(std::string tagger, std::string SFfile, OutputTree& ot);
   void set_WPs(double WP_L, double WP_M, double WP_T);
   double get_WP(btagWP WP) {return WP_[WP];}
 
@@ -38,6 +43,9 @@ public:
   // if non-emtpy syst, the SF is calculated with the measurement "syst" shifted up/down if syst_up
   // void get_SF_allJetsPassWP (const std::vector<Jet>& jets, btagWP WP, std::string syst = "", bool syst_up = true);
   double get_SF_allJetsPassWP (const std::vector<Jet>& jets, btagWP WP);
+  void compute_reshaping_sf(const std::vector<Jet> &jets, NanoAODTree& nat, OutputTree &ot);
+
+  bool reshaping_found;
 
 private:
   // every WP must have its reader

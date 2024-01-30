@@ -103,6 +103,8 @@ public:
   
   void match_genjets_to_reco(NanoAODTree &nat, EventInfo& ei,std::vector<GenJet>& in_gen,std::vector<Jet>& in_reco);
   
+  double getPFHT(NanoAODTree& nat, EventInfo& ei);
+
   ////////////////////////////////////////////////////
   /// non-jet functions
   ////////////////////////////////////////////////////
@@ -144,11 +146,13 @@ public:
    */
   virtual void initialize_functions(TFile &outputFile) {};
 
-
   ////////////////////////////////////////////////////
   /// gen objects functions
   ////////////////////////////////////////////////////
-
+  /**
+   * @brief Select all gen b-quarks
+   */
+  std::vector<GenPart> select_b_quarks(NanoAODTree &nat, EventInfo &ei);
 
   /**
    * @brief Select important gen particles and save them to ei

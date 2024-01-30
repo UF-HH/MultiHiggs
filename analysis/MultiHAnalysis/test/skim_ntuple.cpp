@@ -383,7 +383,7 @@ void initializeTriggerRequirements(
 
 // -----------------------------------
 
-enum SkimTypes { kfourb, ksixb, keightb, kpass, kpresel, kttbar, knull };
+enum SkimTypes { kfourb, ksixb, keightb, kpass, kpresel, kttbar, kQCD, knull };
 
 int main(int argc, char** argv) {
   const auto start_prog_t = chrono::high_resolution_clock::now();
@@ -493,7 +493,8 @@ int main(int argc, char** argv) {
                                : skim_type_name == "eightb" ? keightb
                                : skim_type_name == "pass"   ? kpass
                                : skim_type_name == "presel" ? kpresel
-                               : skim_type_name == "ttbar" ?  kttbar
+                               : skim_type_name == "ttbar"  ? kttbar
+			       : skim_type_name == "qcd"    ? kQCD
                                                             : knull);
   if (skim_type == knull)
     throw std::runtime_error("skim type not recognized");
@@ -523,9 +524,11 @@ int main(int argc, char** argv) {
                     {"sixb_brs", (skim_type == ksixb)},
                     {"eightb_brs", (skim_type == keightb)},
                     {"ttbar_brs", (skim_type == kttbar)},
+		    {"QCD_brs", (skim_type == kQCD)},
                     {"run3_brs", (skim_type == kfourb)}, // fourb is running on run3 nanoAOD 
                     {"sig_gen_brs", (is_signal)},
-                    {"gen_brs", (!is_data) && readCfgOptWithDefault<bool>(config, "configurations::saveGen", true)},
+                    {"gen_brs", (!is_data)},
+		    {"bquark_coll", (!is_data) && readCfgOptWithDefault<bool>(config, "configurations::saveGenPColl", false)},
                     {"saveTrgSF", (!is_data) && readCfgOptWithDefault<bool>(config, "triggers::saveTrgSF", false)},
                 });
   NormWeightTree nwt;
@@ -655,7 +658,7 @@ int main(int argc, char** argv) {
   BtagSF btsf;
   if (!is_data) {
     string btsffile = config.readStringOpt("parameters::DeepJetScaleFactorFile");
-    btsf.init_reader("DeepJet", btsffile);
+    btsf.init_reader("DeepJet", btsffile, ot);
     btsf.set_WPs(btag_WPs.at(0), btag_WPs.at(1), btag_WPs.at(2));
   }
 
@@ -942,6 +945,9 @@ int main(int argc, char** argv) {
     if (debug)
       dumpObjColl(presel_jets, "==== PRESELECTED JETS ===");
 
+    // Save event PFHT
+    ei.PFHT = skf->getPFHT(nat, ei);
+
     //=================================
     // Fatjet selection
     //=================================
@@ -1055,6 +1061,12 @@ int main(int argc, char** argv) {
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
       if (selected_jets.size() < 6)
         continue;
+
+      btsf.compute_reshaping_sf(presel_jets, nat, ot);
+
+      if (readCfgOptWithDefault<bool>(config, "configurations::saveSelected", false))
+        ei.jet_list = selected_jets;
+
       cutflow.add("Jets for pairing selection", nwt);
       cutflow_Unweighted.add("Jets for pairing selection");
 
@@ -1155,6 +1167,43 @@ int main(int argc, char** argv) {
       cutflow.add("nselect_jets>=6", nwt);
       cutflow_Unweighted.add("nselect_jets>=6");
     }
+    else if (skim_type == kQCD)
+      {
+	// Gen-information
+	std::vector<GenJet> GenJets = skf->get_all_genjets(nat);
+	std::vector<GenPart> bQuarks = skf->select_b_quarks(nat, ei);
+	std::vector<GenPart*> bQuarks_ptr;
+	for (unsigned int b=0; b<bQuarks.size(); b++)
+	  {
+	    bQuarks_ptr.push_back(&bQuarks.at(b));
+	  }
+	// Save only the gen-level b-quarks
+	ei.genpb_list  = bQuarks;
+	// Save all gen-level jets
+	ei.genjet_list = GenJets;
+
+	std::vector<GenPart*> matched_quarks;
+	std::vector<GenJet> matched_genjets;
+	skf->GetMatchedPairs(0.4, bQuarks_ptr, GenJets, matched_quarks, matched_genjets);
+	std::vector<Jet> matched_recojets;
+	for (unsigned int j=0; j<presel_jets.size(); j++)
+	  {
+	    Jet jet = presel_jets.at(j);
+	    int genJetIdx = get_property(jet, Jet_genJetIdx);
+	    for (unsigned int igen = 0; igen < matched_genjets.size(); igen++)
+	      {
+		GenJet genjet = matched_genjets.at(igen);
+		int genJet_idx = genjet.getIdx();
+		if (genJetIdx == genJet_idx) matched_recojets.push_back(jet);
+	      }
+	  }
+
+	loop_timer.click("QCD gen-level matching");
+
+	// Do something if needed for the matched objects (matched_quarks, matched_genjets, matched_recojets)
+	// ...
+
+      } // kQCD skim
     if (blind && is_data && skf->is_blinded(nat, ei, is_data))
       continue;
 

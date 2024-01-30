@@ -354,6 +354,25 @@ std::vector<int> Skim_functions::match_local_idx(std::vector<Jet>& subset,std::v
   return local_idxs;
 }
 
+std::vector<GenPart> Skim_functions::select_b_quarks(NanoAODTree &nat, EventInfo &ei)
+{
+  /*
+   * @brief: Return all final state b-quarks
+   */
+  std::vector<GenPart> bQuarks;
+  for (uint igp = 0; igp < *(nat.nGenPart); ++igp)
+    {
+      GenPart gp(igp, &nat);
+      int apdgid = abs(get_property(gp, GenPart_pdgId));
+      // b quarks
+      if ((apdgid == 5) && gp.isLastCopy())
+	{
+	  bQuarks.push_back(gp);
+	}
+    }
+  return bQuarks;
+}
+
 void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*>& quarks, std::vector<GenJetAK8>& genfatjets,
 				     std::vector<GenPart*>& matched_quarks, std::vector<GenJetAK8>& matched_genfatjets)
 {
@@ -384,7 +403,7 @@ void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*
             }
         }
     }
-  
+
   if (minDR < dR_match)
     {
       // For debugging
@@ -396,7 +415,7 @@ void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*
         }
       matched_genfatjets.push_back(genfatjets.at(minDR_jetIndex));
       matched_quarks.push_back(quarks.at(minDR_particleIndex));
-      
+
       // Temporary quarks vector:
       std::vector<GenPart*> quarks_to_match_temp;
       unsigned int counter = -1;
@@ -406,7 +425,6 @@ void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*
           if (counter == minDR_particleIndex) continue;
           quarks_to_match_temp.push_back(p);
         }
-      
       GetMatchedPairs(dR_match, quarks_to_match_temp, genfatjets, matched_quarks, matched_genfatjets);
     }
   else return;
@@ -433,16 +451,16 @@ void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*
       for (unsigned int igj=0; igj<genjets.size(); ++igj)
         {
           double dR = ROOT::Math::VectorUtil::DeltaR(p->P4(), genjets.at(igj).P4());
-          if (dR > dR_match) continue;
+	  if (dR > dR_match) continue;
           if (dR < minDR)
             {
-              minDR = dR;
+	      minDR = dR;
               minDR_jetIndex = igj;
               minDR_particleIndex = counter;
             }
         }
     }
-  
+
   if (minDR < dR_match)
     {
       // For debugging
@@ -454,7 +472,7 @@ void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*
         }
       matched_genjets.push_back(genjets.at(minDR_jetIndex));
       matched_quarks.push_back(quarks.at(minDR_particleIndex));
-      
+
       // Temporary quarks vector:
       std::vector<GenPart*> quarks_to_match_temp;
       unsigned int counter = -1;
@@ -464,7 +482,7 @@ void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*
           if (counter == minDR_particleIndex) continue;
           quarks_to_match_temp.push_back(p);
         }
-      
+
       // Temporary genjets vector:
       std::vector<GenJet> genjets_to_match_temp;
       for (unsigned int igj=0; igj<genjets.size(); ++igj)
@@ -472,7 +490,7 @@ void Skim_functions::GetMatchedPairs(const double dR_match, std::vector<GenPart*
           if (igj == minDR_jetIndex) continue;
           genjets_to_match_temp.push_back(genjets.at(igj));
         }
-      
+
       GetMatchedPairs(dR_match, quarks_to_match_temp, genjets_to_match_temp, matched_quarks, matched_genjets);
     }
   else return;
@@ -649,4 +667,17 @@ std::vector<Electron> Skim_functions::select_electrons(CfgParser &config, NanoAO
       selected_electrons.emplace_back(el);
     }
   return selected_electrons;
+}
+
+double Skim_functions::getPFHT(NanoAODTree& nat, EventInfo& ei)
+{
+  double sumPFHT = 0.0;
+  for (unsigned int ij = 0; ij < *(nat.nJet); ++ij)
+    {
+      Jet jet(ij, &nat);
+      if (jet.P4().Pt() < 30) continue;
+      if (std::abs(jet.P4().Eta()) > 2.5) continue;
+      sumPFHT+=jet.P4().Pt();
+    }
+  return sumPFHT;
 }

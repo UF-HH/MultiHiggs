@@ -35,6 +35,7 @@ struct EventInfo{
   boost::optional<int>    n_pu;
   boost::optional<double> n_true_int;
   boost::optional<double> rhofastjet_all;
+  boost::optional<double> PFHT;
   boost::optional<double> lhe_ht;
 
   boost::optional<int>    n_total_jet;
@@ -224,6 +225,7 @@ struct EventInfo{
   // End Reco 8B Objects
   boost::optional< std::vector<Electron> > ele_list;
   boost::optional< std::vector<Muon> > muon_list;
+  boost::optional< std::vector<GenPart> > genpb_list;
   boost::optional< std::vector<GenJet> > genjet_list;
   boost::optional< std::vector<Jet> > jet_list;
   boost::optional< std::vector<GenJetAK8> > genfatjet_list;

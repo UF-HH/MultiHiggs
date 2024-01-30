@@ -153,6 +153,12 @@ public:
   NanoReaderArray<Bool_t>    Electron_mvaFall17V2Iso_WPL          {fReader, "Electron_mvaFall17V2Iso_WPL"};
   NanoReaderArray<Bool_t>    Electron_mvaFall17V2Iso_WP90         {fReader, "Electron_mvaFall17V2Iso_WP90"};
   NanoReaderArray<Bool_t>    Electron_mvaFall17V2Iso_WP80         {fReader, "Electron_mvaFall17V2Iso_WP80"};
+  
+  // Run-3 samples
+  NanoReaderArray<Bool_t> Electron_mvaIso_WP80                 {fReader, "Electron_mvaIso_WP80"};
+  NanoReaderArray<Bool_t> Electron_mvaIso_WP90                 {fReader, "Electron_mvaIso_WP90"};
+  NanoReaderArray<Bool_t> Electron_mvaIso_WPL                  {fReader, "Electron_mvaIso_WPL"};
+  
   // NanoReaderArray<Int_t>     Electron_genPartIdx                  {fReader, "Electron_genPartIdx"};
   // NanoReaderArray<UChar_t>   Electron_genPartFlav                 {fReader, "Electron_genPartFlav"};
   NanoReaderArray<Int_t>     Electron_genPartIdx                   {fReader, "Electron_genPartIdx"};
@@ -280,6 +286,7 @@ public:
   NanoReaderArray<Float_t>   Jet_btagDeepB                        {fReader, "Jet_btagDeepB"};
   NanoReaderArray<Float_t>   Jet_btagDeepC                        {fReader, "Jet_btagDeepC"};
   NanoReaderArray<Float_t>   Jet_btagDeepFlavB                    {fReader, "Jet_btagDeepFlavB"};
+  NanoReaderArray<Float_t>   Jet_btagPNetBvsAll                   {fReader, "Jet_btagPNetBvsAll"};
   NanoReaderArray<Float_t>   Jet_btagDeepFlavC                    {fReader, "Jet_btagDeepFlavC"};
   NanoReaderArray<Float_t>   Jet_chEmEF                           {fReader, "Jet_chEmEF"};
   NanoReaderArray<Float_t>   Jet_chHEF                            {fReader, "Jet_chHEF"};

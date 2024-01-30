@@ -40,6 +40,18 @@ private:
   static const std::map<int, float> gen_mass_;
 };
 
+struct GenPartListCollection : public BranchCollection<std::vector<GenPart> >{
+  std::vector<float> m;
+  std::vector<float> pt;
+  std::vector<float> eta;
+  std::vector<float> phi;
+
+  DEF_BRANCH_COLLECTION(GenPartListCollection);
+  void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
+  void Clear() override;
+  void Fill(const std::vector<GenPart>& genparts) override;
+};
+
 struct GenPartCollection : public BranchCollection<GenPart> {
   float m;  
   float pt; 
