@@ -30,14 +30,14 @@ extra=""
 ####################################################################################################
 # input="input/Run2_UL/RunIISummer20UL16NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-1000_MY-600_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
 # input="input/Run2_UL/RunIISummer20UL16NanoAODv9/preVFP/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-1000_MY-250_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
-# input="input/Run2_UL/RunIISummer20UL17NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-700_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
+input="input/Run2_UL/RunIISummer20UL17NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-700_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
 # input="input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-1000_MY-250_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
-input="input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/NMSSM_XYH_YToHH_6b_MX_700_MY_400_2M.txt --is-signal"
+# input="input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/NMSSM_XYH_YToHH_6b_MX_700_MY_400_2M.txt --is-signal"
 
-input="test.root --is-signal"
+# input="test.txt --is-signal"
 
-cfg="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
-# cfg="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
+# cfg="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
+cfg="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
 # cfg="config/skim_ntuple_2016postVFP_106X_NanoAODv9.cfg"
 # cfg="config/skim_ntuple_2016preVFP_106X_NanoAODv9.cfg"
      
