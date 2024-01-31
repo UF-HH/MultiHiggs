@@ -514,7 +514,6 @@ int main(int argc, char** argv) {
   if (nfiles == 0)
     throw std::runtime_error("The input file list is empty.");
 
-  cout << "Checkpoint 1" << endl;
   double genEventSumw_total = 0;
   if (!is_data) {
     TChain rch("Runs");
@@ -526,7 +525,6 @@ int main(int argc, char** argv) {
     }
     cout << "Total genEventSumw: " << genEventSumw_total << endl;
   }
-  cout << "Checkpoint 2" << endl;
 
   const string outputFileName = opts["output"].as<string>();
   std::cout << "\033[1;34m Output file is  : \033[0m" << outputFileName << "\n" << std::endl;
@@ -938,7 +936,7 @@ int main(int argc, char** argv) {
       }
       loop_timer.click("Signal gen level");
     }
-
+    
     //======================================
     // Jet Selection
     //======================================
