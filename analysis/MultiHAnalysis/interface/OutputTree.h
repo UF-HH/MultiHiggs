@@ -69,12 +69,19 @@ public:
   unsigned int           Run;
   unsigned int           LumiSec;
   unsigned long long int Event;
+  
+  double                 genEventSumw;
 
   int    n_other_pv;
   int    n_pu;
   double n_true_int;
   double rhofastjet_all;
   double PFHT;
+  double HEMWeight;
+
+  double PUIDWeight;
+  double PUIDWeight_up;
+  double PUIDWeight_down;
   
   // Trigger scale factor branches
   float triggerScaleFactor;

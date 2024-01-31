@@ -442,6 +442,10 @@ int main(int argc, char** argv) {
        po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false),
        "disable the storage of the genweight tree for normalizations")
       //
+      ("check-HEM",
+      po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false),
+       "check Run value to correct HEM15/16 issue in 2018B dataset")
+      //
       ("debug",
        po::value<bool>()->zero_tokens()->implicit_value(true)->default_value(false),
        "debug this event (verbose printing)");
@@ -469,6 +473,7 @@ int main(int argc, char** argv) {
   const string year = config.readStringOpt("parameters::year");
   const bool is_data = opts["is-data"].as<bool>();
   const bool is_signal = (is_data ? false : opts["is-signal"].as<bool>());
+  const bool check_HEM = opts["check-HEM"].as<bool>();
 
   std::cout << "\033[1;34m Year            : \033[0m" << year << std::endl;
   std::cout << "\033[1;34m Sample type     : \033[0m";
@@ -508,6 +513,18 @@ int main(int argc, char** argv) {
   int nfiles = su::appendFromFileList(&ch, opts["input"].as<string>());
   if (nfiles == 0)
     throw std::runtime_error("The input file list is empty.");
+
+  double genEventSumw_total = 0;
+  if (!is_data) {
+    TChain rch("Runs");
+    int rnfiles = su::appendFromFileList(&rch, opts["input"].as<string>());
+    TTreeReader rch_reader(&rch);
+    TTreeReaderValue<Double_t> genEventSumw(rch_reader, "genEventSumw");
+    while (rch_reader.Next()) {
+      genEventSumw_total += *genEventSumw;
+    }
+    cout << "Total genEventSumw: " << genEventSumw_total << endl;
+  }
 
   const string outputFileName = opts["output"].as<string>();
   std::cout << "\033[1;34m Output file is  : \033[0m" << outputFileName << "\n" << std::endl;
@@ -578,9 +595,9 @@ int main(int argc, char** argv) {
   if (year == "2018") {
     trgEfficiencyCalculator_ = new TriggerEfficiencyCalculator_2018(trgEffFileName, nat);
   } else if (year == "2017") {
-    trgEfficiencyCalculator_ = new TriggerEfficiencyCalculator_2017(trgEffFileName, nat);
+    // trgEfficiencyCalculator_ = new TriggerEfficiencyCalculator_2017(trgEffFileName, nat);
   } else {
-    throw std::invalid_argument("No trigger efficiency file exists for the year requested");
+    // throw std::invalid_argument("No trigger efficiency file exists for the year requested");
   }
   if (simulateTrg)
     trgEfficiencyCalculator_->simulateTrigger(&ot);
@@ -606,6 +623,13 @@ int main(int argc, char** argv) {
       {"name_PU_w_up", "PUweights_up"},
       {"name_PU_w_do", "PUweights_down"},
   };
+
+  string puid_sf_file;
+  if (!is_data) {
+    puid_sf_file = readCfgOptWithDefault<string>(config, "parameters::PUIDScaleFactorFile", "");
+    std::cout << "\n\033[1;33m PUID reweighting: \033[0m" << std::endl;
+    std::cout << "\033[1;34m PUID Weights : \033[0m" << pu_weight_file << "\n" << std::endl;
+  }
 
   // // just a test
   // nwt.add_weight("test1", {"test1_up", "test1_down"});
@@ -652,8 +676,9 @@ int main(int argc, char** argv) {
   skf->set_btag_WPs(config.readDoubleListOpt("configurations::bTagWPDef"));
 
   cout << "[INFO] ... events must contain >= " << nMinBtag << " jets passing WP (0:L, 1:M, 2:T) : " << bTagWP << endl;
-  cout << "[INFO] ... the WPs are: (L/M/T) : " << btag_WPs.at(0) << "/" << btag_WPs.at(1) << "/" << btag_WPs.at(2)
-       << endl;
+  cout << "[INFO] ... the WPs are: (L/M/T) : ";
+      for (auto wp : btag_WPs) {cout << wp << " ";}
+    cout << endl;
 
   BtagSF btsf;
   if (!is_data) {
@@ -705,6 +730,8 @@ int main(int argc, char** argv) {
   const Variation jer_var = string_to_jer_variation(opts["jer-shift-syst"].as<string>());
   const Variation bjer_var = string_to_jer_variation(opts["bjer-shift-syst"].as<string>());
 
+  string L1PrefiringSFMethod = config.readStringOpt("parameters::L1PrefiringSFMethod");
+
   // ------------------------------------------------------------------
   skf->initialize_params_from_cfg(config);
   skf->initialize_functions(outputFile);
@@ -745,6 +772,10 @@ int main(int argc, char** argv) {
   Cutflow cutflow_Unweighted("h_cutflow_unweighted", "Unweighted selection cutflow");
   HistoCollection histograms;
 
+  //==========================================================
+  // Loop begins!
+  //==========================================================
+  cout << "[INFO] Loop begins!" << endl;
   for (int iEv = 0; true; ++iEv) {
     if (maxEvts >= 0 && iEv >= maxEvts)
       break;
@@ -775,7 +806,7 @@ int main(int argc, char** argv) {
     if (is_data && !jlf.isValid(*nat.run, *nat.luminosityBlock)) {
       continue;  // not a valid lumi
     }
-
+  
     EventInfo ei;
     ot.clear();
     loop_timer.click("Input read");
@@ -905,7 +936,7 @@ int main(int argc, char** argv) {
       }
       loop_timer.click("Signal gen level");
     }
-
+    
     //======================================
     // Jet Selection
     //======================================
@@ -913,6 +944,19 @@ int main(int argc, char** argv) {
     ei.nfound_all = skf->n_gjmatched_in_jetcoll(nat, ei, all_jets);
     ei.nfound_all_h = skf->n_ghmatched_in_jetcoll(nat, ei, all_jets);
     loop_timer.click("All jets copy");
+
+    if (!is_data && year == "2018") {
+      if (skf->checkHEMissue(ei, all_jets)) {ei.HEMWeight = 0.352;}
+    }
+    else if (is_data && year == "2018")
+    {
+      // skip events with jets in affected region
+      if (check_HEM){
+        int run = (int) *ei.Run;
+        bool HEMruns = (run == 319077 || run == 319310);
+        if (HEMruns && skf->checkHEMissue(ei, all_jets)) {continue;}
+      }
+    }
 
     if (!is_data) {
       if (do_jes_shift)
@@ -1030,7 +1074,7 @@ int main(int argc, char** argv) {
           }
         }
       }
-
+      
       //================================================
       // Proceed with the jets pairing
       //================================================
@@ -1062,7 +1106,11 @@ int main(int argc, char** argv) {
       if (selected_jets.size() < 6)
         continue;
 
-      btsf.compute_reshaping_sf(presel_jets, nat, ot);
+      if (!is_data && saveTrgSF) {skf->get_puid_sf(ei, all_jets, puid_sf_file, year);}
+
+      if (btsf.reshaping_found) {
+        btsf.compute_reshaping_sf(presel_jets, nat, ot);
+      }
 
       if (readCfgOptWithDefault<bool>(config, "configurations::saveSelected", false))
         ei.jet_list = selected_jets;
@@ -1147,12 +1195,19 @@ int main(int argc, char** argv) {
       }
       skf->compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
+      
+      ei.genEventSumw = genEventSumw_total;
+
     }  // Closes sixb skimming
     else if (skim_type == kttbar) {
       if (presel_jets.size() < 6)
         continue;
       cutflow.add("npresel_jets>=6", nwt);
       cutflow_Unweighted.add("npresel_jets>=6");
+
+      if (btsf.reshaping_found) {
+        btsf.compute_reshaping_sf(presel_jets, nat, ot);
+      }
       
       std::vector<Jet> selected_jets = skf->select_jets(nat, ei, presel_jets);
       ei.nfound_select = skf->n_gjmatched_in_jetcoll(nat, ei, selected_jets);
@@ -1181,6 +1236,10 @@ int main(int argc, char** argv) {
 	ei.genpb_list  = bQuarks;
 	// Save all gen-level jets
 	ei.genjet_list = GenJets;
+
+  if (btsf.reshaping_found) {
+        btsf.compute_reshaping_sf(presel_jets, nat, ot);
+      }
 
 	std::vector<GenPart*> matched_quarks;
 	std::vector<GenJet> matched_genjets;
@@ -1223,8 +1282,9 @@ int main(int argc, char** argv) {
   cutflow_Unweighted.write(outputFile);
   histograms.write(outputFile);
   ot.write();
-  if (!is_data)
-    nwt.write();
+  // if (!is_data) {
+  //   nwt.write();
+  //   }
 
   // timing statistics
   const auto end_prog_t = chrono::high_resolution_clock::now();

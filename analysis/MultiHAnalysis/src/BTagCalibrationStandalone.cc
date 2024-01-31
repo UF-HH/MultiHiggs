@@ -47,6 +47,11 @@ BTagEntry::BTagEntry(const std::string &csvLine)
     }
     vec.push_back(token);
   }
+  // quick fix that may break in the future
+  if (vec.size() == 12) {
+    vec[10] = vec[10] + "," +  vec[11];
+    vec.erase(vec.begin() + 11);
+  }
   if (vec.size() != 11) {
     std::cerr << "ERROR in BTagCalibration: "
 	      << "Invalid csv line; num tokens != 11: "
@@ -86,6 +91,10 @@ BTagEntry::BTagEntry(const std::string &csvLine)
   else if (operating_point == "T")
     {
       op = OP_TIGHT;
+    }
+  else if (operating_point == "shape")
+    {
+      op = OP_RESHAPING;
     }
   else
     {

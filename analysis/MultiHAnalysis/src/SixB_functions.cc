@@ -41,8 +41,9 @@ void SixB_functions::initialize_params_from_cfg(CfgParser& config)
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "bias_pt_sort" || pmap.get_param<string> ("configurations", "sixbJetChoice") == "btag_sortedpt_cuts")
     {
       pmap.insert_param<bool>          ("bias_pt_sort", "applyJetCuts", config.readBoolOpt("bias_pt_sort::applyJetCuts"));
-      pmap.insert_param<vector<int>>   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
-      pmap.insert_param<std::vector<double> >("bias_pt_sort", "pt_cuts", config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
+      pmap.insert_param<vector<int> >   ("bias_pt_sort", "btagWP_cuts",  config.readIntListOpt("bias_pt_sort::btagWP_cuts"));
+      pmap.insert_param<std::vector<double >>("bias_pt_sort", "pt_cuts", config.readDoubleListOpt("bias_pt_sort::pt_cuts"));
+      pmap.insert_param<double>("bias_pt_sort", "htCut", config.readDoubleOpt("bias_pt_sort::htCut"));
     }
 
   if (pmap.get_param<string> ("configurations", "sixbJetChoice") == "6jet_DNN") {
@@ -394,27 +395,27 @@ std::vector<Jet> SixB_functions::select_sixb_jets_bias_pt_sort(NanoAODTree &nat,
       
       unsigned int ncuts = pt_cuts.size();
       if (jets.size() < ncuts)
-	{
-	  pass_cuts = false;
-	}
+      {
+        pass_cuts = false;
+      }
       else
-	{
-	  for (unsigned int icut = 0; icut < ncuts; icut++)
-	    {
-	      const Jet& ijet = jets[icut];
-	      double pt   = pt_cuts[icut];
-	      int btag_wp = btagWP_cuts[icut];
-	      if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] )
-		{
-		  // if (debug_){
-		  //   cout << "==> the jet nr " << icut << " fails cuts, jet dumped below" << endl;
-		  //   cout << getObjDescr(ijet) << endl;
-		  // }
-		  pass_cuts = false;
-		  break;
-		}
-	    }
-	}
+      {
+        for (unsigned int icut = 0; icut < ncuts; icut++)
+          {
+            const Jet& ijet = jets[icut];
+            double pt   = pt_cuts[icut];
+            int btag_wp = btagWP_cuts[icut];
+            if ( ijet.get_pt() <= pt || ijet.get_btag() <= btag_WPs[btag_wp] )
+        {
+          // if (debug_){
+          //   cout << "==> the jet nr " << icut << " fails cuts, jet dumped below" << endl;
+          //   cout << getObjDescr(ijet) << endl;
+          // }
+          pass_cuts = false;
+          break;
+        }
+          }
+      }
       if (!pass_cuts)
 	jets.resize(0); // empty this vector if cuts were not passed
     }
@@ -476,6 +477,11 @@ std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInf
 	{
 	  throw std::runtime_error("Number of cuts required larger than the jet collection size! Fix me.");
 	}
+
+    double ht_cut = pmap.get_param<double>("bias_pt_sort", "htCut");
+    if (ei.PFHT < ht_cut) {
+      pass_cuts = false;
+    }
       
       for (unsigned int icut=0; icut<btagWP_cuts.size(); icut++)
 	{
@@ -517,13 +523,12 @@ std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInf
 	  jets.resize(0);
 	}
     }
+  // std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
   stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
           return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
   ); // sort jet by deepjet score (highest to lowest)
-  // The resulting jets collection is still sorted by b-tagging score and then by pT
   return jets;
 }
-
 
 std::vector<Jet> SixB_functions::select_sixb_jets_pt_sort(NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets)
 {

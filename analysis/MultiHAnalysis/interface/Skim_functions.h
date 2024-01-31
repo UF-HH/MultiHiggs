@@ -113,6 +113,10 @@ public:
   std::vector<Muon> select_muons(CfgParser &config, NanoAODTree &nat, EventInfo &ei);
   
   void set_btag_WPs(std::vector<double> btag_wps) { btag_WPs = btag_wps; }
+
+  bool checkHEMissue(EventInfo& ei, const std::vector<Jet> &jets);
+
+  void get_puid_sf(EventInfo& ei, const std::vector<Jet> &jets, string puid_sf_file, string year);
   
   ////////////////////////////////////////////////////
   /// parameter handling
