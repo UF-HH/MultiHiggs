@@ -131,6 +131,5 @@ For instructions on how to perform skims, see [analysis/MultiHAnalysis](https://
 See [this page](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#for-end-users-that-dont-need-to-commit-or-do-any-development) for instructions on how to install and run Combine ([HiggsAnalysis-CombinedLimit GitHub](https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit))
 
 Notes:
-- Documentation recommends using CMSSW_10_2_18 to run Combine
+- Documentation recommends using CMSSW_11_3_X to run Combine v9 but this requires architecture slc7_amd64_gcc900, which is not available on lpc machines. Instead, CMSSW_12_X is acceptable.
 - Must start a new shell to run Combine (i.e., no cms environments)
-- 
