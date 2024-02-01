@@ -1,8 +1,16 @@
 ## Installation
 
-Please see the README.md in the root folder before attempting to run these skims if you haven't already. Once installation of the repo has been completed, follow these steps to set up the analysis code.
+Follow these instructions to install and set up the analysis code, which is used to perform skims on generated samples. For instructions on how to produce gridpacks and generate full simulation ntuples, please see the README.md in the root of this repository [MultiHiggs](https://github.com/UF-HH/MultiHiggs/tree/master).
+
 
 ```
+cmsrel CMSSW_10_6_28_patch2
+cd CMSSW_10_6_28_patch2/src
+cmsenv
+git cms-addpkg CommonTools/Utils CondFormats/JetMETObjects CondFormats/Serialization FWCore/MessageLogger FWCore/Utilities JetMETCorrections/Modules PhysicsTools/TensorFlow PhysicsTools/ONNXRuntime
+scram b -j 4
+git clone https://github.com/UF-HH/MultiHiggs
+cd MultiHiggs/analysis/MultiHAnalysis
 source scripts/setup.sh
 make exe -j
 ```
@@ -36,32 +44,6 @@ Scripts to submit jobs to condor are in `scripts/` directory. Options are includ
 ```
 sh scripts/submit_all_signal.sh
 ```
-
-### HPG Slurm Submission
-Support for HPG and SLURM can be enabled by merging with the `hpg` branch: https://github.com/UF-HH/MultiHiggs/tree/hpg
-
-#### NOTE: HPG uses EL8 and needs to be created in CMSSW_12_6_0 
-Replace `python scripts/submitSkimOnBatch.py` with `python2 scripts/submitSkimOnSlurm.py` in all submission scripts.
-
-A new job monitoring script is provided in `scripts/post.py`. This script will check the job status and merge the output files is the job is complete. It can be run as
-
-```
-python3 scripts/post.py /path/to/skim/job/
-```
-
-If all jobs are complete, this will merge the output files into a single file.
-If there are failed jobs, you can resubmit them using the `--resubmit` option.
-
-```
-python3 scripts/post.py /path/to/skim/job/ --resubmit
-```
-
-You can force merging of the output files using the `--force` option.
-
-```
-python3 scripts/post.py /path/to/skim/job/ --force
-```
-
 
 ### Calculating B-Tag Efficiency
 
