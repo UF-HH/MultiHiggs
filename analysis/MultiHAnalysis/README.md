@@ -1,8 +1,16 @@
 ## Installation
 
-Please see the README.md in the root folder before attempting to run these skims if you haven't already. Once installation of the repo has been completed, follow these steps to set up the analysis code.
+Follow these instructions to install and set up the analysis code, which is used to perform skims on generated samples. For instructions on how to produce gridpacks and generate full simulation ntuples, please see the README.md in the root of this repository [MultiHiggs](https://github.com/UF-HH/MultiHiggs/tree/master).
+
 
 ```
+cmsrel CMSSW_10_6_28_patch2
+cd CMSSW_10_6_28_patch2/src
+cmsenv
+git cms-addpkg CommonTools/Utils CondFormats/JetMETObjects CondFormats/Serialization FWCore/MessageLogger FWCore/Utilities JetMETCorrections/Modules PhysicsTools/TensorFlow PhysicsTools/ONNXRuntime
+scram b -j 4
+git clone https://github.com/UF-HH/MultiHiggs
+cd MultiHiggs/analysis/MultiHAnalysis
 source scripts/setup.sh
 make exe -j
 ```

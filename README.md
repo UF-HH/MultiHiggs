@@ -12,6 +12,24 @@
   - [Perform Skim on NTuples](#perform-skim-on-ntuples)
   - [HiggsCombine](#higgscombine)
 
+## Repository Contents
+
+This repository contains three projects:
+
+1. Sample skimming for Multi-Higgs analyses
+
+This project is used to skim both private and centrally-produced samples. For instructions on how to perform skims, see [analysis/MultiHAnalysis](https://github.com/UF-HH/MultiHiggs/tree/master/analysis/MultiHAnalysis).
+
+2. Gridpack production with MadGraph5
+
+This project is used to produce gridpacks, which are used for gen-level event generation (located in `MadGraph/`). See installation and running instructions below.
+
+3. Full simulation private sample generation 
+
+This project is used to generate event simulations that propagate the gen-level events through the detectors. For instructions on how to perform skims, see [FullSim](https://github.com/UF-HH/MultiHiggs/tree/master/FullSim).
+
+
+
 ## Install Instructions
 
 Note:
@@ -27,7 +45,7 @@ cd CMSSW_10_6_28_patch2/src
 cmsenv
 git cms-addpkg CommonTools/Utils CondFormats/JetMETObjects CondFormats/Serialization FWCore/MessageLogger FWCore/Utilities JetMETCorrections/Modules PhysicsTools/TensorFlow PhysicsTools/ONNXRuntime
 scram b -j 4
-git clone https://github.com/UF-HH/sixB
+git clone https://github.com/UF-HH/MultiHiggs
 
 # install MadGraph
 cd MadGraph
@@ -49,11 +67,11 @@ Sample event production can also be done by generating a gridpack (consisting of
 
 After running `python generate_grid.py`, navigate to the directory `sixB/MadGraph/gridpacks/genproductions/bin/MadGraph5_aMCatNLO/` and modify and run `sh generate_6b_gridpacks.sh`. This will generate the tarballs, which you can copy to `FullSim/Summer20UL18/Template/`, in which you can modify `genSim_step.py` and `crabConfig.py` and submit each Full Sim sample to CRAB via the command `crab submit crabConfig.py`.
 
-## Running Instructions
+### Running Instructions
 
 
 These steps allow for generating an LHE file and run Pythia (within the CMSSW framework) on top of it.
-### LHE step
+#### LHE step
 
 To generate the MadGraph process (needed only once) see below.
 It will generate the diagrams and copy updated run and param cards to the destination folder called ``X_YH_HHH_6b``.
@@ -92,7 +110,7 @@ This step takes approximately 90s to hadronise and ntuplise 1000 events (a few e
 For test purposes you can add at the end ``maxEvents=<num_events>`` (e.g. to run on 100 events)
 
 
-### Content and description of the ntuples
+#### Content and description of the ntuples
 
 Conventions:
    * The particles in the process are labeled as X &#8594; Y HX, and Y &#8594; HY1 HY2. The three H bosons (HX, HY1, HY2) decay to b1 b2.
@@ -106,7 +124,7 @@ Content:
 
 ## Perform Skim on NTuples
 
-For instructions on how to perform skims, see [analysis/sixBanalysis](https://github.com/UF-HH/sixB/tree/master/analysis/sixBanalysis).
+For instructions on how to perform skims, see [analysis/MultiHAnalysis](https://github.com/UF-HH/MultiHiggs/tree/master/analysis/MultiHAnalysis).
 
 ## HiggsCombine
 
