@@ -101,8 +101,12 @@ echo "    $JOBDIR"
 
 # ----
 
-echo "Submitting samples"
+export METIS_JOBDIR=$JOBDIR
+TMUX_SESSION=${OUTPUT}_${TAG}
 
-echo "TODO: run this command in a tmux session"
-cd $JOBDIR
-python submit.py
+echo "Submitting samples in tmux"
+tmux new-session -d -s $TMUX_SESSION
+tmux send-keys -t $TMUX_SESSION 'cd ${METIS_JOBDIR}; python submit.py' Enter
+
+echo "Attach tmux session with"
+echo "    tmux attach-session -t $TMUX_SESSION"

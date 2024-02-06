@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
         # Parse the summary and make a summary.txt that will be used to pretty status of the jobs
         os.system("rm -f web_summary.json")
-        webdir="~/public_html/MultiHiggs6bTree"
+        webdir="~/public_html/{output}_{tag}".format(output=output, tag=tag)
         StatsParser(data=task_summary, webdir=webdir).do()
         os.system("chmod -R 755 {}".format(webdir))
         os.system("msummary -r -i {}/web_summary.json".format(webdir))
