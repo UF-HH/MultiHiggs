@@ -10,7 +10,7 @@ make -q exe --silent || {
     exit 1
 }
 
-# ---- Install Metis and setup
+# ---- Install Metis
 
 METIS_PATH=$HOME/workdir/ProjectMetis
 if [ ! -d $METIS_PATH ]; then 
@@ -25,26 +25,22 @@ if [ ! -d $METIS_PATH ]; then
     cd $CWD
 fi
 
-
-voms-proxy-info -exists || {
-    voms-proxy-init -hours 168 -voms cms -rfc # to setup proxy
-}
-
-if [ -z $METIS_BASE ]; then
-    echo "Setting up Metis"
-    source $METIS_PATH/setup.sh
-fi
-
 # ---- Init Arguments ---- #
 
 VALID_SKIM=1
 if [ -z $CONFIG ]; then
     echo Specify a skim config using the CONFIG env variable
     VALID_SKIM=0
+elif [ ! -f $CONFIG ]; then
+    echo CONFIG=$CONFIG does not exist
+    VALID_SKIM=0
 fi
 
 if [ -z $SAMPLES ]; then
     echo Specify a skim sample using the SAMPLES env variable
+    VALID_SKIM=0
+elif [ ! -f $SAMPLES ]; then
+    echo SAMPLES=$SAMPLES does not exist
     VALID_SKIM=0
 fi
 
@@ -58,8 +54,20 @@ if [ -z $TAG ] ; then
     VALID_SKIM=0
 fi
 
-if [ ! $VALID_SKIM ]; then
+if [ $VALID_SKIM -eq 0 ]; then
+    echo An error occured, please fix this before continuing
     exit 1
+fi
+
+# --- Setup Metis
+
+voms-proxy-info -exists || {
+    voms-proxy-init -hours 168 -voms cms -rfc # to setup proxy
+}
+
+if [ -z $METIS_BASE ]; then
+    echo "Setting up Metis"
+    source $METIS_PATH/setup.sh
 fi
 
 # ---- Build submission directory
@@ -94,7 +102,7 @@ fi
 
 cp metis/condor_executable_metis.sh $JOBDIR
 cp $SAMPLES $JOBDIR/samples.py
-sed "s/\${OUTPUT}/$OUTPUT/g; s/\${CONFIG}/$CONFIG/g; s/\${TAG}/${TAG}/g" metis/submit.py > $JOBDIR/submit.py
+sed "s|\${OUTPUT}|$OUTPUT|g; s|\${CONFIG}|$CONFIG|g; s|\${TAG}|${TAG}|g" metis/submit.py > $JOBDIR/submit.py
 
 echo "Finished Building Workspace"
 echo "    $JOBDIR"
