@@ -43,11 +43,12 @@ for INPUT in ${INPUTS[@]}; do
         continue
     fi
 
-    sample=${das//\//_}
+    sample=${das/\//_}
     sample="${sample:1}"
+    sample=${sample/\/*/}
 
     echo " ... adding $das"
-    echo "\"$sample\" : DBSample(dataset=\"$das\")," >> $TMPOUT
+    echo "\"$sample\" : DBSSample(dataset=\"$das\")," >> $TMPOUT
 
 done
 

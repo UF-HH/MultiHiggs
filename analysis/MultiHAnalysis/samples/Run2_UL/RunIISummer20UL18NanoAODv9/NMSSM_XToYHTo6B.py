@@ -1,8 +1,3 @@
-merged_samples = {}
-
-
-# ---- Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B.py
-
 from metis.Sample import DirectorySample, DBSSample
 
 SAMPLE_PATTERN = "NMSSM_XToYHTo6B_MX-{MX}_MY-{MY}" 
@@ -64,70 +59,3 @@ samples = {
     for (MX, MY) in MASSES
     if USE_MASS(MX, MY)
 }
-
-merged_samples.update(samples)
-
-
-# ---- Run2_UL/RunIISummer20UL18NanoAODv9/JetHT.py
-
-from metis.Sample import DirectorySample, DBSSample
-
-samples = {
-"JetHT" : DBSSample(dataset="/JetHT/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"),
-"JetHT" : DBSSample(dataset="/JetHT/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"),
-"JetHT" : DBSSample(dataset="/JetHT/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"),
-"JetHT" : DBSSample(dataset="/JetHT/Run2018D-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"),
-}
-
-merged_samples.update(samples)
-
-
-# ---- Run2_UL/RunIISummer20UL18NanoAODv9/QCD_BGenFilter.py
-
-from metis.Sample import DirectorySample, DBSSample
-
-samples = {
-"QCD_HT1000to1500_BGenFilter_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_HT1000to1500_BGenFilter_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM"),
-"QCD_HT100to200_BGenFilter_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_HT100to200_BGenFilter_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM"),
-"QCD_HT1500to2000_BGenFilter_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_HT1500to2000_BGenFilter_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM"),
-"QCD_HT2000toInf_BGenFilter_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_HT2000toInf_BGenFilter_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM"),
-"QCD_HT200to300_BGenFilter_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_HT200to300_BGenFilter_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM"),
-"QCD_HT300to500_BGenFilter_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_HT300to500_BGenFilter_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM"),
-"QCD_HT500to700_BGenFilter_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_HT500to700_BGenFilter_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM"),
-"QCD_HT700to1000_BGenFilter_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_HT700to1000_BGenFilter_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM"),
-}
-
-merged_samples.update(samples)
-
-
-# ---- Run2_UL/RunIISummer20UL18NanoAODv9/QCD_bEnriched.py
-
-from metis.Sample import DirectorySample, DBSSample
-
-samples = {
-"QCD_bEnriched_HT1000to1500_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_bEnriched_HT1000to1500_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"),
-"QCD_bEnriched_HT100to200_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_bEnriched_HT100to200_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"),
-"QCD_bEnriched_HT1500to2000_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_bEnriched_HT1500to2000_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"),
-"QCD_bEnriched_HT2000toInf_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_bEnriched_HT2000toInf_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"),
-"QCD_bEnriched_HT200to300_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_bEnriched_HT200to300_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"),
-"QCD_bEnriched_HT300to500_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_bEnriched_HT300to500_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"),
-"QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_bEnriched_HT500to700_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"),
-"QCD_bEnriched_HT700to1000_TuneCP5_13TeV-madgraph-pythia8" : DBSSample(dataset="/QCD_bEnriched_HT700to1000_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"),
-}
-
-merged_samples.update(samples)
-
-
-# ---- Run2_UL/RunIISummer20UL18NanoAODv9/TTJets_FXFX.py
-
-from metis.Sample import DirectorySample, DBSSample
-
-samples = {
-"TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8" : DBSSample(dataset="/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM"),
-}
-
-merged_samples.update(samples)
-
-
-samples = dict(merged_samples)
-

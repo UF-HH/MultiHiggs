@@ -29,14 +29,22 @@ EOF
 for input in ${INPUTS[@]}; do 
     echo " ... adding $input"
 
-    echo "# ---- $input" >> $TMPOUT
-    echo >> $TMPOUT
-    cat $input >> $TMPOUT
-    echo "merged_samples.update(samples)" >> $TMPOUT
-    echo >> $TMPOUT
+cat << EOF >> $TMPOUT
+
+# ---- $input
+
+$(cat $input)
+
+merged_samples.update(samples)
+
+EOF
 done
 
-echo "samples = dict(merged_samples)" >> $TMPOUT
+cat << EOF >> $TMPOUT
+
+samples = dict(merged_samples)
+
+EOF
 
 mkdir -p $(dirname $OUTPUT)
 mv $TMPOUT $OUTPUT

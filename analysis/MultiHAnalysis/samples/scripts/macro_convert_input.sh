@@ -1,13 +1,13 @@
 #!/bin/bash
 
 SAMPLES=(
-    # "JetHT=JetHT_Run*txt"
-    # "QCD_PSWeights=QCD*PSWeights*txt"
-    # "QCD_bEnriched=QCD*bEnriched*txt"
+    "JetHT=JetHT_Run*txt"
+    "QCD_PSWeights=QCD*PSWeights*txt"
+    "QCD_bEnriched=QCD*bEnriched*txt"
     "QCD_BGenFilter=QCD*BGenFilter*txt"
-    # "TTJets_MLM=TTJets*MLM*txt"
-    # "TTJets_FXFX=TTJets*FXFX*txt"
-    # "TTbar=TTTo*txt"
+    "TTJets_MLM=TTJets*MLM*txt"
+    "TTJets_FXFX=TTJets*FXFX*txt"
+    "TTbar=TTTo*txt"
 )
 
 DIRECTORY=(
@@ -29,7 +29,7 @@ for sample in "${SAMPLES[@]}"; do
             continue
         fi
 
-        bash convert_input.sh $dir/$sample.py $INPUT
+        bash scripts/convert_input.sh $dir/$sample.py $INPUT
     done
 
 done
