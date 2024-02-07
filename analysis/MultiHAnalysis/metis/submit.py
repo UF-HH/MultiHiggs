@@ -28,6 +28,13 @@ def split_func(dsname):
     # else:
     #     return 1
 
+# set sample type flag based on the DAS path
+def get_typeflag(dsname):
+    if 'NMSSM' in dsname:
+        return '--is-signal'
+    if 'JetHT' in dsname:
+        return '--is-data'
+
 if __name__ == "__main__":
     # Samples
     samples = samples.samples
@@ -49,6 +56,9 @@ if __name__ == "__main__":
 
         # Loop over the dataset provided by the user few lines above, and do the Metis magic
         for shortname, ds in samples.items():
+            typeflag = get_typeflag(ds.get_datasetname())
+            typeflag = typeflag if typeflag else ""
+
             task = CondorTask(
                     sample = ds,
                     files_per_output = split_func(ds.get_datasetname()),
@@ -58,7 +68,7 @@ if __name__ == "__main__":
                         "sites": "T2_US_UCSD,UAF",
                         "use_xrootd":True,
                         "classads": [
-                            ["metis_extraargs", "--cfg {config}".format(config=config)]
+                            ["metis_extraargs", "--cfg {config} {typeflag}".format(config=config, typeflag=typeflag)]
                             ]
                         },
                     cmssw_version = "CMSSW_10_6_28",

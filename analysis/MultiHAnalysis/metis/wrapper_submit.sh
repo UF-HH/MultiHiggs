@@ -87,16 +87,11 @@ if [ ! -f $TARFILE ]; then
     git log -n 1
     git status
 
-    FILES_TO_TAR=(
-        bin/
-        lib/
-        config/
-        data/
-        models/
-    )
-
+    FILES_TO_TAR="bin/ lib/ config/ data/ models/"
     echo "Building Tarball"
-    tar -chJf $TARFILE $FILES_TO_TAR
+    du -csh $FILES_TO_TAR
+
+    time tar -chJf $TARFILE $FILES_TO_TAR
     git log -n 1 > $JOBDIR/commit
 fi
 
@@ -109,11 +104,17 @@ echo "    $JOBDIR"
 
 # ----
 
-export METIS_JOBDIR=$JOBDIR
 TMUX_SESSION=${OUTPUT}_${TAG}
 
-echo "Submitting samples in tmux"
+tmux has-session -t $TMUX_SESSION 2>/dev/null && {
+    echo "Killing existing session"
+    tmux kill-session -t $TMUX_SESSION
+}
+
+export METIS_JOBDIR=$JOBDIR
 tmux new-session -d -s $TMUX_SESSION
+
+echo "Submitting samples in tmux"
 tmux send-keys -t $TMUX_SESSION 'cd ${METIS_JOBDIR}; python submit.py' Enter
 
 echo "Attach tmux session with"
