@@ -71,20 +71,19 @@ for input in ${files[@]}; do
         echo ".. skipping because mx=$mx" 
         continue
     fi
-    python2 scripts/submitSkimOnSlurm.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal --forceOverwrite --memory 4000
-    # python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal --forceOverwrite --memory 4000
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --is-signal --forceOverwrite --memory 4000
 done
 
 
-# python2 scripts/submitSkimOnSlurm.py --tag Summer2018UL/maxbtag_4b/Official_NMSSM/ --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-1000_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal --forceOverwrite --memory 3000
+# python scripts/submitSkimOnBatch.py --tag Summer2018UL/maxbtag_4b/Official_NMSSM/ --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-1200_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal --forceOverwrite --memory 3000
 
-# python2 scripts/submitSkimOnSlurm.py --tag Summer2018UL/maxbtag/NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/NMSSM_XYH_YToHH_6b_MX_950_MY_250.txt  --is-signal --forceOverwrite
+# python scripts/submitSkimOnBatch.py --tag Summer2017UL/maxbtag_4b/Official_NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2017_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL17NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-700_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt  --is-signal --forceOverwrite
+
+# python scripts/submitSkimOnBatch.py --tag Summer2016UL/maxbtag_4b/Official_NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2016postVFP_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL16NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-700_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt  --is-signal --forceOverwrite
+
+# python scripts/submitSkimOnBatch.py --tag Summer2018UL/maxbtag_4b/Official_NMSSM/syst/FlavorQCD/up --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-750_MY-500_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal --jes-shift-syst FlavorQCD:up --forceOverwrite
+
+# python scripts/submitSkimOnBatch.py --tag Summer2018UL/maxbtag/NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt  --is-signal --forceOverwrite
 
 # LIMITED USE - for producing central samples at maxbtag level
-# python2 scripts/submitSkimOnSlurm.py --tag Summer2018UL/maxbtag/Official_NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-450_MY-300_TuneCP5_13TeV-madgraph-pythia8.txt  --is-signal --forceOverwrite
-
-# python2 scripts/submitSkimOnSlurm.py --tag Summer2016UL/maxbtag_4b/Official_NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2016postVFP_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL16NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-700_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt  --is-signal --forceOverwrite
-
-# python2 scripts/submitSkimOnSlurm.py --tag Summer2017UL/maxbtag_4b/Official_NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2017_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL17NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-700_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt  --is-signal --forceOverwrite
-
-# python2 scripts/submitSkimOnSlurm.py --tag Summer2018UL/maxbtag_4b/Official_NMSSM/syst/FlavorQCD/up --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-750_MY-500_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal --jes-shift-syst FlavorQCD:up --forceOverwrite
+# python scripts/submitSkimOnBatch.py --tag Summer2018UL/maxbtag/Official_NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-450_MY-300_TuneCP5_13TeV-madgraph-pythia8.txt  --is-signal --forceOverwrite
