@@ -523,8 +523,8 @@ int main(int argc, char** argv) {
     while (rch_reader.Next()) {
       genEventSumw_total += *genEventSumw;
     }
-    cout << "Total genEventSumw: " << genEventSumw_total << endl;
   }
+  cout << "Total genEventSumw: " << genEventSumw_total << endl;
 
   const string outputFileName = opts["output"].as<string>();
   std::cout << "\033[1;34m Output file is  : \033[0m" << outputFileName << "\n" << std::endl;
@@ -953,7 +953,8 @@ int main(int argc, char** argv) {
       // skip events with jets in affected region
       if (check_HEM){
         int run = (int) *ei.Run;
-        bool HEMruns = (run == 319077 || run == 319310);
+        // bool HEMruns = (run == 319077 || run == 319310);
+        bool HEMruns = (run >= 319077);
         if (HEMruns && skf->checkHEMissue(ei, all_jets)) {continue;}
       }
     }
@@ -1181,6 +1182,11 @@ int main(int argc, char** argv) {
       skf->pair_jets(nat, ei, selected_jets);
       loop_timer.click("Six b jet pairing");
 
+      if (!is_data) {
+        ei.genEventSumw = genEventSumw_total;
+        // cout << "genEventSumw_total = " << genEventSumw_total << endl;
+        }
+      
       if (is_signal) {
         skf->compute_seljets_genmatch_flags(nat, ei);
         loop_timer.click("Six b pairing flags");
@@ -1188,7 +1194,6 @@ int main(int argc, char** argv) {
       skf->compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
       
-      ei.genEventSumw = genEventSumw_total;
 
     }  // Closes sixb skimming
     else if ( skim_type == kttbar ) {
