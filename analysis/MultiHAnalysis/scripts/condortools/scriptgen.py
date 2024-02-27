@@ -60,6 +60,12 @@ def make_exec_script(filename, analysis_tarball, filelist_proto, outfile_proto, 
     writeln(fout, 'rm %s' % tarname)
     writeln(fout, 'echo "... retrieving filelist"')
     writeln(fout, 'xrdcp -f -s %s .' % flist_name) ## force overwrite file list
+    writeln(fout, 'mkdir files')
+    writeln(fout, 'for file in `cat $(basename %s)`; do' % flist_name)
+    writeln(fout, '   echo "xrdcp -f -s ${file} files/"')
+    writeln(fout, '   xrdcp -f -s ${file} files/')
+    writeln(fout, 'done')
+    writeln(fout, 'ls files/* > $(basename %s)' % flist_name)
     #------------------ environment configurations
     writeln(fout, 'export CPP_BOOST_PATH=%s' % cpp_boost_path)
     writeln(fout, 'export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./lib:${CPP_BOOST_PATH}/lib')
