@@ -8,6 +8,7 @@
 #include "BTagCalibrationStandalone.h"
 #include "Jet.h"
 #include "OutputTree.h"
+#include "rapidcsv.h"
 
 class BtagSF{
     
@@ -30,6 +31,8 @@ public:
   const std::vector<std::string> btag_sf_reshaping_unc_sources_ = {"jes", "jesAbsolute", "jesBBEC1", "jesEC2", "jesFlavorQCD", "jesHF", "jesRelativeBal", "jesRelativeSample", "hf", "lf", "lfstats1", "lfstats2", "hfstats1", "hfstats2"}; // x {up, down} in the code
   std::vector<std::string> btag_sf_reshaping_full_list_;
   std::vector<double> btag_sf_reshaping_full_list_sumw_;
+
+  rapidcsv::Document doc;
 
   BtagSF(){};
   ~BtagSF(){};

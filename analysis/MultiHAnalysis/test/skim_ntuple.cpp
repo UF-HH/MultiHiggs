@@ -1184,7 +1184,6 @@ int main(int argc, char** argv) {
 
       if (!is_data) {
         ei.genEventSumw = genEventSumw_total;
-        // cout << "genEventSumw_total = " << genEventSumw_total << endl;
         }
       
       if (is_signal) {
@@ -1279,9 +1278,9 @@ int main(int argc, char** argv) {
   cutflow_Unweighted.write(outputFile);
   histograms.write(outputFile);
   ot.write();
-  // if (!is_data) {
-  //   nwt.write();
-  //   }
+  if (!is_data) {
+    nwt.write();
+    }
 
   // timing statistics
   const auto end_prog_t = chrono::high_resolution_clock::now();
