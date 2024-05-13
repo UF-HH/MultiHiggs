@@ -595,7 +595,7 @@ int main(int argc, char** argv) {
   if (year == "2018") {
     trgEfficiencyCalculator_ = new TriggerEfficiencyCalculator_2018(trgEffFileName, nat);
   } else if (year == "2017") {
-    // trgEfficiencyCalculator_ = new TriggerEfficiencyCalculator_2017(trgEffFileName, nat);
+    trgEfficiencyCalculator_ = new TriggerEfficiencyCalculator_2017(trgEffFileName, nat);
   } else {
     // throw std::invalid_argument("No trigger efficiency file exists for the year requested");
   }

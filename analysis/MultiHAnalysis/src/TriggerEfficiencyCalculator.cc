@@ -732,7 +732,7 @@ std::tuple<float, float, float> TriggerEfficiencyCalculator_2017::calculateDataT
   static_assert(false, "Do not use fit not implemented for TriggerEfficiencyCalculator_2017");
 #endif
   
-  float effL1            = fTriggerFitCurves.fSingleMuon__Efficiency_L1filterHTPair.first                     ->Eval(caloJetSum_);
+  float effL1            = fTriggerFitCurves.fSingleMuon__Efficiency_L1calojetsPFHTPair.first                     ->Eval(caloJetSum_);
   float effQuad30CaloJet = fTriggerFitCurves.fSingleMuon__Efficiency_QuadCentralJet30Pair.first               ->Eval(pt4_       );
   float effCaloHT        = fTriggerFitCurves.fSingleMuon__Efficiency_CaloQuadJet30HT300Pair.first             ->Eval(caloJetSum_);
   float effQuad30PFJet   = fTriggerFitCurves.fSingleMuon__Efficiency_PFCentralJetLooseIDQuad30Pair.first      ->Eval(pt4_       );
@@ -742,7 +742,7 @@ std::tuple<float, float, float> TriggerEfficiencyCalculator_2017::calculateDataT
   float effQuad40PFJet   = fTriggerFitCurves.fSingleMuon__Efficiency_4PFCentralJetLooseID40Pair.first         ->Eval(pt4_       );
   float effPFHT          = fTriggerFitCurves.fSingleMuon__Efficiency_PFCentralJetsLooseIDQuad30HT300Pair.first->Eval(pfJetSum_  );
   
-  float effL1Error            = getFitError(fTriggerFitCurves.fSingleMuon__Efficiency_L1filterHTPair.second                     , caloJetSum_);
+  float effL1Error            = getFitError(fTriggerFitCurves.fSingleMuon__Efficiency_L1calojetsPFHTPair.second                     , caloJetSum_);
   float effQuad30CaloJetError = getFitError(fTriggerFitCurves.fSingleMuon__Efficiency_QuadCentralJet30Pair.second               , pt4_       );
   float effCaloHTError        = getFitError(fTriggerFitCurves.fSingleMuon__Efficiency_CaloQuadJet30HT300Pair.second             , caloJetSum_);
   float effQuad30PFJetError   = getFitError(fTriggerFitCurves.fSingleMuon__Efficiency_PFCentralJetLooseIDQuad30Pair.second      , pt4_       );
@@ -879,7 +879,7 @@ std::tuple<float, float, float> TriggerEfficiencyCalculator_2017::calculateMonte
   static_assert(false, "Do not use fit not implemented for TriggerEfficiencyCalculator_2017");
 #endif
   
-  float effL1            = fTriggerFitCurves.fTTbar__Efficiency_L1filterHTPair.first                     ->Eval(caloJetSum_);
+  float effL1            = fTriggerFitCurves.fTTbar__Efficiency_L1calojetsPFHTPair.first                     ->Eval(caloJetSum_);
   float effQuad30CaloJet = fTriggerFitCurves.fTTbar__Efficiency_QuadCentralJet30Pair.first               ->Eval(pt4_       );
   float effCaloHT        = fTriggerFitCurves.fTTbar__Efficiency_CaloQuadJet30HT300Pair.first             ->Eval(caloJetSum_);
   float effQuad30PFJet   = fTriggerFitCurves.fTTbar__Efficiency_PFCentralJetLooseIDQuad30Pair.first      ->Eval(pt4_       );
@@ -889,7 +889,7 @@ std::tuple<float, float, float> TriggerEfficiencyCalculator_2017::calculateMonte
   float effQuad40PFJet   = fTriggerFitCurves.fTTbar__Efficiency_4PFCentralJetLooseID40Pair.first         ->Eval(pt4_       );
   float effPFHT          = fTriggerFitCurves.fTTbar__Efficiency_PFCentralJetsLooseIDQuad30HT300Pair.first->Eval(pfJetSum_  );
   
-  float effL1Error            = getFitError(fTriggerFitCurves.fTTbar__Efficiency_L1filterHTPair.second                     , caloJetSum_);
+  float effL1Error            = getFitError(fTriggerFitCurves.fTTbar__Efficiency_L1calojetsPFHTPair.second                     , caloJetSum_);
   float effQuad30CaloJetError = getFitError(fTriggerFitCurves.fTTbar__Efficiency_QuadCentralJet30Pair.second               , pt4_       );
   float effCaloHTError        = getFitError(fTriggerFitCurves.fTTbar__Efficiency_CaloQuadJet30HT300Pair.second             , caloJetSum_);
   float effQuad30PFJetError   = getFitError(fTriggerFitCurves.fTTbar__Efficiency_PFCentralJetLooseIDQuad30Pair.second      , pt4_       );
