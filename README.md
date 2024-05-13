@@ -46,6 +46,9 @@ cmsenv
 git cms-addpkg CommonTools/Utils CondFormats/JetMETObjects CondFormats/Serialization FWCore/MessageLogger FWCore/Utilities JetMETCorrections/Modules PhysicsTools/TensorFlow PhysicsTools/ONNXRuntime
 scram b -j 4
 git clone https://github.com/UF-HH/MultiHiggs
+cd MultiHiggs/analysis/MultiHAnalysis
+source scripts/setup.sh
+make exe -j
 
 # install MadGraph
 cd MadGraph
