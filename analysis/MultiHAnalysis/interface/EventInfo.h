@@ -36,9 +36,13 @@ struct EventInfo{
   boost::optional<double> n_true_int;
   boost::optional<double> rhofastjet_all;
   boost::optional<double> PFHT;
-  boost::optional<double> HEMWeight;
   boost::optional<double> lhe_ht;
   boost::optional<double> genEventSumw;
+
+  boost::optional<double> HEMWeight;
+  boost::optional<double> L1PreFiringWeight;
+  boost::optional<double> L1PreFiringWeightUp;
+  boost::optional<double> L1PreFiringWeightDown;
   
   boost::optional<double> PUIDWeight;
   boost::optional<double> PUIDWeight_up;

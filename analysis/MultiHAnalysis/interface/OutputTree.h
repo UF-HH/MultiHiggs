@@ -77,7 +77,11 @@ public:
   double n_true_int;
   double rhofastjet_all;
   double PFHT;
+
   double HEMWeight;
+  double L1PreFiringWeight;
+  double L1PreFiringWeightUp;
+  double L1PreFiringWeightDown;
 
   double PUIDWeight;
   double PUIDWeight_up;

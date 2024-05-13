@@ -33,6 +33,10 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
   tree_->Branch("PFHT", &PFHT);
 
   tree_->Branch("HEMWeight", &HEMWeight);
+  
+  tree_->Branch("L1PreFiringWeight", &L1PreFiringWeight);
+  tree_->Branch("L1PreFiringWeightUp", &L1PreFiringWeightUp);
+  tree_->Branch("L1PreFiringWeightDown", &L1PreFiringWeightDown);
 
   tree_->Branch("PUIDWeight", &PUIDWeight);
   tree_->Branch("PUIDWeight_up", &PUIDWeight_up);
@@ -325,6 +329,10 @@ void OutputTree::clear()
   PFHT = 0;
 
   HEMWeight = 1.;
+
+  L1PreFiringWeight = 1.;
+  L1PreFiringWeightUp = 1.;
+  L1PreFiringWeightDown = 1.;
 
   PUIDWeight = 1.;
   PUIDWeight_up = 1.;

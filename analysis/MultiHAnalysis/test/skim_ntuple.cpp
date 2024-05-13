@@ -730,8 +730,6 @@ int main(int argc, char** argv) {
   const Variation jer_var = string_to_jer_variation(opts["jer-shift-syst"].as<string>());
   const Variation bjer_var = string_to_jer_variation(opts["bjer-shift-syst"].as<string>());
 
-  string L1PrefiringSFMethod = config.readStringOpt("parameters::L1PrefiringSFMethod");
-
   // ------------------------------------------------------------------
   skf->initialize_params_from_cfg(config);
   skf->initialize_functions(outputFile);
@@ -1236,6 +1234,12 @@ int main(int argc, char** argv) {
   if (btsf.reshaping_found) {
         btsf.compute_reshaping_sf(presel_jets, nat, ot);
       }
+
+  if (!isdata && (year == "2016" || year == "2017")) {
+    ei.L1PreFiringWeight = *nat.L1PreFiringWeight_Nom;
+    ei.L1PreFiringWeightUp = *nat.L1PreFiringWeight_Up;
+    ei.L1PreFiringWeightDown = *nat.L1PreFiringWeight_Dn;
+  }
 
 	std::vector<GenPart*> matched_quarks;
 	std::vector<GenJet> matched_genjets;

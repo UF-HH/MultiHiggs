@@ -56,6 +56,12 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   if(ei.n_genfatjet)    ot.n_genfatjet     = *ei.n_genfatjet;
   if(ei.n_ele)          ot.n_ele           = *ei.n_ele;
   if(ei.n_muon)         ot.n_muon          = *ei.n_muon;
+
+  if(ei.HEMWeight)      ot.HEMWeight       = *ei.HEMWeight;
+
+  if(ei.L1PreFiringWeight) ot.L1PreFiringWeight = *ei.L1PreFiringWeight;
+  if(ei.L1PreFiringWeightUp) ot.L1PreFiringWeightUp = *ei.L1PreFiringWeightUp;
+  if(ei.L1PreFiringWeightDown) ot.L1PreFiringWeightDown = *ei.L1PreFiringWeightDown;
   
   if(ei.b_6j_score)     ot.b_6j_score      = *ei.b_6j_score;
   if(ei.b_3d_score)     ot.b_3d_score      = *ei.b_3d_score;
