@@ -515,16 +515,16 @@ int main(int argc, char** argv) {
     throw std::runtime_error("The input file list is empty.");
 
   double genEventSumw_total = 0;
-  if (!is_data) {
-    TChain rch("Runs");
-    int rnfiles = su::appendFromFileList(&rch, opts["input"].as<string>());
-    TTreeReader rch_reader(&rch);
-    TTreeReaderValue<Double_t> genEventSumw(rch_reader, "genEventSumw");
-    while (rch_reader.Next()) {
-      genEventSumw_total += *genEventSumw;
-    }
-  }
-  cout << "Total genEventSumw: " << genEventSumw_total << endl;
+  // if (!is_data) {
+  //   TChain rch("Runs");
+  //   int rnfiles = su::appendFromFileList(&rch, opts["input"].as<string>());
+  //   TTreeReader rch_reader(&rch);
+  //   TTreeReaderValue<Double_t> genEventSumw(rch_reader, "genEventSumw");
+  //   while (rch_reader.Next()) {
+  //     genEventSumw_total += *genEventSumw;
+  //   }
+  // }
+  // cout << "Total genEventSumw: " << genEventSumw_total << endl;
 
   const string outputFileName = opts["output"].as<string>();
   std::cout << "\033[1;34m Output file is  : \033[0m" << outputFileName << "\n" << std::endl;
@@ -628,7 +628,7 @@ int main(int argc, char** argv) {
   if (!is_data) {
     puid_sf_file = readCfgOptWithDefault<string>(config, "parameters::PUIDScaleFactorFile", "");
     std::cout << "\n\033[1;33m PUID reweighting: \033[0m" << std::endl;
-    std::cout << "\033[1;34m PUID Weights : \033[0m" << pu_weight_file << "\n" << std::endl;
+    std::cout << "\033[1;34m PUID Weights : \033[0m" << puid_sf_file << "\n" << std::endl;
   }
 
   // // just a test
@@ -957,6 +957,14 @@ int main(int argc, char** argv) {
       }
     }
 
+    // cout << is_data << endl;
+    // cout << year << endl;
+    if (!is_data && (year == "2016" || year == "2017")) {
+      ei.L1PreFiringWeight = *nat.L1PreFiringWeight_Nom;
+      ei.L1PreFiringWeightUp = *nat.L1PreFiringWeight_Up;
+      ei.L1PreFiringWeightDown = *nat.L1PreFiringWeight_Dn;
+    }
+
     if (!is_data) {
       if (do_jes_shift)
         all_jets = jt.jec_shift_jets(nat, all_jets, dir_jes_shift_is_up);  // apply JEC scale shift to jets
@@ -1234,12 +1242,6 @@ int main(int argc, char** argv) {
   if (btsf.reshaping_found) {
         btsf.compute_reshaping_sf(presel_jets, nat, ot);
       }
-
-  if (!isdata && (year == "2016" || year == "2017")) {
-    ei.L1PreFiringWeight = *nat.L1PreFiringWeight_Nom;
-    ei.L1PreFiringWeightUp = *nat.L1PreFiringWeight_Up;
-    ei.L1PreFiringWeightDown = *nat.L1PreFiringWeight_Dn;
-  }
 
 	std::vector<GenPart*> matched_quarks;
 	std::vector<GenJet> matched_genjets;
