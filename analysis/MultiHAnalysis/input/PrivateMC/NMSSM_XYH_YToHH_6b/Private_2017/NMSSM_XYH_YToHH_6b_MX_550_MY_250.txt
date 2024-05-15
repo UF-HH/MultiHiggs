@@ -1,0 +1,7 @@
+root://cmseos.fnal.gov//store/group/lpchbb/srosenzw/XYH_YToHH/Summer2017UL/CRAB_PrivateMC/srosenzw_NMSSM_XYH_YToHH_6b_MX_550_MY_250_sl7_nano/240510_192543/0000/nanoAOD_step_906.root
+root://cmseos.fnal.gov//store/group/lpchbb/srosenzw/XYH_YToHH/Summer2017UL/CRAB_PrivateMC/srosenzw_NMSSM_XYH_YToHH_6b_MX_550_MY_250_sl7_nano/240510_192543/0001/nanoAOD_step_1132.root
+root://cmseos.fnal.gov//store/group/lpchbb/srosenzw/XYH_YToHH/Summer2017UL/CRAB_PrivateMC/srosenzw_NMSSM_XYH_YToHH_6b_MX_550_MY_250_sl7_nano/240510_192543/0001/nanoAOD_step_1578.root
+root://cmseos.fnal.gov//store/group/lpchbb/srosenzw/XYH_YToHH/Summer2017UL/CRAB_PrivateMC/srosenzw_NMSSM_XYH_YToHH_6b_MX_550_MY_250_sl7_nano/240510_192543/0001/nanoAOD_step_1686.root
+root://cmseos.fnal.gov//store/group/lpchbb/srosenzw/XYH_YToHH/Summer2017UL/CRAB_PrivateMC/srosenzw_NMSSM_XYH_YToHH_6b_MX_550_MY_250_sl7_nano/240510_192543/0001/nanoAOD_step_1760.root
+root://cmseos.fnal.gov//store/group/lpchbb/srosenzw/XYH_YToHH/Summer2017UL/CRAB_PrivateMC/srosenzw_NMSSM_XYH_YToHH_6b_MX_550_MY_250_sl7_nano/240510_192543/0001/nanoAOD_step_1993.root
+root://cmseos.fnal.gov//store/group/lpchbb/srosenzw/XYH_YToHH/Summer2017UL/CRAB_PrivateMC/srosenzw_NMSSM_XYH_YToHH_6b_MX_550_MY_250_sl7_nano/240510_192543/0003/nanoAOD_step_3234.root
