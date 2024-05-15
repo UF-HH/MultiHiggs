@@ -1,12 +1,18 @@
+# sh scripts/6b_scripts/submit_all_6b_private.sh
+
 # TAG="Summer2018UL/cutflow_studies/presel/NMSSM"
 # TAG="Summer2018UL/maxbtag_4b/NMSSM"
 # TAG="Summer2018UL/maxbtag/NMSSM"
 # TAG="Summer2018UL/maxbtag/Official_NMSSM"
 # TAG="Summer2018UL/btag_pt/NMSSM"
 
-TAG="Summer2018UL/maxbtag/NMSSM"
-CFG="config/skim_ntuple_2018_106X_NanoAODv9_private.cfg"
-VERSION="input/PrivateMC_2018/NMSSM_XYH_YToHH_6b"
+# TAG="Summer2018UL/maxbtag/NMSSM"
+# CFG="config/skim_ntuple_2018_106X_NanoAODv9_private.cfg"
+# VERSION="input/PrivateMC/NMSSM_XYH_YToHH_6b/Private_2018"
+
+TAG="Summer2017UL/maxbtag/NMSSM"
+CFG="config/skim_ntuple_2017_106X_NanoAODv9_private.cfg"
+VERSION="input/PrivateMC/NMSSM_XYH_YToHH_6b/Private_2017"
 
 files=$(ls $VERSION/NMSSM_XYH_YToHH_6b_*)
 
@@ -33,13 +39,18 @@ for input in ${files[@]}; do
     mx=$(($mx))
     my=$(($my))
 
+    echo "$mx, $my"
+
     # if [[ $mx -gt 2000 ]]; then
     if [[ $mx -gt 1200 ]]; then
     # if [[ $mx -le 1200 || $mx -gt 2000 ]]; then
         echo ".. skipping because mx=$mx" 
         continue
     fi
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 75 --input $input --is-signal --forceOverwrite --memory 4000
+    echo "python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 1 --input $input --is-signal --forceOverwrite --memory 4000"
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 1 --input $input --is-signal --forceOverwrite --memory 4000
 done
 
-# python scripts/submitSkimOnBatch.py --tag Summer2018UL/maxbtag/NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt  --is-signal --forceOverwrite
+# python scripts/submitSkimOnBatch.py --tag Summer2018UL/maxbtag/NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/PrivateMC/NMSSM_XYH_YToHH_6b/Private_2018/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt  --is-signal --forceOverwrite
+
+# python scripts/submitSkimOnBatch.py --tag Summer2017UL/maxbtag/NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2017_106X_NanoAODv9.cfg --njobs 100 --input input/PrivateMC/NMSSM_XYH_YToHH_6b/Private_2017/NMSSM_XYH_YToHH_6b_MX_700_MY_400.txt  --is-signal --forceOverwrite
