@@ -41,7 +41,8 @@ def exists_on_eos(lfn):
    # print "THE FOLDER", lfn, "RETURNED CODE", retcode
    return True if retcode == 0 else False
 
-outputName = f"input/PrivateMC_{args.year}/NMSSM_XYH_YToHH_{args.analysis}/{textfile}"
+outputName = f"input/PrivateMC/NMSSM_XYH_YToHH_{args.analysis}/Private_{args.year}/{textfile}"
+
 with open(outputName, "w") as f:
    if (exists_on_eos(dirName)):
       print(f".. writing to file: {outputName}")
