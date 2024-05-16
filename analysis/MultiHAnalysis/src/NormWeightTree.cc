@@ -10,15 +10,20 @@ NormWeightTree::NormWeightTree (string name, string title) :
 }
 
 void NormWeightTree::init_weights(NanoAODTree& nat, std::map<std::string, std::string> pu_data){
+  cout << ".. initializing gen weight" << endl;
   init_gen_weight();
+  cout << ".. initializing pu weight" << endl;
   init_pu_weight(
 		 pu_data.at("filename"),
 		 pu_data.at("name_PU_w"),
 		 pu_data.at("name_PU_w_up"),
 		 pu_data.at("name_PU_w_do")
 		 );
+  cout << ".. initializing pdf weight" << endl;
   init_pdf_weight(nat);
+  cout << ".. initializing scale weight" << endl;
   init_scale_weight(nat);
+  cout << ".. initializing ps weight" << endl;
   init_ps_weight(nat);
 }
 
