@@ -76,9 +76,11 @@ def CreateList(args):
 
     # Get all samples:
     if args.allowInProduction:
-        cmd = 'dasgoclient -query="dataset status=* dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/%s*/*NANO*"' % (args.campaign)
+        # cmd = 'dasgoclient -query="dataset status=* dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/%s*/*NANO*"' % (args.campaign)
+        cmd = 'dasgoclient -query="dataset status=* dataset=/%s/%s*/*NANO*"' % (args.dataset, args.campaign)
     else:
-        cmd = 'dasgoclient -query="dataset status=VALID dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/%s*/*NANO*"' % (args.campaign)
+        # cmd = 'dasgoclient -query="dataset status=VALID dataset=/NMSSM_XToYHTo6B_MX-*_MY-*_TuneCP5_13TeV-madgraph-pythia8/%s*/*NANO*"' % (args.campaign)
+        cmd = 'dasgoclient -query="dataset status=VALID dataset=/%s/%s*/*NANO*"' % (args.dataset, args.campaign)
     exe = Execute(cmd)
     for count, sample in enumerate(exe):
                 
