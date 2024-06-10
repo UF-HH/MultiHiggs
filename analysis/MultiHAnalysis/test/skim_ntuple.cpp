@@ -35,7 +35,7 @@ namespace su = SkimUtils;
 
 #include "Cutflow.h"
 #include "HistoCollection.h"
-#include "EvalNN.h"
+// #include "EvalNN.h"
 
 #include "Timer.h"
 #include "DebugUtils.h"
@@ -691,6 +691,12 @@ int main(int argc, char** argv) {
   if (config.hasOpt("configurations::blinded"))
     blind = config.readBoolOpt("configurations::blinded");
 
+  int train_skip_mod;
+  bool train_test_split = config.readBoolOpt("train_test::split");
+  string train_test_type = config.readStringOpt("train_test::type");
+  if (train_test_split && train_test_type == "train") {train_skip_mod = 0;}
+  else if (train_test_split && train_test_type == "test") {train_skip_mod = 1;}
+
   // --------------------------------------------------------------
   JetTools jt;
 
@@ -789,7 +795,7 @@ int main(int argc, char** argv) {
     }
 
     // use the tree content to initialise weight tree in the first event
-    if (iEv == 0 && !is_data && save_genw_tree) {
+    if (iEv == 0 && is_signal && save_genw_tree) {
       nwt.init_weights(nat, pu_data);  // get the syst structure from nanoAOD
       su::init_gen_weights(ot, nwt);   // and forward it to the output tree
     }
@@ -812,7 +818,7 @@ int main(int argc, char** argv) {
     //==========================================================
     // Normalization weights: to be saved before any filtering
     //==========================================================
-    if (!is_data && save_genw_tree) {
+    if (is_signal && save_genw_tree) {
       nwt.read_weights(nat);
       // example to fill user weights
       // auto& w1 = nwt.get_weight("test1");
@@ -1199,6 +1205,12 @@ int main(int argc, char** argv) {
       skf->compute_event_shapes(nat, ei, selected_jets);
       loop_timer.click("Event shapes calculation");
       
+      if (!is_signal && !is_data && train_test_split) {
+        if (iEv % 2 == train_skip_mod) {
+          // cout << "skipping event " << iEv << " for " << train_test_type << "ing" << endl;
+          continue;
+        }
+      }
 
     }  // Closes sixb skimming
     else if ( skim_type == kttbar ) {
@@ -1284,7 +1296,8 @@ int main(int argc, char** argv) {
   cutflow_Unweighted.write(outputFile);
   histograms.write(outputFile);
   ot.write();
-  if (!is_data) {
+  // if (!is_data) {
+  if (is_signal) {
     nwt.write();
     }
 
