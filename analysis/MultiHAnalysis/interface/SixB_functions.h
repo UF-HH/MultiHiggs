@@ -2,7 +2,7 @@
 #define SIXB_FUNCTIONS_H
 
 #include "Skim_functions.h"
-#include "EvalNN.h"
+// #include "EvalNN.h"
 
 class SixB_functions : public Skim_functions{
     
@@ -32,7 +32,7 @@ public:
    * This method should be overriden 
    * @param outputFile .root output file
    */
-  void initialize_functions(TFile &outputFile) override;
+  // void initialize_functions(TFile &outputFile) override;
 
 
   ////////////////////////////////////////////////////
@@ -163,7 +163,7 @@ public:
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_D_HHH (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, const int fitCorrection);
 
   // use the 2jet DNN
-  std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_2jet_DNN (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
+  // std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_2jet_DNN (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets);
 
   // build the pairs leading to the min mass difference across them
   std::tuple<CompositeCandidate, CompositeCandidate, CompositeCandidate> pair_min_diag_distance (NanoAODTree& nat, EventInfo& ei, std::vector<Jet> jets);
@@ -192,7 +192,7 @@ public:
 
   
   // std::vector<DiJet> get_2jet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_2j_classifier);
-  std::vector<DiJet> get_3dijet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_3d_classifier);
+  // std::vector<DiJet> get_3dijet_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_3d_classifier);
   // std::vector<DiJet> get_tri_higgs_NN(EventInfo& ei,std::vector<Jet>& in_jets,EvalNN& n_6j_classifier,EvalNN& n_2j_classifier);
 
   // passes event if all dijets mass is greater than 30 from higgs mass
@@ -203,7 +203,7 @@ public:
   std::vector<Jet> selectJetsForPairing            (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by the b tag groups + pt within but apply cuts on sorted by pT b-jets
   std::vector<Jet> select_sixb_jets_bias_pt_sort   (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by the b tag groups + pt within
   std::vector<Jet> select_sixb_jets_pt_sort        (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // by pt (highest first)
-  std::vector<Jet> select_sixb_jets_6jet_DNN       (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // use the 6 jet classifier
+  // std::vector<Jet> select_sixb_jets_6jet_DNN       (NanoAODTree &nat, EventInfo& ei, const std::vector<Jet> &in_jets); // use the 6 jet classifier
   std::vector<Jet> select_sixb_jets_maxbtag        (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets); // by b tag (highest first)
   std::vector<Jet> select_sixb_jets_maxbtag_highpT (NanoAODTree& nat, EventInfo& ei, const std::vector<Jet>& in_jets, int nleadbtag);
         
@@ -211,8 +211,8 @@ public:
 private:
 	
   // NN evaluators for DNN
-  std::unique_ptr<EvalNN> n_2j_classifier_;
-  std::unique_ptr<EvalNN> n_6j_classifier_;
+  // std::unique_ptr<EvalNN> n_2j_classifier_;
+  // std::unique_ptr<EvalNN> n_6j_classifier_;
 
   // All the different dijet pairs for 6 jets
   const std::vector<std::vector<int>> dijet_pairings = {
