@@ -819,6 +819,7 @@ int main(int argc, char** argv) {
     EventInfo ei;
     ot.clear();
     loop_timer.click("Input read");
+    ei.Year = std::stoi(year);
 
     //==========================================================
     // Normalization weights: to be saved before any filtering
