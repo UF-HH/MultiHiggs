@@ -1,29 +1,23 @@
 # sh scripts/6b_scripts/submit_all_6b_ttbar.sh
 
 ODIR="/store/user/srosenzw/sixb/ntuples/"
-CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
-VERSION="Run2_UL/RunIISummer20UL18NanoAODv9"
-TAG="Summer2018UL/maxbtag_4b/TTJets"
-# TAG="Summer2018UL/cutflow_studies/presel/TTJets"
-# TAG="Summer2018UL/btag_pt/TTJets"
-# TAG="$VERSION/TTJets/"
 
-rm -rf /eos/uscms$ODIR/$TAG/analysis_tar
+VERSION="Run2_UL/RunIISummer20UL17NanoAODv9"
+CFG="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
+TAG="Summer2017UL/maxbtag/TTJets"
+
+rm -rf /eos/uscms/$ODIR/$TAG/analysis_tar
 make exe -j || exit -1
 
 echo "... tag       : ", $TAG
 echo "... saving to : ", $ODIR
 
-# ttbar_files=$(ls input/$VERSION/training_TTJets_*)
-# ttbar_files=$(ls input/$VERSION/testing_TTJets_*)
 ttbar_files=$(ls input/$VERSION/TTJets_*)
 
-
 for input in ${ttbar_files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --memory 4000 --no-genw-tree --forceOverwrite
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --memory 4000 --forceOverwrite --no-genw-tree
 done
 # python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg config/skim_ntuple_2018_ttbar.cfg --njobs 100 --input input/Run2_UL/2018/SingleMuon_Run2.txt --is-data
-
 
 #############
 

@@ -694,8 +694,13 @@ int main(int argc, char** argv) {
   int train_skip_mod;
   bool train_test_split = config.readBoolOpt("train_test::split");
   string train_test_type = config.readStringOpt("train_test::type");
-  if (train_test_split && train_test_type == "train") {train_skip_mod = 0;}
-  else if (train_test_split && train_test_type == "test") {train_skip_mod = 1;}
+  if (train_test_split && train_test_type == "train") {
+    cout << "[INFO] ... running on training set" << endl;
+    train_skip_mod = 0;
+    }
+  else if (train_test_split && train_test_type == "test") {
+    cout << "[INFO] ... running on testing set" << endl;
+    train_skip_mod = 1;}
 
   // --------------------------------------------------------------
   JetTools jt;
