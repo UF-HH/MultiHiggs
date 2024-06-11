@@ -1,25 +1,28 @@
+# sh scripts/6b_scripts/submit_all_6b_qcd.sh
 
 ODIR="/store/user/srosenzw/sixb/ntuples/"
 
-# VERSION="Run2_UL/RunIISummer20UL16NanoAODv9"
-# CFG="config/skim_ntuple_2016_106X_NanoAODv9.cfg"
+# VERSION="Run2_UL/RunIISummer20UL16NanoAODv9/preVFP"
+# CFG="config/skim_ntuple_2016preVFP_106X_NanoAODv9.cfg"
+# TAG="Summer2016UL/preVFP/maxbtag/QCD"
 
 # VERSION="Run2_UL/RunIISummer20UL17NanoAODv9"
 # CFG="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
+# TAG="Summer2017UL/maxbtag/QCD"
 
-VERSION="Run2_Autumn18"
-VERSION="Run2_UL/RunIISummer20UL18NanoAODv9"
-CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
+# VERSION="Run2_Autumn18"
+# VERSION="Run2_UL/RunIISummer20UL18NanoAODv9"
+# CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
 # TAG="Summer2018UL/cutflow_studies/nocuts/QCD"
 # TAG="Summer2018UL/maxbtag_4b/QCD"
 
-# VERSION="Run2_UL/RunIISummer20UL16NanoAODv9/preVFP"
-# CFG="config/skim_ntuple_2016preVFP_106X_NanoAODv9.cfg"
-# TAG="Summer2016UL/preVFP/maxbtag_4b/QCD"
+VERSION="Run2_UL/RunIISummer20UL16NanoAODv9"
+CFG="config/skim_ntuple_2016_106X_NanoAODv9.cfg"
+TAG="Summer2016UL/maxbtag/QCD"
 
 # TAG="Summer2018UL/maxbtag_4b/QCD"
-# TAG="Summer2018UL/maxbtag/QCD"
-TAG="Autumn18/maxbtag/QCD"
+# TAG="Summer2018UL/maxbtag_4b/QCD"
+# TAG="Autumn18/maxbtag/QCD"
 # TAG="Summer2018UL/btag_pt/QCD"
 
 

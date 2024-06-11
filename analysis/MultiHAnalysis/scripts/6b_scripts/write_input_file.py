@@ -17,23 +17,9 @@ parser = ArgumentParser(description='Command line parser of model options and ta
 parser.add_argument('--year', dest='year', help='conditions of which year', default=2018)
 parser.add_argument('--dir', dest='dir', help='CRAB output directory', required=True)
 parser.add_argument('-a', '--analysis', dest='analysis', help='6b or 8b', default='6b')
-
 args = parser.parse_args()
 
-dirName = args.dir
-if dirName[-1] != '/': dirName = dirName + '/'
-ending = [out for out in dirName.split('/') if 'MX_' in out][0].split('_')[-1]
-if ending == '100k': ending = ''
-elif ending == '500k': ending = ''
-else: ending = '_' + ending
-
-# find the desired file name, NMSSM_XYH_YToHH_6b_MX_###_MY_###
-# Assumption: crab job was saved in the format
-# srosenzw_NMSSM_XYH_YToHH_6b_MX_###_MY_###_sl7_nano_100k
-start = re.search('NMSSM*',dirName).start()
-end = re.search('_sl7',dirName).start()
-
-textfile = f"{dirName[start:end]}{ending}.txt"
+textfile = f"{re.search('(NMSSM_XYH_YToHH_.+)_sl7', args.dir).group(1)}.txt"
 
 def exists_on_eos(lfn):
    """ check if lfn (starting with /store/group) exists """
@@ -44,14 +30,14 @@ def exists_on_eos(lfn):
 outputName = f"input/PrivateMC/NMSSM_XYH_YToHH_{args.analysis}/Private_{args.year}/{textfile}"
 
 with open(outputName, "w") as f:
-   if (exists_on_eos(dirName)):
+   if (exists_on_eos(args.dir)):
       print(f".. writing to file: {outputName}")
-      output = subprocess.check_output(shlex.split(f"eos root://cmseos.fnal.gov ls {dirName}"))
+      output = subprocess.check_output(shlex.split(f"eos root://cmseos.fnal.gov ls {args.dir}"))
       listOfDirs = output.decode("utf-8").split("\n")
       print(listOfDirs)
       for eachDir in listOfDirs:
          if eachDir != '':
-               fullPath = dirName + eachDir
+               fullPath = args.dir + eachDir
                output = subprocess.check_output(["eos", "root://cmseos.fnal.gov", "ls", fullPath])
                listOfFiles = output.decode("utf-8").split("\n")
                for fileName in listOfFiles:

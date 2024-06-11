@@ -10,14 +10,16 @@ ODIR="/store/user/srosenzw/sixb/ntuples"
 # CFG="config/skim_ntuple_2016preVFP_106X_NanoAODv9.cfg"
 # VERSION="input/Run2_UL/RunIISummer20UL16NanoAODv9/preVFP/NMSSM_XToYHTo6B"
 
-# TAG="Summer2017UL/maxbtag_4b/Official_NMSSM"
-# CFG="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
-# VERSION="input/Run2_UL/RunIISummer20UL17NanoAODv9/NMSSM_XToYHTo6B"
+# TAG="Summer2017UL/maxbtag/Official_NMSSM"
+TAG="Summer2017UL/maxbtag_4b/Official_NMSSM"
+CFG="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
+VERSION="input/Run2_UL/RunIISummer20UL17NanoAODv9/NMSSM_XToYHTo6B"
 
 # TAG="Summer2018UL/maxbtag/Official_NMSSM"
-TAG="Summer2018UL/maxbtag_4b/Official_NMSSM"
-CFG="config/skim_ntuple_2018_106X_NanoAODv9_private.cfg"
-VERSION="input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B"
+# CFG="config/skim_ntuple_2018_106X_NanoAODv9_private.cfg"
+# TAG="Summer2018UL/maxbtag_4b/Official_NMSSM"
+# CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
+# VERSION="input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B"
 
 files=$(ls $VERSION/NMSSM_XToYHTo6B_MX-*)
 
