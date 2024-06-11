@@ -69,6 +69,7 @@ public:
   unsigned int           Run;
   unsigned int           LumiSec;
   unsigned long long int Event;
+  unsigned int           Year;
   
   double                 genEventSumw;
 

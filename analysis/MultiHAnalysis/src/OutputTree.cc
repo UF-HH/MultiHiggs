@@ -25,6 +25,7 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
   tree_->Branch("Run",     &Run);
   tree_->Branch("LumiSec", &LumiSec);
   tree_->Branch("Event",   &Event);
+  tree_->Branch("Year",    &Year);
 
   tree_->Branch("genEventSumw",   &genEventSumw);
 
@@ -319,6 +320,8 @@ void OutputTree::clear()
   Run     = 0;
   LumiSec = 0;
   Event   = 0;
+  Year    = 0;
+  
   genEventSumw = 0;
 
   n_other_pv     = 0;

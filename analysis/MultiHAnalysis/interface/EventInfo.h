@@ -30,6 +30,7 @@ struct EventInfo{
   boost::optional<unsigned int>           Run;
   boost::optional<unsigned int>           LumiSec;
   boost::optional<unsigned long long int> Event;
+  boost::optional<unsigned int>           Year;
 
   boost::optional<int>    n_other_pv;
   boost::optional<int>    n_pu;
