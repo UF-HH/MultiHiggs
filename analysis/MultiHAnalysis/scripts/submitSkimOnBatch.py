@@ -189,6 +189,7 @@ skim_base_commands = [
 skim_command = ' '.join(skim_base_commands)
 ## now forward all the other commands to skim_command
 skim_command += ' ' + ' '.join(unknown)
+print skim_command
 
 eosdest = '{}{}/output'. format(eos_server, odir_sample)
 
