@@ -5,7 +5,7 @@ using namespace std;
 NormWeightTree::NormWeightTree (string name, string title) :
   BaseOutTree(name, title, "NormWeightTree")
 {
-  void init_branches(NanoAODTree& nat);
+  // void init_branches(NanoAODTree& nat);
   verbosity_ = 1;
 }
 
@@ -52,7 +52,7 @@ void NormWeightTree::init_gen_weight(){
   gen_w_.syst_name = {};
   if (verbosity_ >= 1)
     cout << "[INFO] NormWeightTree : initialising gen weights" << endl;
-  make_branches(gen_w_);
+  // make_branches(gen_w_);
 }
 
 void NormWeightTree::init_pu_weight(std::string filename, std::string name_PU_w, std::string name_PU_w_up, std::string name_PU_w_do){
@@ -67,7 +67,7 @@ void NormWeightTree::init_pu_weight(std::string filename, std::string name_PU_w,
   pu_w_.syst_name = {"PUWeight_up", "PUWeight_down"};
   if (verbosity_ >= 1)
     cout << "[INFO] NormWeightTree : initialising PU weights with " << pu_w_.syst_val.size() << " variations" << endl;
-  make_branches(pu_w_);    
+  // make_branches(pu_w_);    
 }
 
 void NormWeightTree::init_pdf_weight(NanoAODTree &nat){
@@ -82,7 +82,7 @@ void NormWeightTree::init_pdf_weight(NanoAODTree &nat){
   }
   if (verbosity_ >= 1)
     cout << "[INFO] NormWeightTree : initialising PDF weights with " << pdf_w_.syst_val.size() << " variations" << endl;
-  make_branches(pdf_w_);
+  // make_branches(pdf_w_);
 }
 
 void NormWeightTree::init_scale_weight(NanoAODTree &nat){
@@ -97,7 +97,7 @@ void NormWeightTree::init_scale_weight(NanoAODTree &nat){
   }
   if (verbosity_ >= 1)
     cout << "[INFO] NormWeightTree : initialising scale weights with " << scale_w_.syst_val.size() << " variations" << endl;
-  make_branches(scale_w_);
+  // make_branches(scale_w_);
 }
 
 void NormWeightTree::init_ps_weight(NanoAODTree &nat){
@@ -112,7 +112,7 @@ void NormWeightTree::init_ps_weight(NanoAODTree &nat){
   }
   if (verbosity_ >= 1)
     cout << "[INFO] NormWeightTree : initialising PS weights with " << ps_w_.syst_val.size() << " variations" << endl;
-  make_branches(ps_w_);
+  // make_branches(ps_w_);
 }
 
 // -----------------------------------------------
