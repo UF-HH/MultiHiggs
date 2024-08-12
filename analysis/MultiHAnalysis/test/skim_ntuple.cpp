@@ -631,11 +631,6 @@ int main(int argc, char** argv) {
     std::cout << "\033[1;34m PUID Weights : \033[0m" << puid_sf_file << "\n" << std::endl;
   }
 
-  // // just a test
-  // nwt.add_weight("test1", {"test1_up", "test1_down"});
-  // nwt.add_weight("test2", {"test2_A", "test2_B", "test2_C"});
-  // nwt.add_weight("test3", {});
-
   //---------------------------------------------------------------------
   // All pre-running configurations (corrections, methods from cfg, etc)
   //---------------------------------------------------------------------
@@ -800,7 +795,7 @@ int main(int argc, char** argv) {
     }
 
     // use the tree content to initialise weight tree in the first event
-    if (iEv == 0 && is_signal && save_genw_tree) {
+    if (iEv == 0 && !is_data && save_genw_tree) {
       nwt.init_weights(nat, pu_data);  // get the syst structure from nanoAOD
       su::init_gen_weights(ot, nwt);   // and forward it to the output tree
     }
@@ -824,7 +819,7 @@ int main(int argc, char** argv) {
     //==========================================================
     // Normalization weights: to be saved before any filtering
     //==========================================================
-    if (is_signal && save_genw_tree) {
+    if (!is_data && save_genw_tree) {
       nwt.read_weights(nat);
       // example to fill user weights
       // auto& w1 = nwt.get_weight("test1");
@@ -836,7 +831,7 @@ int main(int argc, char** argv) {
       // w1.syst_val = {iEv + 1., iEv - 1.};
       // w2.syst_val = {10. * iEv - 10, 10. * iEv - 20, 10. * iEv - 30};
       // w3.syst_val = {};
-      nwt.fill();
+      // nwt.fill();
       loop_timer.click("Norm weight read + fill");
     }
 
@@ -1203,7 +1198,6 @@ int main(int argc, char** argv) {
       if (!is_data) {
         ei.genEventSumw = genEventSumw_total;
         }
-      
       if (is_signal) {
         skf->compute_seljets_genmatch_flags(nat, ei);
         loop_timer.click("Six b pairing flags");
