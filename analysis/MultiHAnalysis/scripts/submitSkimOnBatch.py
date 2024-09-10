@@ -14,6 +14,8 @@ parser.add_argument('--input'     ,  dest = 'input'     ,  help = 'input filelis
 parser.add_argument('--tag'       ,  dest = 'tag'       ,  help = 'production tag'           ,  required = True        )
 parser.add_argument('--njobs'     ,  dest = 'njobs'     ,  help = 'njobs'                    ,  type     = int         ,   default = 50    )
 parser.add_argument('--jes-shift-syst'     ,  dest = 'jes'     ,  help = 'jes'                    ,  type     = str         ,   default = ""    )
+parser.add_argument('--bjer-shift-syst'     ,  dest = 'bjer'     ,  help = 'bjer'                    ,  type     = str         ,   default = ""    )
+parser.add_argument('--jer-shift-syst'     ,  dest = 'jer'     ,  help = 'jer'                    ,  type     = str         ,   default = ""    )
 parser.add_argument('--memory'    ,  dest = 'memory'    ,  help = 'request memory'           ,  type     = int         ,   default = None  )
 #### --------------------------------------------------- - expert usage
 parser.add_argument('--outputName', dest='oname',  help='the name of the directory of this sample (if not given, auto from filelist)', default = None)
@@ -189,6 +191,9 @@ skim_base_commands = [
 skim_command = ' '.join(skim_base_commands)
 ## now forward all the other commands to skim_command
 skim_command += ' ' + ' '.join(unknown)
+if len(args.jes) > 0: skim_command += ' --jes-shift-syst ' + args.jes
+if len(args.bjer) > 0: skim_command += ' --bjer-shift-syst ' + args.bjer
+if len(args.jer) > 0: skim_command += ' --jer-shift-syst ' + args.jer
 print skim_command
 
 eosdest = '{}{}/output'. format(eos_server, odir_sample)
