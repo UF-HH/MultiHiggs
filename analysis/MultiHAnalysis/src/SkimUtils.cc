@@ -42,6 +42,13 @@ void SkimUtils::fill_output_tree(OutputTree& ot, NanoAODTree& nat, EventInfo& ei
   ot.Event    = *ei.Event;
   ot.Year     = *ei.Year;
 
+  if(ei.PV_npvs)     ot.PV_npvs      = *ei.PV_npvs;
+  if(ei.PV_npvsGood)     ot.PV_npvsGood      = *ei.PV_npvsGood;
+
+  if(ei.puid_check)     ot.puid_check      = *ei.puid_check;
+  if(ei.met_check)     ot.met_check      = *ei.met_check;
+  if(ei.lep_check)     ot.lep_check      = *ei.lep_check;
+
   if(ei.genEventSumw)   ot.genEventSumw = *ei.genEventSumw;
   if(ei.n_other_pv)     ot.n_other_pv      = *ei.n_other_pv;
   if(ei.n_pu)           ot.n_pu            = *ei.n_pu;

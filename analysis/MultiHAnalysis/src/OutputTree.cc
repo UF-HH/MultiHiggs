@@ -27,7 +27,13 @@ void OutputTree::init_branches(std::map<std::string, bool> branch_switches)
   tree_->Branch("Event",   &Event);
   tree_->Branch("Year",    &Year);
 
+  tree_->Branch("puid_check", &puid_check);
+  tree_->Branch("met_check", &met_check);
+  tree_->Branch("lep_check", &lep_check);
+
   tree_->Branch("genEventSumw",   &genEventSumw);
+  tree_->Branch("PV_npvs",   &PV_npvs);
+  tree_->Branch("PV_npvsGood",   &PV_npvsGood);
 
   tree_->Branch("n_other_pv",     &n_other_pv);
   tree_->Branch("rhofastjet_all", &rhofastjet_all);
@@ -323,6 +329,10 @@ void OutputTree::clear()
   Year    = 0;
   
   genEventSumw = 0;
+
+  puid_check = 1;
+  met_check = 1;
+  lep_check = 1;
 
   n_other_pv     = 0;
   n_pu           = 0;

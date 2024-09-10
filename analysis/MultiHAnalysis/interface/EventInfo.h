@@ -32,6 +32,13 @@ struct EventInfo{
   boost::optional<unsigned long long int> Event;
   boost::optional<unsigned int>           Year;
 
+  boost::optional<int>    PV_npvs;
+  boost::optional<int>    PV_npvsGood;
+
+  boost::optional<int>    puid_check;
+  boost::optional<int>    met_check;
+  boost::optional<int>    lep_check;
+
   boost::optional<int>    n_other_pv;
   boost::optional<int>    n_pu;
   boost::optional<double> n_true_int;
