@@ -868,6 +868,7 @@ int main(int argc, char** argv) {
     bool bMETFilters = *nat.Flag_goodVertices && *nat.Flag_globalSuperTightHalo2016Filter &&
                        *nat.Flag_HBHENoiseFilter && *nat.Flag_HBHENoiseIsoFilter &&
                        *nat.Flag_EcalDeadCellTriggerPrimitiveFilter && *nat.Flag_BadPFMuonFilter &&
+                       *nat.Flag_BadPFMuonDzFilter && *nat.Flag_hfNoisyHitsFilter // new filters added for UL
                        *nat.Flag_eeBadScFilter && (*nat.Flag_ecalBadCalibFilter || (year == "2016"));
     bool applyMETFilters = config.readBoolOpt("configurations::applyMETFilters");
     if (applyMETFilters) {
