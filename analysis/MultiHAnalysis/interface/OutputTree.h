@@ -72,6 +72,12 @@ public:
   unsigned int           Year;
   
   double                 genEventSumw;
+  int    PV_npvs;
+  int    PV_npvsGood;
+
+  int   puid_check;
+  int   met_check;
+  int   lep_check;
 
   int    n_other_pv;
   int    n_pu;
