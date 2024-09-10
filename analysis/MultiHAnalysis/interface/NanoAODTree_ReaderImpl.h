@@ -173,6 +173,8 @@ public:
   NanoReaderValue<Bool_t> Flag_HBHENoiseIsoFilter                 {fReader, "Flag_HBHENoiseIsoFilter"}; // HBHEiso noise filter
   NanoReaderValue<Bool_t> Flag_EcalDeadCellTriggerPrimitiveFilter {fReader, "Flag_EcalDeadCellTriggerPrimitiveFilter"}; // ECAL TP filter
   NanoReaderValue<Bool_t> Flag_BadPFMuonFilter                    {fReader, "Flag_BadPFMuonFilter"}; // Bad PF Muon Filter
+  NanoReaderValue<Bool_t> Flag_BadPFMuonDzFilter                  {fReader, "Flag_BadPFMuonDzFilter"}; // Bad PF Muon Filter
+  NanoReaderValue<Bool_t> Flag_hfNoisyHitsFilter                  {fReader, "Flag_hfNoisyHitsFilter"}; // Bad PF Muon Filter
   NanoReaderValue<Bool_t> Flag_eeBadScFilter                      {fReader, "Flag_eeBadScFilter"}; // ee badSC noise filter
   NanoReaderValue<Bool_t> Flag_ecalBadCalibFilter                 {fReader, "Flag_ecalBadCalibFilter"}; // ECAL bad calibration filter update (not for 2016)
 
