@@ -208,7 +208,8 @@ std::vector<Jet> Skim_functions::preselect_jets(NanoAODTree &nat, EventInfo& ei,
       if (!checkBit(jet.get_id(), pf_id))
 	continue;
       if (jet.P4().Pt() < 50 && !checkBit(jet.get_puid(), pu_id))
-	continue; // PU ID only applies to jet with pT < 50 GeV
+        ei.puid_check = 0;
+	// continue; // PU ID only applies to jet with pT < 50 GeV
       
       out_jets.emplace_back(jet);
       
