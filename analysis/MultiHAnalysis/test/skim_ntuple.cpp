@@ -270,12 +270,13 @@ bool performTriggerMatching(
   for (const auto& triggerRequirements :
        any_cast<std::map<std::string, std::map<std::pair<int, int>, int>>>(triggerObjectAndMinNumberMap)) {
     triggerResult[triggerRequirements.first] = true;
-    if (std::find(nat.getTrgPassed().begin(), nat.getTrgPassed().end(), triggerRequirements.first) ==
-        nat.getTrgPassed().end())  // triggers not fired
+    if (nat.getTrgResult(triggerRequirements.first) == false)
     {
-      triggerResult[triggerRequirements.first] = false;
-      continue;
+    //std::cout << "trigger  "<<triggerRequirements.first<<"  is not satisfied. Skip checking trigger object matching."<< std::endl;
+    triggerResult[triggerRequirements.first] = false;
+    continue;
     }
+
 
     for (const auto& requiredNumberOfObjects : triggerRequirements.second)  // triggers fired
     {
@@ -815,6 +816,8 @@ int main(int argc, char** argv) {
     ot.clear();
     loop_timer.click("Input read");
     ei.Year = std::stoi(year);
+    ei.PV_npvs = *nat.PV_npvs;
+    ei.PV_npvsGood = *nat.PV_npvsGood;
 
     //==========================================================
     // Normalization weights: to be saved before any filtering
@@ -887,7 +890,8 @@ int main(int argc, char** argv) {
     bool applyMuonSelection = config.readBoolOpt("configurations::applyMuonSelection");
     if (applyMuonVeto) {
       if (selected_muons.size() != 0)
-        continue;
+        ei.met_check = 0;
+        // continue;
       cutflow.add("#mu veto", nwt);
       cutflow_Unweighted.add("#mu veto");
       loop_timer.click("#mu veto");
@@ -912,7 +916,8 @@ int main(int argc, char** argv) {
     bool applyEleSelection = config.readBoolOpt("configurations::applyEleSelection");
     if (applyEleVeto) {
       if (selected_electrons.size() != 0)
-        continue;
+        ei.lep_check = 0;
+        // continue;
       cutflow.add("e veto", nwt);
       cutflow_Unweighted.add("e veto");
       loop_timer.click("e veto");
@@ -1150,19 +1155,25 @@ int main(int argc, char** argv) {
       //========================================
       // Apply trigger matching
       //========================================
-      if (applyTrgMatching) {
-        bool triggerMatched = performTriggerMatching(nat,
-                                                     ot,
-                                                     config,
-                                                     triggerObjectAndMinNumberMap,
-                                                     triggerObjectPerJetCount_,
-                                                     triggerObjectTotalCount_,
-                                                     selected_jets);
-        if (!triggerMatched)
-          continue;
-        cutflow.add("Trigger matching", nwt);
-        cutflow_Unweighted.add("Trigger matching");
-        loop_timer.click("Trigger object - offline object matching");
+      try{
+        if (applyTrgMatching) {
+          bool triggerMatched = performTriggerMatching(nat,
+                                                      ot,
+                                                      config,
+                                                      triggerObjectAndMinNumberMap,
+                                                      triggerObjectPerJetCount_,
+                                                      triggerObjectTotalCount_,
+                                                      selected_jets);
+          if (!triggerMatched)
+            continue;
+          cutflow.add("Trigger matching", nwt);
+          cutflow_Unweighted.add("Trigger matching");
+          loop_timer.click("Trigger object - offline object matching");
+        }
+        throw (iEv);
+      }
+      catch (int iEv) {
+        std::cout << "Trigger matching failed on event " << iEv << std::endl;
       }
 
       //=======================================
