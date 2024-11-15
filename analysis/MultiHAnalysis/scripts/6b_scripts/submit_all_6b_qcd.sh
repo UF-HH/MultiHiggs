@@ -2,9 +2,9 @@
 
 ODIR="/store/user/srosenzw/sixb/ntuples/"
 
-VERSION="Run2_UL/RunIISummer20UL16APVNanoAODv9"
-CFG="config/skim_ntuple_2016APV_106X_NanoAODv9.cfg"
-TAG="Summer2016APVUL/maxbtag_4b/QCD"
+# VERSION="Run2_UL/RunIISummer20UL16APVNanoAODv9"
+# CFG="config/skim_ntuple_2016APV_106X_NanoAODv9.cfg"
+# TAG="Summer2016APVUL/maxbtag_4b/QCD"
 
 # VERSION="Run2_UL/RunIISummer20UL16NanoAODv9"
 # CFG="config/skim_ntuple_2016_106X_NanoAODv9.cfg"
@@ -14,9 +14,9 @@ TAG="Summer2016APVUL/maxbtag_4b/QCD"
 # CFG="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
 # TAG="Summer2017UL/maxbtag_4b/QCD"
 
-# VERSION="Run2_UL/RunIISummer20UL18NanoAODv9"
-# CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
-# TAG="Summer2018UL/maxbtag_4b/QCD"
+VERSION="Run2_UL/RunIISummer20UL18NanoAODv9"
+CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
+TAG="Summer2018UL/maxbtag_4b/QCD"
 
 rm -rf /eos/uscms/$ODIR/$TAG/analysis_tar
 make exe -j || exit -1
