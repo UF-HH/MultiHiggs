@@ -10,12 +10,15 @@ exe=bin/skim_ntuple.exe
 output="output.root"
 
 extra=""
+# extra="--jes-shift-syst FlavorQCD:up"
+# extra="--jer-shift-syst up"
+# extra="--no-genw-tree"
 
 ####################################################################################################
 # Data
 ####################################################################################################
 # input="input/Run2_UL/RunIISummer20UL18NanoAODv9/JetHT_Run2018C.txt --is-data "
-input="input/Run2_UL/RunIISummer20UL17NanoAODv9/BTagCSV_Run2017C.txt --is-data "
+# input="input/Run2_UL/RunIISummer20UL17NanoAODv9/BTagCSV_Run2017C.txt --is-data "
 # input="input/Run2_UL/RunIISummer20UL16NanoAODv9/BTagCSV_Run2016B_ver2_HIPM.txt --is-data "
 
 ####################################################################################################
@@ -31,21 +34,21 @@ input="input/Run2_UL/RunIISummer20UL17NanoAODv9/BTagCSV_Run2017C.txt --is-data "
 # input="input/Run2_UL/RunIISummer20UL16NanoAODv9/preVFP/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-1000_MY-250_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
 # input="input/Run2_UL/RunIISummer20UL16NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-1000_MY-250_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
 # input="input/Run2_UL/RunIISummer20UL17NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-700_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
-# input="input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-1000_MY-250_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
+input="input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-700_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal"
 # input="input/PrivateMC_2018/NMSSM_XYH_YToHH_6b/NMSSM_XYH_YToHH_6b_MX_700_MY_400_2M.txt --is-signal"
 
 # input="test.txt --is-signal"
 
 # cfg="config/skim_ntuple_2016_106X_NanoAODv9.cfg"
 # cfg="config/skim_ntuple_2016preVFP_106X_NanoAODv9.cfg"
-cfg="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
-# cfg="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
+# cfg="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
+cfg="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
      
 make exe -j && \
     $exe \
 	--input $input \
 	--cfg  $cfg \
 	--output $output \
-	--maxEvts 100000 \
+	--maxEvts 10000 \
 	$extra \
 	$@
