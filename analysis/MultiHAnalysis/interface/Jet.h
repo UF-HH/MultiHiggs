@@ -41,6 +41,15 @@ public:
   int preselIdx = -1;
   void set_preselIdx(int idx) { preselIdx = idx; }
 
+  float jec_factor = 1.0;
+  void set_jec_factor(float factor) { jec_factor = factor; }
+
+  float smear_factor = 1.0;
+  void set_smear_factor(float factor) { smear_factor = factor; }
+
+  float breg_factor = 1.0;
+  void set_breg_factor(float factor) { breg_factor = factor; }
+
   float get_E() const { return this->P4().E(); }
   float get_m() const { return this->P4().M(); }
   float get_mRegressed() const { return this->P4Regressed().M(); }
@@ -70,6 +79,9 @@ public:
   int get_id() const { return get_property((*this), Jet_jetId); }
   int get_puid() const { return get_property((*this), Jet_puId); }
   int get_preselIdx() const { return preselIdx; }
+  float get_jec_factor() const { return jec_factor; }
+  float get_smear_factor() const { return smear_factor; }
+  float get_breg_factor() const { return breg_factor; }
 
 private:
   void buildP4() override; 
@@ -98,6 +110,9 @@ struct JetListCollection : public BranchCollection<std::vector<Jet>> {
   std::vector<int> nConstituents; 
   std::vector<int> id;            
   std::vector<int> puid;
+  std::vector<float> jec_factor;
+  std::vector<float> smear_factor;
+  std::vector<float> breg_factor;
 
   DEF_BRANCH_COLLECTION(JetListCollection);
   void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;
@@ -125,6 +140,9 @@ struct JetCollection : public BranchCollection<Jet> {
   int nConstituents; 
   int id;            
   int puid;
+  float jec_factor;
+  float smear_factor;
+  float breg_factor;
 
   DEF_BRANCH_COLLECTION(JetCollection);
   void Register(TString tag, std::unique_ptr<TTree>& tree_, std::map<std::string, bool>& branch_switches_) override;

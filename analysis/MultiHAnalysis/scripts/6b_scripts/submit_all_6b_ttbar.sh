@@ -6,17 +6,17 @@ ODIR="/store/user/srosenzw/sixb/ntuples/"
 # CFG="config/skim_ntuple_2016APV_106X_NanoAODv9.cfg"
 # TAG="Summer2016APVUL/maxbtag_4b/TTJets"
 
-VERSION="Run2_UL/RunIISummer20UL16NanoAODv9"
-CFG="config/skim_ntuple_2016_106X_NanoAODv9.cfg"
-TAG="Summer2016UL/maxbtag_4b/TTJets"
+# VERSION="Run2_UL/RunIISummer20UL16NanoAODv9"
+# CFG="config/skim_ntuple_2016_106X_NanoAODv9.cfg"
+# TAG="Summer2016UL/maxbtag_4b/TTJets"
 
 # VERSION="Run2_UL/RunIISummer20UL17NanoAODv9"
 # CFG="config/skim_ntuple_2017_106X_NanoAODv9.cfg"
 # TAG="Summer2017UL/maxbtag_4b/TTJets"
 
-# VERSION="Run2_UL/RunIISummer20UL18NanoAODv9"
-# CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
-# TAG="Summer2018UL/maxbtag_4b/TTJets"
+VERSION="Run2_UL/RunIISummer20UL18NanoAODv9"
+CFG="config/skim_ntuple_2018_106X_NanoAODv9.cfg"
+TAG="Summer2018UL/maxbtag_4b/TTJets"
 
 rm -rf /eos/uscms/$ODIR/$TAG/analysis_tar
 make exe -j || exit -1
@@ -27,7 +27,8 @@ echo "... saving to : ", $ODIR
 ttbar_files=$(ls input/$VERSION/TTJets_*amcatnloFXFX*.txt)
 
 for input in ${ttbar_files[@]}; do
-    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 100 --input $input --memory 4000 --forceOverwrite
+    python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 200 --input $input --memory 5000 --forceOverwrite
+    # python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg $CFG --njobs 200 --input $input --memory 5000 --no-genw-tree --forceOverwrite
 done
 # python scripts/submitSkimOnBatch.py --tag $TAG --outputDir $ODIR --cfg config/skim_ntuple_2017_ttbar.cfg --njobs 100 --input input/Run2_UL/2017/SingleMuon_Run2.txt --is-data
 
