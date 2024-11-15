@@ -24,6 +24,9 @@ std::vector<Jet> JetTools::jec_shift_jets(NanoAODTree& nat, const std::vector<Je
 
   // NOTE : the input jets must be unsmeared
 
+
+  // https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_25/PhysicsTools/PatUtils/interface/ShiftedJetProducerT.h
+
   std::vector<Jet> result;
   result.reserve(input_jets.size());
 
@@ -36,9 +39,20 @@ std::vector<Jet> JetTools::jec_shift_jets(NanoAODTree& nat, const std::vector<Je
       double corr_factor = jcu_->getUncertainty(direction_is_up);
 
       Jet jet = input_jets.at(ijet);
+      double pt_i = jet.P4().Pt();
       jet.setP4(jet.P4() * (1 + shift * corr_factor) ); // set the shifted p4 ...
+
+      // SUZANNE INVESTIGATING ONE-SIDED IMPACTS BY ARTIFICIALLY INJECTING A CORRECTION FACTOR TO SEE HOW THIS AFFECTS THE IMPACT PLOTS -- FIX ME LATER
+      // jet.setP4(jet.P4() * (1 + shift * 0.5) ); // set the shifted p4 ...
+
+      
       jet.buildP4Regressed(); // ... and reset the regressed p4 to be recomputed
+      double pt_f = jet.P4().Pt();
+      jet.set_jec_factor(1+shift*corr_factor);
+      // std::cout << jet.get_jec_factor() << std::endl;
       result.emplace_back(jet);
+
+    //  std::cout << "JetTools::jec_shift_jets : jet " << ijet << " : pt_i = " << pt_i << " : pt_f = " << pt_f << " : corr_factor = " << corr_factor << std::endl;
     }
 
   return result;    
@@ -68,14 +82,19 @@ std::vector<Jet> JetTools::smear_jets(NanoAODTree& nat, const std::vector<Jet>& 
     //JER smearfactor for normal jets
     double smearFactor;
     if(genJetId >= 0 && genJetId < numberOfGenJets) {  //generated jet was found and saved -> JER smearfactor for normal jets
+      // https://cms-jerc.web.cern.ch/JER/
+      // 1 + (s_JER - 1) * (pT - pT_gen) / pT
       smearFactor     = 1. + (tmpJER_ScaleFactor - 1.) * (jet.P4().Pt() - nat.GenJet_pt.At(genJetId))/jet.P4().Pt();
+      // std::cout << "JetTools::smear_jets : genJetId = " << genJetId << ", smearFactor = " << smearFactor << std::endl;
     }
     else if(tmpJER_ScaleFactor > 1.) {
       double sigma     = tmpJER_Resolution * std::sqrt(tmpJER_ScaleFactor * tmpJER_ScaleFactor - 1);
       smearFactor     = 1. + rndm_generator_.Gaus(0., sigma);
+      // std::cout << "JetTools::smear_jets : tmpJER_ScaleFactor = " << tmpJER_ScaleFactor << ", smearFactor = " << smearFactor << std::endl;
     }
     else{
       smearFactor = 1.;
+      // std::cout << "JetTools::smear_jets : smearFactor = " << smearFactor << std::endl;
     }
 
     double MIN_JET_ENERGY = 1e-2;
@@ -86,6 +105,8 @@ std::vector<Jet> JetTools::smear_jets(NanoAODTree& nat, const std::vector<Jet>& 
         
         //Make standard smearing to the jet
         jet.setP4(unsmeared_jetP4 * smearFactor);
+        // std::cout << "JetTools::smear_jets : unsmeared_jet.P4.Pt() = " << unsmeared_jetP4.Pt() << std::endl;
+        // std::cout << "JetTools::smear_jets : jet.P4().Pt() = " << jet.P4().Pt() << std::endl;
 
         //Procedure for b-regressed jets 
         //Step1: Check if genjet is found, then use the dedicated smearing and regression
@@ -119,8 +140,10 @@ std::vector<Jet> JetTools::smear_jets(NanoAODTree& nat, const std::vector<Jet>& 
                 resSmear = 1.1;
             else if (breg_jer_var == Variation::UP)
                 resSmear = 1.2;
+                // resSmear = 1.8;
             else if (breg_jer_var == Variation::DOWN)
                 resSmear = 1.0;
+                // resSmear = 0.5;
             else
                 throw std::runtime_error("JetTools::smear_jets : did not recognise b jet variation");
 
@@ -142,6 +165,8 @@ std::vector<Jet> JetTools::smear_jets(NanoAODTree& nat, const std::vector<Jet>& 
 	jet.buildP4Regressed();
       } 
   
+    jet.set_smear_factor(smearFactor);
+    jet.set_breg_factor(bregcorr);
   }
 
   return smeared_jets;
