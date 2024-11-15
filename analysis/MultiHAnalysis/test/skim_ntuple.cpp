@@ -502,6 +502,8 @@ int main(int argc, char** argv) {
                                : skim_type_name == "ttbar"  ? kttbar
 			       : skim_type_name == "qcd"    ? kQCD
                                                             : knull);
+
+  std::cout << "save genw tree: " << save_genw_tree << std::endl;
   if (skim_type == knull)
     throw std::runtime_error("skim type not recognized");
 
@@ -797,6 +799,7 @@ int main(int argc, char** argv) {
 
     // use the tree content to initialise weight tree in the first event
     if (iEv == 0 && !is_data && save_genw_tree) {
+      cout << "[INFO] ... initializing gen weights" << endl;
       nwt.init_weights(nat, pu_data);  // get the syst structure from nanoAOD
       su::init_gen_weights(ot, nwt);   // and forward it to the output tree
     }
@@ -868,7 +871,7 @@ int main(int argc, char** argv) {
     bool bMETFilters = *nat.Flag_goodVertices && *nat.Flag_globalSuperTightHalo2016Filter &&
                        *nat.Flag_HBHENoiseFilter && *nat.Flag_HBHENoiseIsoFilter &&
                        *nat.Flag_EcalDeadCellTriggerPrimitiveFilter && *nat.Flag_BadPFMuonFilter &&
-                       *nat.Flag_BadPFMuonDzFilter && *nat.Flag_hfNoisyHitsFilter // new filters added for UL
+                       *nat.Flag_BadPFMuonDzFilter && *nat.Flag_hfNoisyHitsFilter && // new filters added for UL
                        *nat.Flag_eeBadScFilter && (*nat.Flag_ecalBadCalibFilter || (year == "2016"));
     bool applyMETFilters = config.readBoolOpt("configurations::applyMETFilters");
     if (applyMETFilters) {
@@ -978,12 +981,47 @@ int main(int argc, char** argv) {
       ei.L1PreFiringWeightDown = *nat.L1PreFiringWeight_Dn;
     }
 
+    // std::vector<float> ratio;
+    // if (iEv < 15) {
+    //   cout << "Event " << iEv << endl;
+    //   cout << "Before" << endl;
+    //   for (unsigned int ij=0; ij<all_jets.size(); ij++) {
+    //     Jet& jet = all_jets.at(ij);
+    //     cout << "Jet " << ij << ": jet pt = " << jet.P4().Pt() << ", jet eta = " << jet.P4().Eta() << ", jet phi = " << jet.P4().Phi() << ", jet m = " << jet.P4().M() << endl;
+    //     ratio.push_back(jet.P4().Pt());
+    //   }
+    // }
+
     if (!is_data) {
       if (do_jes_shift)
         all_jets = jt.jec_shift_jets(nat, all_jets, dir_jes_shift_is_up);  // apply JEC scale shift to jets
+    //     if (iEv < 15) {
+    //   cout << "After JEC" << endl;
+    //   for (unsigned int ij=0; ij<all_jets.size(); ij++) {
+    //     Jet& jet = all_jets.at(ij);
+    //     cout << "Jet " << ij << ": jet pt = " << jet.P4().Pt() << ", jet eta = " << jet.P4().Eta() << ", jet phi = " << jet.P4().Phi() << ", jet m = " << jet.P4().M() << endl;
+    //     cout << "Ratio = " << ratio[ij] / jet.P4().Pt() << endl;
+    //   }
+    // }
       all_jets = jt.smear_jets(nat, all_jets, jer_var, bjer_var);          // apply JER smearing to jets
       loop_timer.click("JEC + JER");
     }
+
+    // cout << "After smear" << endl;
+    //   for (unsigned int ij=0; ij<all_jets.size(); ij++) {
+    //     Jet& jet = all_jets.at(ij);
+    //     cout << "Jet " << ij << ": jet pt = " << jet.P4().Pt() << ", jet eta = " << jet.P4().Eta() << ", jet phi = " << jet.P4().Phi() << ", jet m = " << jet.P4().M() << endl;
+    //     cout << "Ratio = " << ratio[ij] / jet.P4().Pt() << endl;
+    //   }
+
+    // if (iEv < 15) {
+    //   cout << "After" << endl;
+    //   for (unsigned int ij=0; ij<all_jets.size(); ij++) {
+    //     Jet& jet = all_jets.at(ij);
+    //     cout << "Jet " << ij << ": jet pt = " << jet.P4().Pt() << ", jet eta = " << jet.P4().Eta() << ", jet phi = " << jet.P4().Phi() << ", jet m = " << jet.P4().M() << endl;
+    //     cout << "Ratio = " << ratio[ij] / jet.P4().Pt() << endl;
+    //   }
+    // }
 
     // Apply preselections to jets (min pT / max eta / PU ID / PF ID)
     std::vector<Jet> presel_jets = skf->preselect_jets(nat, ei, all_jets);
@@ -1174,7 +1212,7 @@ int main(int argc, char** argv) {
         throw (iEv);
       }
       catch (int iEv) {
-        std::cout << "Trigger matching failed on event " << iEv << std::endl;
+        // std::cout << "Trigger matching failed on event " << iEv << std::endl;
       }
 
       //=======================================
