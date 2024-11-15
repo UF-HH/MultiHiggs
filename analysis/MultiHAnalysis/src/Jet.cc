@@ -66,6 +66,9 @@ void JetListCollection::Register(TString tag, std::unique_ptr<TTree>& tree_, std
   CHECK_BRANCH(nConstituents);
   CHECK_BRANCH(id);
   CHECK_BRANCH(puid);
+  CHECK_BRANCH(jec_factor);
+  CHECK_BRANCH(smear_factor);
+  CHECK_BRANCH(breg_factor);
 
   if ( is_enabled("gen_brs") ) {
     CHECK_BRANCH(partonFlav);
@@ -95,6 +98,9 @@ void JetListCollection::Clear() {
   nConstituents.clear();
   id.clear();
   puid.clear();
+  jec_factor.clear();
+  smear_factor.clear();
+  breg_factor.clear();
 }
 
 void JetListCollection::Fill(const std::vector<Jet>& jets) {
@@ -126,6 +132,9 @@ void JetListCollection::Fill(const std::vector<Jet>& jets) {
     nConstituents.push_back(jet.get_nConstituents());
     id.push_back(jet.get_id());
     puid.push_back(jet.get_puid());
+    jec_factor.push_back(jet.get_jec_factor());
+    smear_factor.push_back(jet.get_smear_factor());
+    breg_factor.push_back(jet.get_breg_factor());
   }
 }
 
@@ -149,6 +158,8 @@ void JetCollection::Register(TString tag, std::unique_ptr<TTree>& tree_, std::ma
   CHECK_BRANCH(nConstituents);
   CHECK_BRANCH(id);
   CHECK_BRANCH(puid);
+  CHECK_BRANCH(jec_factor);
+  CHECK_BRANCH(smear_factor);
 
   if ( is_enabled("gen_brs") ) {
     CHECK_BRANCH(partonFlav);
@@ -176,6 +187,9 @@ void JetCollection::Clear() {
   nConstituents = -999;
   id = -999;
   puid = -999;
+  jec_factor = 1.0;
+  smear_factor = 1.0;
+  breg_factor = 1.0;
 }
 
 void JetCollection::Fill(const Jet& jet) {
@@ -204,4 +218,7 @@ void JetCollection::Fill(const Jet& jet) {
   nConstituents = jet.get_nConstituents();
   id = jet.get_id();
   puid = jet.get_puid();
+  jec_factor = jet.get_jec_factor();
+  smear_factor = jet.get_smear_factor();
+  breg_factor = jet.get_breg_factor();
 }
