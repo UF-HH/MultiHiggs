@@ -1212,7 +1212,7 @@ int main(int argc, char** argv) {
         throw (iEv);
       }
       catch (int iEv) {
-        // std::cout << "Trigger matching failed on event " << iEv << std::endl;
+        std::cout << "Trigger matching failed on event " << iEv << std::endl;
       }
 
       //=======================================
@@ -1334,6 +1334,7 @@ int main(int argc, char** argv) {
       su::copy_gen_weights(ot, nwt);
       loop_timer.click("Read and copy gen weights");
     }
+    cout << "Filling output tree..." << endl;
     su::fill_output_tree(ot, nat, ei);
     loop_timer.click("Output tree fill");
   }  // Closes Event Loop
@@ -1345,6 +1346,7 @@ int main(int argc, char** argv) {
   cutflow.write(outputFile);
   cutflow_Unweighted.write(outputFile);
   histograms.write(outputFile);
+  cout << "Writing to file..." << endl;
   ot.write();
   // if (!is_data) {
   if (is_signal) {
