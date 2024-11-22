@@ -3,7 +3,7 @@
 #include "Jet.h"
 #include "TAxis.h"
 #include "TFitResult.h"
-//#include "TriggerFitCurves2016.h"
+#include "TriggerFitCurves2016.h"
 #include "TriggerFitCurves2017.h"
 #include "TriggerFitCurves2018.h"
 
@@ -102,8 +102,7 @@ class TriggerEfficiencyCalculator
   bool applyTurnOnCut_ {false};
 };
 
-/*
-//================= 2016
+// ================= 2016
 class TriggerEfficiencyCalculator_2016 : public TriggerEfficiencyCalculator
 {
 public:
@@ -162,7 +161,6 @@ private:
     float sumPt_      {0.};
     std::vector<float> deepFlavBVector{0., 0., 0., 0.} ;
 };
-*/
 
 //================= 2017
 class TriggerEfficiencyCalculator_2017 : public TriggerEfficiencyCalculator
