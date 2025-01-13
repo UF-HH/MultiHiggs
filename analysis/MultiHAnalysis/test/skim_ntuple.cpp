@@ -1385,7 +1385,7 @@ int main(int argc, char** argv) {
       su::copy_gen_weights(ot, nwt);
       loop_timer.click("Read and copy gen weights");
     }
-    cout << "Filling output tree..." << endl;
+    // cout << "Filling output tree..." << endl;
     su::fill_output_tree(ot, nat, ei);
     loop_timer.click("Output tree fill");
   }  // Closes Event Loop
