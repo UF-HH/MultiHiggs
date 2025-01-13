@@ -487,21 +487,64 @@ std::tuple<float, float, float> TriggerEfficiencyCalculator_2016::calculateMonte
 void TriggerEfficiencyCalculator_2016::extractInformationFromEvent(std::vector<Jet> selectedJets)
 {
   
-    assert(selectedJets.size()==4);
-
-    uint16_t positionInVector = 0;
-    for(const auto& theJet : selectedJets)
+    // Sort jets by b-tagging score
+  std::sort(selectedJets.begin(), selectedJets.end(),[](Jet& j1, Jet& j2){ return j1.get_btag()>j2.get_btag();});
+  for(unsigned int i=0; i<selectedJets.size(); i++)
     {
-        deepFlavBVector[positionInVector++] = get_property(theJet, Jet_btagDeepFlavB); //This has to be the deep flavor!!
+      // Keep only the leading four in b-tagging score jets
+      if (i > 3) break;
+      deepFlavBVector[i] = get_property(selectedJets.at(i), Jet_btagDeepFlavB);
     }
-    
-    stable_sort(selectedJets.begin(), selectedJets.end(), [](const Jet & a, const Jet & b) -> bool
-    {
-        return ( a.P4().Pt() > b.P4().Pt() );
-    });
+  
+  // Sort jets by pT
+  stable_sort(selectedJets.begin(), selectedJets.end(), [](const Jet & a, const Jet & b) -> bool{return (a.P4().Pt() > b.P4().Pt()); });
 
-    pt2_ = selectedJets[1].P4().Pt();
-    pt4_ = selectedJets[3].P4().Pt();
+  // Save the pT of the leading four jets
+  pt1_ = selectedJets[0].P4().Pt();
+  pt2_ = selectedJets[1].P4().Pt();
+  pt3_ = selectedJets[2].P4().Pt();
+  pt4_ = selectedJets[3].P4().Pt();
+
+  // Calculate the event sums
+  caloJetSum_ = 0.;
+  pfJetSum_   = 0.;
+  onlyJetSum_ = 0.;
+  for (uint ij=0; ij<*(theNanoAODTree_.nJet); ++ij)
+    {
+      // here preselect jets
+      Jet jet (ij, &theNanoAODTree_);
+      if (jet.P4().Pt() >= 30. && std::abs(jet.P4().Eta()) < 2.5) pfJetSum_ += jet.P4().Pt();
+      
+      bool isMuon = false;
+      for (uint candIt = 0; candIt < *(theNanoAODTree_.nMuon); ++candIt)
+        {
+	  Muon theMuon (candIt, &theNanoAODTree_);
+	  if(get_property(theMuon, Muon_pfRelIso04_all) > 0.3) continue;
+	  if(jet.getIdx() == get_property(theMuon, Muon_jetIdx))
+            {
+	      isMuon = true;
+	      break;
+            }
+        }
+      if(isMuon) continue;
+      
+      if (jet.P4().Pt() >= 30. && std::abs(jet.P4().Eta()) < 2.5) caloJetSum_ += jet.P4().Pt();
+      
+      bool isElectron = false;
+      for (uint candIt = 0; candIt < *(theNanoAODTree_.nElectron); ++candIt)
+        {
+	  Electron theElectron (candIt, &theNanoAODTree_);
+	  if(get_property(theElectron, Electron_pfRelIso03_all) > 0.3) continue;
+	  if(jet.getIdx() == get_property(theElectron, Electron_jetIdx))
+            {
+	      isElectron = true;
+	      break;
+            }
+        }
+      if(isElectron) continue;
+      
+      if (jet.P4().Pt() >= 30. && std::abs(jet.P4().Eta()) < 2.5) onlyJetSum_ += jet.P4().Pt();      
+    }
 
     sumPt_ = 0;
     for (uint ij = 0; ij < *(theNanoAODTree_.nJet); ++ij)
@@ -525,9 +568,9 @@ void TriggerEfficiencyCalculator_2016::extractInformationFromEvent(std::vector<J
         if (jet.P4().Pt() >= 30. && std::abs(jet.P4().Eta()) < 2.5) sumPt_ += jet.P4().Pt();
     }
 
-    theOutputTree_->userFloat("HLT_Pt2"  ) = pt2_  ;
-    theOutputTree_->userFloat("HLT_Pt4"  ) = pt4_  ;
-    theOutputTree_->userFloat("HLT_SumPt") = sumPt_;
+    // theOutputTree_->userFloat("HLT_Pt2"  ) = pt2_  ;
+    // theOutputTree_->userFloat("HLT_Pt4"  ) = pt4_  ;
+    // theOutputTree_->userFloat("HLT_SumPt") = sumPt_;
 
 }
 
