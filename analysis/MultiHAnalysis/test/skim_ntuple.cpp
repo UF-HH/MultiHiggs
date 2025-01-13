@@ -161,7 +161,7 @@ bool performTriggerMatching(
     std::map<std::string, std::map<std::pair<int, int>, int>>& triggerObjectAndMinNumberMap,
     std::map<std::string, std::vector<std::map<std::pair<int, int>, bool>>>& triggerObjectPerJetCount_,
     std::map<std::string, std::map<std::pair<int, int>, int>>& triggerObjectTotalCount_,
-    std::vector<Jet> selected_jets) {
+    std::vector<Jet> selected_jets, std::string) {
   bool triggerMatched = false;
   //std::vector<int> matched_jets;
   const float trgMatchingDeltaR = config.readFloatOpt("triggers::MaxDeltaR");
@@ -247,35 +247,69 @@ bool performTriggerMatching(
   }  // Closes loop over trigger objects
 
   // Count all filters passed
-  for (auto& triggerAndJetVector : triggerObjectPerJetCount_) {
-    if (0)
-      std::cout << "Trigger path = " << triggerAndJetVector.first << std::endl;
-    for (auto& jetMap : triggerAndJetVector.second) {
-      for (auto& filterAndFlag : jetMap) {
-        if (0)
-          std::cout << " Trigger Object ID " << filterAndFlag.first.first << " -  Filter " << filterAndFlag.first.second
-                    << " -> ";
-        if (filterAndFlag.second) {
-          if (0)
-            std::cout << "true" << std::endl;
-          ++triggerObjectTotalCount_.at(triggerAndJetVector.first).at(filterAndFlag.first);
-        }
-        //else std::cout<< "false" << std::endl;
-      }
+  for (auto& triggerAndJetVector : triggerObjectPerJetCount_)
+    {
+      //std::cout << "Trigger path = " << triggerAndJetVector.first << std::endl;
+      for (auto& jetMap : triggerAndJetVector.second)
+	{
+	  for (auto& filterAndFlag : jetMap)
+	    {
+	      if (0)
+		std::cout << " Trigger Object ID " << filterAndFlag.first.first << " -  Filter " << filterAndFlag.first.second
+			  << " -> ";
+	      if (filterAndFlag.second)
+		{
+		  if (0)
+		    std::cout << "true" << std::endl;
+		  ++triggerObjectTotalCount_.at(triggerAndJetVector.first).at(filterAndFlag.first);
+		}
+	      //else std::cout<< "false" << std::endl;
+	    }
+	}
     }
-  }
 
   // Check if trigger matching is satisfied
   std::map<std::string, bool> triggerResult;
-  for (const auto& triggerRequirements :
-       any_cast<std::map<std::string, std::map<std::pair<int, int>, int>>>(triggerObjectAndMinNumberMap)) {
+  // for (const auto& triggerRequirements :
+  //      any_cast<std::map<std::string, std::map<std::pair<int, int>, int>>>(triggerObjectAndMinNumberMap)) {
+  //   triggerResult[triggerRequirements.first] = true;
+  //   if (nat.getTrgResult(triggerRequirements.first) == false)
+  //   {
+  //   //std::cout << "trigger  "<<triggerRequirements.first<<"  is not satisfied. Skip checking trigger object matching."<< std::endl;
+  //   triggerResult[triggerRequirements.first] = false;
+  //   continue;
+  //   }
+  for (const auto& triggerRequirements : any_cast<std::map<std::string, std::map<std::pair<int, int>, int>>>(triggerObjectAndMinNumberMap))
+  {
     triggerResult[triggerRequirements.first] = true;
-    if (nat.getTrgResult(triggerRequirements.first) == false)
-    {
-    //std::cout << "trigger  "<<triggerRequirements.first<<"  is not satisfied. Skip checking trigger object matching."<< std::endl;
-    triggerResult[triggerRequirements.first] = false;
-    continue;
-    }
+
+      if (nat.getTrgResult(triggerRequirements.first) == false)
+	{
+	  //std::cout << "trigger  "<<triggerRequirements.first<<"  is not satisfied. Skip checking trigger object matching."<< std::endl;
+	  triggerResult[triggerRequirements.first] = false;
+	  continue;
+	}
+
+      for (const auto& requiredNumberOfObjects : triggerRequirements.second)  // triggers fired
+	{
+	  if (0) {
+	    std::cout << "====trigger fired : "<< triggerRequirements.first<<std::endl;
+	    std::cout << "Id = " << requiredNumberOfObjects.first.first
+		      << " - Filter = " << requiredNumberOfObjects.first.second;
+	    std::cout << "  -> Required = " << requiredNumberOfObjects.second;
+	    std::cout << "  -> Passed = "
+		      << triggerObjectTotalCount_[triggerRequirements.first][requiredNumberOfObjects.first];
+	  }
+	  if (triggerObjectTotalCount_[triggerRequirements.first][requiredNumberOfObjects.first] < requiredNumberOfObjects.second)
+	    {
+	      triggerResult[triggerRequirements.first] = false;  // Number of object not enough
+	      //std::cout << " false"<<std::endl;
+	    }
+	  //else
+	  // {
+	  //   std::cout << " true"<<std::endl;
+	  // }
+  }
 
 
     for (const auto& requiredNumberOfObjects : triggerRequirements.second)  // triggers fired
@@ -969,7 +1003,8 @@ int main(int argc, char** argv) {
         int run = (int) *ei.Run;
         // bool HEMruns = (run == 319077 || run == 319310);
         bool HEMruns = (run >= 319077);
-        if (HEMruns && skf->checkHEMissue(ei, all_jets)) {continue;}
+        // if (HEMruns && skf->checkHEMissue(ei, all_jets)) {continue;}
+        if (HEMruns && skf->checkHEMissue(ei, all_jets)) {ei.HEMWeight = 0.;}
       }
     }
 
@@ -1099,7 +1134,8 @@ int main(int argc, char** argv) {
                                                      triggerObjectAndMinNumberMap,
                                                      triggerObjectPerJetCount_,
                                                      triggerObjectTotalCount_,
-                                                     selected_jets);
+                                                     selected_jets,
+                                                     year);
         if (!triggerMatched)
           continue;
         cutflow.add("Trigger matching", nwt);
@@ -1194,26 +1230,41 @@ int main(int argc, char** argv) {
       //========================================
       // Apply trigger matching
       //========================================
-      try{
-        if (applyTrgMatching) {
-          bool triggerMatched = performTriggerMatching(nat,
-                                                      ot,
-                                                      config,
-                                                      triggerObjectAndMinNumberMap,
-                                                      triggerObjectPerJetCount_,
-                                                      triggerObjectTotalCount_,
-                                                      selected_jets);
-          if (!triggerMatched)
-            continue;
-          cutflow.add("Trigger matching", nwt);
-          cutflow_Unweighted.add("Trigger matching");
-          loop_timer.click("Trigger object - offline object matching");
-        }
-        throw (iEv);
+      // try{
+      //   if (applyTrgMatching) {
+      //     bool triggerMatched = performTriggerMatching(nat,
+      //                                                 ot,
+      //                                                 config,
+      //                                                 triggerObjectAndMinNumberMap,
+      //                                                 triggerObjectPerJetCount_,
+      //                                                 triggerObjectTotalCount_,
+      //                                                 selected_jets);
+      //     if (!triggerMatched)
+      //       continue;
+      //     cutflow.add("Trigger matching", nwt);
+      //     cutflow_Unweighted.add("Trigger matching");
+      //     loop_timer.click("Trigger object - offline object matching");
+      //   }
+      //   throw (iEv);
+      // }
+      if (applyTrgMatching) {
+        bool triggerMatched = performTriggerMatching(nat,
+                      ot,
+                      config,
+                      triggerObjectAndMinNumberMap,
+                      triggerObjectPerJetCount_,
+                      triggerObjectTotalCount_,
+                      selected_jets,
+                      year);
+        if (!triggerMatched)
+          continue;
+        cutflow.add("Trigger matching", nwt);
+        cutflow_Unweighted.add("Trigger matching");
+        loop_timer.click("Trigger object - offline object matching");
       }
-      catch (int iEv) {
-        std::cout << "Trigger matching failed on event " << iEv << std::endl;
-      }
+      // catch (int iEv) {
+      //   std::cout << "Trigger matching failed on event " << iEv << std::endl;
+      // }
 
       //=======================================
       // Calculate trigger scale factor
