@@ -156,9 +156,14 @@ private:
     float quad45_minSumPt_            {0.};
     float quad45_minPt4_              {0.};
     
+    float pt1_        {0.};
     float pt2_        {0.};
+    float pt3_        {0.};
     float pt4_        {0.};
     float sumPt_      {0.};
+    float caloJetSum_  {0.};
+    float pfJetSum_    {0.};
+    float onlyJetSum_  {0.};
     std::vector<float> deepFlavBVector{0., 0., 0., 0.} ;
 };
 
