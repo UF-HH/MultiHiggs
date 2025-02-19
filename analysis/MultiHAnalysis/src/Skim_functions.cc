@@ -205,11 +205,16 @@ std::vector<Jet> Skim_functions::preselect_jets(NanoAODTree &nat, EventInfo& ei,
 	continue;
       if (std::abs(jet.P4().Eta()) >= eta_max)
 	continue;
-      if (!checkBit(jet.get_id(), pf_id))
-	continue;
-      if (jet.P4().Pt() < 50 && !checkBit(jet.get_puid(), pu_id))
+      if (!checkBit(jet.get_id(), pf_id)) {
+	      continue;
+      }
+      // cout << "jet.get_id() = " << jet.get_id() << "  pf_id = " << pf_id << endl;
+      // cout << "checkBit(jet.get_id(), pf_id) = " << checkBit(jet.get_id(), pf_id) << endl;
+      if (jet.P4().Pt() < 50 && !checkBit(jet.get_puid(), pu_id)) {
+        // cout << "Jet failed PF ID" << endl;
         ei.puid_check = 0;
 	// continue; // PU ID only applies to jet with pT < 50 GeV
+    }
       
       out_jets.emplace_back(jet);
       
@@ -692,9 +697,9 @@ bool Skim_functions::checkHEMissue(EventInfo& ei, const std::vector<Jet> &jets)
     {
       bool eta_check = (-3.0 < jets.at(ij).P4().Eta() && jets.at(ij).P4().Eta() < -1.3);
       bool phi_check = (-1.57 < jets.at(ij).P4().Phi() && jets.at(ij).P4().Phi() < -0.87);
-      bool pt_check = jets.at(ij).P4().Pt() > 30;
+      // bool pt_check = jets.at(ij).P4().Pt() > 30;
 
-      if (eta_check && phi_check && pt_check)
+      if (eta_check && phi_check)
         {
           // ei.HEMWeight = 0.352;
           return true;
