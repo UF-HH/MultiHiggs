@@ -443,23 +443,27 @@ std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInf
     {
       std::cout << "SixB_functions::selectJetsForPairing:   input jet collection (should be ordered in pT only):"<<std::endl;
       for (unsigned int ij=0; ij<in_jets.size(); ij++)
-	{
-	  std::cout << " jet "<<ij<<"   pT="<<in_jets.at(ij).get_pt()<<"   b-disc.="<<in_jets.at(ij).get_btag()<<std::endl;
-	}
+        {
+          std::cout << " jet "<<ij<<"   pT="<<in_jets.at(ij).get_pt()<<"   b-disc.="<<in_jets.at(ij).get_btag()<<std::endl;
+        }
     }
   
   if (0) std::cout << "Sort jets by their b-tagging score in descending order"<<std::endl;
   // Sort jets by their b-tagging score in descending order
-  std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
+  // std::vector<Jet> jets = bias_pt_sort_jets(nat, ei, in_jets);
+  std::vector<Jet> jets = in_jets;
+  stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
+          return ( get_property (a, Jet_btagDeepFlavB) > get_property (b, Jet_btagDeepFlavB) ); }
+  ); // sort jet by deepjet score (highest to lowest)
   
   if (0) // For debugging
-    {
-      std::cout << "SixB_functions::selectJetsForPairing:  jet collection after sorting by b-tagging score and then pT within each group:"<<std::endl;
-      for (unsigned int ij=0; ij<jets.size(); ij++)
-        {
-          std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
-        }
-    }
+  {
+    std::cout << "SixB_functions::selectJetsForPairing:  jet collection after sorting by b-tagging score and then pT within each group:"<<std::endl;
+    for (unsigned int ij=0; ij<jets.size(); ij++)
+      {
+        std::cout << " jet "<<ij<<"   pT="<<jets.at(ij).get_pt()<<"   b-disc.="<<jets.at(ij).get_btag()<<std::endl;
+      }
+  }
   
   // Select the first 6 jets for the pairing
   if (0) std::cout << "Select the first 6 jets for the pairing"<<std::endl;
@@ -474,54 +478,54 @@ std::vector<Jet> SixB_functions::selectJetsForPairing(NanoAODTree &nat, EventInf
       if (0) std::cout << "Apply b-tagging cuts on the selected jets"<<std::endl;
       std::vector<int> btagWP_cuts = pmap.get_param<std::vector<int>>("bias_pt_sort", "btagWP_cuts");
       if (btagWP_cuts.size() > n_out)
-	{
-	  throw std::runtime_error("Number of cuts required larger than the jet collection size! Fix me.");
-	}
+      {
+        throw std::runtime_error("Number of cuts required larger than the jet collection size! Fix me.");
+      }
 
-    double ht_cut = pmap.get_param<double>("bias_pt_sort", "htCut");
-    if (ei.PFHT < ht_cut) {
-      pass_cuts = false;
-    }
+      double ht_cut = pmap.get_param<double>("bias_pt_sort", "htCut");
+      if (ei.PFHT < ht_cut) {
+        pass_cuts = false;
+      }
       
       for (unsigned int icut=0; icut<btagWP_cuts.size(); icut++)
-	{
-	  const Jet& j = jets.at(icut);
-	  int btag_wp  = btagWP_cuts.at(icut);
-	  if (j.get_btag() <= btag_WPs[btag_wp])
-	    {
-	      pass_cuts = false; 
-	      break;
-	    }
-	}
+      {
+        const Jet& j = jets.at(icut);
+        int btag_wp  = btagWP_cuts.at(icut);
+        if (j.get_btag() <= btag_WPs[btag_wp])
+          {
+            pass_cuts = false; 
+            break;
+          }
+      }
       
       if (0) std::cout << "Apply pT cuts on the selected jets"<<std::endl;
       const std::vector<double> pt_cuts = pmap.get_param<std::vector<double> >("bias_pt_sort", "pt_cuts");
       if (pt_cuts.size() > n_out)
-	{
-	  throw std::runtime_error("Number of pT cuts required larger thatn the jet collection size! Fix me.");
-	}
+      {
+        throw std::runtime_error("Number of pT cuts required larger thatn the jet collection size! Fix me.");
+      }
       
       unsigned int ptCut_index = 0;
       // Jets need to be sorted by pT in descending order before applying different pT cuts
       std::vector<Jet> jets_sortedInPt = pt_sort_jets(nat, ei, jets);
       for (unsigned int ij=0; ij<jets_sortedInPt.size(); ++ij)
-	{
-	  const Jet &jet = jets_sortedInPt.at(ij);
-	  
-	  if (0) std::cout << " jet "<<ij<<"  pt="<<jet.P4().Pt()<<"   pt cut ="<<pt_cuts.at(ptCut_index)<<std::endl;
-	  
-	  if (jet.P4().Pt() <= pt_cuts.at(ptCut_index))
-	    {
-	      pass_cuts = false;
-	      break;
-	    }
-	  if (ptCut_index < pt_cuts.size()-1) ptCut_index++;
-	}
+      {
+        const Jet &jet = jets_sortedInPt.at(ij);
+        
+        if (0) std::cout << " jet "<<ij<<"  pt="<<jet.P4().Pt()<<"   pt cut ="<<pt_cuts.at(ptCut_index)<<std::endl;
+        
+        if (jet.P4().Pt() <= pt_cuts.at(ptCut_index))
+          {
+            pass_cuts = false;
+            break;
+          }
+        if (ptCut_index < pt_cuts.size()-1) ptCut_index++;
+      }
       
       if (!pass_cuts)
-	{
-	  jets.resize(0);
-	}
+      {
+        jets.resize(0);
+      }
     }
   // std::sort(jets.begin(),jets.end(),[](Jet& j1,Jet& j2){ return j1.get_btag()>j2.get_btag(); });
   stable_sort(jets.begin(), jets.end(), [](const Jet& a, const Jet& b) -> bool {
