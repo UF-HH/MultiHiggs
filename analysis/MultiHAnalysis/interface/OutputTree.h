@@ -167,12 +167,12 @@ public:
   GenJetCollection gen_H2_b1_genjet = GenJetCollection({"pt","m","eta","phi"});
   GenJetCollection gen_H2_b2_genjet = GenJetCollection({"pt","m","eta","phi"});
 
-  JetCollection gen_HX_b1_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
-  JetCollection gen_HX_b2_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
-  JetCollection gen_H1_b1_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
-  JetCollection gen_H1_b2_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
-  JetCollection gen_H2_b1_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
-  JetCollection gen_H2_b2_recojet = JetCollection({"pt","m","eta","phi","ptRegressed","mRegressed"});
+  JetCollection gen_HX_b1_recojet = JetCollection({"pt","m","eta","phi","btag","ptRegressed","mRegressed"});
+  JetCollection gen_HX_b2_recojet = JetCollection({"pt","m","eta","phi","btag","ptRegressed","mRegressed"});
+  JetCollection gen_H1_b1_recojet = JetCollection({"pt","m","eta","phi","btag","ptRegressed","mRegressed"});
+  JetCollection gen_H1_b2_recojet = JetCollection({"pt","m","eta","phi","btag","ptRegressed","mRegressed"});
+  JetCollection gen_H2_b1_recojet = JetCollection({"pt","m","eta","phi","btag","ptRegressed","mRegressed"});
+  JetCollection gen_H2_b2_recojet = JetCollection({"pt","m","eta","phi","btag","ptRegressed","mRegressed"});
   // End Gen 6B Objects
 
   
@@ -224,12 +224,12 @@ public:
   CompositeCandidateCollection H1;
   CompositeCandidateCollection H2;
 
-  JetCollection HX_b1 = JetCollection({"pt","eta","phi","m","btag"});
-  JetCollection HX_b2 = JetCollection({"pt","eta","phi","m","btag"});
-  JetCollection H1_b1 = JetCollection({"pt","eta","phi","m","btag"});
-  JetCollection H1_b2 = JetCollection({"pt","eta","phi","m","btag"});
-  JetCollection H2_b1 = JetCollection({"pt","eta","phi","m","btag"});
-  JetCollection H2_b2 = JetCollection({"pt","eta","phi","m","btag"});
+  JetCollection HX_b1 = JetCollection({"pt","eta","phi","m","btag","ptRegressed","mRegressed","signalId"});
+  JetCollection HX_b2 = JetCollection({"pt","eta","phi","m","btag","ptRegressed","mRegressed","signalId"});
+  JetCollection H1_b1 = JetCollection({"pt","eta","phi","m","btag","ptRegressed","mRegressed","signalId"});
+  JetCollection H1_b2 = JetCollection({"pt","eta","phi","m","btag","ptRegressed","mRegressed","signalId"});
+  JetCollection H2_b1 = JetCollection({"pt","eta","phi","m","btag","ptRegressed","mRegressed","signalId"});
+  JetCollection H2_b2 = JetCollection({"pt","eta","phi","m","btag","ptRegressed","mRegressed","signalId"});
 
   int HX_b1_genHflag;
   int HX_b2_genHflag;
