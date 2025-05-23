@@ -873,7 +873,7 @@ int main(int argc, char** argv) {
       // w1.syst_val = {iEv + 1., iEv - 1.};
       // w2.syst_val = {10. * iEv - 10, 10. * iEv - 20, 10. * iEv - 30};
       // w3.syst_val = {};
-      // nwt.fill();
+      nwt.fill();
       loop_timer.click("Norm weight read + fill");
     }
 
@@ -1003,7 +1003,6 @@ int main(int argc, char** argv) {
       // skip events with jets in affected region
       if (check_HEM){
         int run = (int) *ei.Run;
-        // bool HEMruns = (run == 319077 || run == 319310);
         bool HEMruns = (run >= 319077);
         // if (HEMruns && skf->checkHEMissue(ei, all_jets)) {continue;}
         if (HEMruns && skf->checkHEMissue(ei, all_jets)) {ei.HEMWeight = 0.;}
