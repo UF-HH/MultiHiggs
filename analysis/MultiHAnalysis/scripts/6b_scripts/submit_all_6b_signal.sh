@@ -68,7 +68,9 @@ for input in ${files[@]}; do
 done
 
 
-# python scripts/submitSkimOnBatch.py --tag Summer2018UL/maxbtag_4b/Official_NMSSM/ --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-850_MY-500_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal --forceOverwrite --memory 4000
+# python scripts/submitSkimOnBatch.py --tag Summer2016APVUL/maxbtag_4b/Official_NMSSM/ --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2016APV_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL16APVNanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-900_MY-350_TuneCP5_13TeV-madgraph-pythia8.txt --forceOverwrite --memory 4000
+
+# python scripts/submitSkimOnBatch.py --tag Summer2018UL/maxbtag_4b/Official_NMSSM/ --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2018_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL18NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-1200_MY-1000_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal --forceOverwrite --memory 4000
 
 # python scripts/submitSkimOnBatch.py --tag Summer2017UL/maxbtag_4b/Official_NMSSM --outputDir /store/user/srosenzw/sixb/ntuples --cfg config/skim_ntuple_2017_106X_NanoAODv9.cfg --njobs 100 --input input/Run2_UL/RunIISummer20UL17NanoAODv9/NMSSM_XToYHTo6B/NMSSM_XToYHTo6B_MX-600_MY-400_TuneCP5_13TeV-madgraph-pythia8.txt --is-signal --forceOverwrite
 

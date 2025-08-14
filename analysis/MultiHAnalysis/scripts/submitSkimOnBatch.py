@@ -232,7 +232,9 @@ fmetainfo.close()
 if args.submitjobs:
     print "[INFO] submitting jobs"
     os.chdir(jobsdir)
+    # print(jobsdir)
     command = 'condor_submit ' + jdlname
+    # print(command)
     exitcode = os.system(command)
     if exitcode != 0:
         print "[ERROR] Something went wrong when submitting jobs (code = {})".format(exitcode)

@@ -811,9 +811,14 @@ int main(int argc, char** argv) {
 
   const auto start_loop_t = chrono::high_resolution_clock::now();
 
+  
   Cutflow cutflow;
   Cutflow cutflow_Unweighted("h_cutflow_unweighted", "Unweighted selection cutflow");
+  Cutflow LHEScaleWeight("h_LHEScaleWeight", "LHE scale weight selection cutflow");
+  Cutflow LHEPdfWeight("h_LHEPdfWeight", "LHE PDF scale weight selection cutflow");
+  Cutflow PSWeight("h_PSWeight", "PS scale weight selection cutflow");
   HistoCollection histograms;
+  cout << "Checkpoint 2" << endl;
 
   //==========================================================
   // Loop begins!
@@ -879,6 +884,10 @@ int main(int argc, char** argv) {
 
     // ------- events can start be filtered from here (after saving all gen weights)
     cutflow.add("total", nwt);
+    
+    for (int i=0; i < nat.LHEScaleWeight.GetSize(); i++) {LHEScaleWeight.add(i, nat.LHEScaleWeight.At(i));}
+    for (int i=0; i < nat.LHEPdfWeight.GetSize(); i++) {LHEPdfWeight.add(i, nat.LHEPdfWeight.At(i));}
+    for (int i=0; i < nat.PSWeight.GetSize(); i++) {PSWeight.add(i, nat.PSWeight.At(i));}
     cutflow_Unweighted.add("total");
 
     //====================================
@@ -1397,6 +1406,9 @@ int main(int argc, char** argv) {
   // Write cutflow histograms to file
   cutflow.write(outputFile);
   cutflow_Unweighted.write(outputFile);
+  LHEScaleWeight.write(outputFile);
+  LHEPdfWeight.write(outputFile);
+  PSWeight.write(outputFile);
   histograms.write(outputFile);
   cout << "Writing to file..." << endl;
   ot.write();

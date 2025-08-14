@@ -30,71 +30,71 @@ class TriggerFitCurves2017
  TriggerFitCurves2017(std::string fileName)
    : triggerFitFile(fileName.data())
    {
-     fSingleMuon__Efficiency_L1calojetsPFHTPair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_L1calojetsPFHT"))->GetFunction("cdf"),
-							 (KFitResult*)triggerFitFile.Get("Data__Efficiency_L1calojetsPFHT_FitResult"));
+     fSingleMuon__Efficiency_L1calojetsPFHTPair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_L1filterHT"))->GetFunction("cdf"),
+							 (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_L1filterHT_FitResult"));
      
-     fSingleMuon__Efficiency_QuadCentralJet30Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_QuadCentralJet30"))->GetFunction("cdf"),
-							       (KFitResult*)triggerFitFile.Get("Data__Efficiency_QuadCentralJet30_FitResult"));
+     fSingleMuon__Efficiency_QuadCentralJet30Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_QuadCentralJet30"))->GetFunction("cdf"),
+							       (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_QuadCentralJet30_FitResult"));
      
-     fSingleMuon__Efficiency_CaloQuadJet30HT300Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_CaloQuadJet30HT300"))->GetFunction("cdf"),
-								 (KFitResult*)triggerFitFile.Get("Data__Efficiency_CaloQuadJet30HT300_FitResult"));
+     fSingleMuon__Efficiency_CaloQuadJet30HT300Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_CaloQuadJet30HT300"))->GetFunction("cdf"),
+								 (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_CaloQuadJet30HT300_FitResult"));
      
-     fSingleMuon__Efficiency_BTagCaloCSVp05DoublePair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_BTagCaloCSVp05Double"))->GetFunction("cdf"),
-								   (KFitResult*)triggerFitFile.Get("Data__Efficiency_BTagCaloCSVp05Double_FitResult"));
+     fSingleMuon__Efficiency_BTagCaloCSVp05DoublePair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_BTagCaloCSVp05Double"))->GetFunction("cdf"),
+								   (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_BTagCaloCSVp05Double_FitResult"));
      
-     fSingleMuon__Efficiency_PFCentralJetLooseIDQuad30Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_PFCentralJetLooseIDQuad30"))->GetFunction("cdf"),
-									(KFitResult*)triggerFitFile.Get("Data__Efficiency_PFCentralJetLooseIDQuad30_FitResult"));
+     fSingleMuon__Efficiency_PFCentralJetLooseIDQuad30Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_PFCentralJetLooseIDQuad30"))->GetFunction("cdf"),
+									(KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_PFCentralJetLooseIDQuad30_FitResult"));
      
-     fSingleMuon__Efficiency_1PFCentralJetLooseID75Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_1PFCentralJetLooseID75"))->GetFunction("cdf"),
-								     (KFitResult*)triggerFitFile.Get("Data__Efficiency_1PFCentralJetLooseID75_FitResult"));
+     fSingleMuon__Efficiency_1PFCentralJetLooseID75Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_1PFCentralJetLooseID75"))->GetFunction("cdf"),
+								     (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_1PFCentralJetLooseID75_FitResult"));
      
-     fSingleMuon__Efficiency_2PFCentralJetLooseID60Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_2PFCentralJetLooseID60"))->GetFunction("cdf"),
-								     (KFitResult*)triggerFitFile.Get("Data__Efficiency_2PFCentralJetLooseID60_FitResult"));
+     fSingleMuon__Efficiency_2PFCentralJetLooseID60Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_2PFCentralJetLooseID60"))->GetFunction("cdf"),
+								     (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_2PFCentralJetLooseID60_FitResult"));
      
-     fSingleMuon__Efficiency_3PFCentralJetLooseID45Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_3PFCentralJetLooseID45"))->GetFunction("cdf"),
-								     (KFitResult*)triggerFitFile.Get("Data__Efficiency_3PFCentralJetLooseID45_FitResult"));
+     fSingleMuon__Efficiency_3PFCentralJetLooseID45Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_3PFCentralJetLooseID45"))->GetFunction("cdf"),
+								     (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_3PFCentralJetLooseID45_FitResult"));
      
-     fSingleMuon__Efficiency_4PFCentralJetLooseID40Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_4PFCentralJetLooseID40"))->GetFunction("cdf"),
-								     (KFitResult*)triggerFitFile.Get("Data__Efficiency_4PFCentralJetLooseID40_FitResult"));
+     fSingleMuon__Efficiency_4PFCentralJetLooseID40Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_4PFCentralJetLooseID40"))->GetFunction("cdf"),
+								     (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_4PFCentralJetLooseID40_FitResult"));
 
-     fSingleMuon__Efficiency_PFCentralJetsLooseIDQuad30HT300Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_PFCentralJetsLooseIDQuad30HT300"))->GetFunction("cdf"),
-									      (KFitResult*)triggerFitFile.Get("Data__Efficiency_PFCentralJetsLooseIDQuad30HT300_FitResult"));
+     fSingleMuon__Efficiency_PFCentralJetsLooseIDQuad30HT300Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_PFCentralJetsLooseIDQuad30HT300"))->GetFunction("cdf"),
+									      (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_PFCentralJetsLooseIDQuad30HT300_FitResult"));
      
-     fSingleMuon__Efficiency_BTagPFCSVp070TriplePair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Data__Efficiency_BTagPFCSVp070Triple"))->GetFunction("cdf"),
-								  (KFitResult*)triggerFitFile.Get("Data__Efficiency_BTagPFCSVp070Triple_FitResult"));
+     fSingleMuon__Efficiency_BTagPFCSVp070TriplePair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("SingleMuon__Efficiency_BTagPFCSVp070Triple"))->GetFunction("cdf"),
+								  (KFitResult*)triggerFitFile.Get("SingleMuon__Efficiency_BTagPFCSVp070Triple_FitResult"));
 
-     fTTbar__Efficiency_L1calojetsPFHTPair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_L1calojetsPFHT"))->GetFunction("cdf"),
-						    (KFitResult*)triggerFitFile.Get("Simulation__Efficiency_L1calojetsPFHT_FitResult"));
+     fTTbar__Efficiency_L1calojetsPFHTPair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_L1filterHT"))->GetFunction("cdf"),
+						    (KFitResult*)triggerFitFile.Get("TTbar__Efficiency_L1filterHT_FitResult"));
      
-     fTTbar__Efficiency_QuadCentralJet30Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_QuadCentralJet30"))->GetFunction("cdf"),
-							  (KFitResult*)triggerFitFile.Get("Simulation__Efficiency_QuadCentralJet30_FitResult"));
+     fTTbar__Efficiency_QuadCentralJet30Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_QuadCentralJet30"))->GetFunction("cdf"),
+							  (KFitResult*)triggerFitFile.Get("TTbar__Efficiency_QuadCentralJet30_FitResult"));
      
-     fTTbar__Efficiency_CaloQuadJet30HT300Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_CaloQuadJet30HT300"))->GetFunction("cdf"),
-							    (KFitResult*)triggerFitFile.Get("Simulation__Efficiency_CaloQuadJet30HT300_FitResult"));
+     fTTbar__Efficiency_CaloQuadJet30HT300Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_CaloQuadJet30HT300"))->GetFunction("cdf"),
+							    (KFitResult*)triggerFitFile.Get("TTbar__Efficiency_CaloQuadJet30HT300_FitResult"));
      
-     fTTbar__Efficiency_BTagCaloCSVp05DoublePair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_BTagCaloCSVp05Double"))->GetFunction("cdf"),
-							      (KFitResult*)triggerFitFile.Get("Simulation__Efficiency_BTagCaloCSVp05Double_FitResult"));
+     fTTbar__Efficiency_BTagCaloCSVp05DoublePair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_BTagCaloCSVp05Double"))->GetFunction("cdf"),
+							      (KFitResult*)triggerFitFile.Get("TTbar__Efficiency_BTagCaloCSVp05Double_FitResult"));
 
-     fTTbar__Efficiency_PFCentralJetLooseIDQuad30Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_PFCentralJetLooseIDQuad30"))->GetFunction("cdf"),
-								   (KFitResult*)triggerFitFile.Get("Simulation__Efficiency_PFCentralJetLooseIDQuad30_FitResult"));
+     fTTbar__Efficiency_PFCentralJetLooseIDQuad30Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_PFCentralJetLooseIDQuad30"))->GetFunction("cdf"),
+								   (KFitResult*)triggerFitFile.Get("TTbar__Efficiency_PFCentralJetLooseIDQuad30_FitResult"));
 
-     fTTbar__Efficiency_1PFCentralJetLooseID75Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_1PFCentralJetLooseID75"))->GetFunction("cdf"),
-								(KFitResult*)triggerFitFile.Get("Simulation__Efficiency_1PFCentralJetLooseID75_FitResult"));
+     fTTbar__Efficiency_1PFCentralJetLooseID75Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_1PFCentralJetLooseID75"))->GetFunction("cdf"),
+								(KFitResult*)triggerFitFile.Get("TTbar__Efficiency_1PFCentralJetLooseID75_FitResult"));
 
-     fTTbar__Efficiency_2PFCentralJetLooseID60Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_2PFCentralJetLooseID60"))->GetFunction("cdf"),
-								(KFitResult*)triggerFitFile.Get("Simulation__Efficiency_2PFCentralJetLooseID60_FitResult"));
+     fTTbar__Efficiency_2PFCentralJetLooseID60Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_2PFCentralJetLooseID60"))->GetFunction("cdf"),
+								(KFitResult*)triggerFitFile.Get("TTbar__Efficiency_2PFCentralJetLooseID60_FitResult"));
 
-     fTTbar__Efficiency_3PFCentralJetLooseID45Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_3PFCentralJetLooseID45"))->GetFunction("cdf"),
-								(KFitResult*)triggerFitFile.Get("Simulation__Efficiency_3PFCentralJetLooseID45_FitResult"));
+     fTTbar__Efficiency_3PFCentralJetLooseID45Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_3PFCentralJetLooseID45"))->GetFunction("cdf"),
+								(KFitResult*)triggerFitFile.Get("TTbar__Efficiency_3PFCentralJetLooseID45_FitResult"));
 
-     fTTbar__Efficiency_4PFCentralJetLooseID40Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_4PFCentralJetLooseID40"))->GetFunction("cdf"),
-								(KFitResult*)triggerFitFile.Get("Simulation__Efficiency_4PFCentralJetLooseID40_FitResult"));
+     fTTbar__Efficiency_4PFCentralJetLooseID40Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_4PFCentralJetLooseID40"))->GetFunction("cdf"),
+								(KFitResult*)triggerFitFile.Get("TTbar__Efficiency_4PFCentralJetLooseID40_FitResult"));
      
-     fTTbar__Efficiency_PFCentralJetsLooseIDQuad30HT300Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_PFCentralJetsLooseIDQuad30HT300"))->GetFunction("cdf"),
-									 (KFitResult*)triggerFitFile.Get("Simulation__Efficiency_PFCentralJetsLooseIDQuad30HT300_FitResult"));
+     fTTbar__Efficiency_PFCentralJetsLooseIDQuad30HT300Pair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_PFCentralJetsLooseIDQuad30HT300"))->GetFunction("cdf"),
+									 (KFitResult*)triggerFitFile.Get("TTbar__Efficiency_PFCentralJetsLooseIDQuad30HT300_FitResult"));
      
-     fTTbar__Efficiency_BTagPFCSVp070TriplePair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("Simulation__Efficiency_BTagPFCSVp070Triple"))->GetFunction("cdf"),
-							     (KFitResult*)triggerFitFile.Get("Simulation__Efficiency_BTagPFCSVp070Triple_FitResult"));
+     fTTbar__Efficiency_BTagPFCSVp070TriplePair = createPair(((TGraphAsymmErrors*)triggerFitFile.Get("TTbar__Efficiency_BTagPFCSVp070Triple"))->GetFunction("cdf"),
+							     (KFitResult*)triggerFitFile.Get("TTbar__Efficiency_BTagPFCSVp070Triple_FitResult"));
    }
  ~TriggerFitCurves2017()
    {
